@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spring Playground</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f2f2f7;
+      color: #1c1c1e;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      padding: 24px 48px 0;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #1c1c1e;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 15px;
+      color: #8e8e93;
+    }
+
+    /* ── Main layout ── */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 36px 48px 80px;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .grid-section {
+      overflow-y: auto;
+      max-height: 762px; /* matches demo panel: tabs + stage + footer */
+      padding-right: 4px;
+    }
+
+    .grid-section::-webkit-scrollbar { width: 4px; }
+    .grid-section::-webkit-scrollbar-track { background: transparent; }
+    .grid-section::-webkit-scrollbar-thumb { background: #e5e5ea; border-radius: 2px; }
+
+    /* ── Demo panel ── */
+    .demo-panel {
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      position: sticky;
+      top: 24px;
+    }
+
+    .demo-tabs {
+      display: flex;
+      border-bottom: 1px solid #f2f2f7;
+      padding: 0 4px;
+    }
+
+    .demo-tab {
+      flex: 1;
+      padding: 14px 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #8e8e93;
+      cursor: pointer;
+      text-align: center;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.15s;
+      user-select: none;
+    }
+
+    .demo-tab.active {
+      color: #FF385C;
+      border-bottom-color: #FF385C;
+    }
+
+    .demo-stage {
+      height: 620px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fafafa;
+      overflow: hidden;
+    }
+
+    /* ── Phone frame ── */
+    .phone-frame {
+      width: 280px;
+      height: 560px;
+      border: 2px solid #e5e5ea;
+      border-radius: 36px;
+      background: #fff;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.5);
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 18px 4px;
+      flex-shrink: 0;
+    }
+
+    .status-time {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1c1c1e;
+      letter-spacing: -0.02em;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-icon {
+      background: #1c1c1e;
+      border-radius: 1px;
+    }
+
+    .si-signal {
+      width: 12px;
+      height: 8px;
+      /* 4 bars via clip-path */
+      background: linear-gradient(to right,
+        #1c1c1e 0%, #1c1c1e 18%, transparent 18%,
+        transparent 26%, #1c1c1e 26%, #1c1c1e 44%, transparent 44%,
+        transparent 52%, #1c1c1e 52%, #1c1c1e 70%, transparent 70%,
+        transparent 78%, #1c1c1e 78%, #1c1c1e 96%
+      );
+    }
+
+    .si-wifi {
+      width: 13px;
+      height: 9px;
+      border: 2px solid #1c1c1e;
+      border-bottom: none;
+      border-radius: 9px 9px 0 0;
+      position: relative;
+    }
+
+    .si-wifi::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 3px;
+      background: #1c1c1e;
+      border-radius: 50%;
+    }
+
+    .si-battery {
+      width: 20px;
+      height: 10px;
+      border: 1.5px solid #1c1c1e;
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .si-battery::before {
+      content: '';
+      position: absolute;
+      right: -4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 2px;
+      height: 5px;
+      background: #1c1c1e;
+      border-radius: 0 1px 1px 0;
+    }
+
+    .si-battery::after {
+      content: '';
+      position: absolute;
+      inset: 2px 3px 2px 2px;
+      background: #1c1c1e;
+      border-radius: 1px;
+    }
+
+    .phone-content {
+      padding: 36px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      height: 100%;
+    }
+
+    /* ── Skeleton UI ── */
+    :root { --sk: #e5e5ea; }
+
+    .sk-search {
+      height: 34px;
+      border-radius: 17px;
+      background: var(--sk);
+      flex-shrink: 0;
+    }
+
+    .sk-cats {
+      display: flex;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .sk-cat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      flex: 1;
+    }
+
+    .sk-cat-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--sk);
+    }
+
+    .sk-cat-label {
+      height: 7px;
+      width: 65%;
+      background: var(--sk);
+      border-radius: 4px;
+    }
+
+    .sk-divider {
+      height: 1px;
+      background: var(--sk);
+      margin: 2px -18px 2px;
+      flex-shrink: 0;
+    }
+
+    .sk-card-img {
+      width: 100%;
+      height: 183px;
+      background: var(--sk);
+      border-radius: 12px;
+      flex-shrink: 0;
+      margin-top: 10px;
+    }
+
+    .sk-card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .sk-title { height: 9px; width: 55%; background: var(--sk); border-radius: 5px; }
+    .sk-price { height: 9px; width: 18%; background: var(--sk); border-radius: 5px; }
+    .sk-sub   { height: 8px; width: 38%; background: var(--sk); border-radius: 4px; flex-shrink: 0; }
+
+    .sk-section-label {
+      height: 8px;
+      width: 30%;
+      background: var(--sk);
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .sk-card-img.partial {
+      height: 130px;
+      background: var(--sk);
+      margin-top: 10px;
+    }
+
+    .sk-bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 68px;
+      background: #fff;
+      border-top: 1px solid var(--sk);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-around;
+      padding: 12px 8px 0;
+      z-index: 10;
+    }
+
+    .sk-nav-icon {
+      width: 20px;
+      height: 20px;
+      background: var(--sk);
+      border-radius: 4px;
+    }
+
+    /* ── Sheet demo ── */
+    .sheet {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 55%;
+      background: #fff;
+      border-radius: 22px 22px 0 0;
+      box-shadow: 0 -2px 20px rgba(0,0,0,0.12);
+      padding: 14px 18px;
+      will-change: transform;
+    }
+
+    .sheet-handle {
+      width: 40px;
+      height: 5px;
+      background: #e5e5ea;
+      border-radius: 3px;
+      margin: 0 auto 16px;
+    }
+
+    .sheet-line {
+      height: 10px;
+      background: #f2f2f7;
+      border-radius: 5px;
+      margin-bottom: 9px;
+    }
+
+    .sheet-line.short { width: 55%; }
+
+    /* ── Modal demo ── */
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      will-change: opacity;
+    }
+
+    .modal-card {
+      width: 220px;
+      background: #fff;
+      border-radius: 18px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      will-change: transform, opacity;
+    }
+
+    .modal-line {
+      height: 8px;
+      background: #f2f2f7;
+      border-radius: 4px;
+    }
+
+    .modal-line.short { width: 55%; }
+
+    .modal-btn-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      height: 28px;
+      border-radius: 7px;
+      background: #f2f2f7;
+    }
+
+    .modal-btn.primary {
+      background: #FF385C;
+    }
+
+    /* ── Card flip demo ── */
+    .flip-scene {
+      width: 160px;
+      height: 200px;
+      perspective: 600px;
+    }
+
+    .flip-card {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      position: relative;
+      will-change: transform;
+    }
+
+    .flip-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 20px;
+    }
+
+    .flip-front {
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+    }
+
+    .flip-back {
+      background: #FF385C;
+      transform: rotateY(180deg);
+    }
+
+    .flip-line {
+      width: 100%;
+      height: 8px;
+      background: #f2f2f7;
+      border-radius: 4px;
+    }
+
+    .flip-back .flip-line {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .flip-line.short { width: 60%; }
+
+    /* ── Notification demo ── */
+    .notif {
+      position: absolute;
+      top: 16px;
+      left: 14px;
+      right: 14px;
+      background: #fff;
+      border-radius: 14px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      will-change: transform, opacity;
+    }
+
+    .notif-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #FF385C;
+      flex-shrink: 0;
+    }
+
+    .notif-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .notif-line {
+      height: 7px;
+      background: #f2f2f7;
+      border-radius: 3px;
+    }
+
+    .notif-line.short { width: 60%; }
+
+    /* ── Demo footer ── */
+    .demo-footer {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .selected-token {
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'SF Mono', monospace;
+      color: #1c1c1e;
+    }
+
+    .selected-values {
+      font-size: 13px;
+      color: #8e8e93;
+      margin-top: 2px;
+    }
+
+    .play-btn {
+      background: #FF385C;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 9px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.12s, transform 0.1s;
+    }
+
+    .play-btn:hover { opacity: 0.88; }
+    .play-btn:active { transform: scale(0.97); }
+
+    /* ── Token grid ── */
+    .grid-section h2 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #8e8e93;
+      margin-bottom: 16px;
+    }
+
+    .speed-group { margin-bottom: 28px; }
+
+    .speed-label {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #1c1c1e;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .speed-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e5e5ea;
+    }
+
+    .speed-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .token-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 14px 14px 12px;
+      cursor: pointer;
+      transition: box-shadow 0.15s, transform 0.12s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .token-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      transform: translateY(-1px);
+    }
+
+    .token-card.selected {
+      border-color: var(--char-color, #FF385C);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--char-color, #FF385C) 15%, transparent);
+    }
+
+    .card-char-label {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #1c1c1e;
+      margin-bottom: 16px;
+    }
+
+    .card-token-name {
+      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+      font-size: 10px;
+      color: #636366;
+      background: #f2f2f7;
+      border-radius: 20px;
+      padding: 3px 8px;
+      white-space: nowrap;
+      align-self: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .card-vals {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .card-val {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .card-val-label {
+      font-size: 13px;
+      color: #8e8e93;
+      flex-shrink: 0;
+    }
+
+    .card-val-num {
+      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+      font-size: 13px;
+      color: #1c1c1e;
+    }
+
+    /* ── Push / Nav demo ── */
+    .push-screen {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      will-change: transform;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .push-scrim {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.18);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .push-hero {
+      width: 100%;
+      height: 210px;
+      background: var(--sk);
+      flex-shrink: 0;
+    }
+
+    .push-detail-body {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .push-detail-row {
+      height: 8px;
+      background: var(--sk);
+      border-radius: 4px;
+    }
+
+    .push-detail-row.title {
+      height: 11px;
+      width: 72%;
+      border-radius: 6px;
+      margin-bottom: 2px;
+    }
+
+    .push-detail-row.sub { width: 48%; }
+    .push-detail-row.med { width: 82%; }
+    .push-detail-row.short { width: 55%; }
+    .push-detail-row.full { width: 100%; }
+
+    .push-detail-divider {
+      height: 1px;
+      background: var(--sk);
+      margin: 4px 0;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Spring Playground</h1>
+  <p>Pick a spring, pick a demo, see how it feels.</p>
+</div>
+
+<div class="main">
+
+  <!-- Demo panel -->
+  <div class="demo-panel">
+    <div class="demo-tabs">
+      <div class="demo-tab active" data-demo="sheet">Sheet</div>
+      <div class="demo-tab" data-demo="modal">Modal</div>
+      <div class="demo-tab" data-demo="flip">Card</div>
+      <div class="demo-tab" data-demo="notif">Notification</div>
+      <div class="demo-tab" data-demo="push">Push</div>
+    </div>
+
+    <div class="demo-stage" id="demoStage">
+      <!-- Sheet demo (default) -->
+      <div class="demo-view" id="view-sheet">
+        <div class="phone-frame">
+
+
+          <div class="phone-content">
+            <div class="sk-search"></div>
+            <div class="sk-cats">
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+            </div>
+            <div class="sk-divider"></div>
+            <div class="sk-card-img"></div>
+            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+            <div class="sk-sub"></div>
+            <div class="sk-section-label"></div>
+            <div class="sk-card-img partial"></div>
+          </div>
+          <div class="sk-bottom-nav">
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+          </div>
+          <div class="sheet" id="demoSheet" style="transform: translateY(100%)">
+            <div class="sheet-handle"></div>
+            <div class="sheet-line"></div>
+            <div class="sheet-line short"></div>
+            <div class="sheet-line"></div>
+            <div class="sheet-line short"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal demo -->
+      <div class="demo-view" id="view-modal" style="display:none; align-items:center; justify-content:center;">
+        <div class="phone-frame">
+
+
+          <div class="phone-content">
+            <div class="sk-search"></div>
+            <div class="sk-cats">
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+            </div>
+            <div class="sk-divider"></div>
+            <div class="sk-card-img"></div>
+            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+            <div class="sk-sub"></div>
+            <div class="sk-section-label"></div>
+            <div class="sk-card-img partial"></div>
+          </div>
+          <div class="sk-bottom-nav">
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+          </div>
+          <div class="modal-backdrop" id="demoBackdrop" style="opacity:0; pointer-events:none;"></div>
+          <div class="modal-card" id="demoModal" style="opacity:0; transform: scale(0.85); position:absolute; top:50%; left:50%; margin-top:-70px; margin-left:-110px;">
+            <div class="modal-line"></div>
+            <div class="modal-line short"></div>
+            <div class="modal-line"></div>
+            <div class="modal-btn-row">
+              <div class="modal-btn"></div>
+              <div class="modal-btn primary"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card flip demo -->
+      <div class="demo-view" id="view-flip" style="display:none;">
+        <div class="flip-scene">
+          <div class="flip-card" id="demoFlip">
+            <div class="flip-face flip-front">
+              <div class="flip-line"></div>
+              <div class="flip-line short"></div>
+              <div class="flip-line"></div>
+              <div class="flip-line short"></div>
+            </div>
+            <div class="flip-face flip-back">
+              <div class="flip-line"></div>
+              <div class="flip-line short"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notification demo -->
+      <div class="demo-view" id="view-notif" style="display:none; align-items:center; justify-content:center;">
+        <div class="phone-frame">
+
+
+          <div class="phone-content">
+            <div class="sk-search"></div>
+            <div class="sk-cats">
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+            </div>
+            <div class="sk-divider"></div>
+            <div class="sk-card-img"></div>
+            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+            <div class="sk-sub"></div>
+            <div class="sk-section-label"></div>
+            <div class="sk-card-img partial"></div>
+          </div>
+          <div class="sk-bottom-nav">
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+          </div>
+          <div class="notif" id="demoNotif" style="transform: translateY(-120%); opacity: 0;">
+            <div class="notif-icon"></div>
+            <div class="notif-text">
+              <div class="notif-line"></div>
+              <div class="notif-line short"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Push / Nav demo -->
+      <div class="demo-view" id="view-push" style="display:none; align-items:center; justify-content:center;">
+        <div class="phone-frame">
+          <!-- Source screen (list) -->
+          <div class="push-screen" id="pushSource">
+            <div class="phone-content">
+              <div class="sk-search"></div>
+              <div class="sk-cats">
+                <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+                <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+                <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+                <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              </div>
+              <div class="sk-divider"></div>
+              <div class="sk-card-img"></div>
+              <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+              <div class="sk-sub"></div>
+              <div class="sk-section-label"></div>
+              <div class="sk-card-img partial"></div>
+            </div>
+            <div class="sk-bottom-nav">
+              <div class="sk-nav-icon"></div>
+              <div class="sk-nav-icon"></div>
+              <div class="sk-nav-icon"></div>
+              <div class="sk-nav-icon"></div>
+            </div>
+          </div>
+          <!-- Scrim sits above source (incl. bottom nav) but below dest -->
+          <div class="push-scrim" id="pushScrim"></div>
+          <!-- Destination screen (detail) -->
+          <div class="push-screen" id="pushDest" style="transform: translateX(100%)">
+            <div class="push-hero"></div>
+            <div class="push-detail-body">
+              <div class="push-detail-row title"></div>
+              <div class="push-detail-row sub"></div>
+              <div class="push-detail-divider"></div>
+              <div class="push-detail-row med"></div>
+              <div class="push-detail-row short"></div>
+              <div class="push-detail-row full"></div>
+              <div class="push-detail-divider"></div>
+              <div class="push-detail-row title"></div>
+              <div class="push-detail-row med"></div>
+              <div class="push-detail-row short"></div>
+              <div class="push-detail-row full"></div>
+              <div class="push-detail-divider"></div>
+              <div class="push-detail-row med"></div>
+              <div class="push-detail-row short"></div>
+              <div class="push-detail-row med"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-footer">
+      <div>
+        <div class="selected-token" id="selectedName">default-smooth</div>
+        <div class="selected-values" id="selectedValues">Stiffness: 300 · Damping Ratio: 1.0</div>
+      </div>
+      <button class="play-btn" id="playBtn">Play</button>
+    </div>
+  </div>
+
+  <!-- Token grid -->
+  <div class="grid-section">
+
+    <div id="tokenGrid"></div>
+  </div>
+
+</div>
+
+<script>
+// ── Spring definitions ────────────────────────────────────────────
+const SPEEDS = [
+  { key: 'slow',    stiffness: 100, label: 'Slow' },
+  { key: 'default', stiffness: 300, label: 'Default' },
+  { key: 'fast',    stiffness: 500, label: 'Fast' },
+  { key: 'snappy',  stiffness: 750, label: 'Snappy' },
+];
+
+const CHARS = [
+  { key: 'smooth',   ratio: 1.0,  label: 'Smooth',         color: '#8e8e93' },
+  { key: 'small-bounce',  ratio: 0.85, label: 'Small Bounce',  color: '#5ac8fa' },
+  { key: 'medium-bounce', ratio: 0.7,  label: 'Medium Bounce', color: '#af52de' },
+  { key: 'large-bounce',  ratio: 0.5,  label: 'Large Bounce',  color: '#FF385C' },
+];
+
+function calcDamping(stiffness, ratio) {
+  return Math.round(2 * ratio * Math.sqrt(stiffness));
+}
+
+// ── Spring physics ───────────────────────────────────────────────
+function springPos(t, stiffness, damping, mass = 1) {
+  const omegaN = Math.sqrt(stiffness / mass);
+  const zeta = damping / (2 * Math.sqrt(stiffness * mass));
+  if (zeta >= 1 - 0.001) {
+    return (1 + omegaN * t) * Math.exp(-omegaN * t);
+  } else {
+    const omegaD = omegaN * Math.sqrt(1 - zeta * zeta);
+    return Math.exp(-zeta * omegaN * t) * (
+      Math.cos(omegaD * t) + (zeta / Math.sqrt(1 - zeta * zeta)) * Math.sin(omegaD * t)
+    );
+  }
+}
+
+function isSettled(t, stiffness, damping) {
+  const pos = springPos(t, stiffness, damping);
+  const next = springPos(t + 0.016, stiffness, damping);
+  return Math.abs(pos) < 0.002 && Math.abs(next - pos) < 0.0005;
+}
+
+// ── State ────────────────────────────────────────────────────────
+let selected = { name: 'default-smooth', stiffness: 300, damping: calcDamping(300, 1.0), ratio: 1.0 };
+let currentDemo = 'sheet';
+let demoAnim = null;
+let demoState = 'out'; // 'out' | 'in'
+const miniAnims = {};
+
+// ── Build token grid ─────────────────────────────────────────────
+const gridEl = document.getElementById('tokenGrid');
+
+for (const c of CHARS) {
+  const group = document.createElement('div');
+  group.className = 'speed-group';
+
+  const label = document.createElement('div');
+  label.className = 'speed-label';
+  label.textContent = c.label;
+  group.appendChild(label);
+
+  const row = document.createElement('div');
+  row.className = 'speed-cards';
+
+  for (const s of SPEEDS) {
+    const damping = calcDamping(s.stiffness, c.ratio);
+    const name = `${s.key}-${c.key}`;
+
+    const card = document.createElement('div');
+    card.className = 'token-card';
+    card.style.setProperty('--char-color', c.color);
+    card.id = `card-${name}`;
+    card.innerHTML = `
+      <div class="card-char-label">${s.label}</div>
+      <div class="card-token-name">${name}</div>
+      <div class="card-vals">
+        <div class="card-val"><div class="card-val-label">Stiffness</div><div class="card-val-num">${s.stiffness}</div></div>
+        <div class="card-val"><div class="card-val-label">Damping Ratio</div><div class="card-val-num">${c.ratio}</div></div>
+      </div>
+    `;
+
+    card.addEventListener('click', () => selectSpring(name, s.stiffness, damping, c.ratio, card, c.color));
+    row.appendChild(card);
+  }
+
+  group.appendChild(row);
+  gridEl.appendChild(group);
+}
+
+// Mark default selected
+document.getElementById('card-default-smooth')?.classList.add('selected');
+
+// ── Select spring ────────────────────────────────────────────────
+function selectSpring(name, stiffness, damping, ratio, cardEl, color) {
+  document.querySelectorAll('.token-card').forEach(c => c.classList.remove('selected'));
+  cardEl.classList.add('selected');
+
+  selected = { name, stiffness, damping, ratio };
+  document.getElementById('selectedName').textContent = name;
+  document.getElementById('selectedValues').textContent = `Stiffness: ${stiffness} · Damping Ratio: ${ratio}`;
+
+  triggerMini(name, stiffness, damping);
+  playDemo();
+}
+
+// ── Mini ball animations ──────────────────────────────────────────
+function triggerMini(name, stiffness, damping) {
+  const ball = document.getElementById(`mini-${name}`);
+  if (!ball) return;
+  const track = ball.parentElement;
+  const endX = track.offsetWidth - 8;
+
+  if (miniAnims[name]) cancelAnimationFrame(miniAnims[name].raf);
+  const dir = miniAnims[name]?.dir === 1 ? -1 : 1;
+  const start = performance.now();
+
+  function tick(now) {
+    const t = (now - start) / 1000;
+    const pos = springPos(t, stiffness, damping);
+    const x = dir === 1 ? endX * (1 - pos) : endX * pos;
+    ball.style.transform = `translateX(${x}px)`;
+    if (t < 5 && !isSettled(t, stiffness, damping)) {
+      miniAnims[name] = { raf: requestAnimationFrame(tick), dir };
+    } else {
+      ball.style.transform = `translateX(${dir === 1 ? endX : 0}px)`;
+      miniAnims[name] = { raf: null, dir };
+    }
+  }
+  miniAnims[name] = { raf: requestAnimationFrame(tick), dir };
+}
+
+// ── Demo tabs ────────────────────────────────────────────────────
+document.querySelectorAll('.demo-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentDemo = tab.dataset.demo;
+
+    document.querySelectorAll('.demo-view').forEach(v => v.style.display = 'none');
+    const view = document.getElementById(`view-${currentDemo}`);
+    if (view) view.style.display = 'flex';
+
+    resetDemo();
+    demoState = 'out';
+  });
+});
+
+// ── Play / reset demo ─────────────────────────────────────────────
+function resetDemo() {
+  if (demoAnim) { cancelAnimationFrame(demoAnim); demoAnim = null; }
+
+  if (currentDemo === 'sheet') {
+    document.getElementById('demoSheet').style.transform = 'translateY(100%)';
+  } else if (currentDemo === 'modal') {
+    const bd = document.getElementById('demoBackdrop');
+    const m = document.getElementById('demoModal');
+    bd.style.opacity = '0';
+    bd.style.pointerEvents = 'none';
+    m.style.opacity = '0';
+    m.style.transform = 'scale(0.85)';
+  } else if (currentDemo === 'flip') {
+    document.getElementById('demoFlip').style.transform = 'rotateY(0deg)';
+  } else if (currentDemo === 'notif') {
+    const n = document.getElementById('demoNotif');
+    n.style.transform = 'translateY(-120%)';
+    n.style.opacity = '0';
+  } else if (currentDemo === 'push') {
+    document.getElementById('pushSource').style.transform = 'translateX(0%)';
+    document.getElementById('pushDest').style.transform = 'translateX(100%)';
+    document.getElementById('pushScrim').style.opacity = '0';
+  }
+}
+
+function playDemo() {
+  if (demoAnim) cancelAnimationFrame(demoAnim);
+
+  const { stiffness, damping } = selected;
+  const start = performance.now();
+
+  if (currentDemo === 'sheet') {
+    const sheet = document.getElementById('demoSheet');
+    const isIn = demoState === 'in';
+    demoState = isIn ? 'out' : 'in';
+
+    function tick(now) {
+      const t = (now - start) / 1000;
+      const pos = springPos(t, stiffness, damping);
+      // entering (isIn=false): pos 1→0 maps to translateY 100%→0% (slides up)
+      // dismissing (isIn=true): pos 1→0 maps to translateY 0%→100% (slides down)
+      const pct = isIn ? (1 - pos) * 100 : pos * 100;
+      sheet.style.transform = `translateY(${pct}%)`;
+      if (t < 5 && !isSettled(t, stiffness, damping)) {
+        demoAnim = requestAnimationFrame(tick);
+      } else {
+        sheet.style.transform = isIn ? 'translateY(100%)' : 'translateY(0%)';
+      }
+    }
+    demoAnim = requestAnimationFrame(tick);
+
+  } else if (currentDemo === 'modal') {
+    const bd = document.getElementById('demoBackdrop');
+    const m = document.getElementById('demoModal');
+    const isIn = demoState === 'in';
+    demoState = isIn ? 'out' : 'in';
+    bd.style.pointerEvents = 'auto';
+
+    function tick(now) {
+      const t = (now - start) / 1000;
+      const pos = springPos(t, stiffness, damping);
+      const progress = 1 - pos; // 0→1 as spring settles
+
+      if (isIn) {
+        // dismiss: scale down, fade out (pos goes 1→0, so scale goes 1.0→0.85)
+        const scale = 0.85 + pos * 0.15;
+        const opacity = pos;
+        m.style.transform = `scale(${scale})`;
+        m.style.opacity = opacity;
+        bd.style.opacity = opacity * 0.4;
+      } else {
+        // enter: scale up, fade in
+        const scale = 0.85 + progress * 0.15;
+        const opacity = progress;
+        m.style.transform = `scale(${scale})`;
+        m.style.opacity = opacity;
+        bd.style.opacity = opacity * 0.4;
+      }
+
+      if (t < 5 && !isSettled(t, stiffness, damping)) {
+        demoAnim = requestAnimationFrame(tick);
+      } else {
+        if (isIn) {
+          m.style.opacity = '0'; m.style.transform = 'scale(0.85)';
+          bd.style.opacity = '0'; bd.style.pointerEvents = 'none';
+        } else {
+          m.style.opacity = '1'; m.style.transform = 'scale(1)';
+          bd.style.opacity = '0.4';
+        }
+      }
+    }
+    demoAnim = requestAnimationFrame(tick);
+
+  } else if (currentDemo === 'flip') {
+    const card = document.getElementById('demoFlip');
+    const isFlipped = demoState === 'in';
+    demoState = isFlipped ? 'out' : 'in';
+    const fromDeg = isFlipped ? 180 : 0;
+    const toDeg = isFlipped ? 0 : 180;
+
+    function tick(now) {
+      const t = (now - start) / 1000;
+      const pos = springPos(t, stiffness, damping);
+      const deg = fromDeg + (toDeg - fromDeg) * (1 - pos);
+      card.style.transform = `rotateY(${deg}deg)`;
+      if (t < 5 && !isSettled(t, stiffness, damping)) {
+        demoAnim = requestAnimationFrame(tick);
+      } else {
+        card.style.transform = `rotateY(${toDeg}deg)`;
+      }
+    }
+    demoAnim = requestAnimationFrame(tick);
+
+  } else if (currentDemo === 'push') {
+    const src  = document.getElementById('pushSource');
+    const dest = document.getElementById('pushDest');
+    const scrim = document.getElementById('pushScrim');
+    const isIn = demoState === 'in'; // isIn=true means currently pushed → pop
+    demoState = isIn ? 'out' : 'in';
+
+    function tick(now) {
+      const t = (now - start) / 1000;
+      const pos = springPos(t, stiffness, damping);
+
+      if (!isIn) {
+        // Push: dest comes from right, source retreats left 30%, scrim fades in
+        dest.style.transform = `translateX(${pos * 100}%)`;
+        src.style.transform  = `translateX(${-(1 - pos) * 30}%)`;
+        scrim.style.opacity  = String(1 - pos);
+      } else {
+        // Pop: dest exits right, source returns, scrim fades out
+        dest.style.transform = `translateX(${(1 - pos) * 100}%)`;
+        src.style.transform  = `translateX(${-pos * 30}%)`;
+        scrim.style.opacity  = String(pos);
+      }
+
+      if (t < 5 && !isSettled(t, stiffness, damping)) {
+        demoAnim = requestAnimationFrame(tick);
+      } else {
+        if (!isIn) {
+          dest.style.transform = 'translateX(0%)';
+          src.style.transform  = 'translateX(-30%)';
+          scrim.style.opacity  = '1';
+        } else {
+          dest.style.transform = 'translateX(100%)';
+          src.style.transform  = 'translateX(0%)';
+          scrim.style.opacity  = '0';
+        }
+      }
+    }
+    demoAnim = requestAnimationFrame(tick);
+
+  } else if (currentDemo === 'notif') {
+    const n = document.getElementById('demoNotif');
+    const isIn = demoState === 'in';
+    demoState = isIn ? 'out' : 'in';
+
+    function tick(now) {
+      const t = (now - start) / 1000;
+      const pos = springPos(t, stiffness, damping);
+
+      if (isIn) {
+        const pct = (1 - pos) * -120;
+        n.style.transform = `translateY(${pct}%)`;
+        n.style.opacity = String(pos);
+      } else {
+        const pct = pos * -120;
+        n.style.transform = `translateY(${pct}%)`;
+        n.style.opacity = String(1 - pos);
+      }
+
+      if (t < 5 && !isSettled(t, stiffness, damping)) {
+        demoAnim = requestAnimationFrame(tick);
+      } else {
+        if (isIn) {
+          n.style.transform = 'translateY(-120%)'; n.style.opacity = '0';
+        } else {
+          n.style.transform = 'translateY(0%)'; n.style.opacity = '1';
+        }
+      }
+    }
+    demoAnim = requestAnimationFrame(tick);
+  }
+}
+
+document.getElementById('playBtn').addEventListener('click', playDemo);
+
+// ── Trigger all minis on load ─────────────────────────────────────
+setTimeout(() => {
+  for (const c of CHARS) {
+    for (const s of SPEEDS) {
+      const name = `${s.key}-${c.key}`;
+      const damping = calcDamping(s.stiffness, c.ratio);
+      triggerMini(name, s.stiffness, damping);
+    }
+  }
+}, 200);
+</script>
+</body>
+</html>

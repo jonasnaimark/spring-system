@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Reference — Spring Tokens</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f2f2f7;
+      color: #1c1c1e;
+      font-family: system-ui, -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Nav ── */
+    nav {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      padding: 0 32px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav .nav-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1c1c1e;
+      margin-right: 8px;
+    }
+    nav a {
+      font-size: 12px;
+      color: #636366;
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 20px;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    nav a:hover { background: #f2f2f7; color: #1c1c1e; }
+    nav a.active { background: #FF385C; color: #fff; }
+
+    /* ── Page ── */
+    .page {
+      padding: 40px 48px 80px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 15px;
+      color: #636366;
+      margin-bottom: 32px;
+    }
+
+    /* ── Preview area ── */
+    .preview-area {
+      background: #fff;
+      border-radius: 18px;
+      padding: 24px 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.06);
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .preview-info {
+      flex-shrink: 0;
+      min-width: 200px;
+    }
+    .preview-token {
+      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1c1c1e;
+      margin-bottom: 4px;
+    }
+    .preview-label {
+      font-size: 12px;
+      color: #8e8e93;
+      margin-bottom: 14px;
+    }
+    .preview-values {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .pv-row {
+      display: flex;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .pv-key { color: #8e8e93; min-width: 80px; }
+    .pv-val {
+      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+      font-weight: 600;
+      color: #1c1c1e;
+    }
+
+    .preview-track-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .preview-track {
+      height: 28px;
+      background: #f2f2f7;
+      border-radius: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .preview-ball {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      background: #FF385C;
+    }
+    .preview-empty {
+      font-size: 13px;
+      color: #c7c7cc;
+      text-align: center;
+      padding: 8px 0;
+    }
+
+    /* ── Platform toggle ── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .platform-toggle {
+      display: flex;
+      background: #e5e5ea;
+      border-radius: 10px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .platform-btn {
+      padding: 5px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      color: #636366;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .platform-btn.active {
+      background: #fff;
+      color: #1c1c1e;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+    .toolbar-note {
+      font-size: 12px;
+      color: #8e8e93;
+    }
+
+    /* ── Table ── */
+    .table-wrap {
+      background: #fff;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: #f9f9fb;
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #8e8e93;
+      border-bottom: 1px solid #e5e5ea;
+      white-space: nowrap;
+    }
+
+    /* Group header row */
+    .group-row td {
+      background: #f2f2f7;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-top: 1px solid #e5e5ea;
+      border-bottom: 1px solid #e5e5ea;
+    }
+    .group-row:first-of-type td { border-top: none; }
+
+    .group-row .group-accent-bar {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    /* Data rows */
+    tbody tr.data-row {
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    tbody tr.data-row:hover td { background: #f7f7f9; }
+    tbody tr.data-row.selected td { background: #fff5f7; }
+    tbody tr.data-row td {
+      padding: 0 16px;
+      height: 44px;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+      vertical-align: middle;
+    }
+    tbody tr.data-row:last-child td { border-bottom: none; }
+
+    .td-token {
+      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: #1c1c1e;
+      white-space: nowrap;
+    }
+    .td-mono {
+      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+      font-size: 12px;
+      color: #3a3a3c;
+    }
+    .td-platform { font-size: 12px; color: #3a3a3c; }
+    .platform-val { display: none; }
+    .platform-val.visible { display: inline; }
+
+    .sparkline-canvas {
+      display: block;
+    }
+
+    /* Copy button */
+    .copy-btn {
+      padding: 3px 10px;
+      border-radius: 8px;
+      background: #f2f2f7;
+      border: 1px solid #e5e5ea;
+      font-size: 11px;
+      font-weight: 500;
+      color: #636366;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.12s;
+      white-space: nowrap;
+    }
+    .copy-btn:hover { background: #e5e5ea; border-color: #c7c7cc; color: #1c1c1e; }
+    .copy-btn.copied {
+      background: #e8f5e9;
+      border-color: #a5d6a7;
+      color: #2e7d32;
+    }
+
+    .row-accent-bar {
+      width: 3px;
+      height: 24px;
+      border-radius: 2px;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-label">Spring Tokens</span>
+  <a href="index.html">Hub</a>
+  <a href="grid-curves.html">Curve Grid</a>
+  <a href="grid-strips.html">Strips</a>
+  <a href="grid-cards.html">Cards</a>
+  <a href="grid-compare.html">Compare</a>
+  <a href="grid-reference.html" class="active">Reference</a>
+  <a href="playground.html">Playground</a>
+</nav>
+
+<div class="page">
+  <h1>Developer Reference</h1>
+  <p class="subtitle">Every spring token with values ready to copy. Click a row to preview the animation.</p>
+
+  <!-- Preview area -->
+  <div class="preview-area" id="previewArea">
+    <div class="preview-info">
+      <div class="preview-token" id="previewToken">—</div>
+      <div class="preview-label" id="previewLabel">Click a row to preview</div>
+      <div class="preview-values" id="previewValues"></div>
+    </div>
+    <div class="preview-track-wrap">
+      <div class="preview-track" id="previewTrack">
+        <div class="preview-ball" id="previewBall"></div>
+      </div>
+      <div class="preview-empty" id="previewEmpty">Click any row below to preview</div>
+    </div>
+  </div>
+
+  <!-- Platform toggle -->
+  <div class="toolbar">
+    <div class="platform-toggle">
+      <button class="platform-btn active" data-platform="web">Web</button>
+      <button class="platform-btn" data-platform="ios">iOS</button>
+      <button class="platform-btn" data-platform="android">Android</button>
+    </div>
+    <span class="toolbar-note" id="platformNote">Showing: damping coefficient for CSS/JS spring animations</span>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Token</th>
+          <th>Stiffness</th>
+          <th>Damping Ratio</th>
+          <th class="col-platform">Platform Value</th>
+          <th>Curve</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // ── Spring Data ──
+  const SPEEDS = [
+    { key: 'slow',    stiffness: 100, label: 'Slow' },
+    { key: 'default', stiffness: 300, label: 'Default' },
+    { key: 'fast',    stiffness: 500, label: 'Fast' },
+    { key: 'snappy',  stiffness: 750, label: 'Snappy' },
+  ];
+  const CHARS = [
+    { key: 'smooth',            ratio: 1.0,  label: 'Smooth',            color: '#8e8e93' },
+    { key: 'subtle-bounce',     ratio: 0.85, label: 'Subtle Bounce',     color: '#5ac8fa' },
+    { key: 'medium-bounce',     ratio: 0.7,  label: 'Medium Bounce',     color: '#af52de' },
+    { key: 'expressive-bounce', ratio: 0.5,  label: 'Expressive Bounce', color: '#FF385C' },
+  ];
+
+  function calcDamping(stiffness, ratio) {
+    return Math.round(2 * ratio * Math.sqrt(stiffness));
+  }
+
+  function springPos(t, stiffness, damping, mass = 1) {
+    const omegaN = Math.sqrt(stiffness / mass);
+    const zeta = damping / (2 * Math.sqrt(stiffness * mass));
+    if (zeta >= 1 - 0.001) {
+      return (1 + omegaN * t) * Math.exp(-omegaN * t);
+    } else {
+      const omegaD = omegaN * Math.sqrt(1 - zeta * zeta);
+      return Math.exp(-zeta * omegaN * t) * (
+        Math.cos(omegaD * t) + (zeta / Math.sqrt(1 - zeta * zeta)) * Math.sin(omegaD * t)
+      );
+    }
+  }
+
+  // ── Platform notes ──
+  const PLATFORM_NOTES = {
+    web:     'Showing: damping coefficient for CSS/JS spring animations',
+    ios:     'Showing: UIKit / SwiftUI spring damping value',
+    android: 'Showing: stiffness + dampingRatio for Compose animations',
+  };
+
+  function getPlatformDisplay(stiffness, damping, ratio, platform) {
+    const zeta = (damping / (2 * Math.sqrt(stiffness))).toFixed(3);
+    if (platform === 'web')     return `damping: ${damping}`;
+    if (platform === 'ios')     return `damping: ${zeta}`;
+    if (platform === 'android') return `s: ${stiffness}, r: ${zeta}`;
+    return '';
+  }
+
+  // ── Sparkline ──
+  function drawSparkline(canvas, stiffness, damping, color) {
+    const dpr = window.devicePixelRatio || 1;
+    const W = 60, H = 30;
+    canvas.width  = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width  = `${W}px`;
+    canvas.style.height = `${H}px`;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+
+    const STEPS = 100;
+    const pts = [];
+    for (let i = 0; i <= STEPS; i++) {
+      pts.push(springPos((i / STEPS) * 3.0, stiffness, damping));
+    }
+    const minP = Math.min(...pts);
+    const maxP = Math.max(...pts);
+    const range = maxP - minP || 1;
+    const padT = 4, padB = 6, drawH = H - padT - padB;
+    function toY(p) { return padT + drawH * (1 - (p - minP) / range); }
+    function toX(i) { return (i / STEPS) * W; }
+
+    ctx.beginPath();
+    ctx.moveTo(toX(0), toY(pts[0]));
+    for (let i = 1; i <= STEPS; i++) ctx.lineTo(toX(i), toY(pts[i]));
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+  }
+
+  // ── Build table ──
+  const tbody = document.getElementById('tableBody');
+  let currentPlatform = 'web';
+  let selectedToken = null;
+
+  CHARS.forEach(char => {
+    // Group header
+    const groupRow = document.createElement('tr');
+    groupRow.className = 'group-row';
+    const groupTd = document.createElement('td');
+    groupTd.colSpan = 6;
+    groupTd.innerHTML = `<span class="group-accent-bar" style="background:${char.color}"></span>${char.label} <span style="font-weight:400;color:#8e8e93;text-transform:none;letter-spacing:0;">— ratio: ${char.ratio}</span>`;
+    groupRow.appendChild(groupTd);
+    tbody.appendChild(groupRow);
+
+    SPEEDS.forEach(speed => {
+      const damping = calcDamping(speed.stiffness, char.ratio);
+      const zeta = (damping / (2 * Math.sqrt(speed.stiffness))).toFixed(3);
+      const tokenName = `${speed.key}-${char.key}`;
+
+      const row = document.createElement('tr');
+      row.className = 'data-row';
+      row.dataset.token = tokenName;
+      row.dataset.stiffness = speed.stiffness;
+      row.dataset.damping = damping;
+      row.dataset.ratio = char.ratio;
+      row.dataset.color = char.color;
+      row.dataset.charLabel = char.label;
+      row.dataset.speedLabel = speed.label;
+
+      // Token cell
+      const tdToken = document.createElement('td');
+      tdToken.className = 'td-token';
+      tdToken.innerHTML = `<span class="row-accent-bar" style="background:${char.color}"></span>${tokenName}`;
+
+      // Stiffness
+      const tdStiff = document.createElement('td');
+      tdStiff.className = 'td-mono';
+      tdStiff.textContent = speed.stiffness;
+
+      // Ratio
+      const tdRatio = document.createElement('td');
+      tdRatio.className = 'td-mono';
+      tdRatio.textContent = zeta;
+
+      // Platform value
+      const tdPlat = document.createElement('td');
+      tdPlat.className = 'td-platform';
+      ['web', 'ios', 'android'].forEach(p => {
+        const span = document.createElement('span');
+        span.className = `platform-val${p === 'web' ? ' visible' : ''}`;
+        span.dataset.platform = p;
+        span.textContent = getPlatformDisplay(speed.stiffness, damping, char.ratio, p);
+        tdPlat.appendChild(span);
+      });
+
+      // Sparkline
+      const tdSpark = document.createElement('td');
+      const canvas = document.createElement('canvas');
+      canvas.className = 'sparkline-canvas';
+      tdSpark.appendChild(canvas);
+
+      // Copy button
+      const tdCopy = document.createElement('td');
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'copy-btn';
+      copyBtn.textContent = 'Copy';
+      copyBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        navigator.clipboard.writeText(tokenName).then(() => {
+          copyBtn.textContent = 'Copied!';
+          copyBtn.classList.add('copied');
+          setTimeout(() => { copyBtn.textContent = 'Copy'; copyBtn.classList.remove('copied'); }, 1500);
+        });
+      });
+      tdCopy.appendChild(copyBtn);
+
+      row.appendChild(tdToken);
+      row.appendChild(tdStiff);
+      row.appendChild(tdRatio);
+      row.appendChild(tdPlat);
+      row.appendChild(tdSpark);
+      row.appendChild(tdCopy);
+      tbody.appendChild(row);
+
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        drawSparkline(canvas, speed.stiffness, damping, char.color);
+      }));
+
+      // Row click → preview
+      row.addEventListener('click', () => {
+        document.querySelectorAll('.data-row.selected').forEach(r => r.classList.remove('selected'));
+        row.classList.add('selected');
+        previewToken(tokenName, speed.stiffness, damping, char.ratio, char.color, char.label, speed.label);
+      });
+    });
+  });
+
+  // ── Preview ──
+  function previewToken(tokenName, stiffness, damping, ratio, color, charLabel, speedLabel) {
+    selectedToken = { tokenName, stiffness, damping, ratio, color };
+    const zeta = (damping / (2 * Math.sqrt(stiffness))).toFixed(3);
+
+    document.getElementById('previewToken').textContent = tokenName;
+    document.getElementById('previewLabel').textContent = `${speedLabel} · ${charLabel}`;
+    document.getElementById('previewEmpty').style.display = 'none';
+    document.getElementById('previewBall').style.background = color;
+
+    document.getElementById('previewValues').innerHTML = `
+      <div class="pv-row"><span class="pv-key">Stiffness</span><span class="pv-val">${stiffness}</span></div>
+      <div class="pv-row"><span class="pv-key">Damping</span><span class="pv-val">${damping}</span></div>
+      <div class="pv-row"><span class="pv-key">Ratio (ζ)</span><span class="pv-val">${zeta}</span></div>
+    `;
+
+    // Animate ball
+    const ball = document.getElementById('previewBall');
+    const track = document.getElementById('previewTrack');
+    ball.style.transform = 'translateX(0)';
+    const maxX = track.offsetWidth - 28;
+    const SCALE = 300 / stiffness;
+    const DURATION_MS = 800 * Math.sqrt(SCALE) * 1.5;
+    const DURATION_SIM = 3.0;
+    const start = performance.now();
+    let raf;
+    cancelAnimationFrame(ball._raf);
+    function frame(now) {
+      const elapsed = now - start;
+      const t = (elapsed / DURATION_MS) * DURATION_SIM;
+      const pos = 1 - springPos(t, stiffness, damping);
+      ball.style.transform = `translateX(${Math.max(0, pos * maxX)}px)`;
+      if (elapsed < DURATION_MS + 300) ball._raf = requestAnimationFrame(frame);
+      else ball.style.transform = `translateX(${maxX}px)`;
+    }
+    ball._raf = requestAnimationFrame(frame);
+  }
+
+  // ── Platform toggle ──
+  document.querySelectorAll('.platform-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentPlatform = btn.dataset.platform;
+      document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('platformNote').textContent = PLATFORM_NOTES[currentPlatform];
+      document.querySelectorAll('.platform-val').forEach(span => {
+        span.classList.toggle('visible', span.dataset.platform === currentPlatform);
+      });
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curve Grid — Spring Tokens</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f2f2f7;
+      color: #1c1c1e;
+      font-family: system-ui, -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Nav ── */
+    nav {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      padding: 0 32px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav .nav-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1c1c1e;
+      margin-right: 8px;
+    }
+    nav a {
+      font-size: 12px;
+      color: #636366;
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 20px;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    nav a:hover { background: #f2f2f7; color: #1c1c1e; }
+    nav a.active { background: #FF385C; color: #fff; }
+
+    /* ── Page ── */
+    .page {
+      padding: 48px 48px 80px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 15px;
+      color: #636366;
+      margin-bottom: 48px;
+    }
+
+    /* ── Grid ── */
+    .grid-wrap {
+      display: grid;
+      grid-template-columns: 140px repeat(4, 1fr);
+      gap: 1px;
+      background: #d1d1d6;
+      border: 1px solid #d1d1d6;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .corner, .col-header, .row-header, .cell {
+      background: #ffffff;
+    }
+
+    .corner { min-height: 44px; }
+
+    .col-header {
+      padding: 14px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #636366;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+
+    .row-header {
+      padding: 16px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      border-left: 3px solid transparent;
+    }
+    .row-header .rh-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1c1c1e;
+    }
+    .row-header .rh-ratio {
+      font-size: 11px;
+      color: #8e8e93;
+    }
+
+    /* Row accent colors */
+    .row-smooth    .row-header { border-left-color: #8e8e93; background: #fafafa; }
+    .row-subtle    .row-header { border-left-color: #5ac8fa; background: #f5fbff; }
+    .row-medium    .row-header { border-left-color: #af52de; background: #fdf5ff; }
+    .row-expressive .row-header { border-left-color: #FF385C; background: #fff5f7; }
+
+    /* Cell backgrounds tinted */
+    .row-smooth    .cell { background: #fafafa; }
+    .row-subtle    .cell { background: #f5fbff; }
+    .row-medium    .cell { background: #fdf5ff; }
+    .row-expressive .cell { background: #fff5f7; }
+
+    .cell {
+      padding: 14px 16px 12px;
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+    .cell:hover { filter: brightness(0.97); }
+
+    .curve-canvas {
+      display: block;
+      width: 100%;
+      height: 60px;
+      border-radius: 6px;
+    }
+
+    .token-name {
+      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+      font-size: 10px;
+      color: #1c1c1e;
+      margin-top: 8px;
+      margin-bottom: 3px;
+      font-weight: 500;
+    }
+    .token-meta {
+      font-size: 10px;
+      color: #8e8e93;
+    }
+
+    /* Ball track */
+    .ball-track {
+      height: 18px;
+      background: rgba(0,0,0,0.05);
+      border-radius: 9px;
+      margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .ball {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: none;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-label">Spring Tokens</span>
+  <a href="index.html">Hub</a>
+  <a href="grid-curves.html" class="active">Curve Grid</a>
+  <a href="grid-strips.html">Strips</a>
+  <a href="grid-cards.html">Cards</a>
+  <a href="grid-compare.html">Compare</a>
+  <a href="grid-reference.html">Reference</a>
+  <a href="playground.html">Playground</a>
+</nav>
+
+<div class="page">
+  <h1>Curve Grid</h1>
+  <p class="subtitle">Motion curves for all 16 spring tokens. Hover to animate the curve draw. Click to see the spring in action.</p>
+
+  <div class="grid-wrap" id="grid"></div>
+</div>
+
+<script>
+  // ── Spring Data ──
+  const SPEEDS = [
+    { key: 'slow',    stiffness: 100, label: 'Slow' },
+    { key: 'default', stiffness: 300, label: 'Default' },
+    { key: 'fast',    stiffness: 500, label: 'Fast' },
+    { key: 'snappy',  stiffness: 750, label: 'Snappy' },
+  ];
+  const CHARS = [
+    { key: 'smooth',            ratio: 1.0,  label: 'Smooth',            color: '#8e8e93', rowClass: 'row-smooth' },
+    { key: 'subtle-bounce',     ratio: 0.85, label: 'Subtle Bounce',     color: '#5ac8fa', rowClass: 'row-subtle' },
+    { key: 'medium-bounce',     ratio: 0.7,  label: 'Medium Bounce',     color: '#af52de', rowClass: 'row-medium' },
+    { key: 'expressive-bounce', ratio: 0.5,  label: 'Expressive Bounce', color: '#FF385C', rowClass: 'row-expressive' },
+  ];
+
+  function calcDamping(stiffness, ratio) {
+    return Math.round(2 * ratio * Math.sqrt(stiffness));
+  }
+
+  function springPos(t, stiffness, damping, mass = 1) {
+    const omegaN = Math.sqrt(stiffness / mass);
+    const zeta = damping / (2 * Math.sqrt(stiffness * mass));
+    if (zeta >= 1 - 0.001) {
+      return (1 + omegaN * t) * Math.exp(-omegaN * t);
+    } else {
+      const omegaD = omegaN * Math.sqrt(1 - zeta * zeta);
+      return Math.exp(-zeta * omegaN * t) * (
+        Math.cos(omegaD * t) + (zeta / Math.sqrt(1 - zeta * zeta)) * Math.sin(omegaD * t)
+      );
+    }
+  }
+
+  // ── Draw curve onto canvas ──
+  function drawCurve(canvas, stiffness, damping, color, progress = 1) {
+    const dpr = window.devicePixelRatio || 1;
+    const W = canvas.offsetWidth;
+    const H = canvas.offsetHeight;
+    if (W === 0 || H === 0) return;
+
+    canvas.width  = W * dpr;
+    canvas.height = H * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, W, H);
+
+    const STEPS = 200;
+    const DURATION = 3.0; // seconds of simulation
+    const stopX = Math.floor(STEPS * progress);
+
+    // Collect positions
+    const pts = [];
+    for (let i = 0; i <= STEPS; i++) {
+      const t = (i / STEPS) * DURATION;
+      pts.push(springPos(t, stiffness, damping));
+    }
+
+    // Y mapping: 1.0 → top 10%, 0.0 → bottom 15%, allow overshoot
+    const minPos = Math.min(...pts);
+    const maxPos = Math.max(...pts);
+    const range = maxPos - minPos || 1;
+    const padT = H * 0.1;
+    const padB = H * 0.15;
+    const drawH = H - padT - padB;
+
+    function toY(pos) {
+      return padT + drawH * (1 - (pos - minPos) / range);
+    }
+    function toX(i) {
+      return (i / STEPS) * W;
+    }
+
+    // Baseline at y=0 (rest position)
+    const baseY = toY(0);
+    ctx.beginPath();
+    ctx.moveTo(0, baseY);
+    ctx.lineTo(W, baseY);
+    ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Curve
+    if (stopX < 1) return;
+    ctx.beginPath();
+    ctx.moveTo(toX(0), toY(pts[0]));
+    for (let i = 1; i <= stopX; i++) {
+      ctx.lineTo(toX(i), toY(pts[i]));
+    }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // End dot
+    if (stopX > 0) {
+      ctx.beginPath();
+      ctx.arc(toX(stopX), toY(pts[stopX]), 3, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+  }
+
+  // ── Animate curve draw ──
+  function animateCurveDraw(canvas, stiffness, damping, color) {
+    if (canvas._animating) return;
+    canvas._animating = true;
+    const start = performance.now();
+    const duration = 500;
+    function frame(now) {
+      const p = Math.min((now - start) / duration, 1);
+      drawCurve(canvas, stiffness, damping, color, p);
+      if (p < 1) requestAnimationFrame(frame);
+      else canvas._animating = false;
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ── Animate ball ──
+  function animateBall(ball, trackWidth, stiffness, damping, color) {
+    if (ball._animating) return;
+    ball._animating = true;
+    ball.style.background = color;
+    const ballW = 14;
+    const maxX = trackWidth - ballW - 4;
+    const start = performance.now();
+    const DURATION_SIM = 3.0;
+    const DURATION_MS  = Math.min(2400, 600 + (1000 / (stiffness / 300)));
+
+    function frame(now) {
+      const t = ((now - start) / DURATION_MS) * DURATION_SIM;
+      const pos = 1 - springPos(t, stiffness, damping); // 0→1
+      const x = 2 + pos * maxX;
+      ball.style.transform = `translateX(${x - 2}px)`;
+      if ((now - start) < DURATION_MS + 400) requestAnimationFrame(frame);
+      else { ball.style.transform = `translateX(${maxX}px)`; ball._animating = false; }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ── Build grid ──
+  const grid = document.getElementById('grid');
+
+  // Corner
+  const corner = document.createElement('div');
+  corner.className = 'corner';
+  grid.appendChild(corner);
+
+  // Column headers
+  SPEEDS.forEach(speed => {
+    const h = document.createElement('div');
+    h.className = 'col-header';
+    h.textContent = speed.label;
+    grid.appendChild(h);
+  });
+
+  // Rows
+  CHARS.forEach(char => {
+    const rowDiv = document.createElement('div');
+    rowDiv.className = `row-header ${char.rowClass}`;
+    rowDiv.innerHTML = `<span class="rh-name">${char.label}</span><span class="rh-ratio">ratio: ${char.ratio}</span>`;
+    grid.appendChild(rowDiv);
+
+    SPEEDS.forEach(speed => {
+      const damping = calcDamping(speed.stiffness, char.ratio);
+      const zeta = damping / (2 * Math.sqrt(speed.stiffness));
+      const tokenName = `${speed.key}-${char.key}`;
+
+      const cell = document.createElement('div');
+      cell.className = `cell ${char.rowClass}`;
+
+      const canvas = document.createElement('canvas');
+      canvas.className = 'curve-canvas';
+
+      const tokenEl = document.createElement('div');
+      tokenEl.className = 'token-name';
+      tokenEl.textContent = tokenName;
+
+      const metaEl = document.createElement('div');
+      metaEl.className = 'token-meta';
+      metaEl.textContent = `k: ${speed.stiffness} · ζ: ${zeta.toFixed(2)}`;
+
+      const track = document.createElement('div');
+      track.className = 'ball-track';
+      const ball = document.createElement('div');
+      ball.className = 'ball';
+      ball.style.background = char.color;
+      track.appendChild(ball);
+
+      cell.appendChild(canvas);
+      cell.appendChild(tokenEl);
+      cell.appendChild(metaEl);
+      cell.appendChild(track);
+      grid.appendChild(cell);
+
+      // Draw curve once layout settles
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        drawCurve(canvas, speed.stiffness, damping, char.color, 1);
+      }));
+
+      // Hover: animate curve draw
+      cell.addEventListener('mouseenter', () => {
+        animateCurveDraw(canvas, speed.stiffness, damping, char.color);
+      });
+
+      // Click: animate ball
+      cell.addEventListener('click', () => {
+        animateBall(ball, track.offsetWidth, speed.stiffness, damping, char.color);
+      });
+    });
+  });
+
+  // Redraw on resize
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      document.querySelectorAll('.cell').forEach((cell, idx) => {
+        const charIdx = Math.floor(idx / SPEEDS.length);
+        const speedIdx = idx % SPEEDS.length;
+        const char = CHARS[charIdx];
+        const speed = SPEEDS[speedIdx];
+        if (!char || !speed) return;
+        const damping = calcDamping(speed.stiffness, char.ratio);
+        const canvas = cell.querySelector('.curve-canvas');
+        if (canvas) drawCurve(canvas, speed.stiffness, damping, char.color, 1);
+      });
+    }, 150);
+  });
+</script>
+</body>
+</html>
