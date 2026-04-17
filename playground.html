@@ -692,10 +692,10 @@
   <div class="demo-panel">
     <div class="demo-tabs">
       <div class="demo-tab active" data-demo="sheet">Sheet</div>
+      <div class="demo-tab" data-demo="push">Push</div>
       <div class="demo-tab" data-demo="modal">Modal</div>
       <div class="demo-tab" data-demo="flip">Card</div>
       <div class="demo-tab" data-demo="notif">Notification</div>
-      <div class="demo-tab" data-demo="push">Push</div>
     </div>
 
     <div class="demo-stage" id="demoStage">
@@ -908,10 +908,10 @@ const SPEEDS = [
 ];
 
 const CHARS = [
-  { key: 'smooth',   ratio: 1.0,  label: 'Smooth',         color: '#8e8e93' },
-  { key: 'small-bounce',  ratio: 0.85, label: 'Small Bounce',  color: '#5ac8fa' },
-  { key: 'medium-bounce', ratio: 0.7,  label: 'Medium Bounce', color: '#af52de' },
-  { key: 'large-bounce',  ratio: 0.5,  label: 'Large Bounce',  color: '#FF385C' },
+  { key: 'smooth',        ratio: 1.0,  label: 'Smooth',        color: '#8e8e93', stiffnessMul: 1.0  },
+  { key: 'small-bounce',  ratio: 0.85, label: 'Small Bounce',  color: '#5ac8fa', stiffnessMul: 1.0  },
+  { key: 'medium-bounce', ratio: 0.7,  label: 'Medium Bounce', color: '#af52de', stiffnessMul: 0.8  },
+  { key: 'large-bounce',  ratio: 0.5,  label: 'Large Bounce',  color: '#FF385C', stiffnessMul: 0.5  },
 ];
 
 function calcDamping(stiffness, ratio) {
@@ -939,7 +939,7 @@ function isSettled(t, stiffness, damping) {
 }
 
 // ── State ────────────────────────────────────────────────────────
-let selected = { name: 'default-smooth', stiffness: 300, damping: calcDamping(300, 1.0), ratio: 1.0 };
+let selected = { name: 'default-smooth', stiffness: 300, damping: calcDamping(300, 1.0), ratio: 1.0, color: '#8e8e93' };
 let currentDemo = 'sheet';
 let demoAnim = null;
 let demoState = 'out'; // 'out' | 'in'
@@ -961,7 +961,8 @@ for (const c of CHARS) {
   row.className = 'speed-cards';
 
   for (const s of SPEEDS) {
-    const damping = calcDamping(s.stiffness, c.ratio);
+    const stiffness = Math.round(s.stiffness * c.stiffnessMul);
+    const damping = calcDamping(stiffness, c.ratio);
     const name = `${s.key}-${c.key}`;
 
     const card = document.createElement('div');
@@ -972,12 +973,12 @@ for (const c of CHARS) {
       <div class="card-char-label">${s.label}</div>
       <div class="card-token-name">${name}</div>
       <div class="card-vals">
-        <div class="card-val"><div class="card-val-label">Stiffness</div><div class="card-val-num">${s.stiffness}</div></div>
+        <div class="card-val"><div class="card-val-label">Stiffness</div><div class="card-val-num">${stiffness}</div></div>
         <div class="card-val"><div class="card-val-label">Damping Ratio</div><div class="card-val-num">${c.ratio}</div></div>
       </div>
     `;
 
-    card.addEventListener('click', () => selectSpring(name, s.stiffness, damping, c.ratio, card, c.color));
+    card.addEventListener('click', () => selectSpring(name, stiffness, damping, c.ratio, card, c.color));
     row.appendChild(card);
   }
 
@@ -1236,8 +1237,9 @@ setTimeout(() => {
   for (const c of CHARS) {
     for (const s of SPEEDS) {
       const name = `${s.key}-${c.key}`;
-      const damping = calcDamping(s.stiffness, c.ratio);
-      triggerMini(name, s.stiffness, damping);
+      const stiffness = Math.round(s.stiffness * c.stiffnessMul);
+      const damping = calcDamping(stiffness, c.ratio);
+      triggerMini(name, stiffness, damping);
     }
   }
 }, 200);
