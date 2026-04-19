@@ -200,12 +200,23 @@
     .main {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 36px 48px 80px;
+      padding: 28px 48px 80px;
       display: grid;
-      grid-template-columns: 340px 1fr;
-      gap: 24px;
+      grid-template-columns: 400px 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 12px 24px;
       align-items: stretch;
     }
+
+    .demo-tabs-bar {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .demo-tabs-bar::-webkit-scrollbar { display: none; }
 
     .grid-section {
       display: flex;
@@ -224,15 +235,6 @@
       flex-direction: column;
     }
 
-    .demo-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      padding: 14px 16px 12px;
-      border-bottom: 1px solid #f2f2f7;
-      justify-content: center;
-    }
-
     .demo-tab {
       padding: 5px 12px;
       border-radius: 20px;
@@ -244,6 +246,7 @@
       user-select: none;
       transition: background 0.15s, color 0.15s;
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .demo-tab:hover { background: #e5e5ea; color: #1c1c1e; }
@@ -255,7 +258,7 @@
 
     .demo-stage {
       flex: 1;
-      min-height: 620px;
+      min-height: 680px;
       position: relative;
       display: flex;
       align-items: center;
@@ -266,8 +269,8 @@
 
     /* ── Phone frame ── */
     .phone-frame {
-      width: 280px;
-      height: 560px;
+      width: 310px;
+      height: 620px;
       border: 2px solid #e5e5ea;
       border-radius: 36px;
       background: #fff;
@@ -811,7 +814,7 @@
       font-weight: 600;
       letter-spacing: -0.02em;
       color: #1c1c1e;
-      margin-bottom: 16px;
+      margin-bottom: 24px;
     }
 
     .card-token-name {
@@ -840,14 +843,14 @@
     }
 
     .card-val-label {
-      font-size: 13px;
+      font-size: 11px;
       color: #8e8e93;
       flex-shrink: 0;
     }
 
     .card-val-num {
       font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
-      font-size: 13px;
+      font-size: 11px;
       color: #1c1c1e;
     }
 
@@ -1030,6 +1033,99 @@
       line-height: 1;
     }
 
+    /* ── Tab switch demo ── */
+    .tab-wrap {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .tab-screen {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tab-nav-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #FF385C;
+      margin: 2px auto 0;
+    }
+
+    .sk-msg-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--sk);
+      flex-shrink: 0;
+    }
+
+    .sk-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--sk);
+      flex-shrink: 0;
+    }
+
+    .sk-msg-lines {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    /* ── Press scale demo ── */
+    .press-scene {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 0;
+      padding: 20px;
+    }
+
+    .press-card {
+      width: 100%;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
+      overflow: hidden;
+      transform-origin: center center;
+      will-change: transform;
+    }
+
+    .press-card-img {
+      width: 100%;
+      height: 140px;
+      background: var(--sk);
+    }
+
+    .press-card-body {
+      padding: 12px 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .press-card-row {
+      height: 9px;
+      background: var(--sk);
+      border-radius: 5px;
+    }
+
+    .press-card-row.title { width: 72%; height: 10px; }
+    .press-card-row.sub   { width: 44%; }
+    .press-meta-row { display: flex; justify-content: space-between; }
+    .press-card-row.xshort { width: 28%; }
+    .press-card-row.price  { width: 32%; }
+
   </style>
 </head>
 <body>
@@ -1059,17 +1155,21 @@
 
 <div class="main">
 
+  <!-- Demo tab chips — span full width above both columns -->
+  <div class="demo-tabs-bar">
+    <div class="demo-tab active" data-demo="sheet">Sheet</div>
+    <div class="demo-tab" data-demo="push">Push</div>
+    <div class="demo-tab" data-demo="modal">Modal</div>
+    <div class="demo-tab" data-demo="flip">Card Flip</div>
+    <div class="demo-tab" data-demo="notif">Notification</div>
+    <div class="demo-tab" data-demo="expand">Card Expand</div>
+    <div class="demo-tab" data-demo="tooltip">Tooltip</div>
+    <div class="demo-tab" data-demo="tab">Tab Switch</div>
+    <div class="demo-tab" data-demo="press">Press Scale</div>
+  </div>
+
   <!-- Demo panel -->
   <div class="demo-panel">
-    <div class="demo-tabs">
-      <div class="demo-tab active" data-demo="sheet">Sheet</div>
-      <div class="demo-tab" data-demo="push">Push</div>
-      <div class="demo-tab" data-demo="modal">Modal</div>
-      <div class="demo-tab" data-demo="flip">Card Flip</div>
-      <div class="demo-tab" data-demo="notif">Notification</div>
-      <div class="demo-tab" data-demo="expand">Card Expand</div>
-      <div class="demo-tab" data-demo="tooltip">Tooltip</div>
-    </div>
 
     <div class="demo-stage" id="demoStage">
       <!-- Sheet demo (default) -->
@@ -1368,6 +1468,96 @@
         </div>
       </div>
 
+      <!-- Tab switch demo -->
+      <div class="demo-view" id="view-tab" style="display:none; align-items:center; justify-content:center;">
+        <div class="phone-frame">
+          <!-- Sliding content area — clips to phone bounds -->
+          <div class="tab-wrap">
+            <!-- Screen 0: Explore -->
+            <div class="tab-screen" id="tabScreen0">
+              <div class="phone-content" style="padding-bottom:80px;">
+                <div class="sk-search"></div>
+                <div class="sk-cats">
+                  <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+                  <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+                  <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+                  <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+                </div>
+                <div class="sk-divider"></div>
+                <div class="sk-card-img"></div>
+                <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+                <div class="sk-sub"></div>
+                <div class="sk-section-label"></div>
+                <div class="sk-card-img partial"></div>
+              </div>
+            </div>
+            <!-- Screen 1: Wishlists -->
+            <div class="tab-screen" id="tabScreen1" style="opacity:0; transform:translateX(40px);">
+              <div class="phone-content" style="padding-bottom:80px;">
+                <div class="sk-search"></div>
+                <div class="sk-divider"></div>
+                <div class="sk-card-img"></div>
+                <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+                <div class="sk-sub"></div>
+                <div class="sk-card-img" style="height:100px; margin-top:8px;"></div>
+                <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+                <div class="sk-sub"></div>
+              </div>
+            </div>
+            <!-- Screen 2: Messages -->
+            <div class="tab-screen" id="tabScreen2" style="opacity:0; transform:translateX(40px);">
+              <div class="phone-content" style="gap:0; padding-bottom:80px;">
+                <div class="sk-search" style="margin-bottom:10px;"></div>
+                <div class="sk-msg-row"><div class="sk-avatar"></div><div class="sk-msg-lines"><div class="sk-title"></div><div class="sk-sub"></div></div></div>
+                <div class="sk-msg-row"><div class="sk-avatar"></div><div class="sk-msg-lines"><div class="sk-title"></div><div class="sk-sub"></div></div></div>
+                <div class="sk-msg-row"><div class="sk-avatar"></div><div class="sk-msg-lines"><div class="sk-title"></div><div class="sk-sub"></div></div></div>
+                <div class="sk-msg-row"><div class="sk-avatar"></div><div class="sk-msg-lines"><div class="sk-title"></div><div class="sk-sub"></div></div></div>
+                <div class="sk-msg-row" style="border-bottom:none;"><div class="sk-avatar"></div><div class="sk-msg-lines"><div class="sk-title"></div><div class="sk-sub"></div></div></div>
+              </div>
+            </div>
+            <!-- Screen 3: Profile -->
+            <div class="tab-screen" id="tabScreen3" style="opacity:0; transform:translateX(40px);">
+              <div class="phone-content" style="padding-bottom:80px;">
+                <div class="sk-card-img" style="height:80px; border-radius:50%; width:80px; margin:0 auto;"></div>
+                <div class="sk-section-label" style="width:50%; margin:10px auto 0;"></div>
+                <div class="sk-divider" style="margin:14px 0;"></div>
+                <div class="sk-card-img" style="height:100px;"></div>
+                <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+                <div class="sk-sub"></div>
+                <div class="sk-card-img" style="height:100px; margin-top:8px;"></div>
+                <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+              </div>
+            </div>
+          </div>
+          <!-- Static bottom nav — sits above sliding content, never animates -->
+          <div class="sk-bottom-nav" id="tabNav" style="z-index:5;">
+            <div class="sk-nav-icon" id="tabNavIcon0" style="background:#FF385C;"></div>
+            <div class="sk-nav-icon" id="tabNavIcon1"></div>
+            <div class="sk-nav-icon" id="tabNavIcon2"></div>
+            <div class="sk-nav-icon" id="tabNavIcon3"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Press scale demo -->
+      <div class="demo-view" id="view-press" style="display:none; align-items:center; justify-content:center;">
+        <div class="phone-frame" style="display:flex; align-items:center; justify-content:center;">
+          <div class="press-scene">
+            <div class="press-card" id="demoPress">
+              <div class="press-card-img"></div>
+              <div class="press-card-body">
+                <div class="press-card-row title"></div>
+                <div class="press-card-row sub"></div>
+                <div class="press-meta-row">
+                  <div class="press-card-row xshort"></div>
+                  <div class="press-card-row price"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Tooltip demo -->
       <div class="demo-view" id="view-tooltip" style="display:none; align-items:center; justify-content:center;">
         <div class="phone-frame">
@@ -1486,6 +1676,9 @@ let currentDemo = 'sheet';
 let demoAnim = null;
 let demoState = 'out'; // 'out' | 'in'
 let expandState = null;
+let tabIdx = 0;    // current visible tab screen (0–3)
+let tabNavIdx = 0; // active nav icon (0–3) — same index, same direction
+let tabDir = 1;    // shared direction: 1=right, -1=left; ping-pongs at 0 and 3
 const miniAnims = {};
 
 // ── Build token grid ─────────────────────────────────────────────
@@ -1626,6 +1819,16 @@ function resetDemo() {
     expandState = null;
     expandCardIdx = 0;
     document.querySelectorAll('.expand-card').forEach(c => c.style.visibility = '');
+  } else if (currentDemo === 'tab') {
+    tabIdx = 0; tabNavIdx = 0; tabDir = 1;
+    for (let i = 0; i < 4; i++) {
+      const s = document.getElementById(`tabScreen${i}`);
+      if (s) { s.style.opacity = i === 0 ? '1' : '0'; s.style.transform = i === 0 ? 'translateX(0)' : 'translateX(40px)'; }
+      const icon = document.getElementById(`tabNavIcon${i}`);
+      if (icon) icon.style.background = i === 0 ? '#FF385C' : '';
+    }
+  } else if (currentDemo === 'press') {
+    document.getElementById('demoPress').style.transform = 'scale(1)';
   }
 }
 
@@ -1828,6 +2031,77 @@ function playDemo() {
     } else {
       expandCard(cards[expandCardIdx]);
     }
+
+  } else if (currentDemo === 'tab') {
+    const travelDir = tabDir;                  // save before any flip
+    const nextIdx   = tabIdx + travelDir;
+    const outScreen = document.getElementById(`tabScreen${tabIdx}`);
+    const inScreen  = document.getElementById(`tabScreen${nextIdx}`);
+
+    // Advance both content and nav together, then ping-pong at ends
+    tabIdx = nextIdx;
+    tabNavIdx = nextIdx;
+    if (tabIdx === 0 || tabIdx === 3) tabDir *= -1;
+
+    // Snap nav icon instantly
+    for (let i = 0; i < 4; i++) {
+      const icon = document.getElementById(`tabNavIcon${i}`);
+      if (icon) icon.style.background = i === tabNavIdx ? '#FF385C' : '';
+    }
+
+    const SLIDE_PX = 40;
+    const incomingSign = travelDir;    // incoming slides from this side
+    const outgoingSign = -travelDir;   // outgoing exits opposite
+    inScreen.style.opacity = '0';
+    inScreen.style.transform = `translateX(${incomingSign * SLIDE_PX}px)`;
+
+    function tick(now) {
+      const t = (now - start) / 1000;
+      const pos = springPos(t, stiffness, damping);
+      const completion = 1 - pos;
+
+      // Outgoing: exits in outgoingSign direction, fades out over 0–40% completion
+      const outX = outgoingSign * completion * SLIDE_PX;
+      const outOpacity = Math.max(1 - completion / 0.40, 0);
+      outScreen.style.transform = `translateX(${outX}px)`;
+      outScreen.style.opacity = String(outOpacity);
+
+      // Incoming: slides from incomingSign side to 0, fades in 20–100% completion
+      const inX = incomingSign * pos * SLIDE_PX;
+      const inOpacity = Math.min(Math.max((completion - 0.20) / 0.80, 0), 1);
+      inScreen.style.transform = `translateX(${inX}px)`;
+      inScreen.style.opacity = String(inOpacity);
+
+      if (t < 5 && !isSettled(t, stiffness, damping)) {
+        demoAnim = requestAnimationFrame(tick);
+      } else {
+        outScreen.style.transform = `translateX(${outgoingSign * SLIDE_PX}px)`;
+        outScreen.style.opacity = '0';
+        inScreen.style.transform = 'translateX(0)';
+        inScreen.style.opacity = '1';
+      }
+    }
+    demoAnim = requestAnimationFrame(tick);
+
+  } else if (currentDemo === 'press') {
+    const card = document.getElementById('demoPress');
+    // Instantly compress, then spring back
+    card.style.transform = 'scale(0.88)';
+    const pressStart = performance.now();
+
+    function tick(now) {
+      const t = (now - pressStart) / 1000;
+      const pos = springPos(t, stiffness, damping);
+      // pos goes 1→0; scale goes 0.88→1
+      const scale = 0.88 + (1 - 0.88) * (1 - pos);
+      card.style.transform = `scale(${scale.toFixed(4)})`;
+      if (t < 5 && !isSettled(t, stiffness, damping)) {
+        demoAnim = requestAnimationFrame(tick);
+      } else {
+        card.style.transform = 'scale(1)';
+      }
+    }
+    demoAnim = requestAnimationFrame(tick);
   }
 }
 
@@ -1957,6 +2231,13 @@ document.querySelectorAll('.expand-card').forEach(card => {
 document.getElementById('expandPanel').addEventListener('click', () => { if (expandState) collapseCard(); });
 
 document.getElementById('playBtn').addEventListener('click', playDemo);
+
+// Clicking anywhere in the phone also plays — except expand (has its own card/panel handlers)
+document.getElementById('demoStage').addEventListener('click', (e) => {
+  if (currentDemo === 'expand') return; // expand has its own click handlers
+  if (e.target.closest('.play-btn')) return;
+  if (e.target.closest('.phone-frame')) playDemo();
+});
 
 // ── Copy + toast ─────────────────────────────────────────────────
 let toastTimer;
