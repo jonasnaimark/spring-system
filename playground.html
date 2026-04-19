@@ -483,9 +483,10 @@
       height: 55%;
       background: #fff;
       border-radius: 22px 22px 0 0;
-      box-shadow: 0 -2px 20px rgba(0,0,0,0.12);
+      box-shadow: 0 -2px 20px rgba(0,0,0,0);
       padding: 14px 18px;
       will-change: transform;
+      z-index: 11;
     }
 
     .sheet-handle {
@@ -498,12 +499,47 @@
 
     .sheet-line {
       height: 10px;
-      background: #f2f2f7;
+      background: var(--sk);
       border-radius: 5px;
       margin-bottom: 9px;
     }
 
     .sheet-line.short { width: 55%; }
+    .sheet-line.med   { width: 70%; }
+    .sheet-line.xshort { width: 35%; }
+    .sheet-line.thin  { height: 7px; }
+
+    .sheet-section-gap { height: 14px; }
+
+    .sheet-img-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .sheet-thumb {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      background: var(--sk);
+      flex-shrink: 0;
+    }
+    .sheet-thumb-lines {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      justify-content: center;
+    }
+    .sheet-tag-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .sheet-tag {
+      height: 22px;
+      border-radius: 11px;
+      background: var(--sk);
+    }
 
     /* ── Modal demo ── */
     .modal-backdrop {
@@ -514,6 +550,7 @@
       align-items: center;
       justify-content: center;
       will-change: opacity;
+      z-index: 11;
     }
 
     .modal-card {
@@ -529,7 +566,7 @@
 
     .modal-line {
       height: 8px;
-      background: #f2f2f7;
+      background: var(--sk);
       border-radius: 4px;
     }
 
@@ -554,9 +591,9 @@
 
     /* ── Card flip demo ── */
     .flip-scene {
-      width: 160px;
-      height: 200px;
-      perspective: 600px;
+      width: 200px;
+      height: 250px;
+      perspective: 700px;
     }
 
     .flip-card {
@@ -572,12 +609,9 @@
       inset: 0;
       border-radius: 16px;
       backface-visibility: hidden;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 20px;
     }
 
     .flip-front {
@@ -590,23 +624,54 @@
       transform: rotateY(180deg);
     }
 
+    .flip-img {
+      width: calc(100% - 16px);
+      height: 116px;
+      background: var(--sk);
+      flex-shrink: 0;
+      margin: 8px 8px 0;
+      border-radius: 8px;
+    }
+
+    .flip-body {
+      padding: 10px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+
     .flip-line {
       width: 100%;
       height: 8px;
-      background: #f2f2f7;
+      background: var(--sk);
       border-radius: 4px;
+    }
+
+    .flip-back .flip-img {
+      background: rgba(255,255,255,0.2);
     }
 
     .flip-back .flip-line {
       background: rgba(255,255,255,0.3);
     }
 
-    .flip-line.short { width: 60%; }
+    .flip-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .flip-line.title  { height: 9px; width: 72%; }
+    .flip-line.sub    { width: 48%; }
+    .flip-line.short  { width: 36%; }
+    .flip-line.price  { width: 30%; }
 
     /* ── Notification demo ── */
     .notif {
       position: absolute;
-      top: 16px;
+      top: 18px;
       left: 14px;
       right: 14px;
       background: #fff;
@@ -696,7 +761,7 @@
       font-weight: 700;
       letter-spacing: -0.02em;
       color: #1c1c1e;
-      margin-bottom: 12px;
+      margin-bottom: 18px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -923,6 +988,9 @@
     .expand-card-row.title { height: 10px; width: 70%; border-radius: 5px; }
     .expand-card-row.sub   { width: 45%; }
     .expand-card-row.med   { width: 80%; }
+    .expand-card-row.price { width: 32%; }
+    .expand-card-row.xshort { width: 28%; }
+    .expand-card-meta-row  { display: flex; justify-content: space-between; align-items: center; }
 
     /* The flying hero panel — absolutely positioned over the phone frame */
     .expand-hero-panel {
@@ -1030,12 +1098,41 @@
             <div class="sk-nav-icon"></div>
             <div class="sk-nav-icon"></div>
           </div>
+          <div class="push-scrim" id="sheetScrim" style="z-index:10;"></div>
           <div class="sheet" id="demoSheet" style="transform: translateY(100%)">
             <div class="sheet-handle"></div>
-            <div class="sheet-line"></div>
-            <div class="sheet-line short"></div>
-            <div class="sheet-line"></div>
-            <div class="sheet-line short"></div>
+            <!-- Title + subtitle -->
+            <div class="sheet-line med"></div>
+            <div class="sheet-line short thin"></div>
+            <div class="sheet-section-gap"></div>
+            <!-- Tag pills -->
+            <div class="sheet-tag-row">
+              <div class="sheet-tag" style="width:54px;"></div>
+              <div class="sheet-tag" style="width:44px;"></div>
+              <div class="sheet-tag" style="width:62px;"></div>
+            </div>
+            <!-- List rows with thumbnail -->
+            <div class="sheet-img-row">
+              <div class="sheet-thumb"></div>
+              <div class="sheet-thumb-lines">
+                <div class="sheet-line" style="margin-bottom:0;"></div>
+                <div class="sheet-line short thin" style="margin-bottom:0;"></div>
+              </div>
+            </div>
+            <div class="sheet-img-row">
+              <div class="sheet-thumb"></div>
+              <div class="sheet-thumb-lines">
+                <div class="sheet-line" style="margin-bottom:0;"></div>
+                <div class="sheet-line med thin" style="margin-bottom:0;"></div>
+              </div>
+            </div>
+            <div class="sheet-img-row">
+              <div class="sheet-thumb"></div>
+              <div class="sheet-thumb-lines">
+                <div class="sheet-line" style="margin-bottom:0;"></div>
+                <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1067,7 +1164,7 @@
             <div class="sk-nav-icon"></div>
           </div>
           <div class="modal-backdrop" id="demoBackdrop" style="opacity:0; pointer-events:none;"></div>
-          <div class="modal-card" id="demoModal" style="opacity:0; transform: scale(0.85); position:absolute; top:50%; left:50%; margin-top:-70px; margin-left:-110px;">
+          <div class="modal-card" id="demoModal" style="opacity:0; transform: scale(0.85); position:absolute; top:50%; left:50%; margin-top:-70px; margin-left:-110px; z-index:12;">
             <div class="modal-line"></div>
             <div class="modal-line short"></div>
             <div class="modal-line"></div>
@@ -1084,14 +1181,26 @@
         <div class="flip-scene">
           <div class="flip-card" id="demoFlip">
             <div class="flip-face flip-front">
-              <div class="flip-line"></div>
-              <div class="flip-line short"></div>
-              <div class="flip-line"></div>
-              <div class="flip-line short"></div>
+              <div class="flip-img"></div>
+              <div class="flip-body">
+                <div class="flip-line title"></div>
+                <div class="flip-line sub"></div>
+                <div class="flip-meta-row">
+                  <div class="flip-line short"></div>
+                  <div class="flip-line price"></div>
+                </div>
+              </div>
             </div>
             <div class="flip-face flip-back">
-              <div class="flip-line"></div>
-              <div class="flip-line short"></div>
+              <div class="flip-img"></div>
+              <div class="flip-body">
+                <div class="flip-line title"></div>
+                <div class="flip-line sub"></div>
+                <div class="flip-meta-row">
+                  <div class="flip-line short"></div>
+                  <div class="flip-line price"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1195,7 +1304,10 @@
                 <div class="expand-card-body">
                   <div class="expand-card-row title"></div>
                   <div class="expand-card-row sub"></div>
-                  <div class="expand-card-row med"></div>
+                  <div class="expand-card-meta-row">
+                    <div class="expand-card-row xshort"></div>
+                    <div class="expand-card-row price"></div>
+                  </div>
                 </div>
               </div>
               <div class="expand-card" data-expand="1">
@@ -1203,7 +1315,10 @@
                 <div class="expand-card-body">
                   <div class="expand-card-row title"></div>
                   <div class="expand-card-row sub"></div>
-                  <div class="expand-card-row med"></div>
+                  <div class="expand-card-meta-row">
+                    <div class="expand-card-row xshort"></div>
+                    <div class="expand-card-row price"></div>
+                  </div>
                 </div>
               </div>
               <div class="expand-card" data-expand="2">
@@ -1211,7 +1326,10 @@
                 <div class="expand-card-body">
                   <div class="expand-card-row title"></div>
                   <div class="expand-card-row sub"></div>
-                  <div class="expand-card-row med"></div>
+                  <div class="expand-card-meta-row">
+                    <div class="expand-card-row xshort"></div>
+                    <div class="expand-card-row price"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1224,7 +1342,10 @@
               <div class="expand-card-body">
                 <div class="expand-card-row title"></div>
                 <div class="expand-card-row sub"></div>
-                <div class="expand-card-row med"></div>
+                <div class="expand-card-meta-row">
+                  <div class="expand-card-row xshort"></div>
+                  <div class="expand-card-row price"></div>
+                </div>
               </div>
             </div>
             <!-- Detail state: fades in on expand, fades out on collapse -->
@@ -1293,7 +1414,7 @@
 
   <!-- Token grid -->
   <div class="grid-section">
-    <div id="tokenGrid" style="display:flex; flex-direction:column; justify-content:space-between; flex:1;"></div>
+    <div id="tokenGrid" style="display:flex; flex-direction:column; gap:28px; flex:1;"></div>
     <div id="tokenList" style="display:none">
       <div class="list-wrap">
         <table class="list-table">
@@ -1336,6 +1457,10 @@ function calcDamping(stiffness, ratio) {
 }
 
 // ── Spring physics ───────────────────────────────────────────────
+// Scrims always use a critically-damped spring regardless of selected token
+const SCRIM_STIFFNESS = 300;
+const SCRIM_DAMPING   = 2 * Math.sqrt(SCRIM_STIFFNESS); // ratio = 1.0
+
 function springPos(t, stiffness, damping, mass = 1) {
   const omegaN = Math.sqrt(stiffness / mass);
   const zeta = damping / (2 * Math.sqrt(stiffness * mass));
@@ -1470,6 +1595,8 @@ function resetDemo() {
 
   if (currentDemo === 'sheet') {
     document.getElementById('demoSheet').style.transform = 'translateY(100%)';
+    document.getElementById('demoSheet').style.boxShadow = '0 -2px 20px rgba(0,0,0,0)';
+    document.getElementById('sheetScrim').style.opacity = '0';
   } else if (currentDemo === 'modal') {
     const bd = document.getElementById('demoBackdrop');
     const m = document.getElementById('demoModal');
@@ -1510,6 +1637,7 @@ function playDemo() {
 
   if (currentDemo === 'sheet') {
     const sheet = document.getElementById('demoSheet');
+    const scrim = document.getElementById('sheetScrim');
     const isIn = demoState === 'in';
     demoState = isIn ? 'out' : 'in';
 
@@ -1519,11 +1647,17 @@ function playDemo() {
       // entering (isIn=false): pos 1→0 maps to translateY 100%→0% (slides up)
       // dismissing (isIn=true): pos 1→0 maps to translateY 0%→100% (slides down)
       const pct = isIn ? (1 - pos) * 100 : pos * 100;
+      const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+      const shadowProgress = isIn ? scrimPos : (1 - scrimPos);
       sheet.style.transform = `translateY(${pct}%)`;
+      sheet.style.boxShadow = `0 -2px 20px rgba(0,0,0,${(shadowProgress * 0.12).toFixed(3)})`;
+      scrim.style.opacity = String(isIn ? scrimPos : (1 - scrimPos));
       if (t < 5 && !isSettled(t, stiffness, damping)) {
         demoAnim = requestAnimationFrame(tick);
       } else {
         sheet.style.transform = isIn ? 'translateY(100%)' : 'translateY(0%)';
+        sheet.style.boxShadow = isIn ? '0 -2px 20px rgba(0,0,0,0)' : '0 -2px 20px rgba(0,0,0,0.12)';
+        scrim.style.opacity = isIn ? '0' : '1';
       }
     }
     demoAnim = requestAnimationFrame(tick);
@@ -1538,22 +1672,22 @@ function playDemo() {
     function tick(now) {
       const t = (now - start) / 1000;
       const pos = springPos(t, stiffness, damping);
+      const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
       const progress = 1 - pos; // 0→1 as spring settles
+      const scrimProgress = 1 - scrimPos;
 
       if (isIn) {
-        // dismiss: scale down, fade out (pos goes 1→0, so scale goes 1.0→0.85)
+        // dismiss: scale down, fade out
         const scale = 0.85 + pos * 0.15;
-        const opacity = pos;
         m.style.transform = `scale(${scale})`;
-        m.style.opacity = opacity;
-        bd.style.opacity = opacity * 0.4;
+        m.style.opacity = pos;
+        bd.style.opacity = scrimPos * 0.4;
       } else {
         // enter: scale up, fade in
         const scale = 0.85 + progress * 0.15;
-        const opacity = progress;
         m.style.transform = `scale(${scale})`;
-        m.style.opacity = opacity;
-        bd.style.opacity = opacity * 0.4;
+        m.style.opacity = progress;
+        bd.style.opacity = scrimProgress * 0.4;
       }
 
       if (t < 5 && !isSettled(t, stiffness, damping)) {
@@ -1600,17 +1734,18 @@ function playDemo() {
     function tick(now) {
       const t = (now - start) / 1000;
       const pos = springPos(t, stiffness, damping);
+      const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
 
       if (!isIn) {
         // Push: dest comes from right, source retreats left 30%, scrim fades in
         dest.style.transform = `translateX(${pos * 100}%)`;
         src.style.transform  = `translateX(${-(1 - pos) * 30}%)`;
-        scrim.style.opacity  = String(1 - pos);
+        scrim.style.opacity  = String(1 - scrimPos);
       } else {
         // Pop: dest exits right, source returns, scrim fades out
         dest.style.transform = `translateX(${(1 - pos) * 100}%)`;
         src.style.transform  = `translateX(${-pos * 30}%)`;
-        scrim.style.opacity  = String(pos);
+        scrim.style.opacity  = String(scrimPos);
       }
 
       if (t < 5 && !isSettled(t, stiffness, damping)) {
