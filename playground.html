@@ -19,19 +19,181 @@
       padding: 24px 48px 0;
       max-width: 1200px;
       margin: 0 auto;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
     }
 
-    .header h1 {
+    .header-text h1 {
       font-size: 32px;
       font-weight: 700;
       letter-spacing: -0.03em;
       color: #1c1c1e;
-      margin-bottom: 6px;
     }
 
-    .header p {
+    .header-text p {
       font-size: 15px;
       color: #8e8e93;
+    }
+
+    /* ── View toggle ── */
+    .view-toggle {
+      display: flex;
+      background: #e5e5ea;
+      border-radius: 10px;
+      padding: 3px;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .view-btn {
+      width: 32px;
+      height: 28px;
+      border-radius: 7px;
+      border: none;
+      background: transparent;
+      color: #8e8e93;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .view-btn.active {
+      background: #fff;
+      color: #1c1c1e;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    }
+
+    .view-btn svg { display: block; }
+
+    /* ── List view ── */
+    #tokenList {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .list-wrap {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .list-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .list-table thead th {
+      background: #f9f9fb;
+      padding: 10px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #8e8e93;
+      border-bottom: 1px solid #e5e5ea;
+      white-space: nowrap;
+    }
+
+    .list-table thead th:last-child { text-align: right; }
+
+    .list-group-row td {
+      background: #f2f2f7;
+      padding: 7px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #636366;
+      border-top: 1px solid #e5e5ea;
+      border-bottom: 1px solid #e5e5ea;
+    }
+
+    .list-data-row {
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .list-data-row:hover td  { background: #f7f7f9; }
+    .list-data-row.selected td { background: #fff5f7; }
+    .list-data-row td {
+      padding: 0 16px;
+      height: 40px;
+      vertical-align: middle;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+    .list-data-row:last-child td { border-bottom: none; }
+
+    .list-td-speed {
+      font-size: 13px;
+      font-weight: 600;
+      color: #3a3a3c;
+      padding-left: 24px !important;
+      white-space: nowrap;
+    }
+
+    .list-td-mono {
+      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+      font-size: 12px;
+      color: #3a3a3c;
+      white-space: nowrap;
+    }
+
+    .list-td-copy { text-align: right; white-space: nowrap; }
+
+    .list-copy-btn {
+      padding: 3px 10px;
+      border-radius: 7px;
+      background: #f2f2f7;
+      border: 1px solid #e5e5ea;
+      font-size: 11px;
+      font-weight: 500;
+      color: #636366;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.12s;
+    }
+    .list-copy-btn:hover  { background: #e5e5ea; color: #1c1c1e; }
+    .list-copy-btn.copied { background: #34c759; border-color: #34c759; color: #fff; }
+
+    .list-token-chip {
+      display: inline-block;
+      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+      font-size: 10px;
+      color: #636366;
+      background: #f2f2f7;
+      border-radius: 20px;
+      padding: 3px 8px;
+      white-space: nowrap;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      background: #1c1c1e;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 9px 18px;
+      border-radius: 20px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s, transform 0.15s;
+      white-space: nowrap;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
 
     /* ── Main layout ── */
@@ -42,18 +204,13 @@
       display: grid;
       grid-template-columns: 340px 1fr;
       gap: 24px;
-      align-items: start;
+      align-items: stretch;
     }
 
     .grid-section {
-      overflow-y: auto;
-      max-height: 762px; /* matches demo panel: tabs + stage + footer */
-      padding-right: 4px;
+      display: flex;
+      flex-direction: column;
     }
-
-    .grid-section::-webkit-scrollbar { width: 4px; }
-    .grid-section::-webkit-scrollbar-track { background: transparent; }
-    .grid-section::-webkit-scrollbar-thumb { background: #e5e5ea; border-radius: 2px; }
 
     /* ── Demo panel ── */
     .demo-panel {
@@ -63,35 +220,42 @@
       box-shadow: 0 2px 12px rgba(0,0,0,0.07);
       position: sticky;
       top: 24px;
+      display: flex;
+      flex-direction: column;
     }
 
     .demo-tabs {
       display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 14px 16px 12px;
       border-bottom: 1px solid #f2f2f7;
-      padding: 0 4px;
+      justify-content: center;
     }
 
     .demo-tab {
-      flex: 1;
-      padding: 14px 8px;
+      padding: 5px 12px;
+      border-radius: 20px;
       font-size: 12px;
       font-weight: 500;
-      color: #8e8e93;
+      color: #636366;
+      background: #f2f2f7;
       cursor: pointer;
-      text-align: center;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      transition: color 0.15s;
       user-select: none;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
     }
 
+    .demo-tab:hover { background: #e5e5ea; color: #1c1c1e; }
+
     .demo-tab.active {
-      color: #FF385C;
-      border-bottom-color: #FF385C;
+      background: #FF385C;
+      color: #fff;
     }
 
     .demo-stage {
-      height: 620px;
+      flex: 1;
+      min-height: 620px;
       position: relative;
       display: flex;
       align-items: center;
@@ -221,6 +385,8 @@
       display: flex;
       gap: 14px;
       flex-shrink: 0;
+      margin-top: 6px;
+      margin-bottom: 6px;
     }
 
     .sk-cat {
@@ -523,7 +689,7 @@
       margin-bottom: 16px;
     }
 
-    .speed-group { margin-bottom: 28px; }
+    .speed-group { margin-bottom: 0; }
 
     .speed-label {
       font-size: 16px;
@@ -553,7 +719,7 @@
     .token-card {
       background: #fff;
       border-radius: 14px;
-      padding: 14px 14px 12px;
+      padding: 13px 14px 11px;
       cursor: pointer;
       transition: box-shadow 0.15s, transform 0.12s;
       box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
@@ -677,13 +843,150 @@
       margin: 4px 0;
     }
 
+    /* ── Tooltip demo ── */
+    .demo-tooltip {
+      position: absolute;
+      /* Caret tip aligned to 2nd circle center (~108px from left, just below cats ~133px) */
+      left: 108px;
+      top: 133px;
+      transform: translateX(-50%) scale(0.6);
+      transform-origin: 50% 0%;
+      opacity: 0;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .tooltip-caret {
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 7px solid #1c1c1e;
+    }
+
+    .tooltip-bubble {
+      background: #1c1c1e;
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 140px;
+    }
+
+    .tooltip-tl {
+      height: 8px;
+      background: rgba(255,255,255,0.55);
+      border-radius: 4px;
+    }
+    .tooltip-tl.short { width: 65%; }
+
+    /* ── Expand / card-hero demo ── */
+    .expand-scroll {
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .expand-card {
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .expand-card-img {
+      width: 100%;
+      height: 110px;
+      background: var(--sk);
+    }
+
+    .expand-card-body {
+      padding: 10px 12px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .expand-card-row {
+      height: 8px;
+      background: var(--sk);
+      border-radius: 4px;
+    }
+    .expand-card-row.title { height: 10px; width: 70%; border-radius: 5px; }
+    .expand-card-row.sub   { width: 45%; }
+    .expand-card-row.med   { width: 80%; }
+
+    /* The flying hero panel — absolutely positioned over the phone frame */
+    .expand-hero-panel {
+      position: absolute;
+      background: #fff;
+      overflow: hidden;
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06);
+      display: none;
+    }
+
+    .expand-hero-panel .push-hero { flex-shrink: 0; }
+
+    .expand-detail-content {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .expand-back-btn {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.25);
+      border: none;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      color: #fff;
+      font-size: 14px;
+      line-height: 1;
+    }
+
   </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>Spring Playground</h1>
-  <p>Pick a spring, pick a demo, see how it feels.</p>
+  <div class="header-text">
+    <h1>Spring Playground</h1>
+  </div>
+  <div class="view-toggle">
+    <button class="view-btn active" id="btnGrid" title="Grid view">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <rect x="0" y="0" width="6" height="6" rx="1.5" fill="currentColor"/>
+        <rect x="8" y="0" width="6" height="6" rx="1.5" fill="currentColor"/>
+        <rect x="0" y="8" width="6" height="6" rx="1.5" fill="currentColor"/>
+        <rect x="8" y="8" width="6" height="6" rx="1.5" fill="currentColor"/>
+      </svg>
+    </button>
+    <button class="view-btn" id="btnList" title="List view">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <rect x="0" y="1" width="14" height="2" rx="1" fill="currentColor"/>
+        <rect x="0" y="6" width="14" height="2" rx="1" fill="currentColor"/>
+        <rect x="0" y="11" width="14" height="2" rx="1" fill="currentColor"/>
+      </svg>
+    </button>
+  </div>
 </div>
 
 <div class="main">
@@ -694,8 +997,10 @@
       <div class="demo-tab active" data-demo="sheet">Sheet</div>
       <div class="demo-tab" data-demo="push">Push</div>
       <div class="demo-tab" data-demo="modal">Modal</div>
-      <div class="demo-tab" data-demo="flip">Card</div>
+      <div class="demo-tab" data-demo="flip">Card Flip</div>
       <div class="demo-tab" data-demo="notif">Notification</div>
+      <div class="demo-tab" data-demo="expand">Card Expand</div>
+      <div class="demo-tab" data-demo="tooltip">Tooltip</div>
     </div>
 
     <div class="demo-stage" id="demoStage">
@@ -818,7 +1123,7 @@
             <div class="sk-nav-icon"></div>
             <div class="sk-nav-icon"></div>
           </div>
-          <div class="notif" id="demoNotif" style="transform: translateY(-120%); opacity: 0;">
+          <div class="notif" id="demoNotif" style="transform: translateY(-160%);">
             <div class="notif-icon"></div>
             <div class="notif-text">
               <div class="notif-line"></div>
@@ -879,6 +1184,102 @@
           </div>
         </div>
       </div>
+
+      <!-- Card Expand demo -->
+      <div class="demo-view" id="view-expand" style="display:none; align-items:center; justify-content:center;">
+        <div class="phone-frame" id="expandPhone">
+          <div style="display:flex; flex-direction:column; height:100%;">
+            <div class="expand-scroll" id="expandList">
+              <div class="expand-card" data-expand="0">
+                <div class="expand-card-img"></div>
+                <div class="expand-card-body">
+                  <div class="expand-card-row title"></div>
+                  <div class="expand-card-row sub"></div>
+                  <div class="expand-card-row med"></div>
+                </div>
+              </div>
+              <div class="expand-card" data-expand="1">
+                <div class="expand-card-img"></div>
+                <div class="expand-card-body">
+                  <div class="expand-card-row title"></div>
+                  <div class="expand-card-row sub"></div>
+                  <div class="expand-card-row med"></div>
+                </div>
+              </div>
+              <div class="expand-card" data-expand="2">
+                <div class="expand-card-img"></div>
+                <div class="expand-card-body">
+                  <div class="expand-card-row title"></div>
+                  <div class="expand-card-row sub"></div>
+                  <div class="expand-card-row med"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Flying hero panel -->
+          <div class="expand-hero-panel" id="expandPanel">
+            <!-- Card state: visible when collapsed, fades out on expand -->
+            <div id="expandCardLayer" style="position:absolute;inset:0;background:#fff;">
+              <div class="expand-card-img"></div>
+              <div class="expand-card-body">
+                <div class="expand-card-row title"></div>
+                <div class="expand-card-row sub"></div>
+                <div class="expand-card-row med"></div>
+              </div>
+            </div>
+            <!-- Detail state: fades in on expand, fades out on collapse -->
+            <div id="expandDetailLayer" style="position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;">
+              <div class="push-hero" style="height:220px;flex-shrink:0;"></div>
+              <div class="expand-detail-content" id="expandDetail">
+                <div class="push-detail-row title"></div>
+                <div class="push-detail-row sub"></div>
+                <div class="push-detail-divider"></div>
+                <div class="push-detail-row med"></div>
+                <div class="push-detail-row short"></div>
+                <div class="push-detail-row full"></div>
+                <div class="push-detail-divider"></div>
+                <div class="push-detail-row med"></div>
+                <div class="push-detail-row short"></div>
+              </div>
+            </div>
+          </div>
+          <button class="expand-back-btn" id="expandBackBtn" style="display:none"></button>
+        </div>
+      </div>
+
+      <!-- Tooltip demo -->
+      <div class="demo-view" id="view-tooltip" style="display:none; align-items:center; justify-content:center;">
+        <div class="phone-frame">
+          <div class="phone-content">
+            <div class="sk-search"></div>
+            <div class="sk-cats">
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+            </div>
+            <div class="sk-divider"></div>
+            <div class="sk-card-img"></div>
+            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+            <div class="sk-sub"></div>
+            <div class="sk-section-label"></div>
+            <div class="sk-card-img partial"></div>
+          </div>
+          <div class="sk-bottom-nav">
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+          </div>
+          <div class="demo-tooltip" id="demoTooltip">
+            <div class="tooltip-caret"></div>
+            <div class="tooltip-bubble">
+              <div class="tooltip-tl"></div>
+              <div class="tooltip-tl short"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="demo-footer">
@@ -892,8 +1293,24 @@
 
   <!-- Token grid -->
   <div class="grid-section">
-
-    <div id="tokenGrid"></div>
+    <div id="tokenGrid" style="display:flex; flex-direction:column; justify-content:space-between; flex:1;"></div>
+    <div id="tokenList" style="display:none">
+      <div class="list-wrap">
+        <table class="list-table">
+          <thead>
+            <tr>
+              <th>Speed</th>
+              <th>Token</th>
+              <th>Stiffness</th>
+              <th>Ratio</th>
+              <th>Damping</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="listBody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -909,9 +1326,9 @@ const SPEEDS = [
 
 const CHARS = [
   { key: 'smooth',        ratio: 1.0,  label: 'Smooth',        color: '#8e8e93', stiffnessMul: 1.0  },
-  { key: 'small-bounce',  ratio: 0.85, label: 'Small Bounce',  color: '#5ac8fa', stiffnessMul: 1.0  },
-  { key: 'medium-bounce', ratio: 0.7,  label: 'Medium Bounce', color: '#af52de', stiffnessMul: 0.8  },
-  { key: 'large-bounce',  ratio: 0.5,  label: 'Large Bounce',  color: '#FF385C', stiffnessMul: 0.5  },
+  { key: 'small.bounce',  ratio: 0.85, label: 'Small Bounce',  color: '#5ac8fa', stiffnessMul: 1.0  },
+  { key: 'medium.bounce', ratio: 0.7,  label: 'Medium Bounce', color: '#af52de', stiffnessMul: 0.8  },
+  { key: 'large.bounce',  ratio: 0.5,  label: 'Large Bounce',  color: '#FF385C', stiffnessMul: 0.5  },
 ];
 
 function calcDamping(stiffness, ratio) {
@@ -943,6 +1360,7 @@ let selected = { name: 'default-smooth', stiffness: 300, damping: calcDamping(30
 let currentDemo = 'sheet';
 let demoAnim = null;
 let demoState = 'out'; // 'out' | 'in'
+let expandState = null;
 const miniAnims = {};
 
 // ── Build token grid ─────────────────────────────────────────────
@@ -992,7 +1410,9 @@ document.getElementById('card-default-smooth')?.classList.add('selected');
 // ── Select spring ────────────────────────────────────────────────
 function selectSpring(name, stiffness, damping, ratio, cardEl, color) {
   document.querySelectorAll('.token-card').forEach(c => c.classList.remove('selected'));
-  cardEl.classList.add('selected');
+  document.querySelectorAll('.list-data-row').forEach(r => r.classList.remove('selected'));
+  cardEl?.classList.add('selected');
+  document.getElementById(`list-row-${name}`)?.classList.add('selected');
 
   selected = { name, stiffness, damping, ratio };
   document.getElementById('selectedName').textContent = name;
@@ -1061,12 +1481,24 @@ function resetDemo() {
     document.getElementById('demoFlip').style.transform = 'rotateY(0deg)';
   } else if (currentDemo === 'notif') {
     const n = document.getElementById('demoNotif');
-    n.style.transform = 'translateY(-120%)';
-    n.style.opacity = '0';
+    n.style.transform = 'translateY(-160%)';
   } else if (currentDemo === 'push') {
     document.getElementById('pushSource').style.transform = 'translateX(0%)';
     document.getElementById('pushDest').style.transform = 'translateX(100%)';
     document.getElementById('pushScrim').style.opacity = '0';
+  } else if (currentDemo === 'tooltip') {
+    const tt = document.getElementById('demoTooltip');
+    tt.style.transform = 'translateX(-50%) scale(0.6)';
+    tt.style.opacity = '0';
+  } else if (currentDemo === 'expand') {
+    const panel = document.getElementById('expandPanel');
+    panel.style.display = 'none';
+    document.getElementById('expandCardLayer').style.opacity  = '1';
+    document.getElementById('expandDetailLayer').style.opacity = '0';
+    if (expandState?.card) expandState.card.style.visibility = '';
+    expandState = null;
+    expandCardIdx = 0;
+    document.querySelectorAll('.expand-card').forEach(c => c.style.visibility = '');
   }
 }
 
@@ -1207,30 +1639,358 @@ function playDemo() {
       const pos = springPos(t, stiffness, damping);
 
       if (isIn) {
-        const pct = (1 - pos) * -120;
+        const pct = (1 - pos) * -160;
         n.style.transform = `translateY(${pct}%)`;
-        n.style.opacity = String(pos);
       } else {
-        const pct = pos * -120;
+        const pct = pos * -160;
         n.style.transform = `translateY(${pct}%)`;
-        n.style.opacity = String(1 - pos);
       }
 
       if (t < 5 && !isSettled(t, stiffness, damping)) {
         demoAnim = requestAnimationFrame(tick);
       } else {
         if (isIn) {
-          n.style.transform = 'translateY(-120%)'; n.style.opacity = '0';
+          n.style.transform = 'translateY(-160%)';
         } else {
-          n.style.transform = 'translateY(0%)'; n.style.opacity = '1';
+          n.style.transform = 'translateY(0%)';
         }
       }
     }
     demoAnim = requestAnimationFrame(tick);
+
+  } else if (currentDemo === 'tooltip') {
+    const tt = document.getElementById('demoTooltip');
+    const isIn = demoState === 'in';
+    demoState = isIn ? 'out' : 'in';
+
+    function tick(now) {
+      const t = (now - start) / 1000;
+      const pos = springPos(t, stiffness, damping);
+
+      if (!isIn) {
+        const sc = 1 - pos * 0.4;
+        tt.style.transform = `translateX(-50%) scale(${sc})`;
+        tt.style.opacity   = String(Math.min(t / 0.12, 1));
+      } else {
+        const sc = 0.6 + pos * 0.4;
+        tt.style.transform = `translateX(-50%) scale(${sc})`;
+        tt.style.opacity   = String(Math.max(1 - t / 0.12, 0));
+      }
+
+      if (t < 5 && !isSettled(t, stiffness, damping)) {
+        demoAnim = requestAnimationFrame(tick);
+      } else {
+        tt.style.transform = `translateX(-50%) scale(${isIn ? 0.6 : 1})`;
+        tt.style.opacity   = isIn ? '0' : '1';
+      }
+    }
+    demoAnim = requestAnimationFrame(tick);
+
+  } else if (currentDemo === 'expand') {
+    const cards = document.querySelectorAll('.expand-card');
+    if (expandState) {
+      collapseCard(() => { expandCardIdx = (expandCardIdx + 1) % cards.length; });
+    } else {
+      expandCard(cards[expandCardIdx]);
+    }
   }
 }
 
+// ── Card Expand logic ─────────────────────────────────────────────
+let expandCardIdx = 0;
+
+function expandCard(card) {
+  if (expandState || !card) return;
+  const { stiffness, damping } = selected;
+
+  const phone  = document.getElementById('expandPhone');
+  const panel  = document.getElementById('expandPanel');
+
+  // Account for phone border so left:0/top:0 aligns with card coordinates
+  const bx = phone.clientLeft, by = phone.clientTop;
+  const phoneRect = phone.getBoundingClientRect();
+  const cardRect  = card.getBoundingClientRect();
+
+  const fromX = cardRect.left - phoneRect.left - bx;
+  const fromY = cardRect.top  - phoneRect.top  - by;
+  const fromW = cardRect.width;
+  const fromH = cardRect.height;
+  const fromR = 14;
+  const toX = 0, toY = 0, toW = phone.clientWidth, toH = phone.clientHeight, toR = 30;
+
+  // Reset layers: card visible, detail hidden
+  document.getElementById('expandCardLayer').style.opacity  = '1';
+  document.getElementById('expandDetailLayer').style.opacity = '0';
+
+  // Hide the real card — panel is the visual stand-in during animation
+  card.style.visibility = 'hidden';
+
+  panel.style.display       = 'block';
+  panel.style.left          = fromX + 'px';
+  panel.style.top           = fromY + 'px';
+  panel.style.width         = fromW + 'px';
+  panel.style.height        = fromH + 'px';
+  panel.style.borderRadius  = fromR + 'px';
+  panel.style.boxShadow     = '0 2px 8px rgba(0,0,0,0.10)';
+  panel.style.pointerEvents = 'none';
+  panel.style.zIndex        = '10';
+  expandState = { fromX, fromY, fromW, fromH, fromR, card };
+
+  const startT = performance.now();
+  if (demoAnim) cancelAnimationFrame(demoAnim);
+
+  const cardLayer   = document.getElementById('expandCardLayer');
+  const detailLayer = document.getElementById('expandDetailLayer');
+  function tick(now) {
+    const t = (now - startT) / 1000;
+    const pos = springPos(t, stiffness, damping);
+    panel.style.left         = (toX + (fromX - toX) * pos) + 'px';
+    panel.style.top          = (toY + (fromY - toY) * pos) + 'px';
+    panel.style.width        = (toW + (fromW - toW) * pos) + 'px';
+    panel.style.height       = (toH + (fromH - toH) * pos) + 'px';
+    panel.style.borderRadius = (toR + (fromR - toR) * pos) + 'px';
+    panel.style.boxShadow    = `0 2px 8px rgba(0,0,0,${(0.10 * pos).toFixed(3)}), 0 1px 2px rgba(0,0,0,${(0.06 * pos).toFixed(3)})`;
+    const fade = Math.min(t / 0.2, 1);
+    detailLayer.style.opacity = String(fade);
+    cardLayer.style.opacity   = String(1 - fade);
+    if (t < 5 && !isSettled(t, stiffness, damping)) {
+      demoAnim = requestAnimationFrame(tick);
+    } else {
+      panel.style.left = '0'; panel.style.top = '0';
+      panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
+      panel.style.borderRadius = '30px';
+      panel.style.boxShadow = 'none';
+      panel.style.pointerEvents = 'auto';
+      detailLayer.style.opacity = '1';
+      cardLayer.style.opacity   = '0';
+    }
+  }
+  demoAnim = requestAnimationFrame(tick);
+}
+
+function collapseCard(onDone) {
+  if (!expandState) return;
+  const { stiffness, damping } = selected;
+  const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, card } = expandState;
+
+  const phone   = document.getElementById('expandPhone');
+  const panel   = document.getElementById('expandPanel');
+
+  panel.style.pointerEvents = 'none';
+
+  const fromX = 0, fromY = 0, fromW = phone.clientWidth, fromH = phone.clientHeight, fromR = 30;
+  const cardLayer   = document.getElementById('expandCardLayer');
+  const detailLayer = document.getElementById('expandDetailLayer');
+  const startT = performance.now();
+  if (demoAnim) cancelAnimationFrame(demoAnim);
+
+  function tick(now) {
+    const t = (now - startT) / 1000;
+    const pos = springPos(t, stiffness, damping);
+    const p = 1 - pos;
+    panel.style.left         = (fromX + (toX - fromX) * p) + 'px';
+    panel.style.top          = (fromY + (toY - fromY) * p) + 'px';
+    panel.style.width        = (fromW + (toW - fromW) * p) + 'px';
+    panel.style.height       = (fromH + (toH - fromH) * p) + 'px';
+    panel.style.borderRadius = (fromR + (toR - fromR) * p) + 'px';
+    panel.style.boxShadow    = `0 2px 8px rgba(0,0,0,${(0.10 * p).toFixed(3)}), 0 1px 2px rgba(0,0,0,${(0.06 * p).toFixed(3)})`;
+    const fade = Math.min(t / 0.2, 1);
+    detailLayer.style.opacity = String(1 - fade);
+    cardLayer.style.opacity   = String(fade);
+    if (t < 5 && !isSettled(t, stiffness, damping)) {
+      demoAnim = requestAnimationFrame(tick);
+    } else {
+      panel.style.display = 'none';
+      detailLayer.style.opacity = '0';
+      cardLayer.style.opacity   = '1';
+      if (card) card.style.visibility = '';
+      expandState = null;
+      onDone?.();
+    }
+  }
+  demoAnim = requestAnimationFrame(tick);
+}
+
+document.querySelectorAll('.expand-card').forEach(card => {
+  card.addEventListener('click', () => {
+    if (expandState) { collapseCard(); return; }
+    const cards = document.querySelectorAll('.expand-card');
+    expandCardIdx = [...cards].indexOf(card);
+    expandCard(card);
+  });
+});
+document.getElementById('expandPanel').addEventListener('click', () => { if (expandState) collapseCard(); });
+
 document.getElementById('playBtn').addEventListener('click', playDemo);
+
+// ── Copy + toast ─────────────────────────────────────────────────
+let toastTimer;
+function copyToken(name, btn) {
+  navigator.clipboard.writeText(name).then(() => {
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 1000);
+
+    const toast = document.getElementById('toast');
+    toast.textContent = `Copied "${name}"`;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+  });
+}
+
+// ── Build list view ───────────────────────────────────────────────
+function drawSparkline(canvas, stiffness, damping, color) {
+  const dpr = window.devicePixelRatio || 1;
+  const W = 60, H = 28;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width  = `${W}px`;
+  canvas.style.height = `${H}px`;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+  const STEPS = 100;
+  const pts = [];
+  for (let i = 0; i <= STEPS; i++) pts.push(springPos((i / STEPS) * 3.0, stiffness, damping));
+  const minP = Math.min(...pts), maxP = Math.max(...pts);
+  const range = maxP - minP || 1;
+  const padT = 3, padB = 5, drawH = H - padT - padB;
+  const toY = p => padT + drawH * (1 - (p - minP) / range);
+  const toX = i => (i / STEPS) * W;
+  ctx.beginPath();
+  ctx.moveTo(toX(0), toY(pts[0]));
+  for (let i = 1; i <= STEPS; i++) ctx.lineTo(toX(i), toY(pts[i]));
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+}
+
+const listBody = document.getElementById('listBody');
+
+for (const c of CHARS) {
+  const groupRow = document.createElement('tr');
+  groupRow.className = 'list-group-row';
+  const groupTd = document.createElement('td');
+  groupTd.colSpan = 6;
+  groupTd.textContent = c.label;
+  groupRow.appendChild(groupTd);
+  listBody.appendChild(groupRow);
+
+  for (const s of SPEEDS) {
+    const stiffness = Math.round(s.stiffness * c.stiffnessMul);
+    const damping = calcDamping(stiffness, c.ratio);
+    const name = `${s.key}-${c.key}`;
+
+    const row = document.createElement('tr');
+    row.className = 'list-data-row';
+    row.id = `list-row-${name}`;
+
+    const tdChar = document.createElement('td');
+    tdChar.className = 'list-td-speed';
+    tdChar.textContent = s.label;
+
+    const tdToken = document.createElement('td');
+    const chip = document.createElement('span');
+    chip.className = 'list-token-chip';
+    chip.textContent = name;
+    tdToken.appendChild(chip);
+
+    const tdStiff = document.createElement('td');
+    tdStiff.className = 'list-td-mono';
+    tdStiff.textContent = stiffness;
+
+    const tdRatio = document.createElement('td');
+    tdRatio.className = 'list-td-mono';
+    tdRatio.textContent = c.ratio;
+
+    const tdDamp = document.createElement('td');
+    tdDamp.className = 'list-td-mono';
+    tdDamp.textContent = damping;
+
+    const tdCopy = document.createElement('td');
+    tdCopy.className = 'list-td-copy';
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'list-copy-btn';
+    copyBtn.textContent = 'Copy';
+    copyBtn.addEventListener('click', e => { e.stopPropagation(); copyToken(name, copyBtn); });
+    tdCopy.appendChild(copyBtn);
+
+    row.appendChild(tdChar);
+    row.appendChild(tdToken);
+    row.appendChild(tdStiff);
+    row.appendChild(tdRatio);
+    row.appendChild(tdDamp);
+    row.appendChild(tdCopy);
+    listBody.appendChild(row);
+
+    row.addEventListener('click', () => {
+      document.querySelectorAll('.token-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.list-data-row').forEach(r => r.classList.remove('selected'));
+      row.classList.add('selected');
+      document.getElementById(`card-${name}`)?.classList.add('selected');
+      selectSpring(name, stiffness, damping, c.ratio, document.getElementById(`card-${name}`) ?? row, c.color);
+    });
+  }
+}
+
+// ── View toggle ───────────────────────────────────────────────────
+const tokenGrid = document.getElementById('tokenGrid');
+const tokenList = document.getElementById('tokenList');
+
+function springAnimate(from, to, stiffness, damping, onUpdate, onDone) {
+  const start = performance.now();
+  let raf;
+  function tick(now) {
+    const t = (now - start) / 1000;
+    const pos = springPos(t, stiffness, damping);
+    onUpdate(to + (from - to) * pos);
+    if (t < 6 && !isSettled(t, stiffness, damping)) {
+      raf = requestAnimationFrame(tick);
+    } else {
+      onUpdate(to);
+      onDone?.();
+    }
+  }
+  raf = requestAnimationFrame(tick);
+  return () => cancelAnimationFrame(raf);
+}
+
+let cancelHeightAnim;
+
+function switchView(showList) {
+  const panel = document.querySelector('.demo-panel');
+
+  const oldPanelH = panel.offsetHeight;
+
+  // Switch views
+  tokenGrid.style.display = showList ? 'none' : 'flex';
+  tokenList.style.display = showList ? 'flex' : 'none';
+
+  // Measure natural new height, then lock back to old so we can animate
+  const newPanelH = panel.offsetHeight;
+  panel.style.height = oldPanelH + 'px';
+
+  cancelHeightAnim?.();
+  cancelHeightAnim = springAnimate(oldPanelH, newPanelH, 300, calcDamping(300, 1.0),
+    h => panel.style.height = h + 'px',
+    () => { panel.style.height = ''; cancelHeightAnim = null; }
+  );
+}
+
+document.getElementById('btnGrid').addEventListener('click', () => {
+  if (tokenGrid.style.display !== 'none') return;
+  document.getElementById('btnGrid').classList.add('active');
+  document.getElementById('btnList').classList.remove('active');
+  switchView(false);
+});
+
+document.getElementById('btnList').addEventListener('click', () => {
+  if (tokenList.style.display !== 'none') return;
+  document.getElementById('btnList').classList.add('active');
+  document.getElementById('btnGrid').classList.remove('active');
+  switchView(true);
+});
 
 // ── Trigger all minis on load ─────────────────────────────────────
 setTimeout(() => {
@@ -1244,5 +2004,6 @@ setTimeout(() => {
   }
 }, 200);
 </script>
+<div class="toast" id="toast"></div>
 </body>
 </html>

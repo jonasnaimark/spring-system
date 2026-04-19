@@ -19,8 +19,8 @@
 |  | Slow (100) | Default (300) | Fast (500) | Snappy (750) |
 |--|--|--|--|--|
 | **Smooth** (ζ 1.0) | slow-smooth | default-smooth | fast-smooth | snappy-smooth |
-| **Small Bounce** (ζ 0.85) | slow-small-bounce | default-small-bounce | fast-small-bounce | snappy-small-bounce |
-| **Medium Bounce** (ζ 0.70) | slow-medium-bounce | default-medium-bounce | fast-medium-bounce | snappy-medium-bounce |
-| **Large Bounce** (ζ 0.50) | slow-large-bounce | default-large-bounce | fast-large-bounce | snappy-large-bounce |
+| **Small Bounce** (ζ 0.85) | slow-small.bounce | default-small.bounce | fast-small.bounce | snappy-small.bounce |
+| **Medium Bounce** (ζ 0.70) | slow-medium.bounce | default-medium.bounce | fast-medium.bounce | snappy-medium.bounce |
+| **Large Bounce** (ζ 0.50) | slow-large.bounce | default-large.bounce | fast-large.bounce | snappy-large.bounce |
 
 Stiffness controls speed. Damping ratio controls bounciness. Mass = 1. No dependencies — open any HTML file directly in a browser.
