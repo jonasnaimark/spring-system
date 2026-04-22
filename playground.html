@@ -17,7 +17,7 @@
 /* ── View toggle ── */
     .view-toggle {
       display: flex;
-      background: #e5e5ea;
+      background: var(--c-surface-3);
       border-radius: 10px;
       padding: 3px;
       gap: 2px;
@@ -30,7 +30,7 @@
       border-radius: 7px;
       border: none;
       background: transparent;
-      color: #8e8e93;
+      color: var(--c-text-quaternary);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -39,8 +39,8 @@
     }
 
     .view-btn.active {
-      background: #fff;
-      color: #1c1c1e;
+      background: var(--c-surface-0);
+      color: var(--c-text-primary);
       box-shadow: 0 1px 3px rgba(0,0,0,0.12);
     }
 
@@ -54,11 +54,11 @@
     }
 
     .list-wrap {
-      background: #fff;
+      background: var(--c-surface-0);
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
-      border: 1px solid rgba(0,0,0,0.06);
+      border: 1px solid var(--c-border-subtle);
     }
 
     .list-table {
@@ -67,50 +67,50 @@
     }
 
     .list-table thead th {
-      background: #f9f9fb;
+      background: var(--c-surface-1);
       padding: 10px 16px;
       text-align: left;
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: #8e8e93;
-      border-bottom: 1px solid #e5e5ea;
+      color: var(--c-text-quaternary);
+      border-bottom: 1px solid var(--c-border-subtle);
       white-space: nowrap;
     }
 
     .list-table thead th:last-child { text-align: right; }
 
     .list-group-row td {
-      background: #f2f2f7;
+      background: var(--c-surface-3);
       padding: 7px 16px;
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #3a3a3c;
-      border-top: 1px solid #e5e5ea;
-      border-bottom: 1px solid #e5e5ea;
+      color: var(--c-text-secondary);
+      border-top: 1px solid var(--c-border-subtle);
+      border-bottom: 1px solid var(--c-border-subtle);
     }
 
     .list-data-row {
       cursor: pointer;
       transition: background 0.1s;
     }
-    .list-data-row:hover td  { background: #f7f7f9; }
-    .list-data-row.selected td { background: #fff5f7; }
+    .list-data-row:hover td  { background: var(--c-surface-2); }
+    .list-data-row.selected td { background: var(--c-accent-dim); }
     .list-data-row td {
       padding: 0 16px;
       height: 40px;
       vertical-align: middle;
-      border-bottom: 1px solid rgba(0,0,0,0.04);
+      border-bottom: 1px solid var(--c-border-faint);
     }
     .list-data-row:last-child td { border-bottom: none; }
 
     .list-td-speed {
       font-size: 13px;
       font-weight: 600;
-      color: #1c1c1e;
+      color: var(--c-text-primary);
       padding-left: 24px !important;
       white-space: nowrap;
     }
@@ -118,7 +118,7 @@
     .list-td-mono {
       font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
       font-size: 12px;
-      color: #3a3a3c;
+      color: var(--c-text-secondary);
       white-space: nowrap;
     }
 
@@ -127,24 +127,24 @@
     .list-copy-btn {
       padding: 3px 10px;
       border-radius: 7px;
-      background: #f2f2f7;
-      border: 1px solid #e5e5ea;
+      background: var(--c-surface-3);
+      border: 1px solid var(--c-border-subtle);
       font-size: 11px;
       font-weight: 500;
-      color: #636366;
+      color: var(--c-text-tertiary);
       cursor: pointer;
       font-family: inherit;
       transition: all 0.12s;
     }
-    .list-copy-btn:hover  { background: #e5e5ea; color: #1c1c1e; }
+    .list-copy-btn:hover  { background: var(--c-surface-2); color: var(--c-text-primary); }
     .list-copy-btn.copied { background: #34c759; border-color: #34c759; color: #fff; }
 
     .list-token-chip {
       display: inline-block;
       font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
       font-size: 10px;
-      color: #636366;
-      background: #f2f2f7;
+      color: var(--c-text-tertiary);
+      background: var(--c-surface-3);
       border-radius: 20px;
       padding: 3px 8px;
       white-space: nowrap;
@@ -205,7 +205,7 @@
 
     /* ── Demo panel ── */
     .demo-panel {
-      background: #ebebf0;
+      background: var(--c-demo-bg);
       border-radius: 24px;
       position: sticky;
       top: 24px;
@@ -237,7 +237,7 @@
       line-height: 1;
     }
 
-    .demo-tab:hover { background: rgba(0,0,0,0.04); color: #1c1c1e; border-color: rgba(0,0,0,0.10); }
+    .demo-tab:hover { background: var(--c-border-faint); color: var(--c-text-primary); border-color: var(--c-border-subtle); }
 
     .demo-tab.active {
       background: #FF385C;
@@ -271,7 +271,7 @@
       aspect-ratio: 340 / 680;
       border: 6px solid #1c1c1e;
       border-radius: 46px;
-      background: #fff;
+      background: var(--c-surface-0);
       position: relative;
       overflow: hidden;
     }
@@ -287,7 +287,7 @@
     .status-time {
       font-size: 13px;
       font-weight: 600;
-      color: #1c1c1e;
+      color: var(--c-text-primary);
       letter-spacing: -0.02em;
     }
 
@@ -406,6 +406,64 @@
       --sk-axis:      #c7c7cc;
     }
 
+    [data-theme="dark"] .phone-frame {
+      border-color: #3a3a3c;
+    }
+
+    [data-theme="dark"] .demo-tab:hover {
+      background: var(--c-surface-3);
+      border-color: var(--c-border-medium);
+    }
+
+    [data-theme="dark"] .speed-group {
+      background: var(--c-surface-1);
+      box-shadow: none;
+      border-color: transparent;
+    }
+
+    [data-theme="dark"] .axis-y-label,
+    [data-theme="dark"] .axis-x-label { background: var(--c-bg); }
+
+    [data-theme="dark"] .token-card {
+      background: var(--c-surface-2);
+      outline-color: var(--c-border-subtle);
+    }
+
+    [data-theme="dark"] .token-card:hover {
+      background: var(--c-surface-2);
+      outline-color: var(--c-border-subtle);
+    }
+
+    [data-theme="dark"] .token-card.selected {
+      background: var(--c-surface-2);
+      outline: 2px solid var(--c-text-primary);
+    }
+
+    [data-theme="dark"] {
+      --c-bg:        #000000;
+      --c-surface-0: #1c1c1e;
+      --c-surface-1: #2c2c2e;
+      --c-surface-2: #3a3a3c;
+      --c-surface-3: #48484a;
+
+      --c-text-primary:    #ffffff;
+      --c-text-secondary:  #ebebf5;
+      --c-text-tertiary:   #ebebf599;
+      --c-text-quaternary: #ebebf54d;
+
+      --c-border-faint:    rgba(255,255,255,0.05);
+      --c-border-subtle:   rgba(255,255,255,0.10);
+      --c-border-default:  rgba(255,255,255,0.13);
+      --c-border-medium:   rgba(255,255,255,0.18);
+      --c-border-strong:   rgba(255,255,255,0.28);
+
+      --c-demo-bg: #1c1c1e;
+
+      --sk:      #2c2c2e;
+      --sk-dark: #3a3a3c;
+      --sk-axis: #48484a;
+    }
+
     /* ── Skeleton UI ── */
 
     .sk-search {
@@ -492,7 +550,7 @@
       left: 0;
       right: 0;
       height: 68px;
-      background: #fff;
+      background: var(--c-surface-0);
       border-top: 1px solid var(--sk);
       display: flex;
       align-items: flex-start;
@@ -516,7 +574,7 @@
       right: 0;
       height: calc(55% + 150px);
       bottom: -150px;
-      background: #fff;
+      background: var(--c-surface-0);
       border-radius: 22px 22px 0 0;
       box-shadow: 0 -2px 20px rgba(0,0,0,0);
       padding: 14px 18px;
@@ -527,7 +585,7 @@
     .sheet-handle {
       width: 40px;
       height: 5px;
-      background: #e5e5ea;
+      background: var(--sk);
       border-radius: 3px;
       margin: 0 auto 16px;
     }
@@ -580,7 +638,7 @@
     .modal-backdrop {
       position: absolute;
       inset: 0;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,var(--scrim-modal, 0.4));
       display: flex;
       align-items: center;
       justify-content: center;
@@ -590,7 +648,7 @@
 
     .modal-card {
       width: 220px;
-      background: #fff;
+      background: var(--c-surface-0);
       border-radius: 18px;
       padding: 20px;
       display: flex;
@@ -617,7 +675,7 @@
       flex: 1;
       height: 28px;
       border-radius: 7px;
-      background: #f2f2f7;
+      background: var(--sk);
     }
 
     .modal-btn.primary {
@@ -650,7 +708,7 @@
     }
 
     .flip-front {
-      background: #fff;
+      background: var(--c-surface-0);
       box-shadow: 0 4px 24px rgba(0,0,0,0.1);
     }
 
@@ -709,7 +767,7 @@
       top: 18px;
       left: 14px;
       right: 14px;
-      background: #fff;
+      background: var(--c-surface-0);
       border-radius: 14px;
       padding: 12px 14px;
       display: flex;
@@ -736,7 +794,7 @@
 
     .notif-line {
       height: 7px;
-      background: #f2f2f7;
+      background: var(--sk);
       border-radius: 3px;
     }
 
@@ -750,7 +808,7 @@
       font-weight: 600;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      color: #8e8e93;
+      color: var(--c-text-quaternary);
       margin-bottom: 16px;
     }
 
@@ -767,7 +825,7 @@
       font-size: 16px;
       font-weight: 700;
       letter-spacing: -0.02em;
-      color: #1c1c1e;
+      color: var(--c-text-primary);
       margin-bottom: 10px;
       padding-left: 4px;
     }
@@ -810,21 +868,21 @@
       font-size: 14px;
       font-weight: 600;
       letter-spacing: -0.02em;
-      color: #1c1c1e;
+      color: var(--c-text-primary);
       margin-bottom: 14px;
     }
 
     .card-token-name {
       font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
       font-size: 10px;
-      color: #636366;
-      background: #f2f2f7;
+      color: var(--c-text-tertiary);
+      background: var(--c-surface-3);
       border-radius: 20px;
       padding: 3px 8px;
       white-space: nowrap;
       align-self: flex-start;
       margin-bottom: 10px;
-      border: 1px solid rgba(0,0,0,0.07);
+      border: 1px solid var(--c-border-subtle);
     }
 
     .card-vals {
@@ -842,21 +900,21 @@
 
     .card-val-label {
       font-size: 11px;
-      color: #8e8e93;
+      color: var(--c-text-quaternary);
       flex-shrink: 0;
     }
 
     .card-val-num {
       font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
       font-size: 11px;
-      color: #1c1c1e;
+      color: var(--c-text-primary);
     }
 
 /* ── Push / Nav demo ── */
     .push-screen {
       position: absolute;
       inset: 0;
-      background: #fff;
+      background: var(--c-surface-0);
       will-change: transform;
       display: flex;
       flex-direction: column;
@@ -866,6 +924,17 @@
       border-radius: 36px 0 0 36px;
       overflow: hidden;
     }
+
+    [data-theme="dark"] .push-scrim { background: rgba(0,0,0,0.55); }
+    [data-theme="dark"] .modal-backdrop { --scrim-modal: 0.92; }
+    [data-theme="dark"] .modal-card { outline: 1px solid var(--c-border-subtle); }
+    [data-theme="dark"] #expandScrim { background: rgba(0,0,0,0.8) !important; }
+
+    [data-theme="dark"] .expand-card { outline: 1px solid var(--c-border-subtle); }
+    [data-theme="dark"] .notif { outline: 1px solid var(--c-border-subtle); }
+    [data-theme="dark"] .demo-tooltip { filter: drop-shadow(0 0 0.5px rgba(255,255,255,0.28)) drop-shadow(0 0 0.5px rgba(255,255,255,0.28)); }
+    [data-theme="dark"] .flip-front { outline: 1px solid var(--c-border-subtle); }
+    [data-theme="dark"] .flip-back { outline: 1px solid rgba(255,255,255,0.12); }
 
     .push-scrim {
       position: absolute;
@@ -965,7 +1034,7 @@
     }
 
     .expand-card {
-      background: #fff;
+      background: var(--c-surface-0);
       border-radius: 28px;
       overflow: hidden;
       box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06);
@@ -1001,7 +1070,7 @@
     /* The flying hero panel — absolutely positioned over the phone frame */
     .expand-hero-panel {
       position: absolute;
-      background: #fff;
+      background: var(--c-surface-0);
       overflow: hidden;
       pointer-events: none;
       box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06);
@@ -1046,7 +1115,7 @@
     .tab-screen {
       position: absolute;
       inset: 0;
-      background: #fff;
+      background: var(--c-surface-0);
       display: flex;
       flex-direction: column;
     }
@@ -1109,7 +1178,7 @@
       top: 8px;
       bottom: 8px;
       width: 1px;
-      background: #c7c7cc;
+      background: var(--sk-axis);
       transform: translateX(-50%);
     }
 
@@ -1125,12 +1194,12 @@
 
     .axis-y-line::before {
       top: -7px;
-      border-bottom: 7px solid #c7c7cc;
+      border-bottom: 7px solid var(--sk-axis);
     }
 
     .axis-y-line::after {
       bottom: -7px;
-      border-top: 7px solid #c7c7cc;
+      border-top: 7px solid var(--sk-axis);
     }
 
     .axis-y-label {
@@ -1142,9 +1211,9 @@
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #aeaeb2;
+      color: var(--c-text-quaternary);
       white-space: nowrap;
-      background: #f2f2f7;
+      background: var(--c-demo-bg);
       padding: 0 6px;
     }
 
@@ -1165,7 +1234,7 @@
       left: 6px;
       right: 6px;
       height: 1px;
-      background: #c7c7cc;
+      background: var(--sk-axis);
       transform: translateY(-50%);
     }
 
@@ -1181,12 +1250,12 @@
 
     .axis-x-line::before {
       left: -7px;
-      border-right: 7px solid #c7c7cc;
+      border-right: 7px solid var(--sk-axis);
     }
 
     .axis-x-line::after {
       right: -7px;
-      border-left: 7px solid #c7c7cc;
+      border-left: 7px solid var(--sk-axis);
     }
 
     .axis-x-label {
@@ -1198,9 +1267,9 @@
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #aeaeb2;
+      color: var(--c-text-quaternary);
       white-space: nowrap;
-      background: #f2f2f7;
+      background: var(--c-demo-bg);
       padding: 0 6px;
     }
 
@@ -1208,8 +1277,19 @@
 </head>
 <body>
 
-<div style="max-width:1280px; margin:0 auto; padding:24px 48px 4px;">
-  <h1 style="font-size:28px; font-weight:700; letter-spacing:-0.03em; color:#1c1c1e;">Spring Playground</h1>
+<div style="max-width:1280px; margin:0 auto; padding:24px 48px 4px; display:flex; align-items:center; justify-content:space-between;">
+  <h1 style="font-size:28px; font-weight:700; letter-spacing:-0.03em; color:var(--c-text-primary);">Spring Playground</h1>
+  <button id="themeToggle" title="Toggle dark mode" style="
+    width:32px; height:32px; border-radius:50%; border:1.5px solid var(--c-border-default);
+    background:var(--c-surface-2); color:var(--c-text-secondary); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:background 0.15s, border-color 0.15s; flex-shrink:0;
+  ">
+    <!-- dark_mode icon (shown in light mode) -->
+    <svg id="iconDark" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
+    <!-- light_mode icon (shown in dark mode) -->
+    <svg id="iconLight" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="display:none"><path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"/></svg>
+  </button>
 </div>
 
 
@@ -1562,7 +1642,7 @@
           <!-- Flying hero panel -->
           <div class="expand-hero-panel" id="expandPanel">
             <!-- Card state: visible when collapsed, fades out on expand -->
-            <div id="expandCardLayer" style="position:absolute;inset:0;background:#fff;">
+            <div id="expandCardLayer" style="position:absolute;inset:0;background:var(--c-surface-0);">
               <div class="expand-card-img"></div>
               <div class="expand-card-body">
                 <div class="expand-card-row title"></div>
@@ -1811,6 +1891,30 @@
 </div>
 
 <script>
+// ── Theme toggle ──────────────────────────────────────────────────
+(function() {
+  const html = document.documentElement;
+  const iconDark = document.getElementById('iconDark');
+  const iconLight = document.getElementById('iconLight');
+  function applyTheme(dark) {
+    if (dark) {
+      html.setAttribute('data-theme', 'dark');
+      iconDark.style.display = 'none';
+      iconLight.style.display = '';
+    } else {
+      html.removeAttribute('data-theme');
+      iconDark.style.display = '';
+      iconLight.style.display = 'none';
+    }
+  }
+  applyTheme(localStorage.getItem('theme') === 'dark');
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    applyTheme(!isDark);
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  });
+})();
+
 // ── Spring definitions ────────────────────────────────────────────
 const SPEEDS = [
   { key: 'slow',    stiffness: 100, label: 'Slow' },
@@ -2413,6 +2517,7 @@ function expandCard(card) {
     panel.style.height       = (toH + (fromH - toH) * pos) + 'px';
     panel.style.borderRadius = (toR + (fromR - toR) * pos) + 'px';
     panel.style.boxShadow    = `0 2px 8px rgba(0,0,0,${(0.10 * pos).toFixed(3)}), 0 1px 2px rgba(0,0,0,${(0.06 * pos).toFixed(3)})`;
+    panel.style.outline      = document.documentElement.getAttribute('data-theme') === 'dark' ? `1px solid rgba(255,255,255,${(0.10 * pos).toFixed(3)})` : '';
     expandScrim.style.opacity = (1 - scrimPos).toFixed(3);
     const fade = Math.min(t / 0.2, 1);
     detailLayer.style.opacity = String(fade);
@@ -2450,6 +2555,7 @@ function collapseCard(onDone) {
   const startT = performance.now();
   if (demoAnim) cancelAnimationFrame(demoAnim);
 
+  const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
   function tick(now) {
     const t = (now - startT) / 1000;
     const pos = springPos(t, stiffness, damping);
@@ -2461,6 +2567,7 @@ function collapseCard(onDone) {
     panel.style.height       = (fromH + (toH - fromH) * p) + 'px';
     panel.style.borderRadius = (fromR + (toR - fromR) * p) + 'px';
     panel.style.boxShadow    = `0 2px 8px rgba(0,0,0,${(0.10 * p).toFixed(3)}), 0 1px 2px rgba(0,0,0,${(0.06 * p).toFixed(3)})`;
+    panel.style.outline      = isDark() ? `1px solid rgba(255,255,255,${(0.10 * p).toFixed(3)})` : '';
     expandScrim.style.opacity = scrimPos.toFixed(3);
     const fade = Math.min(t / 0.2, 1);
     detailLayer.style.opacity = String(1 - fade);
@@ -2469,6 +2576,7 @@ function collapseCard(onDone) {
       demoAnim = requestAnimationFrame(tick);
     } else {
       panel.style.display = 'none';
+      panel.style.outline = '';
       detailLayer.style.opacity = '0';
       cardLayer.style.opacity   = '1';
       if (card) card.style.visibility = '';
