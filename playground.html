@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spring Playground</title>
+  <title>Spring Tokens</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -17,11 +17,12 @@
 /* ── View toggle ── */
     .view-toggle {
       display: flex;
-      background: var(--c-surface-3);
+      background: var(--c-surface-0);
       border-radius: 10px;
       padding: 3px;
       gap: 2px;
       flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.10), 0 0 0 1px var(--c-border-subtle);
     }
 
     .view-btn {
@@ -29,6 +30,7 @@
       height: 28px;
       border-radius: 7px;
       border: none;
+      padding: 0;
       background: transparent;
       color: var(--c-text-quaternary);
       cursor: pointer;
@@ -39,10 +41,25 @@
     }
 
     .view-btn.active {
-      background: var(--c-surface-0);
+      background: var(--c-surface-3);
       color: var(--c-text-primary);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
     }
+
+    [data-theme="dark"] .view-toggle {
+      background: var(--c-surface-1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 0 0 1px var(--c-border-subtle);
+    }
+
+    [data-theme="dark"] .view-btn {
+      color: var(--c-text-secondary);
+    }
+
+    [data-theme="dark"] .view-btn.active {
+      background: var(--c-surface-3);
+      color: var(--c-text-primary);
+    }
+
+    #themeToggle { color: var(--c-text-primary); }
 
     .view-btn svg { display: block; }
 
@@ -221,7 +238,7 @@
 
     .demo-tab {
       padding: 5px 12px;
-      border-radius: 20px;
+      border-radius: 8px;
       font-size: 12px;
       font-weight: 500;
       color: var(--c-text-secondary);
@@ -242,7 +259,7 @@
     .demo-tab.active {
       background: #FF385C;
       color: #fff;
-      border-color: transparent;
+      border-color: var(--c-accent-border);
     }
 
     .demo-stage {
@@ -394,8 +411,9 @@
       --c-border-strong:   rgba(0,0,0,0.24);
 
       /* Accent */
-      --c-accent:     #FF385C;
-      --c-accent-dim: rgba(255,56,92,0.12);
+      --c-accent:        #FF385C;
+      --c-accent-border: #d42d4e;
+      --c-accent-dim:    rgba(255,56,92,0.12);
 
       /* Demo */
       --c-demo-bg: #ebebf0;
@@ -415,14 +433,17 @@
       border-color: var(--c-border-medium);
     }
 
+    [data-theme="dark"] .demo-tab.active {
+      border-color: var(--c-accent-border);
+    }
+
     [data-theme="dark"] .speed-group {
       background: var(--c-surface-1);
       box-shadow: none;
       border-color: transparent;
     }
 
-    [data-theme="dark"] .axis-y-label,
-    [data-theme="dark"] .axis-x-label { background: var(--c-bg); }
+    /* axis labels inherit --c-bg directly, no dark override needed */
 
     [data-theme="dark"] .token-card {
       background: var(--c-surface-2);
@@ -437,6 +458,11 @@
     [data-theme="dark"] .token-card.selected {
       background: var(--c-surface-2);
       outline: 2px solid var(--c-text-primary);
+    }
+
+    [data-theme="dark"] .token-card.selected .card-token-name {
+      background: var(--c-surface-3);
+      border-color: var(--c-border-subtle);
     }
 
     [data-theme="dark"] {
@@ -458,6 +484,8 @@
       --c-border-strong:   rgba(255,255,255,0.28);
 
       --c-demo-bg: #1c1c1e;
+
+      --c-accent-border: rgba(255,56,92,0.5);
 
       --sk:      #2c2c2e;
       --sk-dark: #3a3a3c;
@@ -817,12 +845,12 @@
       background: var(--c-surface-1);
       border-radius: 18px;
       padding: 14px 16px 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 6px 20px rgba(0,0,0,0.05);
-      border: 1px solid var(--c-border-faint);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+      border: 1px solid var(--c-border-subtle);
     }
 
     .speed-label {
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 700;
       letter-spacing: -0.02em;
       color: var(--c-text-primary);
@@ -846,7 +874,7 @@
       transition: background 0.15s, outline-color 0.15s;
       box-shadow: none;
       border: none;
-      outline: 1.5px solid var(--c-border-subtle);
+      outline: 1px solid var(--c-border-subtle);
       position: relative;
       overflow: hidden;
       display: flex;
@@ -865,11 +893,11 @@
     }
 
     .card-char-label {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 600;
       letter-spacing: -0.02em;
       color: var(--c-text-primary);
-      margin-bottom: 14px;
+      margin-bottom: 18px;
     }
 
     .card-token-name {
@@ -882,32 +910,26 @@
       white-space: nowrap;
       align-self: flex-start;
       margin-bottom: 10px;
+      margin-left: -8px;
       border: 1px solid var(--c-border-subtle);
     }
 
-    .card-vals {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    .token-card.selected .card-token-name {
+      background: var(--c-surface-0);
+      border-color: var(--c-border-medium);
     }
 
-    .card-val {
-      display: flex;
-      align-items: baseline;
-      gap: 4px;
-      white-space: nowrap;
-    }
-
-    .card-val-label {
-      font-size: 11px;
-      color: var(--c-text-quaternary);
-      flex-shrink: 0;
-    }
-
-    .card-val-num {
+    .card-meta {
       font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
-      font-size: 11px;
-      color: var(--c-text-primary);
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--c-text-quaternary);
+      white-space: nowrap;
+      margin-top: auto;
+    }
+
+    .card-meta-label {
+      color: var(--c-text-quaternary);
     }
 
 /* ── Push / Nav demo ── */
@@ -1213,7 +1235,7 @@
       text-transform: uppercase;
       color: var(--c-text-quaternary);
       white-space: nowrap;
-      background: var(--c-demo-bg);
+      background: var(--c-bg);
       padding: 0 6px;
     }
 
@@ -1269,7 +1291,7 @@
       text-transform: uppercase;
       color: var(--c-text-quaternary);
       white-space: nowrap;
-      background: var(--c-demo-bg);
+      background: var(--c-bg);
       padding: 0 6px;
     }
 
@@ -1278,34 +1300,10 @@
 <body>
 
 <div style="max-width:1280px; margin:0 auto; padding:24px 48px 4px; display:flex; align-items:center; justify-content:space-between;">
-  <h1 style="font-size:28px; font-weight:700; letter-spacing:-0.03em; color:var(--c-text-primary);">Spring Playground</h1>
-  <button id="themeToggle" title="Toggle dark mode" style="
-    width:32px; height:32px; border-radius:50%; border:1.5px solid var(--c-border-default);
-    background:var(--c-surface-2); color:var(--c-text-secondary); cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    transition:background 0.15s, border-color 0.15s; flex-shrink:0;
-  ">
-    <!-- dark_mode icon (shown in light mode) -->
-    <svg id="iconDark" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
-    <!-- light_mode icon (shown in dark mode) -->
-    <svg id="iconLight" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="display:none"><path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"/></svg>
-  </button>
-</div>
-
-
-<div class="main">
-
-  <!-- Demo tab chips — span full width above both columns -->
-  <div class="demo-tabs-bar">
-    <div class="demo-tab active" data-demo="sheet">Sheet</div>
-    <div class="demo-tab" data-demo="push">Push</div>
-    <div class="demo-tab" data-demo="modal">Modal</div>
-    <div class="demo-tab" data-demo="flip">Card Flip</div>
-    <div class="demo-tab" data-demo="notif">Notification</div>
-    <div class="demo-tab" data-demo="expand">Card Expand</div>
-    <div class="demo-tab" data-demo="tooltip">Tooltip</div>
-    <div class="demo-tab" data-demo="tab">Tab Switch</div>
-    <div class="view-toggle" style="margin-left:auto; flex-shrink:0;">
+  <h1 style="font-size:28px; font-weight:700; letter-spacing:-0.03em; color:var(--c-text-primary);">Spring Tokens</h1>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <!-- View toggle -->
+    <div class="view-toggle">
       <button class="view-btn active" id="btnGrid" title="Grid view">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <rect x="0" y="0" width="6" height="6" rx="1.5" fill="currentColor"/>
@@ -1322,6 +1320,29 @@
         </svg>
       </button>
     </div>
+    <!-- Theme toggle -->
+    <div class="view-toggle">
+      <button id="themeToggle" class="view-btn" title="Toggle dark mode">
+        <svg id="iconDark" xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
+        <svg id="iconLight" xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor" style="display:none"><path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<div class="main">
+
+  <!-- Demo tab chips — span full width above both columns -->
+  <div class="demo-tabs-bar">
+    <div class="demo-tab active" data-demo="sheet">Sheet</div>
+    <div class="demo-tab" data-demo="push">Push</div>
+    <div class="demo-tab" data-demo="modal">Modal</div>
+    <div class="demo-tab" data-demo="flip">Card Flip</div>
+    <div class="demo-tab" data-demo="notif">Notification</div>
+    <div class="demo-tab" data-demo="expand">Card Expand</div>
+    <div class="demo-tab" data-demo="tooltip">Tooltip</div>
+    <div class="demo-tab" data-demo="tab">Tab Switch</div>
   </div>
 
   <!-- Demo panel -->
@@ -1858,11 +1879,11 @@
 
   <!-- Token grid -->
   <div class="grid-section">
-    <div class="token-axis-wrap" id="tokenAxisWrap">
+<div class="token-axis-wrap" id="tokenAxisWrap">
       <div id="tokenGrid" style="display:flex; flex-direction:column; gap:10px; flex:1;"></div>
       <div class="axis-y" id="axisY">
         <div class="axis-y-line"></div>
-        <div class="axis-y-label">Character</div>
+        <div class="axis-y-label">Bounciness</div>
       </div>
       <div class="axis-x" id="axisX">
         <div class="axis-x-line"></div>
@@ -1996,10 +2017,7 @@ for (const c of CHARS) {
     card.innerHTML = `
       <div class="card-char-label">${s.label}</div>
       <div class="card-token-name">${name}</div>
-      <div class="card-vals">
-        <div class="card-val"><div class="card-val-label">Stiffness</div><div class="card-val-num">${stiffness}</div></div>
-        <div class="card-val"><div class="card-val-label">Damping Ratio</div><div class="card-val-num">${c.ratio}</div></div>
-      </div>
+      <div class="card-meta"><span class="card-meta-label">S:</span>${stiffness} · <span class="card-meta-label">DR:</span>${c.ratio} · <span class="card-meta-label">D:</span>${damping}</div>
     `;
 
     card.addEventListener('click', () => selectSpring(name, stiffness, damping, c.ratio, card, c.color));
@@ -2010,8 +2028,9 @@ for (const c of CHARS) {
   gridEl.appendChild(group);
 }
 
-// Mark default selected
-document.getElementById('card-default-smooth')?.classList.add('selected');
+// Mark initial demo default (sheet = fast smooth)
+// Deferred so DOM is ready
+setTimeout(() => applyDemoDefault(currentDemo), 0);
 
 // ── SpringSim: per-frame simulation with velocity-preserving retarget ──
 class SpringSim {
@@ -2028,7 +2047,7 @@ class SpringSim {
 // ── Staggered card preview scale animation ───────────────────────
 
 // ── Select spring ────────────────────────────────────────────────
-function selectSpring(name, stiffness, damping, ratio, cardEl, color) {
+function selectSpring(name, stiffness, damping, ratio, cardEl, color, { play = true } = {}) {
   document.querySelectorAll('.token-card').forEach(c => c.classList.remove('selected'));
   document.querySelectorAll('.list-data-row').forEach(r => r.classList.remove('selected'));
   cardEl?.classList.add('selected');
@@ -2037,7 +2056,7 @@ function selectSpring(name, stiffness, damping, ratio, cardEl, color) {
   selected = { name, stiffness, damping, ratio };
 
   triggerMini(name, stiffness, damping);
-  playDemo();
+  if (play) playDemo();
 }
 
 // ── Mini ball animations ──────────────────────────────────────────
@@ -2066,6 +2085,33 @@ function triggerMini(name, stiffness, damping) {
   miniAnims[name] = { raf: requestAnimationFrame(tick), dir };
 }
 
+// ── Per-demo default springs ──────────────────────────────────────
+// Each value is [speedKey, charKey] referencing SPEEDS and CHARS arrays
+const DEMO_DEFAULTS = {
+  sheet:   { speed: 'fast',    char: 'smooth'        },
+  push:    { speed: 'default', char: 'smooth'        },
+  modal:   { speed: 'snappy',  char: 'medium.bounce' },
+  flip:    { speed: 'slow',    char: 'medium.bounce' },
+  notif:   { speed: 'fast',    char: 'medium.bounce' },
+  expand:  { speed: 'fast',    char: 'smooth'        },
+  tooltip: { speed: 'snappy',  char: 'medium.bounce' },
+  tab:     { speed: 'default', char: 'smooth'        },
+  press:   { speed: 'default', char: 'smooth'        },
+};
+
+function applyDemoDefault(demo) {
+  const def = DEMO_DEFAULTS[demo];
+  if (!def) return;
+  const sp = SPEEDS.find(s => s.key === def.speed);
+  const ch = CHARS.find(c => c.key === def.char);
+  if (!sp || !ch) return;
+  const stiffness = Math.round(sp.stiffness * ch.stiffnessMul);
+  const damping   = calcDamping(stiffness, ch.ratio);
+  const name      = `${def.speed}-${def.char}`;
+  const cardEl    = document.getElementById(`card-${name}`);
+  selectSpring(name, stiffness, damping, ch.ratio, cardEl, ch.color, { play: false });
+}
+
 // ── Demo tabs ────────────────────────────────────────────────────
 document.querySelectorAll('.demo-tab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -2079,6 +2125,7 @@ document.querySelectorAll('.demo-tab').forEach(tab => {
 
     resetDemo();
     demoState = 'out';
+    applyDemoDefault(currentDemo);
   });
 });
 
@@ -2489,7 +2536,6 @@ function expandCard(card) {
   // Hide the real card — panel is the visual stand-in during animation
   card.style.visibility = 'hidden';
 
-  panel.style.display       = 'block';
   panel.style.left          = fromX + 'px';
   panel.style.top           = fromY + 'px';
   panel.style.width         = fromW + 'px';
@@ -2498,6 +2544,7 @@ function expandCard(card) {
   panel.style.boxShadow     = '0 2px 8px rgba(0,0,0,0.10)';
   panel.style.pointerEvents = 'none';
   panel.style.zIndex        = '10';
+  panel.style.display       = 'block';
   expandState = { fromX, fromY, fromW, fromH, fromR, card };
 
   const startT = performance.now();
