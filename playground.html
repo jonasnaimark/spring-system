@@ -919,6 +919,10 @@
       border-color: var(--c-border-medium);
     }
 
+    .token-card.selected .card-meta {
+      color: var(--c-text-secondary);
+    }
+
     .card-meta {
       font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
       font-size: 10px;
@@ -926,6 +930,11 @@
       color: var(--c-text-quaternary);
       white-space: nowrap;
       margin-top: auto;
+    }
+
+    .token-card.selected .card-meta,
+    .token-card.selected .card-meta-label {
+      color: var(--c-text-secondary);
     }
 
     .card-meta-label {
@@ -1337,12 +1346,12 @@
   <div class="demo-tabs-bar">
     <div class="demo-tab active" data-demo="sheet">Sheet</div>
     <div class="demo-tab" data-demo="push">Push</div>
-    <div class="demo-tab" data-demo="modal">Modal</div>
-    <div class="demo-tab" data-demo="flip">Card Flip</div>
-    <div class="demo-tab" data-demo="notif">Notification</div>
-    <div class="demo-tab" data-demo="expand">Card Expand</div>
-    <div class="demo-tab" data-demo="tooltip">Tooltip</div>
+    <div class="demo-tab" data-demo="zoom">Zoom</div>
     <div class="demo-tab" data-demo="tab">Tab Switch</div>
+    <div class="demo-tab" data-demo="modal">Modal</div>
+    <div class="demo-tab" data-demo="notif">Notification</div>
+    <div class="demo-tab" data-demo="tooltip">Tooltip</div>
+    <div class="demo-tab" data-demo="flip">Card Flip</div>
   </div>
 
   <!-- Demo panel -->
@@ -1473,32 +1482,36 @@
       </div>
 
       <!-- Card flip demo -->
-      <div class="demo-view" id="view-flip" style="display:none;">
-        <div class="flip-scene">
-          <div class="flip-card" id="demoFlip">
-            <div class="flip-face flip-front">
-              <div class="flip-img"></div>
-              <div class="flip-body">
-                <div class="flip-line title"></div>
-                <div class="flip-line sub"></div>
-                <div class="flip-line" style="width:80%;"></div>
-                <div class="flip-line" style="width:60%;"></div>
-                <div class="flip-meta-row">
-                  <div class="flip-line short"></div>
-                  <div class="flip-line price"></div>
+      <div class="demo-view" id="view-flip" style="display:none; align-items:center; justify-content:center;">
+        <div class="phone-frame">
+          <div style="display:flex; align-items:center; justify-content:center; height:100%; background:var(--c-demo-bg); padding-bottom:60px;">
+            <div class="flip-scene">
+              <div class="flip-card" id="demoFlip">
+                <div class="flip-face flip-front">
+                  <div class="flip-img"></div>
+                  <div class="flip-body">
+                    <div class="flip-line title"></div>
+                    <div class="flip-line sub"></div>
+                    <div class="flip-line" style="width:80%;"></div>
+                    <div class="flip-line" style="width:60%;"></div>
+                    <div class="flip-meta-row">
+                      <div class="flip-line short"></div>
+                      <div class="flip-line price"></div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div class="flip-face flip-back">
-              <div class="flip-img"></div>
-              <div class="flip-body">
-                <div class="flip-line title"></div>
-                <div class="flip-line sub"></div>
-                <div class="flip-line" style="width:80%;"></div>
-                <div class="flip-line" style="width:60%;"></div>
-                <div class="flip-meta-row">
-                  <div class="flip-line short"></div>
-                  <div class="flip-line price"></div>
+                <div class="flip-face flip-back">
+                  <div class="flip-img"></div>
+                  <div class="flip-body">
+                    <div class="flip-line title"></div>
+                    <div class="flip-line sub"></div>
+                    <div class="flip-line" style="width:80%;"></div>
+                    <div class="flip-line" style="width:60%;"></div>
+                    <div class="flip-meta-row">
+                      <div class="flip-line short"></div>
+                      <div class="flip-line price"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1608,7 +1621,7 @@
       </div>
 
       <!-- Card Expand demo -->
-      <div class="demo-view" id="view-expand" style="display:none; align-items:center; justify-content:center;">
+      <div class="demo-view" id="view-zoom" style="display:none; align-items:center; justify-content:center;">
         <div class="phone-frame" id="expandPhone">
           <div style="display:flex; flex-direction:column; height:100%;">
             <div class="expand-scroll" id="expandList">
@@ -2093,7 +2106,7 @@ const DEMO_DEFAULTS = {
   modal:   { speed: 'snappy',  char: 'medium.bounce' },
   flip:    { speed: 'slow',    char: 'medium.bounce' },
   notif:   { speed: 'fast',    char: 'medium.bounce' },
-  expand:  { speed: 'fast',    char: 'smooth'        },
+  zoom:    { speed: 'fast',    char: 'smooth'        },
   tooltip: { speed: 'snappy',  char: 'medium.bounce' },
   tab:     { speed: 'default', char: 'smooth'        },
   press:   { speed: 'default', char: 'smooth'        },
@@ -2113,21 +2126,34 @@ function applyDemoDefault(demo) {
 }
 
 // ── Demo tabs ────────────────────────────────────────────────────
+function switchDemo(demo) {
+  const tab = document.querySelector(`.demo-tab[data-demo="${demo}"]`);
+  if (!tab) return;
+  document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  currentDemo = demo;
+
+  document.querySelectorAll('.demo-view').forEach(v => v.style.display = 'none');
+  const view = document.getElementById(`view-${currentDemo}`);
+  if (view) view.style.display = 'flex';
+
+  resetDemo();
+  demoState = 'out';
+  applyDemoDefault(currentDemo);
+}
+
 document.querySelectorAll('.demo-tab').forEach(tab => {
   tab.addEventListener('click', () => {
-    document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    currentDemo = tab.dataset.demo;
-
-    document.querySelectorAll('.demo-view').forEach(v => v.style.display = 'none');
-    const view = document.getElementById(`view-${currentDemo}`);
-    if (view) view.style.display = 'flex';
-
-    resetDemo();
-    demoState = 'out';
-    applyDemoDefault(currentDemo);
+    switchDemo(tab.dataset.demo);
+    history.replaceState(null, '', `#${tab.dataset.demo}`);
   });
 });
+
+// Restore demo from URL hash on load
+const hashDemo = location.hash.slice(1);
+if (hashDemo && document.querySelector(`.demo-tab[data-demo="${hashDemo}"]`)) {
+  switchDemo(hashDemo);
+}
 
 // ── Play / reset demo ─────────────────────────────────────────────
 function resetDemo() {
@@ -2157,7 +2183,7 @@ function resetDemo() {
     const tt = document.getElementById('demoTooltip');
     tt.style.transform = 'translateX(-50%) scale(0.6)';
     tt.style.opacity = '0';
-  } else if (currentDemo === 'expand') {
+  } else if (currentDemo === 'zoom') {
     const panel = document.getElementById('expandPanel');
     panel.style.display = 'none';
     document.getElementById('expandCardLayer').style.opacity  = '1';
@@ -2443,7 +2469,7 @@ function playDemo() {
     }
     demoAnim = requestAnimationFrame(tick);
 
-  } else if (currentDemo === 'expand') {
+  } else if (currentDemo === 'zoom') {
     const cards = document.querySelectorAll('.expand-card');
     if (expandState) {
       collapseCard(() => { expandCardIdx = (expandCardIdx + 1) % cards.length; });
@@ -2544,6 +2570,7 @@ function expandCard(card) {
   panel.style.boxShadow     = '0 2px 8px rgba(0,0,0,0.10)';
   panel.style.pointerEvents = 'none';
   panel.style.zIndex        = '10';
+  panel.style.visibility    = 'hidden';
   panel.style.display       = 'block';
   expandState = { fromX, fromY, fromW, fromH, fromR, card };
 
@@ -2558,6 +2585,7 @@ function expandCard(card) {
     const t = (now - startT) / 1000;
     const pos = springPos(t, stiffness, damping);
     const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+    panel.style.visibility   = '';
     panel.style.left         = (toX + (fromX - toX) * pos) + 'px';
     panel.style.top          = (toY + (fromY - toY) * pos) + 'px';
     panel.style.width        = (toW + (fromW - toW) * pos) + 'px';
@@ -2646,7 +2674,7 @@ document.getElementById('expandPanel').addEventListener('click', () => { if (exp
 
 // Clicking anywhere in the phone plays — except expand (has its own card/panel handlers)
 document.getElementById('demoStage').addEventListener('click', (e) => {
-  if (currentDemo === 'expand') return;
+  if (currentDemo === 'zoom') return;
   if (e.target.closest('.phone-frame')) playDemo();
 });
 
