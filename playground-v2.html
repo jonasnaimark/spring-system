@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spring Playground — Outlined</title>
+  <title>Spring Playground — Flat</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -373,26 +373,26 @@
 
     /* ── Color tokens ── */
     :root {
-      --c-bg:        #f8f8f8;
-      --c-surface-0: #ffffff;
-      --c-surface-1: #fafafa;
-      --c-surface-2: #f5f5f5;
-      --c-surface-3: #efefef;
-      --c-text-primary:    #1c1c1e;
-      --c-text-secondary:  #3a3a3c;
-      --c-text-tertiary:   #636366;
-      --c-text-quaternary: #8e8e93;
-      --c-border-faint:    rgba(0,0,0,0.07);
-      --c-border-subtle:   rgba(0,0,0,0.12);
-      --c-border-default:  rgba(0,0,0,0.14);
-      --c-border-medium:   rgba(0,0,0,0.22);
-      --c-border-strong:   rgba(0,0,0,0.34);
-      --c-accent:     #30D158;
-      --c-accent-dim: rgba(48,209,88,0.10);
-      --c-demo-bg: #eeeeee;
-      --sk:           #e4e4e4;
-      --sk-dark:      #d8d8d8;
-      --sk-axis:      #c8c8c8;
+      --c-bg:        #f5f2ee;
+      --c-surface-0: #fffefc;
+      --c-surface-1: #faf8f5;
+      --c-surface-2: #f5f2ee;
+      --c-surface-3: #ede9e3;
+      --c-text-primary:    #1a1714;
+      --c-text-secondary:  #3d3730;
+      --c-text-tertiary:   #6e6055;
+      --c-text-quaternary: #9e9080;
+      --c-border-faint:    rgba(0,0,0,0.06);
+      --c-border-subtle:   rgba(0,0,0,0.14);
+      --c-border-default:  rgba(0,0,0,0.18);
+      --c-border-medium:   rgba(0,0,0,0.26);
+      --c-border-strong:   rgba(0,0,0,0.40);
+      --c-accent:     #FF385C;
+      --c-accent-dim: rgba(255,56,92,0.10);
+      --c-demo-bg: #ece8e2;
+      --sk:           #ddd8d0;
+      --sk-dark:      #cec8be;
+      --sk-axis:      #bab2a8;
     }
 
     [data-theme="dark"] .phone-frame {
@@ -1262,23 +1262,23 @@
       padding: 0 6px;
     }
 
-    /* ── V5 Outlined overrides ── */
-    .list-wrap { box-shadow: none; border-radius: 10px; border: 1px solid var(--c-border-default); }
-    .speed-group { box-shadow: none; border-radius: 10px; border: 1px solid var(--c-border-default); }
-    .token-card { border-radius: 8px; outline: 1px solid var(--c-border-default); }
-    .token-card:hover { background: var(--c-surface-2); outline: 1.5px solid var(--c-border-medium); }
+    /* ── V2 Flat overrides ── */
+    .list-wrap { box-shadow: none; border: 1.5px solid var(--c-border-default); border-radius: 12px; }
+    .speed-group { box-shadow: none; border: 1.5px solid var(--c-border-default); border-radius: 12px; }
+    .token-card { outline: 1.5px solid var(--c-border-default); border-radius: 8px; }
+    .token-card:hover { background: var(--c-surface-2); outline-color: var(--c-border-strong); }
     .token-card.selected { outline: 2px solid var(--c-text-primary); }
-    .view-toggle { border: 1px solid var(--c-border-default); }
+    .view-toggle { border: 1.5px solid var(--c-border-default); }
     .view-btn.active { box-shadow: none; }
-    .demo-panel { border-radius: 14px; border: 1px solid var(--c-border-default); box-shadow: none; }
-    .demo-tab { border-radius: 8px; }
-    .expand-card { box-shadow: none; border-radius: 14px; border: 1px solid var(--c-border-subtle); }
+    .demo-panel { border-radius: 16px; border: 1.5px solid var(--c-border-default); box-shadow: none; }
+    .demo-tab { border-radius: 8px; border-width: 1.5px; }
+    .expand-card { box-shadow: none; border-radius: 14px; border: 1.5px solid var(--c-border-subtle); }
     .flip-face { border-radius: 10px; }
-    .flip-front { box-shadow: none; }
-    .notif { box-shadow: none; border-radius: 10px; border: 1px solid var(--c-border-default); }
-    .modal-card { border-radius: 10px; box-shadow: none; border: 1px solid var(--c-border-default); }
-    .sheet { border-radius: 12px 12px 0 0; box-shadow: none; border-top: 1px solid var(--c-border-default); }
-    .expand-hero-panel { box-shadow: none; border: 1px solid var(--c-border-subtle); }
+    .flip-front { box-shadow: none; border: 1.5px solid var(--c-border-default); }
+    .notif { box-shadow: none; border-radius: 10px; border: 1.5px solid var(--c-border-default); }
+    .modal-card { border-radius: 12px; box-shadow: none; border: 1.5px solid var(--c-border-default); }
+    .sheet { border-radius: 14px 14px 0 0; border-top: 1.5px solid var(--c-border-default); box-shadow: none; }
+    .expand-hero-panel { box-shadow: none; border: 1.5px solid var(--c-border-subtle); }
 
   </style>
 </head>
