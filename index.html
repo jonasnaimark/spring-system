@@ -197,15 +197,18 @@
       max-width: 1280px;
       margin: 0 auto;
       padding: 16px 48px 80px;
-      display: grid;
-      grid-template-columns: 1fr 428px;
-      grid-template-rows: auto 1fr;
-      gap: 12px 24px;
-      align-items: stretch;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .main-columns {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
     }
 
     .demo-tabs-bar {
-      grid-column: 1 / -1;
       display: flex;
       flex-wrap: nowrap;
       gap: 6px;
@@ -217,24 +220,23 @@
     .grid-section {
       display: flex;
       flex-direction: column;
-      grid-column: 1;
-      grid-row: 2;
+      flex: 1;
+      min-width: 0;
+      order: 1;
     }
 
     /* ── Demo panel ── */
     .demo-panel {
       background: var(--c-demo-bg);
       border-radius: 24px;
-      position: sticky;
-      top: 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      grid-column: 2;
-      grid-row: 2;
-      align-self: stretch;
+      flex-shrink: 0;
+      width: 428px;
       padding: 28px 14px;
+      order: 2;
     }
 
     .demo-tab {
@@ -1346,6 +1348,40 @@
       padding: 0 6px;
     }
 
+
+    /* ── Bezier Curves section ── */
+    .bez-main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 48px 80px;
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .bez-demo-panel {
+      background: var(--c-demo-bg);
+      border-radius: 24px;
+      padding: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .desktop-bezel {
+      width: 100%;
+      height: 100%;
+      border: 5px solid #1c1c1e;
+      border-radius: 20px;
+      background: #ffffff;
+    }
+
+    [data-theme="dark"] .desktop-bezel {
+      border-color: #3a3a3c;
+      background: #f2f2f7;
+    }
+
   </style>
 </head>
 <body>
@@ -1396,6 +1432,8 @@
     <div class="demo-tab" data-demo="tooltip">Tooltip</div>
     <div class="demo-tab" data-demo="flip">Card Flip</div>
   </div>
+
+  <div class="main-columns">
 
   <!-- Demo panel -->
   <div class="demo-panel">
@@ -1995,6 +2033,81 @@
         </table>
       </div>
     </div>
+  </div>
+
+  </div><!-- end .main-columns -->
+
+</div>
+
+<!-- ── Bezier Curves section ── -->
+<div style="max-width:1280px; margin:16px auto 0; padding:0 48px;">
+  <h1 style="font-size:28px; font-weight:700; letter-spacing:-0.03em; color:var(--c-text-primary);">Bezier Curves</h1>
+</div>
+
+<div class="bez-main">
+
+  <!-- Bezier curve cards — same structure as spring token cards -->
+  <div class="speed-group" id="bezGrid">
+    <div class="speed-cards" style="grid-template-columns: 1fr;">
+
+      <div class="token-card selected" id="bez-standard" onclick="selectBez('standard')" style="flex-direction:row; align-items:center;">
+        <div style="flex:1; display:flex; flex-direction:column;">
+          <div class="card-char-label">Standard</div>
+          <div class="card-token-name">standard.curve</div>
+          <div class="card-meta">(0.40, 0.00, 0.20, 1.00)</div>
+        </div>
+        <div style="flex-shrink:0; background:var(--c-surface-3); border-radius:10px; padding:10px; line-height:0;">
+          <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
+            <path d="M 4 56 C 25 56 14 4 56 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="token-card" id="bez-linear" onclick="selectBez('linear')" style="flex-direction:row; align-items:center;">
+        <div style="flex:1; display:flex; flex-direction:column;">
+          <div class="card-char-label">Linear</div>
+          <div class="card-token-name">linear.curve</div>
+          <div class="card-meta">(0.00, 0.00, 1.00, 1.00)</div>
+        </div>
+        <div style="flex-shrink:0; background:var(--c-surface-3); border-radius:10px; padding:10px; line-height:0;">
+          <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
+            <line x1="4" y1="56" x2="56" y2="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="token-card" id="bez-exit" onclick="selectBez('exit')" style="flex-direction:row; align-items:center;">
+        <div style="flex:1; display:flex; flex-direction:column;">
+          <div class="card-char-label">Exit</div>
+          <div class="card-token-name">exit.curve</div>
+          <div class="card-meta">(0.40, 0.00, 1.00, 1.00)</div>
+        </div>
+        <div style="flex-shrink:0; background:var(--c-surface-3); border-radius:10px; padding:10px; line-height:0;">
+          <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
+            <path d="M 4 56 C 25 56 56 4 56 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="token-card" id="bez-enter" onclick="selectBez('enter')" style="flex-direction:row; align-items:center;">
+        <div style="flex:1; display:flex; flex-direction:column;">
+          <div class="card-char-label">Enter</div>
+          <div class="card-token-name">enter.curve</div>
+          <div class="card-meta">(0.00, 0.00, 0.00, 1.00)</div>
+        </div>
+        <div style="flex-shrink:0; background:var(--c-surface-3); border-radius:10px; padding:10px; line-height:0;">
+          <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
+            <path d="M 4 56 C 4 56 4 4 56 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Desktop demo area -->
+  <div class="bez-demo-panel">
+    <div class="desktop-bezel"></div>
   </div>
 
 </div>
@@ -2941,12 +3054,19 @@ setTimeout(() => {
   }
 }, 200);
 
-// ── Match phone height to card grid height ────────────────────────
+// ── Bezier curve selection ────────────────────────────────────────
+const BEZ_IDS = ['bez-standard', 'bez-exit', 'bez-enter', 'bez-linear'];
+function selectBez(key) {
+  BEZ_IDS.forEach(id => document.getElementById(id)?.classList.remove('selected'));
+  document.getElementById(`bez-${key}`)?.classList.add('selected');
+}
+
+// ── Match phone frame height to card grid height ──────────────────
 const demoPanel = document.querySelector('.demo-panel');
 const cardGridSection = document.querySelector('.grid-section');
 
 function syncPhoneHeight() {
-  if (tokenGrid.style.display === 'none') return; // list mode: keep height unchanged
+  if (tokenGrid.style.display === 'none') return;
   const h = tokenGrid.offsetHeight;
   if (h > 0) demoPanel.style.height = h + 'px';
 }
