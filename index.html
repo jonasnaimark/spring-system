@@ -468,6 +468,16 @@
       border-color: var(--c-border-subtle);
     }
 
+    [data-theme="dark"] .dur-card.selected {
+      background: var(--c-surface-2);
+      outline: 2px solid var(--c-text-primary);
+    }
+
+    [data-theme="dark"] .dur-card.selected .card-token-name {
+      background: var(--c-surface-3);
+      border-color: var(--c-border-subtle);
+    }
+
     [data-theme="dark"] {
       --c-bg:        #000000;
       --c-surface-0: #1c1c1e;
@@ -874,7 +884,7 @@
       border-radius: 12px;
       padding: 13px 14px 11px;
       cursor: pointer;
-      transition: background 0.15s, outline-color 0.15s;
+      transition: background 0.15s, outline-color 0.15s, filter 0.15s ease;
       box-shadow: none;
       border: none;
       outline: 1px solid var(--c-border-subtle);
@@ -888,6 +898,10 @@
     .token-card:hover {
       background: var(--c-surface-3);
       outline-color: var(--c-border-default);
+    }
+
+    .token-card:active {
+      filter: brightness(0.96);
     }
 
     .token-card.selected {
@@ -1349,7 +1363,61 @@
     }
 
 
+    /* ── Duration token cards ── */
+    .dur-card {
+      background: var(--c-surface-2);
+      border-radius: 8px;
+      padding: 10px 12px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      border: none;
+      outline: 1px solid var(--c-border-subtle);
+      min-width: 0;
+      cursor: pointer;
+      transition: background 0.15s, outline-color 0.15s, filter 0.15s ease;
+    }
+    .dur-card:active {
+      filter: brightness(0.96);
+    }
+
+    .dur-card.selected {
+      background: var(--c-surface-3);
+      outline: 2px solid var(--c-text-primary);
+    }
+    .dur-card.selected .card-token-name {
+      background: var(--c-surface-0);
+      border-color: var(--c-border-medium);
+    }
+    .dur-card .card-token-name {
+      font-size: 9px;
+      padding: 2px 6px;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    .dur-label {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--c-text-primary);
+    }
+
     /* ── Bezier Curves section ── */
+    .bez-curve-thumb {
+      background: var(--c-surface-3);
+      outline: 1px solid transparent;
+      transition: background 150ms ease, outline-color 150ms ease;
+    }
+    .token-card.selected .bez-curve-thumb {
+      background: #fff;
+      outline-color: var(--c-border-subtle);
+    }
+    [data-theme="dark"] .token-card.selected .bez-curve-thumb {
+      background: var(--c-surface-0);
+      outline-color: var(--c-border-subtle);
+    }
+
     .bez-main {
       max-width: 1280px;
       margin: 0 auto;
@@ -1371,7 +1439,7 @@
 
     .desktop-bezel {
       width: 100%;
-      height: 100%;
+      height: 520px;
       border: 5px solid #1c1c1e;
       border-radius: 20px;
       background: var(--c-surface-0);
@@ -1461,14 +1529,15 @@
       flex: 1;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      padding: 20px 40px;
+      gap: 14px;
+      padding: 20px 32px 0;
       overflow: hidden;
+      align-content: start;
     }
 
     .dt-card {
       background: var(--c-surface-0);
-      border-radius: 14px;
+      border-radius: 16px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
@@ -1477,12 +1546,12 @@
 
     .dt-card-img {
       width: 100%;
-      flex: 1;
+      height: 120px;
       background: var(--sk);
     }
 
     .dt-card-body {
-      padding: 6px 7px 7px;
+      padding: 8px 9px 9px;
       display: flex;
       flex-direction: column;
       gap: 4px;
@@ -2155,9 +2224,9 @@
 
 </div>
 
-<!-- ── Curve Tokens section ── -->
+<!-- ── Curve & Duration Tokens section ── -->
 <div style="max-width:1280px; margin:0 auto; padding:12px 48px 4px; display:flex; align-items:center; justify-content:space-between;">
-  <h1 style="font-size:28px; font-weight:700; letter-spacing:-0.03em; color:var(--c-text-primary);">Curve Tokens</h1>
+  <h1 style="font-size:28px; font-weight:700; letter-spacing:-0.03em; color:var(--c-text-primary);">Curve & Duration Tokens</h1>
 </div>
 
 <div class="bez-main">
@@ -2170,8 +2239,23 @@
     <div class="demo-tab" data-bez="modal-exit">Modal Exit</div>
   </div>
 
-  <!-- Bezier curve cards — same structure as spring token cards -->
-  <div class="speed-group" id="bezGrid">
+  <!-- Left column: duration cards + divider + curve cards -->
+  <div class="speed-group" id="bezGrid" style="display:flex; flex-direction:column; gap:0;">
+
+    <!-- Duration token chips -->
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; padding-bottom:16px;">
+      <div class="dur-card" data-dur="100"><div class="dur-label">100ms</div><div class="card-token-name" style="margin:0;">duration.100</div></div>
+      <div class="dur-card" data-dur="150"><div class="dur-label">150ms</div><div class="card-token-name" style="margin:0;">duration.150</div></div>
+      <div class="dur-card" data-dur="300"><div class="dur-label">300ms</div><div class="card-token-name" style="margin:0;">duration.300</div></div>
+      <div class="dur-card selected" data-dur="500"><div class="dur-label">500ms</div><div class="card-token-name" style="margin:0;">duration.500</div></div>
+      <div class="dur-card" data-dur="750"><div class="dur-label">750ms</div><div class="card-token-name" style="margin:0;">duration.750</div></div>
+      <div class="dur-card" data-dur="1000"><div class="dur-label">1000ms</div><div class="card-token-name" style="margin:0;">duration.1000</div></div>
+    </div>
+
+    <!-- Divider -->
+    <div style="border-top: 1px solid var(--c-border-subtle); margin-bottom:16px;"></div>
+
+    <!-- Curve cards -->
     <div class="speed-cards" style="grid-template-columns: 1fr;">
 
       <div class="token-card selected" id="bez-standard" onclick="selectBez('standard')" style="flex-direction:row; align-items:center;">
@@ -2180,7 +2264,7 @@
           <div class="card-token-name">standard.curve</div>
           <div class="card-meta">(0.40, 0.00, 0.20, 1.00)</div>
         </div>
-        <div style="flex-shrink:0; background:var(--c-surface-3); border-radius:10px; padding:10px; line-height:0;">
+        <div class="bez-curve-thumb" style="flex-shrink:0; border-radius:10px; padding:10px; line-height:0;">
           <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
             <!-- handles -->
             <line x1="4" y1="56" x2="25" y2="56" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.25"/>
@@ -2203,7 +2287,7 @@
           <div class="card-token-name">linear.curve</div>
           <div class="card-meta">(0.00, 0.00, 1.00, 1.00)</div>
         </div>
-        <div style="flex-shrink:0; background:var(--c-surface-3); border-radius:10px; padding:10px; line-height:0;">
+        <div class="bez-curve-thumb" style="flex-shrink:0; border-radius:10px; padding:10px; line-height:0;">
           <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
             <!-- handles coincide with endpoints for linear -->
             <line x1="4" y1="56" x2="4" y2="56" stroke="currentColor" stroke-width="1" opacity="0.25"/>
@@ -2226,7 +2310,7 @@
           <div class="card-token-name">exit.curve</div>
           <div class="card-meta">(0.40, 0.00, 1.00, 1.00)</div>
         </div>
-        <div style="flex-shrink:0; background:var(--c-surface-3); border-radius:10px; padding:10px; line-height:0;">
+        <div class="bez-curve-thumb" style="flex-shrink:0; border-radius:10px; padding:10px; line-height:0;">
           <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
             <!-- handles -->
             <line x1="4" y1="56" x2="25" y2="56" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.25"/>
@@ -2249,7 +2333,7 @@
           <div class="card-token-name">enter.curve</div>
           <div class="card-meta">(0.00, 0.00, 0.00, 1.00)</div>
         </div>
-        <div style="flex-shrink:0; background:var(--c-surface-3); border-radius:10px; padding:10px; line-height:0;">
+        <div class="bez-curve-thumb" style="flex-shrink:0; border-radius:10px; padding:10px; line-height:0;">
           <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
             <!-- handles -->
             <line x1="4" y1="56" x2="4" y2="56" stroke="currentColor" stroke-width="1" opacity="0.25"/>
@@ -2267,7 +2351,7 @@
       </div>
 
     </div>
-  </div>
+  </div><!-- end flex column wrapper -->
 
   <!-- Desktop demo area -->
   <div class="bez-demo-panel">
@@ -2294,10 +2378,12 @@
         </div>
         <!-- Card grid -->
         <div class="dt-grid">
+          <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:30%; background:var(--sk); border-radius:4px; margin-top:8px;"></div>
           <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
           <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
           <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
           <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+          <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:25%; background:var(--sk); border-radius:4px; margin-top:16px;"></div>
           <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
           <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
           <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
@@ -3251,6 +3337,19 @@ setTimeout(() => {
   }
 }, 200);
 
+// ── Duration token selection ──────────────────────────────────────
+let activeBezDuration = 500;
+
+document.querySelectorAll('.dur-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.dur-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    activeBezDuration = parseInt(card.dataset.dur);
+    const activeTab = document.querySelector('#bezTabsBar .demo-tab.active');
+    if (activeTab?.dataset.bez === 'slow-fade') playSlowFade();
+  });
+});
+
 // ── Bezier curve selection ────────────────────────────────────────
 const BEZ_CURVES = {
   standard: 'cubic-bezier(0.40, 0.00, 0.20, 1.00)',
@@ -3282,30 +3381,41 @@ document.querySelectorAll('#bezTabsBar .demo-tab').forEach(tab => {
 
 function playSlowFade() {
   const cards = Array.from(document.querySelectorAll('.dt-grid .dt-card'));
+  const titles = Array.from(document.querySelectorAll('.dt-grid .dt-section-title'));
+  const allItems = [...titles, ...cards];
   const easing = BEZ_CURVES[activeBezCurve] ?? BEZ_CURVES.standard;
 
   // Fade out all at once
-  cards.forEach(card => {
-    card.style.transition = 'opacity 50ms linear';
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(0px)';
+  allItems.forEach(el => {
+    el.style.transition = 'opacity 50ms linear';
+    el.style.opacity = '0';
   });
+  allItems.forEach(el => { el.style.transform = 'translateY(0px)'; });
 
-  // After fade-out, snap to offset, then stagger fade + slide in
+  // After fade-out, snap all to offset, then stagger fade + slide in
   setTimeout(() => {
-    cards.forEach(card => {
-      card.style.transition = 'none';
-      card.style.transform = 'translateY(20px)';
+    allItems.forEach(el => {
+      el.style.transition = 'none';
+      el.style.transform = 'translateY(20px)';
     });
-    cards[0]?.offsetHeight; // force reflow
-    cards.forEach((card, i) => {
+    allItems[0]?.offsetHeight; // force reflow
+
+    const domOrder = Array.from(document.querySelectorAll('.dt-grid .dt-card, .dt-grid .dt-section-title'));
+    domOrder.forEach((el, i) => {
       const delay = i * 20;
-      card.style.transition = `opacity 500ms ${easing} ${delay}ms, transform 500ms ${easing} ${delay}ms`;
-      card.style.opacity = '1';
-      card.style.transform = 'translateY(0px)';
+      el.style.transition = `opacity ${activeBezDuration}ms ${easing} ${delay}ms, transform ${activeBezDuration}ms ${easing} ${delay}ms`;
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0px)';
     });
   }, 50);
 }
+
+setTimeout(playSlowFade, 300);
+
+document.querySelector('.bez-demo-panel').addEventListener('click', () => {
+  const activeTab = document.querySelector('#bezTabsBar .demo-tab.active');
+  if (activeTab?.dataset.bez === 'slow-fade') playSlowFade();
+});
 
 // ── Match phone frame height to card grid height ──────────────────
 const demoPanel = document.querySelector('.demo-panel');
