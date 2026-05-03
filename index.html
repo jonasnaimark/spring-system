@@ -196,7 +196,7 @@
     .main {
       max-width: 1280px;
       margin: 0 auto;
-      padding: 16px 48px 80px;
+      padding: 16px 48px 40px;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -1353,10 +1353,10 @@
     .bez-main {
       max-width: 1280px;
       margin: 0 auto;
-      padding: 0 48px 80px;
+      padding: 16px 48px 80px;
       display: grid;
       grid-template-columns: 400px 1fr;
-      gap: 24px;
+      gap: 12px 24px;
       align-items: stretch;
     }
 
@@ -1374,13 +1374,129 @@
       height: 100%;
       border: 5px solid #1c1c1e;
       border-radius: 20px;
-      background: #ffffff;
+      background: var(--c-surface-0);
     }
 
     [data-theme="dark"] .desktop-bezel {
       border-color: #3a3a3c;
-      background: #f2f2f7;
     }
+
+    /* ── Desktop placeholder UI ── */
+    .dt-ui {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--c-surface-0);
+      border-radius: 15px;
+    }
+
+    .dt-topbar {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .dt-logo {
+      width: 18px;
+      height: 18px;
+      border-radius: 3px;
+      background: var(--sk);
+      flex-shrink: 0;
+    }
+
+    .dt-search {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 180px;
+      height: 22px;
+      background: var(--sk);
+      border-radius: 11px;
+    }
+
+    .dt-nav-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+
+    .dt-nav-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 2px;
+      background: var(--sk);
+    }
+
+    .dt-nav-icon--avatar {
+      border-radius: 50%;
+    }
+
+    .dt-pills {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      padding: 6px 12px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--c-border-subtle);
+    }
+
+    .dt-pill {
+      height: 14px;
+      width: 36px;
+      border-radius: 7px;
+      background: var(--sk);
+      flex-shrink: 0;
+    }
+
+    .dt-pill--active {
+      background: var(--sk);
+    }
+
+    .dt-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 20px 40px;
+      overflow: hidden;
+    }
+
+    .dt-card {
+      background: var(--c-surface-0);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      outline: 1px solid var(--c-border-subtle);
+    }
+
+    .dt-card-img {
+      width: 100%;
+      flex: 1;
+      background: var(--sk);
+    }
+
+    .dt-card-body {
+      padding: 6px 7px 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .dt-card-row {
+      height: 5px;
+      border-radius: 3px;
+      background: var(--sk);
+    }
+
+    .dt-card-row--title { width: 80%; }
+    .dt-card-row--sub   { width: 55%; }
+    .dt-card-row--price { width: 35%; }
 
   </style>
 </head>
@@ -2039,12 +2155,20 @@
 
 </div>
 
-<!-- ── Bezier Curves section ── -->
-<div style="max-width:1280px; margin:16px auto 0; padding:0 48px;">
-  <h1 style="font-size:28px; font-weight:700; letter-spacing:-0.03em; color:var(--c-text-primary);">Bezier Curves</h1>
+<!-- ── Curve Tokens section ── -->
+<div style="max-width:1280px; margin:0 auto; padding:12px 48px 4px; display:flex; align-items:center; justify-content:space-between;">
+  <h1 style="font-size:28px; font-weight:700; letter-spacing:-0.03em; color:var(--c-text-primary);">Curve Tokens</h1>
 </div>
 
 <div class="bez-main">
+
+  <!-- Demo tab chips — span full width above both columns -->
+  <div class="demo-tabs-bar" id="bezTabsBar" style="grid-column: 1 / -1;">
+    <div class="demo-tab active" data-bez="slow-fade">Slow Fade</div>
+    <div class="demo-tab" data-bez="fast-fade">Fast Fade</div>
+    <div class="demo-tab" data-bez="modal-enter">Modal Enter</div>
+    <div class="demo-tab" data-bez="modal-exit">Modal Exit</div>
+  </div>
 
   <!-- Bezier curve cards — same structure as spring token cards -->
   <div class="speed-group" id="bezGrid">
@@ -2058,7 +2182,17 @@
         </div>
         <div style="flex-shrink:0; background:var(--c-surface-3); border-radius:10px; padding:10px; line-height:0;">
           <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
+            <!-- handles -->
+            <line x1="4" y1="56" x2="25" y2="56" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.25"/>
+            <line x1="56" y1="4" x2="14" y2="4" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.25"/>
+            <!-- curve -->
             <path d="M 4 56 C 25 56 14 4 56 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- control points -->
+            <circle cx="25" cy="56" r="2" fill="currentColor" opacity="0.35"/>
+            <circle cx="14" cy="4" r="2" fill="currentColor" opacity="0.35"/>
+            <!-- endpoints -->
+            <circle cx="4" cy="56" r="2.5" fill="currentColor" opacity="0.6"/>
+            <circle cx="56" cy="4" r="2.5" fill="currentColor" opacity="0.6"/>
           </svg>
         </div>
       </div>
@@ -2071,7 +2205,17 @@
         </div>
         <div style="flex-shrink:0; background:var(--c-surface-3); border-radius:10px; padding:10px; line-height:0;">
           <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
+            <!-- handles coincide with endpoints for linear -->
+            <line x1="4" y1="56" x2="4" y2="56" stroke="currentColor" stroke-width="1" opacity="0.25"/>
+            <line x1="56" y1="4" x2="56" y2="4" stroke="currentColor" stroke-width="1" opacity="0.25"/>
+            <!-- curve -->
             <line x1="4" y1="56" x2="56" y2="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- control points (at endpoints) -->
+            <circle cx="4" cy="56" r="2" fill="currentColor" opacity="0.35"/>
+            <circle cx="56" cy="4" r="2" fill="currentColor" opacity="0.35"/>
+            <!-- endpoints -->
+            <circle cx="4" cy="56" r="2.5" fill="currentColor" opacity="0.6"/>
+            <circle cx="56" cy="4" r="2.5" fill="currentColor" opacity="0.6"/>
           </svg>
         </div>
       </div>
@@ -2084,7 +2228,17 @@
         </div>
         <div style="flex-shrink:0; background:var(--c-surface-3); border-radius:10px; padding:10px; line-height:0;">
           <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
+            <!-- handles -->
+            <line x1="4" y1="56" x2="25" y2="56" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.25"/>
+            <line x1="56" y1="4" x2="56" y2="4" stroke="currentColor" stroke-width="1" opacity="0.25"/>
+            <!-- curve -->
             <path d="M 4 56 C 25 56 56 4 56 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- control points -->
+            <circle cx="25" cy="56" r="2" fill="currentColor" opacity="0.35"/>
+            <circle cx="56" cy="4" r="2" fill="currentColor" opacity="0.35"/>
+            <!-- endpoints -->
+            <circle cx="4" cy="56" r="2.5" fill="currentColor" opacity="0.6"/>
+            <circle cx="56" cy="4" r="2.5" fill="currentColor" opacity="0.6"/>
           </svg>
         </div>
       </div>
@@ -2097,7 +2251,17 @@
         </div>
         <div style="flex-shrink:0; background:var(--c-surface-3); border-radius:10px; padding:10px; line-height:0;">
           <svg width="56" height="56" viewBox="0 0 60 60" fill="none">
+            <!-- handles -->
+            <line x1="4" y1="56" x2="4" y2="56" stroke="currentColor" stroke-width="1" opacity="0.25"/>
+            <line x1="56" y1="4" x2="4" y2="4" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.25"/>
+            <!-- curve -->
             <path d="M 4 56 C 4 56 4 4 56 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- control points -->
+            <circle cx="4" cy="56" r="2" fill="currentColor" opacity="0.35"/>
+            <circle cx="4" cy="4" r="2" fill="currentColor" opacity="0.35"/>
+            <!-- endpoints -->
+            <circle cx="4" cy="56" r="2.5" fill="currentColor" opacity="0.6"/>
+            <circle cx="56" cy="4" r="2.5" fill="currentColor" opacity="0.6"/>
           </svg>
         </div>
       </div>
@@ -2107,7 +2271,40 @@
 
   <!-- Desktop demo area -->
   <div class="bez-demo-panel">
-    <div class="desktop-bezel"></div>
+    <div class="desktop-bezel">
+      <div class="dt-ui">
+        <!-- Top bar -->
+        <div class="dt-topbar">
+          <div class="dt-logo"></div>
+          <div class="dt-search"></div>
+          <div class="dt-nav-icons">
+            <div class="dt-nav-icon"></div>
+            <div class="dt-nav-icon"></div>
+            <div class="dt-nav-icon dt-nav-icon--avatar"></div>
+          </div>
+        </div>
+        <!-- Category pills -->
+        <div class="dt-pills">
+          <div class="dt-pill dt-pill--active"></div>
+          <div class="dt-pill"></div>
+          <div class="dt-pill"></div>
+          <div class="dt-pill"></div>
+          <div class="dt-pill"></div>
+          <div class="dt-pill"></div>
+        </div>
+        <!-- Card grid -->
+        <div class="dt-grid">
+          <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+          <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+          <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+          <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+          <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+          <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+          <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+          <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -2249,7 +2446,7 @@ class SpringSim {
 
 // ── Select spring ────────────────────────────────────────────────
 function selectSpring(name, stiffness, damping, ratio, cardEl, color, { play = true } = {}) {
-  document.querySelectorAll('.token-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('#tokenGrid .token-card').forEach(c => c.classList.remove('selected'));
   document.querySelectorAll('.list-data-row').forEach(r => r.classList.remove('selected'));
   cardEl?.classList.add('selected');
   document.getElementById(`list-row-${name}`)?.classList.add('selected');
@@ -2989,7 +3186,7 @@ for (const c of CHARS) {
     listBody.appendChild(row);
 
     row.addEventListener('click', () => {
-      document.querySelectorAll('.token-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('#tokenGrid .token-card').forEach(c => c.classList.remove('selected'));
       document.querySelectorAll('.list-data-row').forEach(r => r.classList.remove('selected'));
       row.classList.add('selected');
       document.getElementById(`card-${name}`)?.classList.add('selected');
@@ -3055,10 +3252,59 @@ setTimeout(() => {
 }, 200);
 
 // ── Bezier curve selection ────────────────────────────────────────
+const BEZ_CURVES = {
+  standard: 'cubic-bezier(0.40, 0.00, 0.20, 1.00)',
+  linear:   'cubic-bezier(0.00, 0.00, 1.00, 1.00)',
+  exit:     'cubic-bezier(0.40, 0.00, 1.00, 1.00)',
+  enter:    'cubic-bezier(0.00, 0.00, 0.00, 1.00)',
+};
 const BEZ_IDS = ['bez-standard', 'bez-exit', 'bez-enter', 'bez-linear'];
+let activeBezCurve = 'standard';
+
 function selectBez(key) {
   BEZ_IDS.forEach(id => document.getElementById(id)?.classList.remove('selected'));
   document.getElementById(`bez-${key}`)?.classList.add('selected');
+  activeBezCurve = key;
+  // replay the active demo tab with the new curve
+  const activeTab = document.querySelector('#bezTabsBar .demo-tab.active');
+  if (activeTab?.dataset.bez === 'slow-fade') playSlowFade();
+}
+
+// ── Bezier demo tabs ──────────────────────────────────────────────
+document.querySelectorAll('#bezTabsBar .demo-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#bezTabsBar .demo-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const key = tab.dataset.bez;
+    if (key === 'slow-fade') playSlowFade();
+  });
+});
+
+function playSlowFade() {
+  const cards = Array.from(document.querySelectorAll('.dt-grid .dt-card'));
+  const easing = BEZ_CURVES[activeBezCurve] ?? BEZ_CURVES.standard;
+
+  // Fade out all at once
+  cards.forEach(card => {
+    card.style.transition = 'opacity 50ms linear';
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(0px)';
+  });
+
+  // After fade-out, snap to offset, then stagger fade + slide in
+  setTimeout(() => {
+    cards.forEach(card => {
+      card.style.transition = 'none';
+      card.style.transform = 'translateY(20px)';
+    });
+    cards[0]?.offsetHeight; // force reflow
+    cards.forEach((card, i) => {
+      const delay = i * 20;
+      card.style.transition = `opacity 500ms ${easing} ${delay}ms, transform 500ms ${easing} ${delay}ms`;
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0px)';
+    });
+  }, 50);
 }
 
 // ── Match phone frame height to card grid height ──────────────────
