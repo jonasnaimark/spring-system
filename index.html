@@ -235,9 +235,31 @@
       justify-content: center;
       flex-shrink: 0;
       width: 428px;
-      padding: 28px 14px;
+      padding: 20px 14px;
       order: 2;
+      position: relative;
     }
+
+    .play-circle {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--c-surface-0);
+      border: 1px solid var(--c-border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s, filter 0.15s;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+    .play-circle:hover { background: var(--c-surface-3); }
+    .play-circle:active { filter: brightness(0.96); }
 
     .demo-tab {
       padding: 5px 12px;
@@ -267,7 +289,6 @@
 
     .demo-stage {
       width: 100%;
-      height: 100%;
       position: relative;
       display: flex;
       align-items: center;
@@ -287,7 +308,7 @@
     /* ── Phone frame ── */
     .phone-frame {
       width: auto;
-      height: 100%;
+      height: 580px;
       aspect-ratio: 340 / 680;
       border: 6px solid #1c1c1e;
       border-radius: 46px;
@@ -1431,10 +1452,12 @@
     .bez-demo-panel {
       background: var(--c-demo-bg);
       border-radius: 24px;
-      padding: 28px;
+      padding: 20px 28px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
 
     .desktop-bezel {
@@ -2186,6 +2209,10 @@
       </div>
     </div>
 
+    <button class="play-circle" id="springPlayBtn">
+      <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
+    </button>
+
   </div>
 
   <!-- Token grid -->
@@ -2240,9 +2267,10 @@
   </div>
 
   <!-- Left column: duration cards + divider + curve cards -->
-  <div class="speed-group" id="bezGrid" style="display:flex; flex-direction:column; gap:0;">
+  <div class="speed-group" id="bezGrid" style="display:flex; flex-direction:column; gap:0; padding-top:4px;">
 
     <!-- Duration token chips -->
+    <div style="font-size:11px; font-weight:600; color:var(--c-text-tertiary); letter-spacing:0.02em; margin-bottom:14px; margin-top:16px;">Durations</div>
     <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; padding-bottom:16px;">
       <div class="dur-card" data-dur="100"><div class="dur-label">100ms</div><div class="card-token-name" style="margin:0;">duration.100</div></div>
       <div class="dur-card" data-dur="150"><div class="dur-label">150ms</div><div class="card-token-name" style="margin:0;">duration.150</div></div>
@@ -2256,6 +2284,7 @@
     <div style="border-top: 1px solid var(--c-border-subtle); margin-bottom:16px;"></div>
 
     <!-- Curve cards -->
+    <div style="font-size:11px; font-weight:600; color:var(--c-text-tertiary); letter-spacing:0.02em; margin-bottom:14px; margin-top:4px;">Curves</div>
     <div class="speed-cards" style="grid-template-columns: 1fr;">
 
       <div class="token-card selected" id="bez-standard" onclick="selectBez('standard')" style="flex-direction:row; align-items:center;">
@@ -2391,6 +2420,9 @@
         </div>
       </div>
     </div>
+    <button class="play-circle" id="bezPlayBtn">
+      <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
+    </button>
   </div>
 
 </div>
@@ -2601,7 +2633,7 @@ function applyDemoDefault(demo) {
 function switchDemo(demo) {
   const tab = document.querySelector(`.demo-tab[data-demo="${demo}"]`);
   if (!tab) return;
-  document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.demo-tab[data-demo]').forEach(t => t.classList.remove('active'));
   tab.classList.add('active');
   currentDemo = demo;
 
@@ -2614,7 +2646,7 @@ function switchDemo(demo) {
   applyDemoDefault(currentDemo);
 }
 
-document.querySelectorAll('.demo-tab').forEach(tab => {
+document.querySelectorAll('.demo-tab[data-demo]').forEach(tab => {
   tab.addEventListener('click', () => {
     switchDemo(tab.dataset.demo);
     history.replaceState(null, '', `#${tab.dataset.demo}`);
@@ -3347,6 +3379,7 @@ document.querySelectorAll('.dur-card').forEach(card => {
     activeBezDuration = parseInt(card.dataset.dur);
     const activeTab = document.querySelector('#bezTabsBar .demo-tab.active');
     if (activeTab?.dataset.bez === 'slow-fade') playSlowFade();
+    if (activeTab?.dataset.bez === 'fast-fade') playFastFade();
   });
 });
 
@@ -3367,6 +3400,7 @@ function selectBez(key) {
   // replay the active demo tab with the new curve
   const activeTab = document.querySelector('#bezTabsBar .demo-tab.active');
   if (activeTab?.dataset.bez === 'slow-fade') playSlowFade();
+  if (activeTab?.dataset.bez === 'fast-fade') playFastFade();
 }
 
 // ── Bezier demo tabs ──────────────────────────────────────────────
@@ -3375,7 +3409,13 @@ document.querySelectorAll('#bezTabsBar .demo-tab').forEach(tab => {
     document.querySelectorAll('#bezTabsBar .demo-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     const key = tab.dataset.bez;
-    if (key === 'slow-fade') playSlowFade();
+    history.replaceState(null, '', `#${key}`);
+    if (key === 'fast-fade') {
+      selectBez('linear');
+      document.querySelectorAll('.dur-card').forEach(c => c.classList.remove('selected'));
+      document.querySelector('.dur-card[data-dur="150"]')?.classList.add('selected');
+      activeBezDuration = 150;
+    }
   });
 });
 
@@ -3412,10 +3452,29 @@ function playSlowFade() {
 
 setTimeout(playSlowFade, 300);
 
-document.querySelector('.bez-demo-panel').addEventListener('click', () => {
+const FAST_FADE_COLORS = ['#b5d5f5', '#c5e8c5', '#f5c5d5', '#e8d5b5', '#d5c5e8', '#b5e8e0', '#f5e0b5', '#c5d5f5'];
+let fastFadeToggle = false;
+
+function playFastFade() {
+  const imgs = Array.from(document.querySelectorAll('.dt-grid .dt-card-img'));
+  const easing = BEZ_CURVES[activeBezCurve] ?? BEZ_CURVES.linear;
+  const dur = activeBezDuration;
+  fastFadeToggle = !fastFadeToggle;
+
+  imgs.forEach((img, i) => {
+    img.style.transition = `background ${dur}ms ${easing}`;
+    img.style.background = fastFadeToggle ? FAST_FADE_COLORS[i % FAST_FADE_COLORS.length] : 'var(--sk)';
+  });
+}
+
+function runBezDemo() {
   const activeTab = document.querySelector('#bezTabsBar .demo-tab.active');
   if (activeTab?.dataset.bez === 'slow-fade') playSlowFade();
-});
+  if (activeTab?.dataset.bez === 'fast-fade') playFastFade();
+}
+
+document.getElementById('bezPlayBtn').addEventListener('click', runBezDemo);
+document.getElementById('springPlayBtn').addEventListener('click', playDemo);
 
 // ── Match phone frame height to card grid height ──────────────────
 const demoPanel = document.querySelector('.demo-panel');
