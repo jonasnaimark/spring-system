@@ -141,6 +141,27 @@
       margin: 14px 0 32px;
       line-height: 1.5;
     }
+    .ng-h1 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--c-text-primary);
+      letter-spacing: -0.01em;
+      margin: 0 0 3px;
+    }
+    .ng-h2 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--c-text-secondary);
+      margin: 0 0 4px;
+    }
+    .ng-body {
+      font-size: 13px;
+      color: var(--c-text-tertiary);
+      line-height: 1.6;
+      margin: 0;
+    }
+    .ng-group { display: flex; flex-direction: column; gap: 10px; }
+    .ng-subgroup { display: flex; flex-direction: column; gap: 16px; padding-left: 12px; border-left: 2px solid var(--c-border-subtle); }
     .section-content {
       padding-bottom: 48px;
     }
@@ -1695,6 +1716,7 @@
       <a class="nav-item" data-target="sec-transition">Transition Patterns</a>
       <a class="nav-item" data-target="sec-spring">Spring Tokens</a>
       <a class="nav-item" data-target="sec-curve">Curve & Duration</a>
+      <a class="nav-item" data-target="sec-accessibility">Accessibility</a>
     </div>
   </div>
   <div class="topnav-theme">
@@ -1709,17 +1731,59 @@
 <!-- ── Navigation Gestures section ── -->
 <div class="section-wrap" id="sec-gestures">
   <h1 class="section-title">Navigation Gestures</h1>
-  <p class="section-subtitle">Gestures enable more fluid, physical navigation alongside tap-based controls.</p>
+  <p class="section-subtitle">Gestures enable fluid, physical navigation alongside tap-based controls.</p>
   <div class="demo-tabs-bar section-chips" id="ngTabsBar">
-    <div class="demo-tab ng-tab active" data-ng="swipe-down">Swipe Down</div>
-    <div class="demo-tab ng-tab" data-ng="edge-swipe">Edge Swipe</div>
+    <div class="demo-tab ng-tab active" data-ng="zoom-dismiss">Zoom Dismiss</div>
+    <div class="demo-tab ng-tab" data-ng="back-navigation">Back Navigation</div>
   </div>
   <div class="section-content">
-    <div style="display:flex; gap:24px; align-items:flex-start;">
-      <div style="flex:1; min-width:0; border:1px solid var(--c-border-subtle); border-radius:24px; padding:28px; align-self:stretch;">
-        <p style="font-size:14px; color:var(--c-text-tertiary); line-height:1.6;">Body copy text goes here.</p>
+    <div style="display:flex; gap:24px; align-items:stretch;">
+      <div style="flex:0 0 400px; width:400px; border:1px solid var(--c-border-subtle); border-radius:24px; padding:28px; display:flex; flex-direction:column; gap:36px;" id="ngTextPanel">
+        <div class="ng-group">
+          <div class="ng-h1">Swipe direction</div>
+          <div class="ng-subgroup">
+            <div>
+              <div class="ng-h2">Down</div>
+              <p class="ng-body">Zoom transitions are dismissed by swiping down at the top of a scroll view.</p>
+            </div>
+            <div>
+              <div class="ng-h2">Edge</div>
+              <p class="ng-body">Swiping the left edge of the screen will also dismiss a fullscreen zoom transition.</p>
+            </div>
+          </div>
+        </div>
+        <div class="ng-group">
+          <div class="ng-h1">Thresholds</div>
+          <div class="ng-subgroup">
+            <div>
+              <div class="ng-h2">Position</div>
+              <p class="ng-body">A swipe beyond 100 points triggers navigation on release. Releasing early reverts the transition. Haptic feedback confirms when the threshold is crossed.</p>
+            </div>
+            <div>
+              <div class="ng-h2">Velocity</div>
+              <p class="ng-body">A swipe faster than 1000 points/second will trigger back navigation on-release.</p>
+            </div>
+          </div>
+        </div>
+        <div class="ng-group">
+          <div class="ng-h1">Gesture driven motion</div>
+          <div class="ng-subgroup">
+            <div>
+              <div class="ng-h2">Resistance</div>
+              <p class="ng-body">Rubber banding is used at the edges of the screen. The further you swipe towards the opposite edge, the less it follows your input.</p>
+            </div>
+            <div>
+              <div class="ng-h2">Scale</div>
+              <p class="ng-body">Elements being dismissed scale down as they're being dismissed.</p>
+            </div>
+            <div>
+              <div class="ng-h2">Scrim</div>
+              <p class="ng-body">Scrims fade out as the element is being dismissed.</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div style="flex:1; min-width:0; background:var(--c-demo-bg); border-radius:24px; display:flex; align-items:center; justify-content:center; padding:32px; position:relative; min-height:580px;" id="ngDemoContainer">
+      <div style="flex:1; min-width:0; background:var(--c-demo-bg); border-radius:24px; display:flex; align-items:center; justify-content:center; padding:32px; position:relative; overflow:hidden;" id="ngDemoContainer">
         <button class="play-circle" id="ngPlayBtn">
           <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
         </button>
@@ -1762,7 +1826,7 @@
 <!-- ── Transition Patterns section ── -->
 <div class="section-wrap" id="sec-transition">
   <h1 class="section-title">Transition Patterns</h1>
-  <p class="section-subtitle">Transitions are used to orient people as they navigate and introduce new content.</p>
+  <p class="section-subtitle">Transitions orient people as they navigate. Most transitions will use one of these patterns:</p>
   <div class="demo-tabs-bar section-chips" id="tpTabsBar">
     <div class="demo-tab tp-tab active" data-tp="zoom">Zoom</div>
     <div class="demo-tab tp-tab" data-tp="slide-in">Slide In</div>
@@ -1816,7 +1880,7 @@
 
 <div class="section-wrap" id="sec-spring">
   <h1 class="section-title">Spring Tokens</h1>
-  <p class="section-subtitle" style="max-width:none; white-space:nowrap;">Springs are used for most animations because they feel smooth and respond naturally to touch. Here are some common examples:</p>
+  <p class="section-subtitle" style="max-width:none; white-space:nowrap;">Springs are used for most animations because they feel smooth and respond to gestures. These are common examples:</p>
   <div class="demo-tabs-bar section-chips">
     <div class="demo-tab active" data-demo="sheet">Sheet</div>
     <div class="demo-tab" data-demo="push">Push</div>
@@ -2430,7 +2494,7 @@
 <!-- ── Curve & Duration Tokens section ── -->
 <div class="section-wrap" id="sec-curve">
   <h1 class="section-title">Curve & Duration Tokens</h1>
-  <p class="section-subtitle" style="max-width:none; white-space:nowrap;">Curves are used for simple animations like fades and basic slides or scales. These are some common Curve & Duration combos:</p>
+  <p class="section-subtitle" style="max-width:none; white-space:nowrap;">Curves are used for simple animations like fades and basic slides or scales. These are common Curve & Duration combos:</p>
   <div class="demo-tabs-bar section-chips" id="bezTabsBar">
     <div class="demo-tab active" data-bez="slow-fade">Slow Fade</div>
     <div class="demo-tab" data-bez="fast-fade">Fast Fade</div>
@@ -2723,6 +2787,84 @@
     </button>
   </div>
 
+</div>
+
+<div class="section-divider"></div>
+
+<!-- ── Accessibility section ── -->
+<div class="section-wrap" id="sec-accessibility">
+  <h1 class="section-title">Accessibility</h1>
+  <p class="section-subtitle" style="white-space:nowrap;">For some, motion can trigger nausea or distractions. Most platforms have controls to reduce or remove motion.</p>
+  <div class="demo-tabs-bar section-chips" id="accTabsBar">
+    <div class="demo-tab acc-tab active" data-acc="reduced-motion">Reduced Motion</div>
+    <div class="demo-tab acc-tab" data-acc="default-motion">Default Motion</div>
+  </div>
+  <div class="section-content">
+    <div style="display:flex; gap:24px; align-items:stretch;">
+      <div style="flex:0 0 400px; width:400px; border:1px solid var(--c-border-subtle); border-radius:24px; padding:28px; display:flex; flex-direction:column; gap:36px;" id="accTextPanel">
+        <div class="ng-group">
+          <div class="ng-h1">Reduced motion</div>
+          <div class="ng-subgroup">
+            <div>
+              <div class="ng-h2">iOS & macOS</div>
+              <p class="ng-body">Dramatic transitions that scale, slide, or use parallax are replaced with simple 150ms fades.</p>
+            </div>
+            <div>
+              <div class="ng-h2">Windows & Android</div>
+              <p class="ng-body">All animation and motion is turned off.</p>
+            </div>
+          </div>
+        </div>
+        <div class="ng-group">
+          <div class="ng-h1">Animated assets</div>
+          <div class="ng-subgroup">
+            <div>
+              <div class="ng-h2">Icons & illustrations</div>
+              <p class="ng-body">Animated illustrations and icons are replaced with static versions.</p>
+            </div>
+            <div>
+              <div class="ng-h2">Video</div>
+              <p class="ng-body">Auto-playing videos are paused.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1; min-width:0; background:var(--c-demo-bg); border-radius:24px; display:flex; align-items:center; justify-content:center; padding:32px; position:relative; overflow:hidden;" id="accDemoContainer">
+        <button class="play-circle" id="accPlayBtn">
+          <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
+        </button>
+        <div class="phone-frame" id="accPhone">
+          <div class="phone-content">
+            <div class="sk-search"></div>
+            <div class="sk-cats">
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+            </div>
+            <div class="sk-divider"></div>
+            <div class="sk-card-img"></div>
+            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+            <div class="sk-sub"></div>
+            <div class="sk-section-label"></div>
+            <div class="sk-card-img partial"></div>
+            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+            <div class="sk-sub"></div>
+            <div class="sk-sub"></div>
+            <div class="sk-card-img partial"></div>
+            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+            <div class="sk-sub"></div>
+          </div>
+          <div class="sk-bottom-nav">
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -3881,9 +4023,56 @@ function tpPlay() {
   // placeholder — patterns will be wired up per tab
 }
 
-const NG_DESCRIPTIONS = {
-  'swipe-down': 'Placeholder description for Swipe Down gesture.',
-  'edge-swipe': 'Placeholder description for Edge Swipe gesture.',
+const NG_PANELS = {
+  'zoom-dismiss': `
+    <div class="ng-group">
+      <div class="ng-h1">Swipe direction</div>
+      <div class="ng-subgroup">
+        <div>
+          <div class="ng-h2">Down</div>
+          <p class="ng-body">Zoom transitions are dismissed by swiping down at the top of a scroll view.</p>
+        </div>
+        <div>
+          <div class="ng-h2">Edge</div>
+          <p class="ng-body">Swiping the left edge of the screen will also dismiss a fullscreen zoom transition.</p>
+        </div>
+      </div>
+    </div>
+    <div class="ng-group">
+      <div class="ng-h1">Thresholds</div>
+      <div class="ng-subgroup">
+        <div>
+          <div class="ng-h2">Position</div>
+          <p class="ng-body">A swipe beyond 100 points triggers navigation on release. Releasing early reverts the transition. Haptic feedback confirms when the threshold is crossed.</p>
+        </div>
+        <div>
+          <div class="ng-h2">Velocity</div>
+          <p class="ng-body">A swipe faster than 1000 points/second will trigger back navigation on-release.</p>
+        </div>
+      </div>
+    </div>
+    <div class="ng-group">
+      <div class="ng-h1">Gesture driven motion</div>
+      <div class="ng-subgroup">
+        <div>
+          <div class="ng-h2">Resistance</div>
+          <p class="ng-body">Rubber banding is used at the edges of the screen. The further you swipe towards the opposite edge, the less it follows your input.</p>
+        </div>
+        <div>
+          <div class="ng-h2">Scale</div>
+          <p class="ng-body">Elements being dismissed scale down as they're being dismissed.</p>
+        </div>
+        <div>
+          <div class="ng-h2">Scrim</div>
+          <p class="ng-body">Scrims fade out as the element is being dismissed.</p>
+        </div>
+      </div>
+    </div>`,
+  'back-navigation': `
+    <div class="ng-group">
+      <div class="ng-h1">Edge swipes</div>
+      <p class="ng-body">On iOS swiping the left edge of the screen will navigate back using direct manipulation. Android uses both edges of the screen to go back, but does not use direct manipulation. Instead, edge swipes trigger a back transition on-release.</p>
+    </div>`,
 };
 
 document.querySelectorAll('.ng-tab').forEach(tab => {
@@ -3891,12 +4080,22 @@ document.querySelectorAll('.ng-tab').forEach(tab => {
     if (tab.classList.contains('active')) return;
     document.querySelectorAll('.ng-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
-    const desc = NG_DESCRIPTIONS[tab.dataset.ng];
-    if (desc) document.getElementById('ngBodyCopy').textContent = desc;
+    const html = NG_PANELS[tab.dataset.ng];
+    if (html) document.getElementById('ngTextPanel').innerHTML = html;
   });
 });
 document.getElementById('ngPlayBtn').addEventListener('click', () => {});
 document.getElementById('ngPhone').addEventListener('click', () => {});
+
+document.querySelectorAll('.acc-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    if (tab.classList.contains('active')) return;
+    document.querySelectorAll('.acc-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+document.getElementById('accPlayBtn').addEventListener('click', () => {});
+document.getElementById('accPhone').addEventListener('click', () => {});
 
 document.getElementById('tpPlayBtn').addEventListener('click', tpPlay);
 document.getElementById('tpPhone').addEventListener('click', tpPlay);
@@ -3925,6 +4124,7 @@ const NAV_SECTIONS = [
   { id: 'sec-transition', label: 'Transition Patterns' },
   { id: 'sec-spring',     label: 'Spring Tokens' },
   { id: 'sec-curve',      label: 'Curve & Duration' },
+  { id: 'sec-accessibility', label: 'Accessibility' },
 ];
 
 document.querySelectorAll('.nav-item[data-target]').forEach(item => {
