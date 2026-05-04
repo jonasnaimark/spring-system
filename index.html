@@ -15,7 +15,7 @@
       min-height: 100vh;
     }
 
-/* ── View toggle ── */
+/* ── Theme toggle ── */
     .view-toggle {
       display: flex;
       background: var(--c-surface-0);
@@ -41,11 +41,6 @@
       transition: all 0.15s;
     }
 
-    .view-btn.active {
-      background: var(--c-surface-3);
-      color: var(--c-text-primary);
-    }
-
     [data-theme="dark"] .view-toggle {
       background: var(--c-surface-1);
       box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 0 0 1px var(--c-border-subtle);
@@ -55,118 +50,9 @@
       color: var(--c-text-secondary);
     }
 
-    [data-theme="dark"] .view-btn.active {
-      background: var(--c-surface-3);
-      color: var(--c-text-primary);
-    }
-
     #themeToggle { color: var(--c-text-primary); }
 
     .view-btn svg { display: block; }
-
-    /* ── List view ── */
-    #tokenList {
-      display: none;
-      flex-direction: column;
-      flex: 1;
-    }
-
-    .list-wrap {
-      background: var(--c-surface-0);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
-      border: 1px solid var(--c-border-subtle);
-    }
-
-    .list-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .list-table thead th {
-      background: var(--c-surface-1);
-      padding: 10px 16px;
-      text-align: left;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--c-text-quaternary);
-      border-bottom: 1px solid var(--c-border-subtle);
-      white-space: nowrap;
-    }
-
-    .list-table thead th:last-child { text-align: right; }
-
-    .list-group-row td {
-      background: var(--c-surface-3);
-      padding: 7px 16px;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--c-text-secondary);
-      border-top: 1px solid var(--c-border-subtle);
-      border-bottom: 1px solid var(--c-border-subtle);
-    }
-
-    .list-data-row {
-      cursor: pointer;
-      transition: background 0.1s;
-    }
-    .list-data-row:hover td  { background: var(--c-surface-2); }
-    .list-data-row.selected td { background: var(--c-accent-dim); }
-    .list-data-row td {
-      padding: 0 16px;
-      height: 40px;
-      vertical-align: middle;
-      border-bottom: 1px solid var(--c-border-faint);
-    }
-    .list-data-row:last-child td { border-bottom: none; }
-
-    .list-td-speed {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--c-text-primary);
-      padding-left: 24px !important;
-      white-space: nowrap;
-    }
-
-    .list-td-mono {
-      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
-      font-size: 12px;
-      color: var(--c-text-secondary);
-      white-space: nowrap;
-    }
-
-    .list-td-copy { text-align: right; white-space: nowrap; }
-
-    .list-copy-btn {
-      padding: 3px 10px;
-      border-radius: 7px;
-      background: var(--c-surface-3);
-      border: 1px solid var(--c-border-subtle);
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--c-text-tertiary);
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.12s;
-    }
-    .list-copy-btn:hover  { background: var(--c-surface-2); color: var(--c-text-primary); }
-    .list-copy-btn.copied { background: #34c759; border-color: #34c759; color: #fff; }
-
-    .list-token-chip {
-      display: inline-block;
-      font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
-      font-size: 10px;
-      color: var(--c-text-tertiary);
-      background: var(--c-surface-3);
-      border-radius: 20px;
-      padding: 3px 8px;
-      white-space: nowrap;
-    }
 
     /* ── Toast ── */
     .toast {
@@ -1466,6 +1352,8 @@
       border: 5px solid #1c1c1e;
       border-radius: 20px;
       background: var(--c-surface-0);
+      display: flex;
+      overflow: hidden;
     }
 
     [data-theme="dark"] .desktop-bezel {
@@ -1548,6 +1436,97 @@
       background: var(--sk);
     }
 
+    /* ── Fast fade single card ── */
+    .ff-card-wrap {
+      position: relative;
+      width: 260px;
+    }
+
+    .ff-layer {
+      width: 100%;
+      border-radius: 20px;
+      outline: 1px solid var(--c-border-subtle);
+      background: var(--c-surface-0);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ff-layer--loaded {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      opacity: 0;
+    }
+
+    .ff-layer--sk {
+      visibility: visible;
+    }
+
+
+    .ff-img {
+      width: calc(100% - 16px);
+      height: 168px;
+      margin: 8px 8px 0;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+
+    .ff-img--sk { background: var(--sk); }
+    .ff-img--loaded { background: #b5d5f5; }
+
+    .ff-body {
+      padding: 12px 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* skeleton rows — sized to match rendered height of each text line */
+    .ff-sk-row {
+      border-radius: 6px;
+      background: var(--sk);
+      flex-shrink: 0;
+    }
+    /* title: 13px × 1 lh = 13px tall, +6px below gap */
+    .ff-sk-row--title  { width: 80%; height: 13px; margin: 0 0 14px; }
+    /* sub: 12px × 1 lh = 12px, +6px below */
+    .ff-sk-row--sub    { width: 55%; height: 12px; margin: 0 0 8px; }
+    /* rating: same */
+    .ff-sk-row--rating { width: 45%; height: 12px; margin: 0 0 8px; }
+    /* price: same, no gap after */
+    .ff-sk-row--price  { width: 40%; height: 12px; margin: 0; }
+
+    /* loaded content */
+    .ff-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--c-text-primary);
+      letter-spacing: -0.01em;
+      line-height: 1;
+      margin: 0 0 14px;
+    }
+    .ff-sub {
+      font-size: 12px;
+      line-height: 1;
+      color: var(--c-text-tertiary);
+      margin: 0 0 8px;
+    }
+    .ff-rating {
+      font-size: 12px;
+      line-height: 1;
+      color: var(--c-text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin: 0 0 8px;
+    }
+    .ff-price {
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--c-text-primary);
+      margin: 0;
+    }
+
     .dt-grid {
       flex: 1;
       display: grid;
@@ -1597,25 +1576,6 @@
 <div style="max-width:1280px; margin:0 auto; padding:24px 48px 4px; display:flex; align-items:center; justify-content:space-between;">
   <h1 style="font-size:28px; font-weight:700; letter-spacing:-0.03em; color:var(--c-text-primary);">Spring Tokens</h1>
   <div style="display:flex; align-items:center; gap:8px;">
-    <!-- View toggle -->
-    <div class="view-toggle">
-      <button class="view-btn active" id="btnGrid" title="Grid view">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <rect x="0" y="0" width="6" height="6" rx="1.5" fill="currentColor"/>
-          <rect x="8" y="0" width="6" height="6" rx="1.5" fill="currentColor"/>
-          <rect x="0" y="8" width="6" height="6" rx="1.5" fill="currentColor"/>
-          <rect x="8" y="8" width="6" height="6" rx="1.5" fill="currentColor"/>
-        </svg>
-      </button>
-      <button class="view-btn" id="btnList" title="List view">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <rect x="0" y="1" width="14" height="2" rx="1" fill="currentColor"/>
-          <rect x="0" y="6" width="14" height="2" rx="1" fill="currentColor"/>
-          <rect x="0" y="11" width="14" height="2" rx="1" fill="currentColor"/>
-        </svg>
-      </button>
-    </div>
-    <!-- Theme toggle -->
     <div class="view-toggle">
       <button id="themeToggle" class="view-btn" title="Toggle dark mode">
         <svg id="iconDark" xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
@@ -2228,23 +2188,6 @@
         <div class="axis-x-label">Speed</div>
       </div>
     </div>
-    <div id="tokenList" style="display:none">
-      <div class="list-wrap">
-        <table class="list-table">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Token</th>
-              <th>Stiffness</th>
-              <th>Ratio</th>
-              <th>Damping</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="listBody"></tbody>
-        </table>
-      </div>
-    </div>
   </div>
 
   </div><!-- end .main-columns -->
@@ -2270,7 +2213,7 @@
   <div class="speed-group" id="bezGrid" style="display:flex; flex-direction:column; gap:0; padding-top:4px;">
 
     <!-- Duration token chips -->
-    <div style="font-size:11px; font-weight:600; color:var(--c-text-tertiary); letter-spacing:0.02em; margin-bottom:14px; margin-top:16px;">Durations</div>
+    <div style="font-size:11px; font-weight:600; color:var(--c-text-secondary); letter-spacing:0.02em; margin-bottom:14px; margin-top:16px;">Durations</div>
     <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; padding-bottom:16px;">
       <div class="dur-card" data-dur="100"><div class="dur-label">100ms</div><div class="card-token-name" style="margin:0;">duration.100</div></div>
       <div class="dur-card" data-dur="150"><div class="dur-label">150ms</div><div class="card-token-name" style="margin:0;">duration.150</div></div>
@@ -2284,10 +2227,10 @@
     <div style="border-top: 1px solid var(--c-border-subtle); margin-bottom:16px;"></div>
 
     <!-- Curve cards -->
-    <div style="font-size:11px; font-weight:600; color:var(--c-text-tertiary); letter-spacing:0.02em; margin-bottom:14px; margin-top:4px;">Curves</div>
+    <div style="font-size:11px; font-weight:600; color:var(--c-text-secondary); letter-spacing:0.02em; margin-bottom:14px; margin-top:4px;">Curves</div>
     <div class="speed-cards" style="grid-template-columns: 1fr;">
 
-      <div class="token-card selected" id="bez-standard" onclick="selectBez('standard')" style="flex-direction:row; align-items:center;">
+      <div class="token-card selected" id="bez-standard" style="flex-direction:row; align-items:center;">
         <div style="flex:1; display:flex; flex-direction:column;">
           <div class="card-char-label">Standard</div>
           <div class="card-token-name">standard.curve</div>
@@ -2310,7 +2253,7 @@
         </div>
       </div>
 
-      <div class="token-card" id="bez-linear" onclick="selectBez('linear')" style="flex-direction:row; align-items:center;">
+      <div class="token-card" id="bez-linear" style="flex-direction:row; align-items:center;">
         <div style="flex:1; display:flex; flex-direction:column;">
           <div class="card-char-label">Linear</div>
           <div class="card-token-name">linear.curve</div>
@@ -2333,7 +2276,7 @@
         </div>
       </div>
 
-      <div class="token-card" id="bez-exit" onclick="selectBez('exit')" style="flex-direction:row; align-items:center;">
+      <div class="token-card" id="bez-exit" style="flex-direction:row; align-items:center;">
         <div style="flex:1; display:flex; flex-direction:column;">
           <div class="card-char-label">Exit</div>
           <div class="card-token-name">exit.curve</div>
@@ -2356,7 +2299,7 @@
         </div>
       </div>
 
-      <div class="token-card" id="bez-enter" onclick="selectBez('enter')" style="flex-direction:row; align-items:center;">
+      <div class="token-card" id="bez-enter" style="flex-direction:row; align-items:center;">
         <div style="flex:1; display:flex; flex-direction:column;">
           <div class="card-char-label">Enter</div>
           <div class="card-token-name">enter.curve</div>
@@ -2385,8 +2328,9 @@
   <!-- Desktop demo area -->
   <div class="bez-demo-panel">
     <div class="desktop-bezel">
-      <div class="dt-ui">
-        <!-- Top bar -->
+
+      <!-- Slow fade UI: grid -->
+      <div class="dt-ui" id="sfUI" style="flex:1;">
         <div class="dt-topbar">
           <div class="dt-logo"></div>
           <div class="dt-search"></div>
@@ -2396,7 +2340,6 @@
             <div class="dt-nav-icon dt-nav-icon--avatar"></div>
           </div>
         </div>
-        <!-- Category pills -->
         <div class="dt-pills">
           <div class="dt-pill dt-pill--active"></div>
           <div class="dt-pill"></div>
@@ -2405,7 +2348,6 @@
           <div class="dt-pill"></div>
           <div class="dt-pill"></div>
         </div>
-        <!-- Card grid -->
         <div class="dt-grid">
           <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:30%; background:var(--sk); border-radius:4px; margin-top:8px;"></div>
           <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
@@ -2419,6 +2361,129 @@
           <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
         </div>
       </div>
+
+      <!-- Modal enter UI: same grid as slow fade + floating modal -->
+      <div id="meUI" style="display:none; flex:1; position:relative; overflow:hidden;">
+        <div class="dt-ui" style="flex:1;">
+          <div class="dt-topbar">
+            <div class="dt-logo"></div>
+            <div class="dt-search"></div>
+            <div class="dt-nav-icons">
+              <div class="dt-nav-icon"></div>
+              <div class="dt-nav-icon"></div>
+              <div class="dt-nav-icon dt-nav-icon--avatar"></div>
+            </div>
+          </div>
+          <div class="dt-pills">
+            <div class="dt-pill dt-pill--active"></div>
+            <div class="dt-pill"></div>
+            <div class="dt-pill"></div>
+            <div class="dt-pill"></div>
+            <div class="dt-pill"></div>
+            <div class="dt-pill"></div>
+          </div>
+          <div class="dt-grid">
+            <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:30%; background:var(--sk); border-radius:4px; margin-top:8px;"></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+            <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:25%; background:var(--sk); border-radius:4px; margin-top:16px;"></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+          </div>
+        </div>
+        <!-- scrim -->
+        <div id="meScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:0;pointer-events:none;"></div>
+        <!-- floating modal -->
+        <div id="meModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 50px));background:var(--c-surface-0);border-radius:16px;padding:20px 20px 24px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
+          <div style="height:10px;width:60%;background:var(--sk);border-radius:5px;margin-bottom:16px;"></div>
+          <div style="height:120px;width:100%;background:var(--sk);border-radius:8px;margin-bottom:14px;"></div>
+          <div style="height:7px;width:90%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+          <div style="height:7px;width:70%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+          <div style="height:7px;width:80%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+          <div style="height:7px;width:55%;background:var(--sk);border-radius:4px;margin-bottom:20px;"></div>
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;height:34px;background:var(--c-text-primary);border-radius:10px;opacity:0.12;"></div>
+            <div style="flex:1;height:34px;background:var(--sk);border-radius:10px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal exit UI: same grid + modal starts visible -->
+      <div id="mxUI" style="display:none; flex:1; position:relative; overflow:hidden;">
+        <div class="dt-ui" style="flex:1;">
+          <div class="dt-topbar">
+            <div class="dt-logo"></div>
+            <div class="dt-search"></div>
+            <div class="dt-nav-icons">
+              <div class="dt-nav-icon"></div>
+              <div class="dt-nav-icon"></div>
+              <div class="dt-nav-icon dt-nav-icon--avatar"></div>
+            </div>
+          </div>
+          <div class="dt-pills">
+            <div class="dt-pill dt-pill--active"></div>
+            <div class="dt-pill"></div>
+            <div class="dt-pill"></div>
+            <div class="dt-pill"></div>
+            <div class="dt-pill"></div>
+            <div class="dt-pill"></div>
+          </div>
+          <div class="dt-grid">
+            <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:30%; background:var(--sk); border-radius:4px; margin-top:8px;"></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+            <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:25%; background:var(--sk); border-radius:4px; margin-top:16px;"></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+          </div>
+        </div>
+        <div id="mxScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:1;pointer-events:none;"></div>
+        <div id="mxModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(-50%);background:var(--c-surface-0);border-radius:16px;padding:20px 20px 24px;opacity:1;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
+          <div style="height:10px;width:60%;background:var(--sk);border-radius:5px;margin-bottom:16px;"></div>
+          <div style="height:120px;width:100%;background:var(--sk);border-radius:8px;margin-bottom:14px;"></div>
+          <div style="height:7px;width:90%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+          <div style="height:7px;width:70%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+          <div style="height:7px;width:80%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+          <div style="height:7px;width:55%;background:var(--sk);border-radius:4px;margin-bottom:20px;"></div>
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;height:34px;background:var(--c-text-primary);border-radius:10px;opacity:0.12;"></div>
+            <div style="flex:1;height:34px;background:var(--sk);border-radius:10px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fast fade UI: single card -->
+      <div id="ffUI" style="display:none; flex:1; align-items:center; justify-content:center;">
+        <div class="ff-card-wrap" id="ffCardWrap">
+          <div class="ff-layer ff-layer--sk">
+            <div class="ff-img ff-img--sk"></div>
+            <div class="ff-body">
+              <div class="ff-sk-row ff-sk-row--title"></div>
+              <div class="ff-sk-row ff-sk-row--sub"></div>
+              <div class="ff-sk-row ff-sk-row--rating"></div>
+              <div class="ff-sk-row ff-sk-row--price"></div>
+            </div>
+          </div>
+          <div class="ff-layer ff-layer--loaded" id="ffLoaded">
+            <div class="ff-img ff-img--loaded"></div>
+            <div class="ff-body">
+              <div class="ff-title">Cozy loft in the Mission</div>
+              <div class="ff-sub">San Francisco · 2 guests</div>
+              <div class="ff-rating">★ 4.92 · 128 reviews</div>
+              <div class="ff-price">$189 <span style="font-weight:400; color:var(--c-text-tertiary);">/ night</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <button class="play-circle" id="bezPlayBtn">
       <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
@@ -2536,7 +2601,10 @@ for (const c of CHARS) {
       <div class="card-meta"><span class="card-meta-label">S:</span>${stiffness} · <span class="card-meta-label">DR:</span>${c.ratio} · <span class="card-meta-label">D:</span>${damping}</div>
     `;
 
-    card.addEventListener('click', () => selectSpring(name, stiffness, damping, c.ratio, card, c.color));
+    card.addEventListener('click', () => {
+      if (card.classList.contains('selected')) { playDemo(); return; }
+      selectSpring(name, stiffness, damping, c.ratio, card, c.color, { play: false });
+    });
     row.appendChild(card);
   }
 
@@ -2565,9 +2633,7 @@ class SpringSim {
 // ── Select spring ────────────────────────────────────────────────
 function selectSpring(name, stiffness, damping, ratio, cardEl, color, { play = true } = {}) {
   document.querySelectorAll('#tokenGrid .token-card').forEach(c => c.classList.remove('selected'));
-  document.querySelectorAll('.list-data-row').forEach(r => r.classList.remove('selected'));
   cardEl?.classList.add('selected');
-  document.getElementById(`list-row-${name}`)?.classList.add('selected');
 
   selected = { name, stiffness, damping, ratio };
 
@@ -2648,6 +2714,8 @@ function switchDemo(demo) {
 
 document.querySelectorAll('.demo-tab[data-demo]').forEach(tab => {
   tab.addEventListener('click', () => {
+    const alreadyActive = tab.classList.contains('active');
+    if (alreadyActive) { playDemo(); return; }
     switchDemo(tab.dataset.demo);
     history.replaceState(null, '', `#${tab.dataset.demo}`);
   });
@@ -3245,78 +3313,6 @@ function drawSparkline(canvas, stiffness, damping, color) {
   ctx.stroke();
 }
 
-const listBody = document.getElementById('listBody');
-
-for (const c of CHARS) {
-  const groupRow = document.createElement('tr');
-  groupRow.className = 'list-group-row';
-  const groupTd = document.createElement('td');
-  groupTd.colSpan = 6;
-  groupTd.textContent = c.label;
-  groupRow.appendChild(groupTd);
-  listBody.appendChild(groupRow);
-
-  for (const s of SPEEDS) {
-    const stiffness = Math.round(s.stiffness * c.stiffnessMul);
-    const damping = calcDamping(stiffness, c.ratio);
-    const name = `${s.key}-${c.key}`;
-
-    const row = document.createElement('tr');
-    row.className = 'list-data-row';
-    row.id = `list-row-${name}`;
-
-    const tdChar = document.createElement('td');
-    tdChar.className = 'list-td-speed';
-    tdChar.textContent = s.label;
-
-    const tdToken = document.createElement('td');
-    const chip = document.createElement('span');
-    chip.className = 'list-token-chip';
-    chip.textContent = name;
-    tdToken.appendChild(chip);
-
-    const tdStiff = document.createElement('td');
-    tdStiff.className = 'list-td-mono';
-    tdStiff.textContent = stiffness;
-
-    const tdRatio = document.createElement('td');
-    tdRatio.className = 'list-td-mono';
-    tdRatio.textContent = c.ratio;
-
-    const tdDamp = document.createElement('td');
-    tdDamp.className = 'list-td-mono';
-    tdDamp.textContent = damping;
-
-    const tdCopy = document.createElement('td');
-    tdCopy.className = 'list-td-copy';
-    const copyBtn = document.createElement('button');
-    copyBtn.className = 'list-copy-btn';
-    copyBtn.textContent = 'Copy';
-    copyBtn.addEventListener('click', e => { e.stopPropagation(); copyToken(name, copyBtn); });
-    tdCopy.appendChild(copyBtn);
-
-    row.appendChild(tdChar);
-    row.appendChild(tdToken);
-    row.appendChild(tdStiff);
-    row.appendChild(tdRatio);
-    row.appendChild(tdDamp);
-    row.appendChild(tdCopy);
-    listBody.appendChild(row);
-
-    row.addEventListener('click', () => {
-      document.querySelectorAll('#tokenGrid .token-card').forEach(c => c.classList.remove('selected'));
-      document.querySelectorAll('.list-data-row').forEach(r => r.classList.remove('selected'));
-      row.classList.add('selected');
-      document.getElementById(`card-${name}`)?.classList.add('selected');
-      selectSpring(name, stiffness, damping, c.ratio, document.getElementById(`card-${name}`) ?? row, c.color);
-    });
-  }
-}
-
-// ── View toggle ───────────────────────────────────────────────────
-const tokenGrid = document.getElementById('tokenGrid');
-const tokenList = document.getElementById('tokenList');
-
 function springAnimate(from, to, stiffness, damping, onUpdate, onDone) {
   const start = performance.now();
   let raf;
@@ -3335,28 +3331,6 @@ function springAnimate(from, to, stiffness, damping, onUpdate, onDone) {
   return () => cancelAnimationFrame(raf);
 }
 
-function switchView(showList) {
-  tokenGrid.style.display = showList ? 'none' : 'flex';
-  tokenList.style.display = showList ? 'flex' : 'none';
-  document.getElementById('axisY').style.display = showList ? 'none' : '';
-  document.getElementById('axisX').style.display = showList ? 'none' : '';
-  document.getElementById('tokenAxisWrap').style.paddingBottom = showList ? '0' : '';
-}
-
-document.getElementById('btnGrid').addEventListener('click', () => {
-  if (tokenGrid.style.display !== 'none') return;
-  document.getElementById('btnGrid').classList.add('active');
-  document.getElementById('btnList').classList.remove('active');
-  switchView(false);
-});
-
-document.getElementById('btnList').addEventListener('click', () => {
-  if (tokenList.style.display !== 'none') return;
-  document.getElementById('btnList').classList.add('active');
-  document.getElementById('btnGrid').classList.remove('active');
-  switchView(true);
-});
-
 // ── Trigger all minis on load ─────────────────────────────────────
 setTimeout(() => {
   for (const c of CHARS) {
@@ -3374,12 +3348,10 @@ let activeBezDuration = 500;
 
 document.querySelectorAll('.dur-card').forEach(card => {
   card.addEventListener('click', () => {
+    if (card.classList.contains('selected')) { runBezDemo(); return; }
     document.querySelectorAll('.dur-card').forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     activeBezDuration = parseInt(card.dataset.dur);
-    const activeTab = document.querySelector('#bezTabsBar .demo-tab.active');
-    if (activeTab?.dataset.bez === 'slow-fade') playSlowFade();
-    if (activeTab?.dataset.bez === 'fast-fade') playFastFade();
   });
 });
 
@@ -3397,24 +3369,39 @@ function selectBez(key) {
   BEZ_IDS.forEach(id => document.getElementById(id)?.classList.remove('selected'));
   document.getElementById(`bez-${key}`)?.classList.add('selected');
   activeBezCurve = key;
-  // replay the active demo tab with the new curve
-  const activeTab = document.querySelector('#bezTabsBar .demo-tab.active');
-  if (activeTab?.dataset.bez === 'slow-fade') playSlowFade();
-  if (activeTab?.dataset.bez === 'fast-fade') playFastFade();
 }
+
+BEZ_IDS.forEach(id => {
+  const key = id.replace('bez-', '');
+  document.getElementById(id)?.addEventListener('click', () => {
+    if (document.getElementById(id)?.classList.contains('selected')) { runBezDemo(); return; }
+    selectBez(key);
+  });
+});
 
 // ── Bezier demo tabs ──────────────────────────────────────────────
 document.querySelectorAll('#bezTabsBar .demo-tab').forEach(tab => {
   tab.addEventListener('click', () => {
+    const key = tab.dataset.bez;
+    if (tab.classList.contains('active')) { runBezDemo(); return; }
     document.querySelectorAll('#bezTabsBar .demo-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
-    const key = tab.dataset.bez;
     history.replaceState(null, '', `#${key}`);
     if (key === 'fast-fade') {
-      selectBez('linear');
+      activateFastFade();
+    } else if (key === 'modal-enter') {
+      activateModalEnter();
+    } else if (key === 'modal-exit') {
+      activateModalExit();
+    } else if (key === 'slow-fade') {
+      document.getElementById('sfUI').style.display = '';
+      document.getElementById('ffUI').style.display = 'none';
+      document.getElementById('meUI').style.display = 'none';
+      document.getElementById('mxUI').style.display = 'none';
+      selectBez('standard');
       document.querySelectorAll('.dur-card').forEach(c => c.classList.remove('selected'));
-      document.querySelector('.dur-card[data-dur="150"]')?.classList.add('selected');
-      activeBezDuration = 150;
+      document.querySelector('.dur-card[data-dur="500"]')?.classList.add('selected');
+      activeBezDuration = 500;
     }
   });
 });
@@ -3450,31 +3437,169 @@ function playSlowFade() {
   }, 50);
 }
 
-setTimeout(playSlowFade, 300);
-
-const FAST_FADE_COLORS = ['#b5d5f5', '#c5e8c5', '#f5c5d5', '#e8d5b5', '#d5c5e8', '#b5e8e0', '#f5e0b5', '#c5d5f5'];
+// ── Fast Fade demo ────────────────────────────────────────────────
 let fastFadeToggle = false;
 
 function playFastFade() {
-  const imgs = Array.from(document.querySelectorAll('.dt-grid .dt-card-img'));
-  const easing = BEZ_CURVES[activeBezCurve] ?? BEZ_CURVES.linear;
-  const dur = activeBezDuration;
+  const loaded = document.getElementById('ffLoaded');
+  if (!loaded) return;
   fastFadeToggle = !fastFadeToggle;
+  loaded.style.transition = `opacity ${activeBezDuration}ms ${BEZ_CURVES[activeBezCurve] ?? BEZ_CURVES.linear}`;
+  loaded.style.opacity = fastFadeToggle ? '1' : '0';
+}
 
-  imgs.forEach((img, i) => {
-    img.style.transition = `background ${dur}ms ${easing}`;
-    img.style.background = fastFadeToggle ? FAST_FADE_COLORS[i % FAST_FADE_COLORS.length] : 'var(--sk)';
-  });
+function activateFastFade() {
+  document.getElementById('sfUI').style.display = 'none';
+  document.getElementById('ffUI').style.display = 'flex';
+  document.getElementById('meUI').style.display = 'none';
+  document.getElementById('mxUI').style.display = 'none';
+  selectBez('linear');
+  document.querySelectorAll('.dur-card').forEach(c => c.classList.remove('selected'));
+  document.querySelector('.dur-card[data-dur="100"]')?.classList.add('selected');
+  activeBezDuration = 100;
+  fastFadeToggle = false;
+  const loaded = document.getElementById('ffLoaded');
+  if (loaded) { loaded.style.transition = 'none'; loaded.style.opacity = '0'; }
 }
 
 function runBezDemo() {
-  const activeTab = document.querySelector('#bezTabsBar .demo-tab.active');
-  if (activeTab?.dataset.bez === 'slow-fade') playSlowFade();
-  if (activeTab?.dataset.bez === 'fast-fade') playFastFade();
+  const key = document.querySelector('#bezTabsBar .demo-tab.active')?.dataset.bez;
+  if (key === 'slow-fade') playSlowFade();
+  if (key === 'fast-fade') playFastFade();
+  if (key === 'modal-enter') playModalEnter();
+  if (key === 'modal-exit') playModalExit();
+}
+
+// ── Modal enter demo ──────────────────────────────────────────────
+let modalEnterState = 'out'; // 'out' | 'in'
+
+function activateModalEnter() {
+  document.getElementById('sfUI').style.display = 'none';
+  document.getElementById('ffUI').style.display = 'none';
+  document.getElementById('meUI').style.display = 'flex';
+  document.getElementById('mxUI').style.display = 'none';
+  selectBez('enter');
+  document.querySelectorAll('.dur-card').forEach(c => c.classList.remove('selected'));
+  document.querySelector('.dur-card[data-dur="300"]')?.classList.add('selected');
+  activeBezDuration = 300;
+  // reset modal to hidden state
+  modalEnterState = 'out';
+  const modal = document.getElementById('meModal');
+  const scrim = document.getElementById('meScrim');
+  modal.style.transition = 'none';
+  scrim.style.transition = 'none';
+  modal.style.opacity = '0';
+  modal.style.transform = 'translateY(calc(-50% + 50px))';
+  scrim.style.opacity = '0';
+}
+
+function playModalEnter() {
+  const modal = document.getElementById('meModal');
+  const scrim = document.getElementById('meScrim');
+  if (!modal) return;
+
+  const easing = BEZ_CURVES[activeBezCurve] ?? BEZ_CURVES.enter;
+  const dur = activeBezDuration;
+
+  if (modalEnterState === 'out') {
+    modal.style.transition = 'none';
+    scrim.style.transition = 'none';
+    modal.style.opacity = '0';
+    modal.style.transform = 'translateY(calc(-50% + 50px))';
+    scrim.style.opacity = '0';
+    modal.offsetHeight; // reflow
+    modal.style.transition = `opacity 100ms linear, transform ${dur}ms ${easing}`;
+    scrim.style.transition = `opacity 100ms linear`;
+    modal.style.opacity = '1';
+    modal.style.transform = 'translateY(-50%)';
+    scrim.style.opacity = '1';
+    modalEnterState = 'in';
+  } else {
+    modal.style.transition = 'opacity 100ms linear';
+    scrim.style.transition = 'opacity 100ms linear';
+    modal.style.opacity = '0';
+    scrim.style.opacity = '0';
+    setTimeout(() => {
+      modal.style.transition = 'none';
+      modal.style.transform = 'translateY(calc(-50% + 50px))';
+      modalEnterState = 'out';
+      playModalEnter();
+    }, 110);
+  }
+}
+
+// ── Modal exit demo ───────────────────────────────────────────────
+function activateModalExit() {
+  document.getElementById('sfUI').style.display = 'none';
+  document.getElementById('ffUI').style.display = 'none';
+  document.getElementById('meUI').style.display = 'none';
+  document.getElementById('mxUI').style.display = 'flex';
+  selectBez('exit');
+  document.querySelectorAll('.dur-card').forEach(c => c.classList.remove('selected'));
+  document.querySelector('.dur-card[data-dur="150"]')?.classList.add('selected');
+  activeBezDuration = 150;
+  // reset modal to visible state
+  modalExitState = 'in';
+  const modal = document.getElementById('mxModal');
+  const scrim = document.getElementById('mxScrim');
+  modal.style.transition = 'none';
+  scrim.style.transition = 'none';
+  modal.style.opacity = '1';
+  modal.style.transform = 'translateY(-50%)';
+  scrim.style.opacity = '1';
+}
+
+let modalExitState = 'in'; // 'in' | 'out'
+
+function playModalExit() {
+  const modal = document.getElementById('mxModal');
+  const scrim = document.getElementById('mxScrim');
+  if (!modal) return;
+
+  const easing = BEZ_CURVES[activeBezCurve] ?? BEZ_CURVES.exit;
+  const dur = activeBezDuration;
+
+  if (modalExitState === 'in') {
+    // slide down with exit curve, fade out after 50ms delay
+    modal.style.transition = `transform ${dur}ms ${easing}, opacity 100ms linear 50ms`;
+    scrim.style.transition = `opacity 100ms linear 50ms`;
+    modal.style.transform = 'translateY(calc(-50% + 50px))';
+    modal.style.opacity = '0';
+    scrim.style.opacity = '0';
+    modalExitState = 'out';
+  } else {
+    // fade in, pause 150ms, then play exit
+    modal.style.transition = 'none';
+    scrim.style.transition = 'none';
+    modal.style.transform = 'translateY(-50%)';
+    modal.offsetHeight; // reflow
+    modal.style.transition = 'opacity 150ms linear';
+    scrim.style.transition = 'opacity 150ms linear';
+    modal.style.opacity = '1';
+    scrim.style.opacity = '1';
+    modalExitState = 'in';
+    setTimeout(() => playModalExit(), 150 + 150); // 150ms fade-in + 150ms pause
+  }
 }
 
 document.getElementById('bezPlayBtn').addEventListener('click', runBezDemo);
 document.getElementById('springPlayBtn').addEventListener('click', playDemo);
+document.getElementById('ffCardWrap').addEventListener('click', playFastFade);
+
+// ── Restore bezier tab from URL hash ─────────────────────────────
+const hashBez = location.hash.slice(1);
+if (hashBez && document.querySelector(`#bezTabsBar .demo-tab[data-bez="${hashBez}"]`)) {
+  document.querySelectorAll('#bezTabsBar .demo-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`#bezTabsBar .demo-tab[data-bez="${hashBez}"]`).classList.add('active');
+  if (hashBez === 'fast-fade') activateFastFade();
+  if (hashBez === 'modal-enter') activateModalEnter();
+  if (hashBez === 'modal-exit') activateModalExit();
+}
+
+setTimeout(() => {
+  const key = document.querySelector('#bezTabsBar .demo-tab.active')?.dataset.bez;
+  if (!key || key === 'slow-fade') playSlowFade();
+}, 300);
 
 // ── Match phone frame height to card grid height ──────────────────
 const demoPanel = document.querySelector('.demo-panel');
