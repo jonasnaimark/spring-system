@@ -3752,7 +3752,7 @@ if (hashBez && document.querySelector(`#bezTabsBar .demo-tab[data-bez="${hashBez
 
 setTimeout(() => {
   const key = document.querySelector('#bezTabsBar .demo-tab.active')?.dataset.bez;
-  if (!key || key === 'slow-fade') playSlowFade();
+  if (!key || key === 'slow-fade') { markBezDefaults('standard', 500); playSlowFade(); }
 }, 300);
 
 // ── Match phone frame height to card grid height ──────────────────
