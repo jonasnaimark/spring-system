@@ -3,10 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spring Tokens</title>
+  <title>Motion System</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🌀</text></svg>">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Global scrollbar */
+    html { scrollbar-gutter: stable; }
+    * { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.15) rgba(0,0,0,0.06); }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; box-shadow: inset 1px 0 0 rgba(0,0,0,0.1); }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 99px; }
 
     body {
       background: var(--c-bg);
@@ -82,11 +89,80 @@
     .main {
       max-width: 1280px;
       margin: 0 auto;
-      padding: 16px 48px 40px;
+      padding: 0 48px 48px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 0;
     }
+
+    /* ── Shared section layout ── */
+    .section-wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 48px 0;
+    }
+    .section-wrap + .section-wrap {
+      padding-top: 28px;
+    }
+    .section-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--c-text-primary);
+      margin: 0 0 20px;
+    }
+    .section-chips {
+      margin-bottom: 16px;
+    }
+    .section-content {
+      padding-bottom: 48px;
+    }
+
+    /* ── Top nav ── */
+    body { padding-top: 68px; }
+    .topnav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: var(--c-surface-0);
+      box-shadow: 0 1px 0 var(--c-border-subtle);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .topnav-inner {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .topnav-theme {
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .topnav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .topnav-links::-webkit-scrollbar { display: none; }
+    .topnav .nav-item {
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--c-text-secondary);
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.12s, color 0.12s;
+      user-select: none;
+    }
+    .topnav .nav-item:hover { background: var(--c-surface-2); color: var(--c-text-primary); }
+    .topnav .nav-item.active { background: var(--c-text-primary); color: var(--c-surface-0); font-weight: 600; }
 
     .main-columns {
       display: flex;
@@ -143,13 +219,14 @@
       transition: background 0.15s, filter 0.15s;
       z-index: 10;
       flex-shrink: 0;
+      color: var(--c-text-primary);
     }
     .play-circle:hover { background: var(--c-surface-3); }
     .play-circle:active { filter: brightness(0.96); }
 
     .demo-tab {
       padding: 5px 12px;
-      border-radius: 8px;
+      border-radius: 999px;
       font-size: 12px;
       font-weight: 500;
       color: var(--c-text-secondary);
@@ -165,12 +242,12 @@
       line-height: 1;
     }
 
-    .demo-tab:hover { background: var(--c-border-faint); color: var(--c-text-primary); border-color: var(--c-border-subtle); }
+    .demo-tab:hover { background: var(--c-surface-3); color: var(--c-text-primary); border-color: var(--c-border-medium); }
 
     .demo-tab.active {
-      background: #FF385C;
-      color: #fff;
-      border-color: var(--c-accent-border);
+      background: var(--c-text-primary);
+      color: var(--c-surface-0);
+      border-color: var(--c-text-primary);
     }
 
     .demo-stage {
@@ -301,7 +378,7 @@
     /* ── Color tokens ── */
     :root {
       /* Surfaces */
-      --c-bg:        #f2f2f7;
+      --c-bg:        #ffffff;
       --c-surface-0: #ffffff;
       --c-surface-1: #fafafa;
       --c-surface-2: #f7f7f9;
@@ -326,16 +403,12 @@
       --c-accent-dim:    rgba(255,56,92,0.12);
 
       /* Demo */
-      --c-demo-bg: #ebebf0;
+      --c-demo-bg: #f5f5f7;
 
       /* Skeleton */
       --sk:           #e5e5ea;
       --sk-dark:      #d1d1d6;
       --sk-axis:      #c7c7cc;
-    }
-
-    [data-theme="dark"] .phone-frame {
-      border-color: #3a3a3c;
     }
 
     [data-theme="dark"] .demo-tab:hover {
@@ -344,8 +417,11 @@
     }
 
     [data-theme="dark"] .demo-tab.active {
-      border-color: var(--c-accent-border);
+      border-color: var(--c-text-primary);
     }
+
+    [data-theme="dark"] .phone-frame { border-color: #48484a; }
+    [data-theme="dark"] .desktop-bezel { border-color: #48484a; }
 
     [data-theme="dark"] .speed-group {
       background: var(--c-surface-1);
@@ -386,7 +462,7 @@
     }
 
     [data-theme="dark"] {
-      --c-bg:        #000000;
+      --c-bg:        #1c1c1e;
       --c-surface-0: #1c1c1e;
       --c-surface-1: #2c2c2e;
       --c-surface-2: #3a3a3c;
@@ -403,7 +479,7 @@
       --c-border-medium:   rgba(255,255,255,0.18);
       --c-border-strong:   rgba(255,255,255,0.28);
 
-      --c-demo-bg: #1c1c1e;
+      --c-demo-bg: #2c2c2e;
 
       --c-accent-border: rgba(255,56,92,0.5);
 
@@ -763,10 +839,15 @@
     /* Row card — one per character */
     .speed-group {
       background: var(--c-surface-1);
-      border-radius: 18px;
-      padding: 14px 16px 12px;
+      border-radius: 20px;
+      padding: 14px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
       border: 1px solid var(--c-border-subtle);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .speed-group.active {
+      border: 2px solid var(--c-text-primary);
+      background: var(--c-surface-0);
     }
 
     .speed-label {
@@ -774,21 +855,22 @@
       font-weight: 700;
       letter-spacing: -0.02em;
       color: var(--c-text-primary);
-      margin-bottom: 10px;
-      padding-left: 4px;
+      margin-bottom: 6px;
+      padding: 4px 4px 0;
+      transform: translateY(-8px);
     }
 
     .speed-cards {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      gap: 10px;
       align-items: stretch;
     }
 
     /* Individual speed card — subtle inside the row card */
     .token-card {
       background: var(--c-surface-2);
-      border-radius: 12px;
+      border-radius: 6px;
       padding: 13px 14px 11px;
       cursor: pointer;
       transition: background 0.15s, outline-color 0.15s, filter 0.15s ease;
@@ -1328,7 +1410,7 @@
     .bez-main {
       max-width: 1280px;
       margin: 0 auto;
-      padding: 16px 48px 80px;
+      padding: 0 48px 48px;
       display: grid;
       grid-template-columns: 400px 1fr;
       gap: 12px 24px;
@@ -1354,10 +1436,6 @@
       background: var(--c-surface-0);
       display: flex;
       overflow: hidden;
-    }
-
-    [data-theme="dark"] .desktop-bezel {
-      border-color: #3a3a3c;
     }
 
     /* ── Desktop placeholder UI ── */
@@ -1573,23 +1651,78 @@
 </head>
 <body>
 
-<div style="max-width:1280px; margin:0 auto; padding:24px 48px 4px; display:flex; align-items:center; justify-content:space-between;">
-  <h1 style="font-size:28px; font-weight:700; letter-spacing:-0.03em; color:var(--c-text-primary);">Spring Tokens</h1>
-  <div style="display:flex; align-items:center; gap:8px;">
-    <div class="view-toggle">
-      <button id="themeToggle" class="view-btn" title="Toggle dark mode">
-        <svg id="iconDark" xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
-        <svg id="iconLight" xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor" style="display:none"><path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"/></svg>
-      </button>
+<!-- ── Top nav ── -->
+<div class="topnav" id="topnav">
+  <div class="topnav-inner">
+    <div class="topnav-links">
+      <a class="nav-item" data-target="sec-transition">Transition Patterns</a>
+      <a class="nav-item" data-target="sec-spring">Spring Tokens</a>
+      <a class="nav-item" data-target="sec-curve">Curve & Duration</a>
     </div>
+  </div>
+  <div class="topnav-theme">
+    <button id="themeToggle" class="view-btn" title="Toggle dark mode">
+      <svg id="iconDark" xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>
+      <svg id="iconLight" xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor" style="display:none"><path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"/></svg>
+    </button>
   </div>
 </div>
 
 
-<div class="main">
+<!-- ── Transition Patterns section ── -->
+<div class="section-wrap" id="sec-transition">
+  <h1 class="section-title">Transition Patterns</h1>
+  <div class="demo-tabs-bar section-chips" id="tpTabsBar">
+    <div class="demo-tab tp-tab active" data-tp="zoom">Zoom</div>
+    <div class="demo-tab tp-tab" data-tp="slide-in">Slide In</div>
+    <div class="demo-tab tp-tab" data-tp="slide-in-fade">Slide In & Fade</div>
+    <div class="demo-tab tp-tab" data-tp="slide-up">Slide Up</div>
+    <div class="demo-tab tp-tab" data-tp="slide-up-fade">Slide Up & Fade</div>
+    <div class="demo-tab tp-tab" data-tp="scale-in">Scale In</div>
+    <div class="demo-tab tp-tab" data-tp="fade-sequence">Fade Sequence</div>
+    <div class="demo-tab tp-tab" data-tp="bounce-sequence">Bounce Sequence</div>
+  </div>
+  <div class="section-content">
+  <div style="background:var(--c-demo-bg); border-radius:24px; display:flex; align-items:center; justify-content:center; padding:32px; position:relative; min-height:680px;" id="tpDemoContainer">
+    <button class="play-circle" id="tpPlayBtn">
+      <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
+    </button>
+    <div class="phone-frame" id="tpPhone">
+      <div class="phone-content">
+        <div class="sk-search"></div>
+        <div class="sk-cats">
+          <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+          <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+          <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+          <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+        </div>
+        <div class="sk-divider"></div>
+        <div class="sk-card-img"></div>
+        <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+        <div class="sk-sub"></div>
+        <div class="sk-section-label"></div>
+        <div class="sk-card-img partial"></div>
+        <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+        <div class="sk-sub"></div>
+        <div class="sk-sub"></div>
+        <div class="sk-card-img partial"></div>
+        <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+        <div class="sk-sub"></div>
+      </div>
+      <div class="sk-bottom-nav">
+        <div class="sk-nav-icon"></div>
+        <div class="sk-nav-icon"></div>
+        <div class="sk-nav-icon"></div>
+        <div class="sk-nav-icon"></div>
+      </div>
+    </div>
+  </div>
+  </div><!-- end section-content -->
+</div><!-- end section-wrap -->
 
-  <!-- Demo tab chips — span full width above both columns -->
-  <div class="demo-tabs-bar">
+<div class="section-wrap" id="sec-spring">
+  <h1 class="section-title">Spring Tokens</h1>
+  <div class="demo-tabs-bar section-chips">
     <div class="demo-tab active" data-demo="sheet">Sheet</div>
     <div class="demo-tab" data-demo="push">Push</div>
     <div class="demo-tab" data-demo="zoom">Zoom</div>
@@ -1600,7 +1733,9 @@
     <div class="demo-tab" data-demo="tooltip">Tooltip</div>
     <div class="demo-tab" data-demo="flip">Card Flip</div>
   </div>
+</div>
 
+<div class="main">
   <div class="main-columns">
 
   <!-- Demo panel -->
@@ -2195,19 +2330,17 @@
 </div>
 
 <!-- ── Curve & Duration Tokens section ── -->
-<div style="max-width:1280px; margin:0 auto; padding:12px 48px 4px; display:flex; align-items:center; justify-content:space-between;">
-  <h1 style="font-size:28px; font-weight:700; letter-spacing:-0.03em; color:var(--c-text-primary);">Curve & Duration Tokens</h1>
-</div>
-
-<div class="bez-main">
-
-  <!-- Demo tab chips — span full width above both columns -->
-  <div class="demo-tabs-bar" id="bezTabsBar" style="grid-column: 1 / -1;">
+<div class="section-wrap" id="sec-curve">
+  <h1 class="section-title">Curve & Duration Tokens</h1>
+  <div class="demo-tabs-bar section-chips" id="bezTabsBar">
     <div class="demo-tab active" data-bez="slow-fade">Slow Fade</div>
     <div class="demo-tab" data-bez="fast-fade">Fast Fade</div>
     <div class="demo-tab" data-bez="modal-enter">Modal Enter</div>
     <div class="demo-tab" data-bez="modal-exit">Modal Exit</div>
   </div>
+</div>
+
+<div class="bez-main">
 
   <!-- Left column: duration cards + divider + curve cards -->
   <div class="speed-group" id="bezGrid" style="display:flex; flex-direction:column; gap:0; padding-top:4px;">
@@ -2496,18 +2629,14 @@
 // ── Theme toggle ──────────────────────────────────────────────────
 (function() {
   const html = document.documentElement;
-  const iconDark = document.getElementById('iconDark');
-  const iconLight = document.getElementById('iconLight');
   function applyTheme(dark) {
     if (dark) {
       html.setAttribute('data-theme', 'dark');
-      iconDark.style.display = 'none';
-      iconLight.style.display = '';
     } else {
       html.removeAttribute('data-theme');
-      iconDark.style.display = '';
-      iconLight.style.display = 'none';
     }
+    document.getElementById('iconDark').style.display = dark ? 'none' : '';
+    document.getElementById('iconLight').style.display = dark ? '' : 'none';
   }
   applyTheme(localStorage.getItem('theme') === 'dark');
   document.getElementById('themeToggle').addEventListener('click', () => {
@@ -2633,7 +2762,9 @@ class SpringSim {
 // ── Select spring ────────────────────────────────────────────────
 function selectSpring(name, stiffness, damping, ratio, cardEl, color, { play = true } = {}) {
   document.querySelectorAll('#tokenGrid .token-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('#tokenGrid .speed-group').forEach(g => g.classList.remove('active'));
   cardEl?.classList.add('selected');
+  cardEl?.closest('.speed-group')?.classList.add('active');
 
   selected = { name, stiffness, damping, ratio };
 
@@ -3602,11 +3733,27 @@ setTimeout(() => {
 }, 300);
 
 // ── Match phone frame height to card grid height ──────────────────
+// ── Transition Patterns ───────────────────────────────────────────
+document.querySelectorAll('.tp-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    if (tab.classList.contains('active')) { tpPlay(); return; }
+    document.querySelectorAll('.tp-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+
+function tpPlay() {
+  // placeholder — patterns will be wired up per tab
+}
+
+document.getElementById('tpPlayBtn').addEventListener('click', tpPlay);
+
 const demoPanel = document.querySelector('.demo-panel');
 const cardGridSection = document.querySelector('.grid-section');
 
 function syncPhoneHeight() {
-  if (tokenGrid.style.display === 'none') return;
+  const tokenGrid = document.getElementById('tokenGrid');
+  if (!tokenGrid || tokenGrid.style.display === 'none') return;
   const h = tokenGrid.offsetHeight;
   if (h > 0) demoPanel.style.height = h + 'px';
 }
@@ -3614,6 +3761,40 @@ function syncPhoneHeight() {
 const gridResizeObserver = new ResizeObserver(syncPhoneHeight);
 gridResizeObserver.observe(cardGridSection);
 syncPhoneHeight();
+
+// ── Nav: scroll-to + scroll-spy ───────────────────────────────────
+const NAV_SECTIONS = [
+  { id: 'sec-transition', label: 'Transition Patterns' },
+  { id: 'sec-spring',     label: 'Spring Tokens' },
+  { id: 'sec-curve',      label: 'Curve & Duration' },
+];
+
+document.querySelectorAll('.nav-item[data-target]').forEach(item => {
+  item.addEventListener('click', () => {
+    const el = document.getElementById(item.dataset.target);
+    if (!el) return;
+    const navH = document.getElementById('topnav')?.offsetHeight ?? 68;
+    const top = el.getBoundingClientRect().top + window.scrollY - navH;
+    window.scrollTo({ top, behavior: 'smooth' });
+  });
+});
+
+function updateNavActive() {
+  const scrollY = window.scrollY + window.innerHeight * 0.3;
+  let active = NAV_SECTIONS[0].id;
+  for (const sec of NAV_SECTIONS) {
+    const el = document.getElementById(sec.id);
+    if (el && el.getBoundingClientRect().top + window.scrollY <= scrollY) {
+      active = sec.id;
+    }
+  }
+  document.querySelectorAll('.nav-item[data-target]').forEach(item => {
+    item.classList.toggle('active', item.dataset.target === active);
+  });
+}
+
+window.addEventListener('scroll', updateNavActive, { passive: true });
+updateNavActive();
 </script>
 <div class="toast" id="toast"></div>
 </body>
