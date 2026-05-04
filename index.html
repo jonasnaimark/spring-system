@@ -488,7 +488,7 @@
 
     [data-theme="dark"] .token-card:hover {
       background: var(--c-surface-2);
-      outline-color: var(--c-border-subtle);
+      outline-color: var(--c-border-strong);
     }
 
     [data-theme="dark"] .token-card.selected {
@@ -936,7 +936,7 @@
 
     .token-card:hover {
       background: var(--c-surface-3);
-      outline-color: var(--c-border-default);
+      outline-color: var(--c-border-strong);
     }
 
     .token-card:active {
@@ -1422,6 +1422,10 @@
       cursor: pointer;
       transition: background 0.15s, outline-color 0.15s, filter 0.15s ease;
     }
+    .dur-card:hover {
+      background: var(--c-surface-3);
+      outline-color: var(--c-border-strong);
+    }
     .dur-card:active {
       filter: brightness(0.96);
     }
@@ -1880,7 +1884,7 @@
 
 <div class="section-wrap" id="sec-spring">
   <h1 class="section-title">Spring Tokens</h1>
-  <p class="section-subtitle" style="max-width:none; white-space:nowrap;">Springs are used for most animations because they feel smooth and respond to gestures. These are common examples:</p>
+  <p class="section-subtitle" style="max-width:none; white-space:nowrap;">Most animations use springs because they feel smooth and respond naturally to touch.<br>Springs have two dimensions: Speed and Bounciness. These are some common examples:</p>
   <div class="demo-tabs-bar section-chips">
     <div class="demo-tab active" data-demo="sheet">Sheet</div>
     <div class="demo-tab" data-demo="push">Push</div>
