@@ -1088,7 +1088,7 @@
       flex-direction: column;
     }
 
-    #pushDest {
+    #pushDest, #tpPushDest {
       border-radius: 36px 0 0 36px;
       overflow: hidden;
     }
@@ -1920,11 +1920,143 @@
           </div>
         </div>
       </div>
+      <!-- slide-in: push screens -->
+      <div id="tpPushContent" style="display:none;position:absolute;inset:0;">
+        <div class="push-screen" id="tpPushSource">
+          <div class="phone-content"></div>
+          <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
+        </div>
+        <div class="push-scrim" id="tpPushScrim" style="opacity:0;"></div>
+        <div class="push-screen" id="tpPushDest" style="transform:translateX(100%);"></div>
+      </div>
+
+      <!-- slide-in-fade: tab screens -->
+      <div id="tpTabContent" style="display:none;position:absolute;inset:0;">
+        <div class="tab-wrap">
+          <div class="tab-screen" id="tpTabScreen0">
+            <div class="phone-content" style="padding-bottom:80px;">
+              <div class="sk-search"></div>
+              <div class="sk-cats">
+                <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+                <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+                <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+                <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              </div>
+              <div class="sk-divider"></div>
+              <div class="sk-card-img"></div>
+              <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+              <div class="sk-sub"></div>
+              <div class="sk-section-label"></div>
+              <div class="sk-card-img partial"></div>
+              <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+              <div class="sk-sub"></div>
+            </div>
+          </div>
+          <div class="tab-screen" id="tpTabScreen1" style="opacity:0;transform:translateX(40px);">
+            <div class="phone-content" style="padding-bottom:80px;">
+              <div class="sk-search"></div><div class="sk-divider"></div>
+              <div class="sk-card-img"></div>
+              <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+              <div class="sk-sub"></div><div class="sk-sub"></div>
+              <div class="sk-card-img partial"></div>
+              <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+              <div class="sk-sub"></div>
+            </div>
+          </div>
+          <div class="tab-screen" id="tpTabScreen2" style="opacity:0;transform:translateX(40px);">
+            <div class="phone-content" style="padding-bottom:80px;">
+              <div class="sk-divider"></div>
+              <div class="sk-card-img"></div>
+              <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+              <div class="sk-sub"></div>
+              <div class="sk-card-img partial"></div>
+              <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+              <div class="sk-sub"></div>
+            </div>
+          </div>
+          <div class="tab-screen" id="tpTabScreen3" style="opacity:0;transform:translateX(40px);">
+            <div class="phone-content" style="padding-bottom:80px;">
+              <div class="sk-search"></div><div class="sk-divider"></div>
+              <div class="sk-card-img"></div>
+              <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+              <div class="sk-sub"></div>
+              <div class="sk-card-img partial"></div>
+              <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+              <div class="sk-sub"></div>
+            </div>
+          </div>
+        </div>
+        <div class="sk-bottom-nav" style="z-index:5;">
+          <div class="sk-nav-icon" id="tpTabNavIcon0" style="background:#FF385C;"></div>
+          <div class="sk-nav-icon" id="tpTabNavIcon1"></div>
+          <div class="sk-nav-icon" id="tpTabNavIcon2"></div>
+          <div class="sk-nav-icon" id="tpTabNavIcon3"></div>
+        </div>
+      </div>
+
+      <!-- slide-up: sheet -->
+      <div id="tpSheetContent" style="display:none;position:absolute;inset:0;">
+        <div class="phone-content"></div>
+        <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
+        <div class="push-scrim" id="tpSheetScrim" style="opacity:0;z-index:10;"></div>
+        <div class="sheet" id="tpSheet" style="transform:translateY(100%);box-shadow:0 -2px 20px rgba(0,0,0,0);">
+          <div class="sheet-handle"></div>
+          <div class="sheet-line med"></div>
+          <div class="sheet-line short thin"></div>
+          <div class="sheet-section-gap"></div>
+          <div class="sheet-tag-row">
+            <div class="sheet-tag" style="width:54px;"></div>
+            <div class="sheet-tag" style="width:44px;"></div>
+            <div class="sheet-tag" style="width:62px;"></div>
+          </div>
+          <div class="sheet-img-row">
+            <div class="sheet-thumb"></div>
+            <div class="sheet-thumb-lines">
+              <div class="sheet-line" style="margin-bottom:0;"></div>
+              <div class="sheet-line short thin" style="margin-bottom:0;"></div>
+            </div>
+          </div>
+          <div class="sheet-img-row">
+            <div class="sheet-thumb"></div>
+            <div class="sheet-thumb-lines">
+              <div class="sheet-line" style="margin-bottom:0;"></div>
+              <div class="sheet-line med thin" style="margin-bottom:0;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- scale-in: modal -->
+      <div id="tpModalContent" style="display:none;position:absolute;inset:0;">
+        <div class="phone-content"></div>
+        <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
+        <div class="modal-backdrop" id="tpModalBackdrop" style="opacity:0;pointer-events:none;"></div>
+        <div class="modal-card" id="tpModal" style="opacity:0; transform: scale(0.75); position:absolute; top:50%; left:50%; margin-top:-70px; margin-left:-110px; z-index:12; pointer-events:none;"></div>
+      </div>
+
       <div class="sk-bottom-nav">
         <div class="sk-nav-icon"></div>
         <div class="sk-nav-icon"></div>
         <div class="sk-nav-icon"></div>
         <div class="sk-nav-icon"></div>
+      </div>
+    </div>
+
+    <!-- slide-up-fade: desktop bezel (shown instead of phone) -->
+    <div id="tpDesktopWrap" style="display:none;position:absolute;inset:0;flex:1;overflow:hidden;">
+      <div class="dt-ui" id="tpDesktopBg" style="flex:1;"></div>
+      <div id="tpSufScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:0;pointer-events:none;"></div>
+      <div id="tpSufModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 30px));background:var(--c-surface-0);border-radius:16px;padding:20px 20px 24px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
+        <div style="height:10px;width:60%;background:var(--sk);border-radius:5px;margin-bottom:16px;"></div>
+        <div style="height:120px;width:100%;background:var(--sk);border-radius:8px;margin-bottom:14px;"></div>
+        <div style="height:7px;width:90%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+        <div style="height:7px;width:70%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+        <div style="height:7px;width:80%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+        <div style="height:7px;width:55%;background:var(--sk);border-radius:4px;margin-bottom:20px;"></div>
+        <div style="display:flex;gap:8px;">
+          <div style="flex:1;height:34px;background:var(--c-text-primary);border-radius:10px;opacity:0.12;"></div>
+          <div style="flex:1;height:34px;background:var(--sk);border-radius:10px;"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1993,27 +2125,7 @@
           <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
         </button>
         <div class="phone-frame" id="ngPhone">
-          <div class="phone-content">
-            <div class="sk-search"></div>
-            <div class="sk-cats">
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-            </div>
-            <div class="sk-divider"></div>
-            <div class="sk-card-img"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-            <div class="sk-section-label"></div>
-            <div class="sk-card-img partial"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-            <div class="sk-sub"></div>
-            <div class="sk-card-img partial"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-          </div>
+          <div class="phone-content"></div>
           <div class="sk-bottom-nav">
             <div class="sk-nav-icon"></div>
             <div class="sk-nav-icon"></div>
@@ -2057,27 +2169,7 @@
         <div class="phone-frame">
 
 
-          <div class="phone-content">
-            <div class="sk-search"></div>
-            <div class="sk-cats">
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-            </div>
-            <div class="sk-divider"></div>
-            <div class="sk-card-img"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-            <div class="sk-section-label"></div>
-            <div class="sk-card-img partial"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-            <div class="sk-sub"></div>
-            <div class="sk-card-img partial"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-          </div>
+          <div class="phone-content"></div>
           <div class="sk-bottom-nav">
             <div class="sk-nav-icon"></div>
             <div class="sk-nav-icon"></div>
@@ -2135,27 +2227,7 @@
         <div class="phone-frame">
 
 
-          <div class="phone-content">
-            <div class="sk-search"></div>
-            <div class="sk-cats">
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-            </div>
-            <div class="sk-divider"></div>
-            <div class="sk-card-img"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-            <div class="sk-section-label"></div>
-            <div class="sk-card-img partial"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-            <div class="sk-sub"></div>
-            <div class="sk-card-img partial"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-          </div>
+          <div class="phone-content"></div>
           <div class="sk-bottom-nav">
             <div class="sk-nav-icon"></div>
             <div class="sk-nav-icon"></div>
@@ -2163,15 +2235,7 @@
             <div class="sk-nav-icon"></div>
           </div>
           <div class="modal-backdrop" id="demoBackdrop" style="opacity:0; pointer-events:none;"></div>
-          <div class="modal-card" id="demoModal" style="opacity:0; transform: scale(0.75); position:absolute; top:50%; left:50%; margin-top:-70px; margin-left:-110px; z-index:12;">
-            <div class="modal-line"></div>
-            <div class="modal-line short"></div>
-            <div class="modal-line"></div>
-            <div class="modal-btn-row">
-              <div class="modal-btn"></div>
-              <div class="modal-btn primary"></div>
-            </div>
-          </div>
+          <div class="modal-card" id="demoModal" style="opacity:0; transform: scale(0.75); position:absolute; top:50%; left:50%; margin-top:-70px; margin-left:-110px; z-index:12;"></div>
         </div>
       </div>
 
@@ -2218,27 +2282,7 @@
         <div class="phone-frame">
 
 
-          <div class="phone-content">
-            <div class="sk-search"></div>
-            <div class="sk-cats">
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-            </div>
-            <div class="sk-divider"></div>
-            <div class="sk-card-img"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-            <div class="sk-section-label"></div>
-            <div class="sk-card-img partial"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-            <div class="sk-sub"></div>
-            <div class="sk-card-img partial"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-          </div>
+          <div class="phone-content"></div>
           <div class="sk-bottom-nav">
             <div class="sk-nav-icon"></div>
             <div class="sk-nav-icon"></div>
@@ -2260,27 +2304,7 @@
         <div class="phone-frame">
           <!-- Source screen (list) -->
           <div class="push-screen" id="pushSource">
-            <div class="phone-content">
-              <div class="sk-search"></div>
-              <div class="sk-cats">
-                <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-                <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-                <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-                <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              </div>
-              <div class="sk-divider"></div>
-              <div class="sk-card-img"></div>
-              <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-              <div class="sk-sub"></div>
-              <div class="sk-section-label"></div>
-              <div class="sk-card-img partial"></div>
-              <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-              <div class="sk-sub"></div>
-              <div class="sk-sub"></div>
-              <div class="sk-card-img partial"></div>
-              <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-              <div class="sk-sub"></div>
-            </div>
+            <div class="phone-content"></div>
             <div class="sk-bottom-nav">
               <div class="sk-nav-icon"></div>
               <div class="sk-nav-icon"></div>
@@ -2291,26 +2315,7 @@
           <!-- Scrim sits above source (incl. bottom nav) but below dest -->
           <div class="push-scrim" id="pushScrim"></div>
           <!-- Destination screen (detail) -->
-          <div class="push-screen" id="pushDest" style="transform: translateX(100%)">
-            <div class="push-hero"></div>
-            <div class="push-detail-body">
-              <div class="push-detail-row title"></div>
-              <div class="push-detail-row sub"></div>
-              <div class="push-detail-divider"></div>
-              <div class="push-detail-row med"></div>
-              <div class="push-detail-row short"></div>
-              <div class="push-detail-row full"></div>
-              <div class="push-detail-divider"></div>
-              <div class="push-detail-row title"></div>
-              <div class="push-detail-row med"></div>
-              <div class="push-detail-row short"></div>
-              <div class="push-detail-row full"></div>
-              <div class="push-detail-divider"></div>
-              <div class="push-detail-row med"></div>
-              <div class="push-detail-row short"></div>
-              <div class="push-detail-row med"></div>
-            </div>
-          </div>
+          <div class="push-screen" id="pushDest" style="transform: translateX(100%)"></div>
         </div>
       </div>
 
@@ -2811,37 +2816,7 @@
 
       <!-- Modal enter UI: same grid as slow fade + floating modal -->
       <div id="meUI" style="display:none; flex:1; position:relative; overflow:hidden;">
-        <div class="dt-ui" style="flex:1;">
-          <div class="dt-topbar">
-            <div class="dt-logo"></div>
-            <div class="dt-search"></div>
-            <div class="dt-nav-icons">
-              <div class="dt-nav-icon"></div>
-              <div class="dt-nav-icon"></div>
-              <div class="dt-nav-icon dt-nav-icon--avatar"></div>
-            </div>
-          </div>
-          <div class="dt-pills">
-            <div class="dt-pill dt-pill--active"></div>
-            <div class="dt-pill"></div>
-            <div class="dt-pill"></div>
-            <div class="dt-pill"></div>
-            <div class="dt-pill"></div>
-            <div class="dt-pill"></div>
-          </div>
-          <div class="dt-grid">
-            <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:30%; background:var(--sk); border-radius:4px; margin-top:8px;"></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-            <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:25%; background:var(--sk); border-radius:4px; margin-top:16px;"></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-          </div>
-        </div>
+        <div class="dt-ui" id="meUiBg" style="flex:1;"></div>
         <!-- scrim -->
         <div id="meScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:0;pointer-events:none;"></div>
         <!-- floating modal -->
@@ -2861,37 +2836,7 @@
 
       <!-- Modal exit UI: same grid + modal starts visible -->
       <div id="mxUI" style="display:none; flex:1; position:relative; overflow:hidden;">
-        <div class="dt-ui" style="flex:1;">
-          <div class="dt-topbar">
-            <div class="dt-logo"></div>
-            <div class="dt-search"></div>
-            <div class="dt-nav-icons">
-              <div class="dt-nav-icon"></div>
-              <div class="dt-nav-icon"></div>
-              <div class="dt-nav-icon dt-nav-icon--avatar"></div>
-            </div>
-          </div>
-          <div class="dt-pills">
-            <div class="dt-pill dt-pill--active"></div>
-            <div class="dt-pill"></div>
-            <div class="dt-pill"></div>
-            <div class="dt-pill"></div>
-            <div class="dt-pill"></div>
-            <div class="dt-pill"></div>
-          </div>
-          <div class="dt-grid">
-            <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:30%; background:var(--sk); border-radius:4px; margin-top:8px;"></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-            <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:25%; background:var(--sk); border-radius:4px; margin-top:16px;"></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-            <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-          </div>
-        </div>
+        <div class="dt-ui" id="mxUiBg" style="flex:1;"></div>
         <div id="mxScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:1;pointer-events:none;"></div>
         <div id="mxModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(-50%);background:var(--c-surface-0);border-radius:16px;padding:20px 20px 24px;opacity:1;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
           <div style="height:10px;width:60%;background:var(--sk);border-radius:5px;margin-bottom:16px;"></div>
@@ -3030,6 +2975,44 @@
     applyTheme(!isDark);
     localStorage.setItem('theme', isDark ? 'light' : 'dark');
   });
+})();
+
+// ── Template stamping ─────────────────────────────────────────────
+function stampTemplate(templateId, targetEl) {
+  const tpl = document.getElementById(templateId);
+  if (!tpl || !targetEl) return;
+  targetEl.append(tpl.content.cloneNode(true));
+}
+
+// Stamp all templates at load
+(function() {
+  // tpl-list-screen targets (tooltip has custom phone-content so it is excluded)
+  const listTargets = [
+    document.querySelector('#view-sheet .phone-frame .phone-content'),
+    document.querySelector('#view-modal .phone-frame .phone-content'),
+    document.querySelector('#view-notif .phone-frame .phone-content'),
+    document.querySelector('#tpSheetContent .phone-content'),
+    document.querySelector('#tpModalContent .phone-content'),
+    document.querySelector('#tpPushSource .phone-content'),
+    document.querySelector('#pushSource .phone-content'),
+    document.getElementById('ngPhone') ? document.getElementById('ngPhone').querySelector('.phone-content') : null,
+  ];
+  listTargets.forEach(function(el) {
+    if (el) stampTemplate('tpl-list-screen', el);
+  });
+
+  // tpl-detail-screen targets
+  stampTemplate('tpl-detail-screen', document.getElementById('pushDest'));
+  stampTemplate('tpl-detail-screen', document.getElementById('tpPushDest'));
+
+  // tpl-modal-card targets
+  stampTemplate('tpl-modal-card', document.getElementById('demoModal'));
+  stampTemplate('tpl-modal-card', document.getElementById('tpModal'));
+
+  // tpl-desktop-bg targets
+  stampTemplate('tpl-desktop-bg', document.getElementById('meUiBg'));
+  stampTemplate('tpl-desktop-bg', document.getElementById('mxUiBg'));
+  stampTemplate('tpl-desktop-bg', document.getElementById('tpDesktopBg'));
 })();
 
 // ── Spring definitions ────────────────────────────────────────────
@@ -3709,6 +3692,24 @@ let tpExpandCardIdx = 0;
 let tpExpandAnim    = null;
 const TP_SPRING = { stiffness: 500, damping: calcDamping(500, 1.0) };
 
+// TP shared animation state
+let tpAnim = null;
+let tpDemoState = 'out';
+let tpTabIdx = 0, tpTabDir = 1;
+
+function tpSpringAnimate(tick) {
+  if (tpAnim) cancelAnimationFrame(tpAnim);
+  const startT = performance.now();
+  function frame(now) {
+    const t = (now - startT) / 1000;
+    tick(t);
+    if (t < 5 && !isSettled(t, TP_SPRING.stiffness, TP_SPRING.damping)) {
+      tpAnim = requestAnimationFrame(frame);
+    }
+  }
+  tpAnim = requestAnimationFrame(frame);
+}
+
 function tpExpandCard(card) {
   if (tpExpandState || !card) return;
   const { stiffness, damping } = TP_SPRING;
@@ -4235,14 +4236,187 @@ const TP_DEMOS = {
       tpExpandCardIdx = 0;
     },
   },
-  'slide-in':        { description: 'The default nav transition. The incoming screen slides over the outgoing with a parallax effect. Nav bars can be kept persistent if shared across both screens.',                             play() {} },
-  'slide-in-fade':   { description: 'A subtler nav transition, often used with stepped flows or on desktop web.',                                                                                                                  play() {} },
-  'slide-up':        { description: 'Used for components that enter and exit from the bottom of the screen, like sheets and bars.',                                                                                                play() {} },
-  'slide-up-fade':   { description: 'A subtler bottom slide, often used on desktop web.',                                                                                                                                         play() {} },
-  'scale-in':        { description: 'Used to introduce floating elements like tooltips, modals and toasts. The scale origin is center by default but can be linked to another UI element.',                                       play() {} },
+  'slide-in': {
+    description: 'Our default nav transition. Nav bars can be kept persistent if shared across both screens.',
+    reset() {
+      tpDemoState = 'out';
+      if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
+      document.getElementById('tpPushSource').style.transform = 'translateX(0%)';
+      document.getElementById('tpPushDest').style.transform   = 'translateX(100%)';
+      document.getElementById('tpPushScrim').style.opacity    = '0';
+    },
+    play() {
+      const src   = document.getElementById('tpPushSource');
+      const dest  = document.getElementById('tpPushDest');
+      const scrim = document.getElementById('tpPushScrim');
+      const { stiffness, damping } = TP_SPRING;
+      const isIn  = tpDemoState === 'in';
+      tpDemoState = isIn ? 'out' : 'in';
+      tpSpringAnimate((t) => {
+        const pos      = springPos(t, stiffness, damping);
+        const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+        if (!isIn) {
+          dest.style.transform = `translateX(${pos * 100}%)`;
+          src.style.transform  = `translateX(${-(1 - pos) * 30}%)`;
+          scrim.style.opacity  = String(1 - scrimPos);
+        } else {
+          dest.style.transform = `translateX(${(1 - pos) * 100}%)`;
+          src.style.transform  = `translateX(${-pos * 30}%)`;
+          scrim.style.opacity  = String(scrimPos);
+        }
+      });
+    },
+  },
+
+  'slide-in-fade': {
+    description: 'A subtler nav transition, often used with stepped flows or on desktop web.',
+    reset() {
+      tpDemoState = 'out';
+      tpTabIdx = 0; tpTabDir = 1;
+      if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
+      for (let i = 0; i < 4; i++) {
+        const s = document.getElementById(`tpTabScreen${i}`);
+        if (s) { s.style.opacity = i === 0 ? '1' : '0'; s.style.transform = i === 0 ? 'translateX(0)' : 'translateX(40px)'; }
+        const ic = document.getElementById(`tpTabNavIcon${i}`);
+        if (ic) ic.style.background = i === 0 ? '#FF385C' : '';
+      }
+    },
+    play() {
+      const { stiffness, damping } = TP_SPRING;
+      const travelDir = tpTabDir;
+      const nextIdx   = tpTabIdx + travelDir;
+      const outScreen = document.getElementById(`tpTabScreen${tpTabIdx}`);
+      const inScreen  = document.getElementById(`tpTabScreen${nextIdx}`);
+      tpTabIdx = nextIdx;
+      if (tpTabIdx === 0 || tpTabIdx === 3) tpTabDir *= -1;
+      for (let i = 0; i < 4; i++) {
+        const ic = document.getElementById(`tpTabNavIcon${i}`);
+        if (ic) ic.style.background = i === tpTabIdx ? '#FF385C' : '';
+      }
+      const SLIDE_PX = 40;
+      inScreen.style.opacity   = '0';
+      inScreen.style.transform = `translateX(${travelDir * SLIDE_PX}px)`;
+      tpSpringAnimate((t) => {
+        const pos        = springPos(t, stiffness, damping);
+        const completion = 1 - pos;
+        outScreen.style.transform = `translateX(${-travelDir * completion * SLIDE_PX}px)`;
+        outScreen.style.opacity   = String(Math.max(1 - completion / 0.40, 0));
+        inScreen.style.transform  = `translateX(${travelDir * pos * SLIDE_PX}px)`;
+        inScreen.style.opacity    = String(Math.min(Math.max((completion - 0.20) / 0.80, 0), 1));
+      });
+    },
+  },
+
+  'slide-up': {
+    description: 'Used for components that enter and exit from the bottom of the screen, like sheets and bars.',
+    reset() {
+      tpDemoState = 'out';
+      if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
+      const sheet = document.getElementById('tpSheet');
+      const scrim = document.getElementById('tpSheetScrim');
+      sheet.style.transform = 'translateY(100%)';
+      sheet.style.boxShadow = '0 -2px 20px rgba(0,0,0,0)';
+      scrim.style.opacity   = '0';
+    },
+    play() {
+      const sheet = document.getElementById('tpSheet');
+      const scrim = document.getElementById('tpSheetScrim');
+      const { stiffness, damping } = TP_SPRING;
+      const isIn  = tpDemoState === 'in';
+      tpDemoState = isIn ? 'out' : 'in';
+      tpSpringAnimate((t) => {
+        const pos      = springPos(t, stiffness, damping);
+        const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+        sheet.style.transform  = `translateY(${isIn ? (1 - pos) * 100 : pos * 100}%)`;
+        sheet.style.boxShadow  = `0 -2px 20px rgba(0,0,0,${isIn ? scrimPos * 0.15 : (1 - scrimPos) * 0.15})`;
+        scrim.style.opacity    = String(isIn ? scrimPos : 1 - scrimPos);
+      });
+    },
+  },
+
+  'slide-up-fade': {
+    description: 'A subtler bottom slide, often used on desktop web.',
+    reset() {
+      tpDemoState = 'out';
+      const modal = document.getElementById('tpSufModal');
+      const scrim = document.getElementById('tpSufScrim');
+      modal.style.transition = 'none';
+      scrim.style.transition = 'none';
+      modal.style.opacity = '0';
+      modal.style.transform = 'translateY(calc(-50% + 30px))';
+      scrim.style.opacity = '0';
+    },
+    play() {
+      const modal = document.getElementById('tpSufModal');
+      const scrim = document.getElementById('tpSufScrim');
+      const isIn  = tpDemoState === 'in';
+      tpDemoState = isIn ? 'out' : 'in';
+      if (!isIn) {
+        modal.style.transition = 'none';
+        scrim.style.transition = 'none';
+        modal.style.opacity = '0';
+        modal.style.transform = 'translateY(calc(-50% + 30px))';
+        scrim.style.opacity = '0';
+        modal.offsetHeight;
+        modal.style.transition = 'opacity 100ms linear, transform 300ms cubic-bezier(0.00,0.00,0.00,1.00)';
+        scrim.style.transition = 'opacity 100ms linear';
+        modal.style.opacity = '1';
+        modal.style.transform = 'translateY(-50%)';
+        scrim.style.opacity = '1';
+      } else {
+        modal.style.transition = 'opacity 150ms cubic-bezier(0.40,0.00,1.00,1.00), transform 150ms cubic-bezier(0.40,0.00,1.00,1.00)';
+        scrim.style.transition = 'opacity 150ms linear';
+        modal.style.opacity = '0';
+        modal.style.transform = 'translateY(calc(-50% + 20px))';
+        scrim.style.opacity = '0';
+      }
+    },
+  },
+
+  'scale-in': {
+    description: 'Used to introduce floating elements like tooltips, modals and toasts. The scale origin is center by default but can be linked to another UI element.',
+    reset() {
+      tpDemoState = 'out';
+      if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
+      const bd = document.getElementById('tpModalBackdrop');
+      const m  = document.getElementById('tpModal');
+      bd.style.opacity = '0'; bd.style.pointerEvents = 'none';
+      m.style.opacity  = '0'; m.style.transform = 'scale(0.75)'; m.style.pointerEvents = 'none';
+    },
+    play() {
+      const bd  = document.getElementById('tpModalBackdrop');
+      const m   = document.getElementById('tpModal');
+      const { stiffness, damping } = TP_SPRING;
+      const isIn = tpDemoState === 'in';
+      tpDemoState = isIn ? 'out' : 'in';
+      bd.style.pointerEvents = 'auto';
+      tpSpringAnimate((t) => {
+        const pos      = springPos(t, stiffness, damping);
+        const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+        const progress = 1 - pos;
+        if (!isIn) {
+          m.style.transform = `scale(${0.75 + progress * 0.25})`; m.style.opacity = String(progress);
+          bd.style.opacity  = String(scrimPos * 0.4);
+        } else {
+          m.style.transform = `scale(${0.75 + pos * 0.25})`; m.style.opacity = String(pos);
+          bd.style.opacity  = String((1 - scrimPos) * 0.4);
+        }
+      });
+    },
+  },
+
   'fade-sequence':   { description: 'Fades out old content then fades in new content.',                                                                                                                                           play() {} },
   'bounce-sequence': { description: 'A more expressive sequence that adds a scale bounce and blur to the fading content.',                                                                                                        play() {} },
 };
+
+const TP_PHONE_LAYERS = {
+  'zoom':          'tpPhoneContent',
+  'slide-in':      'tpPushContent',
+  'slide-in-fade': 'tpTabContent',
+  'slide-up':      'tpSheetContent',
+  'scale-in':      'tpModalContent',
+};
+const TP_ALL_LAYERS = ['tpPhoneContent','tpPushContent','tpTabContent','tpSheetContent','tpModalContent'];
 
 function switchTpDemo(key) {
   const tab = document.querySelector(`.tp-tab[data-tp="${key}"]`);
@@ -4254,6 +4428,24 @@ function switchTpDemo(key) {
   tab.classList.add('active');
   const desc = TP_DEMOS[key]?.description;
   if (desc) document.getElementById('tpBodyCopy').textContent = desc;
+
+  // Reset shared state
+  tpDemoState = 'out';
+  tpTabIdx = 0; tpTabDir = 1;
+
+  // Show/hide the correct phone content layer
+  const isDesktop = key === 'slide-up-fade';
+  const phone = document.getElementById('tpPhone');
+  const desktopWrap = document.getElementById('tpDesktopWrap');
+  phone.style.display       = isDesktop ? 'none' : '';
+  desktopWrap.style.display = isDesktop ? 'flex' : 'none';
+
+  // Show correct layer inside phone
+  const activeLayer = TP_PHONE_LAYERS[key];
+  TP_ALL_LAYERS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = id === activeLayer ? '' : 'none';
+  });
 }
 
 document.querySelectorAll('.tp-tab').forEach(tab => {
@@ -4468,5 +4660,93 @@ reserveTabWidths();
 })();
 </script>
 <div class="toast" id="toast"></div>
+
+<!-- ── Shared templates ─────────────────────────────────────────── -->
+
+<template id="tpl-list-screen">
+  <div class="sk-search"></div>
+  <div class="sk-cats">
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+  </div>
+  <div class="sk-divider"></div>
+  <div class="sk-card-img"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+  <div class="sk-section-label"></div>
+  <div class="sk-card-img partial"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+  <div class="sk-sub"></div>
+  <div class="sk-card-img partial"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+</template>
+
+<template id="tpl-detail-screen">
+  <div class="push-hero"></div>
+  <div class="push-detail-body">
+    <div class="push-detail-row title"></div>
+    <div class="push-detail-row sub"></div>
+    <div class="push-detail-divider"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-row short"></div>
+    <div class="push-detail-row full"></div>
+    <div class="push-detail-divider"></div>
+    <div class="push-detail-row title"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-row short"></div>
+    <div class="push-detail-row full"></div>
+    <div class="push-detail-divider"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-row short"></div>
+    <div class="push-detail-row med"></div>
+  </div>
+</template>
+
+<template id="tpl-modal-card">
+  <div class="modal-line"></div>
+  <div class="modal-line short"></div>
+  <div class="modal-line"></div>
+  <div class="modal-btn-row">
+    <div class="modal-btn"></div>
+    <div class="modal-btn primary"></div>
+  </div>
+</template>
+
+<template id="tpl-desktop-bg">
+  <div class="dt-topbar">
+    <div class="dt-logo"></div>
+    <div class="dt-search"></div>
+    <div class="dt-nav-icons">
+      <div class="dt-nav-icon"></div>
+      <div class="dt-nav-icon"></div>
+      <div class="dt-nav-icon dt-nav-icon--avatar"></div>
+    </div>
+  </div>
+  <div class="dt-pills">
+    <div class="dt-pill dt-pill--active"></div>
+    <div class="dt-pill"></div>
+    <div class="dt-pill"></div>
+    <div class="dt-pill"></div>
+    <div class="dt-pill"></div>
+    <div class="dt-pill"></div>
+  </div>
+  <div class="dt-grid">
+    <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:30%; background:var(--sk); border-radius:4px; margin-top:8px;"></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+    <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:25%; background:var(--sk); border-radius:4px; margin-top:16px;"></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+  </div>
+</template>
+
 </body>
 </html>
