@@ -1997,8 +1997,8 @@
     </div>
 
     <!-- slide-up-fade: desktop bezel (shown instead of phone) -->
-    <div id="tpDesktopWrap" style="display:none;position:absolute;inset:0;padding:20px 28px;flex-direction:column;align-items:stretch;justify-content:center;">
-      <div class="desktop-bezel" style="cursor:default;width:100%;height:512px;">
+    <div id="tpDesktopWrap" style="display:none;position:absolute;inset:0;padding:20px 28px;flex-direction:column;align-items:center;justify-content:center;">
+      <div class="desktop-bezel" style="cursor:default;max-width:720px;width:100%;height:512px;">
         <div style="flex:1;position:relative;overflow:hidden;display:flex;">
           <div class="dt-ui" id="tpDesktopBg" style="flex:1;"></div>
           <div id="tpSufScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:0;pointer-events:none;"></div>
@@ -3721,13 +3721,14 @@ let tpAnim = null;
 let tpDemoState = 'out';
 let tpTabIdx = 0, tpTabDir = 1;
 
-function tpSpringAnimate(tick) {
+function tpSpringAnimate(tick, spring) {
   if (tpAnim) cancelAnimationFrame(tpAnim);
+  const { stiffness, damping } = spring || TP_SPRING;
   const startT = performance.now();
   function frame(now) {
     const t = (now - startT) / 1000;
     tick(t);
-    if (t < 5 && !isSettled(t, TP_SPRING.stiffness, TP_SPRING.damping)) {
+    if (t < 5 && !isSettled(t, stiffness, damping)) {
       tpAnim = requestAnimationFrame(frame);
     }
   }
@@ -4273,7 +4274,9 @@ const TP_DEMOS = {
       const src   = document.getElementById('tpPushSource');
       const dest  = document.getElementById('tpPushDest');
       const scrim = document.getElementById('tpPushScrim');
-      const { stiffness, damping } = TP_SPRING;
+      // default + smooth: stiffness 300, ratio 1.0
+      const spring = { stiffness: 300, damping: calcDamping(300, 1.0) };
+      const { stiffness, damping } = spring;
       const isIn  = tpDemoState === 'in';
       tpDemoState = isIn ? 'out' : 'in';
       tpSpringAnimate((t) => {
@@ -4288,7 +4291,7 @@ const TP_DEMOS = {
           src.style.transform  = `translateX(${-pos * 30}%)`;
           scrim.style.opacity  = String(scrimPos);
         }
-      });
+      }, spring);
     },
   },
 
@@ -4410,22 +4413,22 @@ const TP_DEMOS = {
     play() {
       const bd  = document.getElementById('tpModalBackdrop');
       const m   = document.getElementById('tpModal');
-      const { stiffness, damping } = TP_SPRING;
+      // snappy + medium.bounce: stiffness 750 * 0.8 = 600, ratio 0.7
+      const spring = { stiffness: 600, damping: calcDamping(600, 0.7) };
       const isIn = tpDemoState === 'in';
       tpDemoState = isIn ? 'out' : 'in';
       bd.style.pointerEvents = 'auto';
       tpSpringAnimate((t) => {
-        const pos      = springPos(t, stiffness, damping);
+        const pos      = springPos(t, spring.stiffness, spring.damping);
         const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
-        const progress = 1 - pos;
         if (!isIn) {
-          m.style.transform = `scale(${0.75 + progress * 0.25})`; m.style.opacity = String(progress);
+          m.style.transform = `scale(${0.75 + pos * 0.25})`; m.style.opacity = String(pos);
           bd.style.opacity  = String(scrimPos * 0.4);
         } else {
-          m.style.transform = `scale(${0.75 + pos * 0.25})`; m.style.opacity = String(pos);
+          m.style.transform = `scale(${0.75 + (1 - pos) * 0.25})`; m.style.opacity = String(1 - pos);
           bd.style.opacity  = String((1 - scrimPos) * 0.4);
         }
-      });
+      }, spring);
     },
   },
 
