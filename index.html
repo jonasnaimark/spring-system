@@ -127,15 +127,9 @@
       margin: 0 auto;
       padding: 32px 48px 0;
     }
-    #sec-gestures {
-      padding-top: 56px;
-    }
-    .section-wrap + .section-wrap {
-      padding-top: 48px;
-    }
     .section-divider {
       max-width: calc(1280px - 96px);
-      margin: 36px auto 36px;
+      margin: 36px auto 24px;
       border-top: 1px solid var(--c-border-subtle);
     }
     .section-title {
@@ -154,7 +148,7 @@
       color: var(--c-text-tertiary);
       margin: 10px 0 32px;
       line-height: 1.5;
-      max-width: 760px;
+      max-width: 840px;
     }
     .section-chips + .section-body {
       margin-top: 14px;
@@ -309,10 +303,10 @@
       padding: 9px 18px;
       border-radius: 12px;
       font-size: var(--text-ui);
-      font-weight: 500;
+      font-weight: 400;
       color: var(--c-text-secondary);
       background: var(--c-surface-2);
-      border: 1.5px solid transparent;
+      border: 1.5px solid var(--c-border-faint);
       cursor: pointer;
       user-select: none;
       transition: background 0.15s, color 0.15s, border-color 0.15s;
@@ -321,6 +315,7 @@
       display: inline-flex;
       align-items: center;
       line-height: 1;
+      position: relative;
     }
 
     .demo-tab:hover { background: var(--c-surface-3); color: var(--c-text-primary); border-color: var(--c-border-medium); }
@@ -329,6 +324,7 @@
       background: var(--c-text-primary);
       color: var(--c-surface-0);
       border-color: var(--c-text-primary);
+      font-weight: 500;
     }
 
     .demo-stage {
@@ -516,6 +512,7 @@
 
     [data-theme="dark"] .phone-frame { border-color: #48484a; }
     #ngDemoContainer .phone-frame { height: 660px; }
+    #accDemoContainer .phone-frame { height: 500px; }
     [data-theme="dark"] .desktop-bezel { border-color: #48484a; }
 
     [data-theme="dark"] .speed-group {
@@ -677,6 +674,39 @@
       padding: 12px 8px 0;
       z-index: 10;
     }
+
+    /* ── Carousel skeleton ── */
+    .sk-section-row {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      margin-top: 12px;
+    }
+    .sk-section-row-title { height: 10px; width: 55%; background: var(--sk); border-radius: 5px; }
+
+    .sk-carousel {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+      margin-top: 6px;
+      margin-right: -18px;
+      overflow: hidden;
+    }
+    .sk-carousel-card {
+      flex: 0 0 105px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .sk-carousel-img {
+      width: 105px;
+      height: 100px;
+      border-radius: 10px;
+      background: var(--sk);
+      flex-shrink: 0;
+    }
+    .sk-carousel-title { height: 7px; width: 80%; background: var(--sk); border-radius: 4px; }
+    .sk-carousel-sub   { height: 7px; width: 60%; background: var(--sk); border-radius: 4px; }
 
     .sk-nav-icon {
       width: 20px;
@@ -993,10 +1023,10 @@
       outline: 2px solid var(--c-text-primary);
     }
     .token-card.default:not(.selected) {
-      outline: 1.5px dashed var(--c-text-quaternary);
+      outline: 2px dashed #34c759;
     }
     .dur-card.default:not(.selected) {
-      outline: 1.5px dashed var(--c-text-quaternary);
+      outline: 2px dashed #34c759;
     }
 
     .card-char-label {
@@ -1211,7 +1241,6 @@
       background: var(--c-surface-0);
       overflow: hidden;
       pointer-events: none;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06);
       display: none;
     }
 
@@ -1658,7 +1687,7 @@
     .ff-img--loaded { background: #b5d5f5; }
 
     .ff-body {
-      padding: 12px 14px 14px;
+      padding: 10px 14px 14px;
       display: flex;
       flex-direction: column;
       gap: 0;
@@ -1686,27 +1715,27 @@
       color: var(--c-text-primary);
       letter-spacing: -0.01em;
       line-height: 1;
-      margin: 0 0 14px;
+      margin: 0 0 6px;
     }
     .ff-sub {
       font-size: var(--text-small);
-      line-height: 1;
+      line-height: 1.3;
       color: var(--c-text-tertiary);
-      margin: 0 0 8px;
+      margin: 0 0 4px;
     }
     .ff-rating {
       font-size: var(--text-small);
-      line-height: 1;
+      line-height: 1.3;
       color: var(--c-text-tertiary);
       display: flex;
       align-items: center;
       gap: 3px;
-      margin: 0 0 8px;
+      margin: 0 0 4px;
     }
     .ff-price {
       font-size: var(--text-small);
       font-weight: 600;
-      line-height: 1;
+      line-height: 1.3;
       color: var(--c-text-primary);
       margin: 0;
     }
@@ -1811,7 +1840,7 @@
       <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
     </button>
     <div class="phone-frame" id="tpPhone">
-      <div class="phone-content">
+      <div class="phone-content" id="tpPhoneContent">
         <div class="sk-search"></div>
         <div class="sk-cats">
           <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
@@ -1820,17 +1849,50 @@
           <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
         </div>
         <div class="sk-divider"></div>
-        <div class="sk-card-img"></div>
-        <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-        <div class="sk-sub"></div>
-        <div class="sk-section-label"></div>
-        <div class="sk-card-img partial"></div>
-        <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-        <div class="sk-sub"></div>
-        <div class="sk-sub"></div>
-        <div class="sk-card-img partial"></div>
-        <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-        <div class="sk-sub"></div>
+        <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+        <div class="sk-carousel">
+          <div class="sk-carousel-card tp-zoom-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+          <div class="sk-carousel-card tp-zoom-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+          <div class="sk-carousel-card tp-zoom-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+        </div>
+        <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+        <div class="sk-carousel">
+          <div class="sk-carousel-card tp-zoom-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+          <div class="sk-carousel-card tp-zoom-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+          <div class="sk-carousel-card tp-zoom-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+        </div>
+        <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+        <div class="sk-carousel">
+          <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+          <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+          <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+        </div>
+      </div>
+      <!-- Scrim -->
+      <div id="tpExpandScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.32);opacity:0;pointer-events:none;z-index:11;"></div>
+      <!-- Flying panel -->
+      <div class="expand-hero-panel" id="tpExpandPanel" style="display:none;">
+        <div id="tpExpandCardLayer" style="position:absolute;inset:0;background:var(--sk);">
+        </div>
+        <div id="tpExpandDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
+          <div id="tpDetailInner" style="position:absolute;top:0;left:0;width:var(--tp-phone-w,200px);transform-origin:top left;display:flex;flex-direction:column;">
+            <div class="push-hero" style="height:220px;flex-shrink:0;"></div>
+            <div class="expand-detail-content">
+              <div class="push-detail-row title"></div>
+              <div class="push-detail-row sub"></div>
+              <div class="push-detail-divider"></div>
+              <div class="push-detail-row med"></div>
+              <div class="push-detail-row short"></div>
+              <div class="push-detail-row full"></div>
+              <div class="push-detail-row med"></div>
+              <div class="push-detail-divider"></div>
+              <div class="push-detail-row title"></div>
+              <div class="push-detail-row med"></div>
+              <div class="push-detail-row short"></div>
+              <div class="push-detail-row full"></div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="sk-bottom-nav">
         <div class="sk-nav-icon"></div>
@@ -1942,10 +2004,10 @@
 
 <div class="section-wrap" id="sec-spring">
   <h1 class="section-title">Spring Tokens</h1>
-  <p class="section-body" style="max-width:none; white-space:nowrap;">Most animations use springs because they feel smooth and respond naturally to touch.<br>Springs have two dimensions: Speed and Bounciness. These are some common examples:</p>
+  <p class="section-body">Most animations use springs because they feel smooth and respond to gestures. Springs have two dimensions to choose from: Speed and Bounciness. These are some common examples:</p>
   <div class="demo-tabs-bar section-chips">
     <div class="demo-tab active" data-demo="sheet">Sheet</div>
-    <div class="demo-tab" data-demo="push">Push</div>
+    <div class="demo-tab" data-demo="push">Nav Transition</div>
     <div class="demo-tab" data-demo="zoom">Zoom</div>
     <div class="demo-tab" data-demo="bottom-bar">Bottom Bar</div>
     <div class="demo-tab" data-demo="tab">Tab Switch</div>
@@ -1954,7 +2016,7 @@
     <div class="demo-tab" data-demo="tooltip">Tooltip</div>
     <div class="demo-tab" data-demo="flip">Card Flip</div>
   </div>
-  <p class="section-body">Select a demo to see each spring token in context. Click the play button or the phone to replay.</p>
+  <p class="section-body" id="spBodyCopy">A fast smooth spring keeps it feeling direct and physical.</p>
 </div>
 
 <div class="main">
@@ -2555,8 +2617,8 @@
 
 <!-- ── Curves & Durations Tokens section ── -->
 <div class="section-wrap" id="sec-curve">
-  <h1 class="section-title">Curves & Durations Tokens</h1>
-  <p class="section-body" style="max-width:none; white-space:nowrap;">Curves are used for simple animations like fades, basic slides or scales. These are common Curve & Duration combos:</p>
+  <h1 class="section-title">Curves & Durations</h1>
+  <p class="section-body">Curves are used for simple animations like fades or slides. Some common Curve & Duration combos:</p>
   <div class="demo-tabs-bar section-chips" id="bezTabsBar">
     <div class="demo-tab active" data-bez="slow-fade">Slow Fade</div>
     <div class="demo-tab" data-bez="fast-fade">Fast Fade</div>
@@ -2856,11 +2918,7 @@
 <!-- ── Accessibility section ── -->
 <div class="section-wrap" id="sec-accessibility">
   <h1 class="section-title">Accessibility</h1>
-  <p class="section-body" style="white-space:nowrap;">For some, motion can trigger nausea or distractions. Most platforms have controls to reduce or remove motion.</p>
-  <div class="demo-tabs-bar section-chips" id="accTabsBar">
-    <div class="demo-tab acc-tab active" data-acc="reduced-motion">Reduced Motion</div>
-    <div class="demo-tab acc-tab" data-acc="default-motion">Default Motion</div>
-  </div>
+  <p class="section-body">Some people find motion disorienting or distracting. Respect these platform settings:</p>
   <div class="section-content">
     <div style="display:flex; gap:24px; align-items:stretch;">
       <div style="flex:0 0 400px; width:400px; border:1px solid var(--c-border-subtle); border-radius:24px; padding:28px; display:flex; flex-direction:column; gap:36px;" id="accTextPanel">
@@ -2936,12 +2994,8 @@
 (function() {
   const html = document.documentElement;
   function applyTheme(dark) {
-    if (dark) {
-      html.setAttribute('data-theme', 'dark');
-    } else {
-      html.removeAttribute('data-theme');
-    }
-    document.getElementById('iconDark').style.display = dark ? 'none' : '';
+    dark ? html.setAttribute('data-theme', 'dark') : html.removeAttribute('data-theme');
+    document.getElementById('iconDark').style.display  = dark ? 'none' : '';
     document.getElementById('iconLight').style.display = dark ? '' : 'none';
   }
   applyTheme(localStorage.getItem('theme') === 'dark');
@@ -2961,24 +3015,23 @@ const SPEEDS = [
 ];
 
 const CHARS = [
-  { key: 'smooth',        ratio: 1.0,  label: 'Smooth',        color: '#8e8e93', stiffnessMul: 1.0  },
-  { key: 'small.bounce',  ratio: 0.8, label: 'Small Bounce',  color: '#5ac8fa', stiffnessMul: 1.0  },
-  { key: 'medium.bounce', ratio: 0.7,  label: 'Medium Bounce', color: '#af52de', stiffnessMul: 0.8  },
-  { key: 'large.bounce',  ratio: 0.5,  label: 'Large Bounce',  color: '#FF385C', stiffnessMul: 0.5  },
+  { key: 'smooth',        ratio: 1.0, label: 'Smooth',        color: '#8e8e93', stiffnessMul: 1.0 },
+  { key: 'small.bounce',  ratio: 0.8, label: 'Small Bounce',  color: '#5ac8fa', stiffnessMul: 1.0 },
+  { key: 'medium.bounce', ratio: 0.7, label: 'Medium Bounce', color: '#af52de', stiffnessMul: 0.8 },
+  { key: 'large.bounce',  ratio: 0.5, label: 'Large Bounce',  color: '#FF385C', stiffnessMul: 0.5 },
 ];
 
 function calcDamping(stiffness, ratio) {
   return Math.round(2 * ratio * Math.sqrt(stiffness));
 }
 
-// ── Spring physics ───────────────────────────────────────────────
-// Scrims always use a critically-damped spring regardless of selected token
+// ── Spring physics ────────────────────────────────────────────────
 const SCRIM_STIFFNESS = 300;
-const SCRIM_DAMPING   = 2 * Math.sqrt(SCRIM_STIFFNESS); // ratio = 1.0
+const SCRIM_DAMPING   = 2 * Math.sqrt(SCRIM_STIFFNESS);
 
 function springPos(t, stiffness, damping, mass = 1) {
   const omegaN = Math.sqrt(stiffness / mass);
-  const zeta = damping / (2 * Math.sqrt(stiffness * mass));
+  const zeta   = damping / (2 * Math.sqrt(stiffness * mass));
   if (zeta >= 1 - 0.001) {
     return (1 + omegaN * t) * Math.exp(-omegaN * t);
   } else {
@@ -2990,68 +3043,12 @@ function springPos(t, stiffness, damping, mass = 1) {
 }
 
 function isSettled(t, stiffness, damping) {
-  const pos = springPos(t, stiffness, damping);
+  const pos  = springPos(t, stiffness, damping);
   const next = springPos(t + 0.016, stiffness, damping);
   return Math.abs(pos) < 0.002 && Math.abs(next - pos) < 0.0005;
 }
 
-// ── State ────────────────────────────────────────────────────────
-let selected = { name: 'default-smooth', stiffness: 300, damping: calcDamping(300, 1.0), ratio: 1.0, color: '#8e8e93' };
-let currentDemo = 'sheet';
-let demoAnim = null;
-let demoState = 'out'; // 'out' | 'in'
-let expandState = null;
-let tabIdx = 0;    // current visible tab screen (0–3)
-let tabNavIdx = 0; // active nav icon (0–3) — same index, same direction
-let tabDir = 1;    // shared direction: 1=right, -1=left; ping-pongs at 0 and 3
-const miniAnims = {};
-
-// ── Build token grid ─────────────────────────────────────────────
-const gridEl = document.getElementById('tokenGrid');
-
-for (const c of CHARS) {
-  const group = document.createElement('div');
-  group.className = 'speed-group';
-
-  const label = document.createElement('div');
-  label.className = 'speed-label';
-  label.textContent = c.label;
-  group.appendChild(label);
-
-  const row = document.createElement('div');
-  row.className = 'speed-cards';
-
-  for (const s of SPEEDS) {
-    const stiffness = Math.round(s.stiffness * c.stiffnessMul);
-    const damping = calcDamping(stiffness, c.ratio);
-    const name = `${s.key}-${c.key}`;
-
-    const card = document.createElement('div');
-    card.className = 'token-card';
-    card.style.setProperty('--char-color', c.color);
-    card.id = `card-${name}`;
-    card.innerHTML = `
-      <div class="card-char-label">${s.label}</div>
-      <div class="card-token-name">${name}</div>
-      <div class="card-meta"><span class="card-meta-label">S:</span>${stiffness} · <span class="card-meta-label">DR:</span>${c.ratio} · <span class="card-meta-label">D:</span>${damping}</div>
-    `;
-
-    card.addEventListener('click', () => {
-      if (card.classList.contains('selected')) { playDemo(); return; }
-      selectSpring(name, stiffness, damping, c.ratio, card, c.color, { play: false });
-    });
-    row.appendChild(card);
-  }
-
-  group.appendChild(row);
-  gridEl.appendChild(group);
-}
-
-// Mark initial demo default (sheet = fast smooth)
-// Deferred so DOM is ready
-setTimeout(() => applyDemoDefault(currentDemo), 0);
-
-// ── SpringSim: per-frame simulation with velocity-preserving retarget ──
+// ── SpringSim: velocity-preserving retarget ───────────────────────
 class SpringSim {
   constructor(initial = 1) { this.x = initial; this.v = 0; this.target = initial; }
   retarget(t) { this.target = t; }
@@ -3063,37 +3060,66 @@ class SpringSim {
   settled() { return Math.abs(this.x - this.target) < 0.0005 && Math.abs(this.v) < 0.0005; }
 }
 
-// ── Staggered card preview scale animation ───────────────────────
+// ── Shared state ──────────────────────────────────────────────────
+let selected    = { name: 'default-smooth', stiffness: 300, damping: calcDamping(300, 1.0), ratio: 1.0, color: '#8e8e93' };
+let currentDemo = 'sheet';
+let demoAnim    = null;
+let demoState   = 'out';
+let expandState   = null;
+let expandCardIdx = 0;
+let tabIdx = 0, tabNavIdx = 0, tabDir = 1;
+const miniAnims = {};
 
-// ── Select spring ────────────────────────────────────────────────
-function selectSpring(name, stiffness, damping, ratio, cardEl, color, { play = true } = {}) {
-  document.querySelectorAll('#tokenGrid .token-card').forEach(c => c.classList.remove('selected'));
-  document.querySelectorAll('#tokenGrid .speed-group').forEach(g => g.classList.remove('active'));
-  cardEl?.classList.add('selected');
-  cardEl?.closest('.speed-group')?.classList.add('active');
-
-  selected = { name, stiffness, damping, ratio };
-
-  triggerMini(name, stiffness, damping);
-  if (play) playDemo();
-}
+// ── Build token grid ─────────────────────────────────────────────
+(function() {
+  const gridEl = document.getElementById('tokenGrid');
+  for (const c of CHARS) {
+    const group = document.createElement('div');
+    group.className = 'speed-group';
+    const label = document.createElement('div');
+    label.className = 'speed-label';
+    label.textContent = c.label;
+    group.appendChild(label);
+    const row = document.createElement('div');
+    row.className = 'speed-cards';
+    for (const s of SPEEDS) {
+      const stiffness = Math.round(s.stiffness * c.stiffnessMul);
+      const damping   = calcDamping(stiffness, c.ratio);
+      const name      = `${s.key}-${c.key}`;
+      const card      = document.createElement('div');
+      card.className  = 'token-card';
+      card.style.setProperty('--char-color', c.color);
+      card.id = `card-${name}`;
+      card.innerHTML = `
+        <div class="card-char-label">${s.label}</div>
+        <div class="card-token-name">${name}</div>
+        <div class="card-meta"><span class="card-meta-label">S:</span>${stiffness} · <span class="card-meta-label">DR:</span>${c.ratio} · <span class="card-meta-label">D:</span>${damping}</div>
+      `;
+      card.addEventListener('click', () => {
+        if (card.classList.contains('selected')) { playDemo(); return; }
+        selectSpring(name, stiffness, damping, c.ratio, card, c.color, { play: false });
+      });
+      row.appendChild(card);
+    }
+    group.appendChild(row);
+    gridEl.appendChild(group);
+  }
+  setTimeout(() => { applyDemoDefault(currentDemo); reserveTabWidths(); }, 0);
+})();
 
 // ── Mini ball animations ──────────────────────────────────────────
 function triggerMini(name, stiffness, damping) {
   const ball = document.getElementById(`mini-${name}`);
   if (!ball) return;
   const track = ball.parentElement;
-  const endX = track.offsetWidth - 8;
-
+  const endX  = track.offsetWidth - 8;
   if (miniAnims[name]) cancelAnimationFrame(miniAnims[name].raf);
-  const dir = miniAnims[name]?.dir === 1 ? -1 : 1;
+  const dir   = miniAnims[name]?.dir === 1 ? -1 : 1;
   const start = performance.now();
-
   function tick(now) {
-    const t = (now - start) / 1000;
+    const t   = (now - start) / 1000;
     const pos = springPos(t, stiffness, damping);
-    const x = dir === 1 ? endX * (1 - pos) : endX * pos;
-    ball.style.transform = `translateX(${x}px)`;
+    ball.style.transform = `translateX(${(dir === 1 ? endX * (1 - pos) : endX * pos)}px)`;
     if (t < 5 && !isSettled(t, stiffness, damping)) {
       miniAnims[name] = { raf: requestAnimationFrame(tick), dir };
     } else {
@@ -3104,144 +3130,406 @@ function triggerMini(name, stiffness, damping) {
   miniAnims[name] = { raf: requestAnimationFrame(tick), dir };
 }
 
-// ── Per-demo default springs ──────────────────────────────────────
-// Each value is [speedKey, charKey] referencing SPEEDS and CHARS arrays
-const DEMO_DEFAULTS = {
-  'bottom-bar': { speed: 'snappy', char: 'smooth'     },
-  sheet:   { speed: 'fast',    char: 'smooth'        },
-  push:    { speed: 'default', char: 'smooth'        },
-  modal:   { speed: 'snappy',  char: 'medium.bounce' },
-  flip:    { speed: 'slow',    char: 'medium.bounce' },
-  notif:   { speed: 'fast',    char: 'medium.bounce' },
-  zoom:    { speed: 'fast',    char: 'smooth'        },
-  tooltip: { speed: 'snappy',  char: 'medium.bounce' },
-  tab:     { speed: 'default', char: 'smooth'        },
-  press:   { speed: 'default', char: 'smooth'        },
+// ── Select spring ─────────────────────────────────────────────────
+function selectSpring(name, stiffness, damping, ratio, cardEl, color, { play = true } = {}) {
+  document.querySelectorAll('#tokenGrid .token-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('#tokenGrid .speed-group').forEach(g => g.classList.remove('active'));
+  cardEl?.classList.add('selected');
+  cardEl?.closest('.speed-group')?.classList.add('active');
+  selected = { name, stiffness, damping, ratio };
+  triggerMini(name, stiffness, damping);
+  if (play) playDemo();
+}
+
+// ── Spring demo registry ──────────────────────────────────────────
+// Each entry: { description, defaultSpring: {speed, char}, play(), reset() }
+const SPRING_DEMOS = {
+  sheet: {
+    description:   'A fast smooth spring keeps it feeling direct and physical.',
+    defaultSpring: { speed: 'fast',    char: 'smooth'        },
+    reset() {
+      document.getElementById('demoSheet').style.transform  = 'translateY(100%)';
+      document.getElementById('demoSheet').style.boxShadow  = '0 -2px 20px rgba(0,0,0,0)';
+      document.getElementById('sheetScrim').style.opacity   = '0';
+    },
+    play() {
+      const sheet = document.getElementById('demoSheet');
+      const scrim = document.getElementById('sheetScrim');
+      const { stiffness, damping } = selected;
+      const isIn = demoState === 'in';
+      demoState  = isIn ? 'out' : 'in';
+      const start = performance.now();
+      function tick(now) {
+        const t         = (now - start) / 1000;
+        const pos       = springPos(t, stiffness, damping);
+        const scrimPos  = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+        const pct       = isIn ? (1 - pos) * 100 : pos * 100;
+        const shadowPrg = isIn ? scrimPos : (1 - scrimPos);
+        sheet.style.transform  = `translateY(${pct}%)`;
+        sheet.style.boxShadow  = `0 -2px 20px rgba(0,0,0,${(shadowPrg * 0.12).toFixed(3)})`;
+        scrim.style.opacity    = String(isIn ? scrimPos : (1 - scrimPos));
+        if (t < 5 && !isSettled(t, stiffness, damping)) {
+          demoAnim = requestAnimationFrame(tick);
+        } else {
+          sheet.style.transform = isIn ? 'translateY(100%)' : 'translateY(0%)';
+          sheet.style.boxShadow = isIn ? '0 -2px 20px rgba(0,0,0,0)' : '0 -2px 20px rgba(0,0,0,0.12)';
+          scrim.style.opacity   = isIn ? '0' : '1';
+        }
+      }
+      demoAnim = requestAnimationFrame(tick);
+    },
+  },
+
+  push: {
+    description:   'A smooth spring balances speed and comfort.',
+    defaultSpring: { speed: 'default', char: 'smooth'        },
+    reset() {
+      document.getElementById('pushSource').style.transform = 'translateX(0%)';
+      document.getElementById('pushDest').style.transform   = 'translateX(100%)';
+      document.getElementById('pushScrim').style.opacity    = '0';
+    },
+    play() {
+      const src   = document.getElementById('pushSource');
+      const dest  = document.getElementById('pushDest');
+      const scrim = document.getElementById('pushScrim');
+      const { stiffness, damping } = selected;
+      const isIn  = demoState === 'in';
+      demoState   = isIn ? 'out' : 'in';
+      const start = performance.now();
+      function tick(now) {
+        const t        = (now - start) / 1000;
+        const pos      = springPos(t, stiffness, damping);
+        const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+        if (!isIn) {
+          dest.style.transform  = `translateX(${pos * 100}%)`;
+          src.style.transform   = `translateX(${-(1 - pos) * 30}%)`;
+          scrim.style.opacity   = String(1 - scrimPos);
+        } else {
+          dest.style.transform  = `translateX(${(1 - pos) * 100}%)`;
+          src.style.transform   = `translateX(${-pos * 30}%)`;
+          scrim.style.opacity   = String(scrimPos);
+        }
+        if (t < 5 && !isSettled(t, stiffness, damping)) {
+          demoAnim = requestAnimationFrame(tick);
+        } else {
+          if (!isIn) {
+            dest.style.transform = 'translateX(0%)'; src.style.transform = 'translateX(-30%)'; scrim.style.opacity = '1';
+          } else {
+            dest.style.transform = 'translateX(100%)'; src.style.transform = 'translateX(0%)'; scrim.style.opacity = '0';
+          }
+        }
+      }
+      demoAnim = requestAnimationFrame(tick);
+    },
+  },
+
+  zoom: {
+    description:   'A fast smooth spring keeps it clear and functional.',
+    defaultSpring: { speed: 'fast',    char: 'smooth'        },
+    reset() {
+      document.getElementById('expandPanel').style.display = 'none';
+      document.getElementById('expandCardLayer').style.opacity   = '1';
+      document.getElementById('expandDetailLayer').style.opacity = '0';
+      if (expandState?.card) expandState.card.style.visibility = '';
+      expandState  = null;
+      expandCardIdx = 0;
+      document.querySelectorAll('.expand-card').forEach(c => c.style.visibility = '');
+    },
+    play() {
+      const cards = document.querySelectorAll('.expand-card');
+      if (expandState) {
+        collapseCard(() => { expandCardIdx = (expandCardIdx + 1) % cards.length; });
+      } else {
+        expandCard(cards[expandCardIdx]);
+      }
+    },
+  },
+
+  'bottom-bar': {
+    description:   'A snappy smooth spring keeps it quick and unobtrusive.',
+    defaultSpring: { speed: 'snappy',  char: 'smooth'        },
+    reset() {
+      document.getElementById('demoBottomBar').style.transform = 'translateY(100%)';
+    },
+    play() {
+      const bar   = document.getElementById('demoBottomBar');
+      const { stiffness, damping } = selected;
+      const isIn  = demoState === 'in';
+      demoState   = isIn ? 'out' : 'in';
+      const start = performance.now();
+      function tick(now) {
+        const t   = (now - start) / 1000;
+        const pos = springPos(t, stiffness, damping);
+        bar.style.transform = `translateY(${isIn ? (1 - pos) * 100 : pos * 100}%)`;
+        if (t < 5 && !isSettled(t, stiffness, damping)) {
+          demoAnim = requestAnimationFrame(tick);
+        } else {
+          bar.style.transform = isIn ? 'translateY(100%)' : 'translateY(0%)';
+        }
+      }
+      demoAnim = requestAnimationFrame(tick);
+    },
+  },
+
+  tab: {
+    description:   'A default smooth spring keeps it comfortable and easy to follow.',
+    defaultSpring: { speed: 'default', char: 'smooth'        },
+    reset() {
+      tabIdx = 0; tabNavIdx = 0; tabDir = 1;
+      for (let i = 0; i < 4; i++) {
+        const s = document.getElementById(`tabScreen${i}`);
+        if (s) { s.style.opacity = i === 0 ? '1' : '0'; s.style.transform = i === 0 ? 'translateX(0)' : 'translateX(40px)'; }
+        const icon = document.getElementById(`tabNavIcon${i}`);
+        if (icon) icon.style.background = i === 0 ? '#FF385C' : '';
+      }
+    },
+    play() {
+      const { stiffness, damping } = selected;
+      const travelDir = tabDir;
+      const nextIdx   = tabIdx + travelDir;
+      const outScreen = document.getElementById(`tabScreen${tabIdx}`);
+      const inScreen  = document.getElementById(`tabScreen${nextIdx}`);
+      tabIdx = nextIdx; tabNavIdx = nextIdx;
+      if (tabIdx === 0 || tabIdx === 3) tabDir *= -1;
+      for (let i = 0; i < 4; i++) {
+        const icon = document.getElementById(`tabNavIcon${i}`);
+        if (icon) icon.style.background = i === tabNavIdx ? '#FF385C' : '';
+      }
+      const SLIDE_PX    = 40;
+      const incomingSign = travelDir;
+      const outgoingSign = -travelDir;
+      inScreen.style.opacity   = '0';
+      inScreen.style.transform = `translateX(${incomingSign * SLIDE_PX}px)`;
+      const start = performance.now();
+      function tick(now) {
+        const t          = (now - start) / 1000;
+        const pos        = springPos(t, stiffness, damping);
+        const completion = 1 - pos;
+        outScreen.style.transform = `translateX(${outgoingSign * completion * SLIDE_PX}px)`;
+        outScreen.style.opacity   = String(Math.max(1 - completion / 0.40, 0));
+        inScreen.style.transform  = `translateX(${incomingSign * pos * SLIDE_PX}px)`;
+        inScreen.style.opacity    = String(Math.min(Math.max((completion - 0.20) / 0.80, 0), 1));
+        if (t < 5 && !isSettled(t, stiffness, damping)) {
+          demoAnim = requestAnimationFrame(tick);
+        } else {
+          outScreen.style.transform = `translateX(${outgoingSign * SLIDE_PX}px)`; outScreen.style.opacity = '0';
+          inScreen.style.transform  = 'translateX(0)'; inScreen.style.opacity = '1';
+        }
+      }
+      demoAnim = requestAnimationFrame(tick);
+    },
+  },
+
+  modal: {
+    description:   'A snappy spring with medium bounce gives it a confident, purposeful feel.',
+    defaultSpring: { speed: 'snappy',  char: 'medium.bounce' },
+    reset() {
+      const bd = document.getElementById('demoBackdrop');
+      const m  = document.getElementById('demoModal');
+      bd.style.opacity = '0'; bd.style.pointerEvents = 'none';
+      m.style.opacity  = '0'; m.style.transform = 'scale(0.75)';
+    },
+    play() {
+      const bd  = document.getElementById('demoBackdrop');
+      const m   = document.getElementById('demoModal');
+      const { stiffness, damping } = selected;
+      const isIn = demoState === 'in';
+      demoState  = isIn ? 'out' : 'in';
+      bd.style.pointerEvents = 'auto';
+      const start = performance.now();
+      function tick(now) {
+        const t         = (now - start) / 1000;
+        const pos       = springPos(t, stiffness, damping);
+        const scrimPos  = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+        const progress  = 1 - pos;
+        if (isIn) {
+          m.style.transform = `scale(${0.75 + pos * 0.25})`; m.style.opacity = pos;
+          bd.style.opacity  = scrimPos * 0.4;
+        } else {
+          m.style.transform = `scale(${0.75 + progress * 0.25})`; m.style.opacity = progress;
+          bd.style.opacity  = (1 - scrimPos) * 0.4;
+        }
+        if (t < 5 && !isSettled(t, stiffness, damping)) {
+          demoAnim = requestAnimationFrame(tick);
+        } else {
+          if (isIn) { m.style.opacity = '0'; m.style.transform = 'scale(0.85)'; bd.style.opacity = '0'; bd.style.pointerEvents = 'none'; }
+          else      { m.style.opacity = '1'; m.style.transform = 'scale(1)';    bd.style.opacity = '0.4'; }
+        }
+      }
+      demoAnim = requestAnimationFrame(tick);
+    },
+  },
+
+  notif: {
+    description:   'A fast spring with medium bounce calls a bit of attention to its entrance.',
+    defaultSpring: { speed: 'fast',    char: 'medium.bounce' },
+    reset() {
+      document.getElementById('demoNotif').style.transform = 'translateY(-160%)';
+    },
+    play() {
+      const n   = document.getElementById('demoNotif');
+      const { stiffness, damping } = selected;
+      const isIn = demoState === 'in';
+      demoState  = isIn ? 'out' : 'in';
+      const start = performance.now();
+      function tick(now) {
+        const t   = (now - start) / 1000;
+        const pos = springPos(t, stiffness, damping);
+        n.style.transform = `translateY(${isIn ? (1 - pos) * -160 : pos * -160}%)`;
+        if (t < 5 && !isSettled(t, stiffness, damping)) {
+          demoAnim = requestAnimationFrame(tick);
+        } else {
+          n.style.transform = isIn ? 'translateY(-160%)' : 'translateY(0%)';
+        }
+      }
+      demoAnim = requestAnimationFrame(tick);
+    },
+  },
+
+  tooltip: {
+    description:   'A snappy spring with medium bounce keeps it lively but brief.',
+    defaultSpring: { speed: 'snappy',  char: 'medium.bounce' },
+    reset() {
+      const tt = document.getElementById('demoTooltip');
+      tt.style.transform = 'translateX(-50%) scale(0.6)'; tt.style.opacity = '0';
+    },
+    play() {
+      const tt  = document.getElementById('demoTooltip');
+      const { stiffness, damping } = selected;
+      const isIn = demoState === 'in';
+      demoState  = isIn ? 'out' : 'in';
+      const start = performance.now();
+      function tick(now) {
+        const t   = (now - start) / 1000;
+        const pos = springPos(t, stiffness, damping);
+        if (!isIn) {
+          tt.style.transform = `translateX(-50%) scale(${1 - pos * 0.4})`;
+          tt.style.opacity   = String(Math.min(t / 0.12, 1));
+        } else {
+          tt.style.transform = `translateX(-50%) scale(${0.6 + pos * 0.4})`;
+          tt.style.opacity   = String(Math.max(1 - t / 0.12, 0));
+        }
+        if (t < 5 && !isSettled(t, stiffness, damping)) {
+          demoAnim = requestAnimationFrame(tick);
+        } else {
+          tt.style.transform = `translateX(-50%) scale(${isIn ? 0.6 : 1})`;
+          tt.style.opacity   = isIn ? '0' : '1';
+        }
+      }
+      demoAnim = requestAnimationFrame(tick);
+    },
+  },
+
+  flip: {
+    description:   'A slow spring with medium bounce gives the motion weight and presence.',
+    defaultSpring: { speed: 'slow',    char: 'medium.bounce' },
+    reset() {
+      document.getElementById('demoFlip').style.transform = 'rotateY(0deg)';
+    },
+    play() {
+      const card = document.getElementById('demoFlip');
+      const { stiffness, damping } = selected;
+      const isFlipped = demoState === 'in';
+      demoState = isFlipped ? 'out' : 'in';
+      const fromDeg = isFlipped ? 180 : 0;
+      const toDeg   = isFlipped ? 0 : 180;
+      const start   = performance.now();
+      function tick(now) {
+        const t   = (now - start) / 1000;
+        const pos = springPos(t, stiffness, damping);
+        card.style.transform = `rotateY(${fromDeg + (toDeg - fromDeg) * (1 - pos)}deg)`;
+        if (t < 5 && !isSettled(t, stiffness, damping)) {
+          demoAnim = requestAnimationFrame(tick);
+        } else {
+          card.style.transform = `rotateY(${toDeg}deg)`;
+        }
+      }
+      demoAnim = requestAnimationFrame(tick);
+    },
+  },
+
+  press: {
+    description:   null,
+    defaultSpring: { speed: 'default', char: 'smooth'        },
+    reset()  { stopPressLoop(); },
+    play()   { startPressLoop(); },
+  },
 };
 
+// ── Apply demo default spring ─────────────────────────────────────
 function applyDemoDefault(demo) {
-  const def = DEMO_DEFAULTS[demo];
+  const def = SPRING_DEMOS[demo]?.defaultSpring;
   if (!def) return;
-  const sp = SPEEDS.find(s => s.key === def.speed);
-  const ch = CHARS.find(c => c.key === def.char);
+  const sp     = SPEEDS.find(s => s.key === def.speed);
+  const ch     = CHARS.find(c => c.key === def.char);
   if (!sp || !ch) return;
   const stiffness = Math.round(sp.stiffness * ch.stiffnessMul);
   const damping   = calcDamping(stiffness, ch.ratio);
   const name      = `${def.speed}-${def.char}`;
   const cardEl    = document.getElementById(`card-${name}`);
-  // Mark default card
   document.querySelectorAll('#tokenGrid .token-card').forEach(c => c.classList.remove('default'));
   cardEl?.classList.add('default');
   selectSpring(name, stiffness, damping, ch.ratio, cardEl, ch.color, { play: false });
 }
 
-// ── Demo tabs ────────────────────────────────────────────────────
+// ── Switch / play / reset spring demo ────────────────────────────
 function switchDemo(demo) {
   const tab = document.querySelector(`.demo-tab[data-demo="${demo}"]`);
   if (!tab) return;
   document.querySelectorAll('.demo-tab[data-demo]').forEach(t => t.classList.remove('active'));
   tab.classList.add('active');
   currentDemo = demo;
-
   document.querySelectorAll('.demo-view').forEach(v => v.style.display = 'none');
   const view = document.getElementById(`view-${currentDemo}`);
   if (view) view.style.display = 'flex';
-
   resetDemo();
   demoState = 'out';
   applyDemoDefault(currentDemo);
+  const desc = SPRING_DEMOS[currentDemo]?.description;
+  if (desc) document.getElementById('spBodyCopy').textContent = desc;
+}
+
+function resetDemo() {
+  if (demoAnim) { cancelAnimationFrame(demoAnim); demoAnim = null; }
+  SPRING_DEMOS[currentDemo]?.reset();
+}
+
+function playDemo() {
+  if (demoAnim) cancelAnimationFrame(demoAnim);
+  SPRING_DEMOS[currentDemo]?.play();
 }
 
 document.querySelectorAll('.demo-tab[data-demo]').forEach(tab => {
   tab.addEventListener('click', () => {
-    const alreadyActive = tab.classList.contains('active');
-    if (alreadyActive) { playDemo(); return; }
+    if (tab.classList.contains('active')) { playDemo(); return; }
     switchDemo(tab.dataset.demo);
     history.replaceState(null, '', `#${tab.dataset.demo}`);
   });
 });
 
-// Restore demo from URL hash on load
+// Restore spring demo from URL hash on load
 const hashDemo = location.hash.slice(1);
-if (hashDemo && document.querySelector(`.demo-tab[data-demo="${hashDemo}"]`)) {
+if (hashDemo && !hashDemo.startsWith('tp-') && !hashDemo.startsWith('ng-') && document.querySelector(`.demo-tab[data-demo="${hashDemo}"]`)) {
   switchDemo(hashDemo);
 }
 
-// ── Play / reset demo ─────────────────────────────────────────────
-function resetDemo() {
-  if (demoAnim) { cancelAnimationFrame(demoAnim); demoAnim = null; }
-
-  if (currentDemo === 'bottom-bar') {
-    document.getElementById('demoBottomBar').style.transform = 'translateY(100%)';
-  } else if (currentDemo === 'sheet') {
-    document.getElementById('demoSheet').style.transform = 'translateY(100%)';
-    document.getElementById('demoSheet').style.boxShadow = '0 -2px 20px rgba(0,0,0,0)';
-    document.getElementById('sheetScrim').style.opacity = '0';
-  } else if (currentDemo === 'modal') {
-    const bd = document.getElementById('demoBackdrop');
-    const m = document.getElementById('demoModal');
-    bd.style.opacity = '0';
-    bd.style.pointerEvents = 'none';
-    m.style.opacity = '0';
-    m.style.transform = 'scale(0.75)';
-  } else if (currentDemo === 'flip') {
-    document.getElementById('demoFlip').style.transform = 'rotateY(0deg)';
-  } else if (currentDemo === 'notif') {
-    const n = document.getElementById('demoNotif');
-    n.style.transform = 'translateY(-160%)';
-  } else if (currentDemo === 'push') {
-    document.getElementById('pushSource').style.transform = 'translateX(0%)';
-    document.getElementById('pushDest').style.transform = 'translateX(100%)';
-    document.getElementById('pushScrim').style.opacity = '0';
-  } else if (currentDemo === 'tooltip') {
-    const tt = document.getElementById('demoTooltip');
-    tt.style.transform = 'translateX(-50%) scale(0.6)';
-    tt.style.opacity = '0';
-  } else if (currentDemo === 'zoom') {
-    const panel = document.getElementById('expandPanel');
-    panel.style.display = 'none';
-    document.getElementById('expandCardLayer').style.opacity  = '1';
-    document.getElementById('expandDetailLayer').style.opacity = '0';
-    if (expandState?.card) expandState.card.style.visibility = '';
-    expandState = null;
-    expandCardIdx = 0;
-    document.querySelectorAll('.expand-card').forEach(c => c.style.visibility = '');
-  } else if (currentDemo === 'tab') {
-    tabIdx = 0; tabNavIdx = 0; tabDir = 1;
-    for (let i = 0; i < 4; i++) {
-      const s = document.getElementById(`tabScreen${i}`);
-      if (s) { s.style.opacity = i === 0 ? '1' : '0'; s.style.transform = i === 0 ? 'translateX(0)' : 'translateX(40px)'; }
-      const icon = document.getElementById(`tabNavIcon${i}`);
-      if (icon) icon.style.background = i === 0 ? '#FF385C' : '';
-    }
-  } else if (currentDemo === 'press') {
-    stopPressLoop();
-  }
-}
-
-// ── Press Scale loop ─────────────────────────────────────────────
+// ── Press Scale loop ──────────────────────────────────────────────
 const PS_GROUPS = [
   ['ps-search'],
   ['ps-cat0'], ['ps-cat1'], ['ps-cat2'], ['ps-cat3'],
-  ['ps-card0'],
-  ['ps-card1'],
-  ['ps-card2'],
+  ['ps-card0'], ['ps-card1'], ['ps-card2'],
   ['ps-nav0'], ['ps-nav1'], ['ps-nav2'], ['ps-nav3'],
 ];
-const PS_ALL_IDS = PS_GROUPS.flat();
-const pressSims = PS_GROUPS.map(() => new SpringSim(1));
-let pressRaf = null;
+const PS_ALL_IDS  = PS_GROUPS.flat();
+const pressSims   = PS_GROUPS.map(() => new SpringSim(1));
+let pressRaf      = null;
 let pressLastTime = null;
 const pressTimers = [];
 
 function triggerPressGroup(i) {
   pressSims[i].retarget(0.92);
   pressTimers.push(setTimeout(() => pressSims[i].retarget(1.0), 100));
-  // Start rAF loop if not already running
-  if (!pressRaf) {
-    pressLastTime = null;
-    pressRaf = requestAnimationFrame(stepPress);
-  }
+  if (!pressRaf) { pressLastTime = null; pressRaf = requestAnimationFrame(stepPress); }
 }
 
 function stepPress(now) {
@@ -3256,21 +3544,14 @@ function stepPress(now) {
     ids.forEach(id => { const el = document.getElementById(id); if (el) el.style.transform = s; });
     if (!pressSims[i].settled()) anyActive = true;
   });
-  if (anyActive) {
-    pressRaf = requestAnimationFrame(stepPress);
-  } else {
-    pressRaf = null;
-    pressLastTime = null;
-  }
+  if (anyActive) { pressRaf = requestAnimationFrame(stepPress); }
+  else { pressRaf = null; pressLastTime = null; }
 }
 
 function startPressLoop() {
   stopPressLoop();
   pressSims.forEach(s => { s.x = 1; s.v = 0; s.target = 1; });
-  // Trigger each group sequentially, 160ms apart, no repeat
-  PS_GROUPS.forEach((_, i) => {
-    pressTimers.push(setTimeout(() => triggerPressGroup(i), i * 160));
-  });
+  PS_GROUPS.forEach((_, i) => pressTimers.push(setTimeout(() => triggerPressGroup(i), i * 160)));
 }
 
 function stopPressLoop() {
@@ -3281,7 +3562,6 @@ function stopPressLoop() {
   PS_ALL_IDS.forEach(id => { const el = document.getElementById(id); if (el) el.style.transform = ''; });
 }
 
-// Individual element click handlers for press demo
 PS_GROUPS.forEach((ids, i) => {
   const el = document.getElementById(ids[0]);
   if (el) el.addEventListener('click', (e) => {
@@ -3291,324 +3571,32 @@ PS_GROUPS.forEach((ids, i) => {
   });
 });
 
-function playDemo() {
-  if (demoAnim) cancelAnimationFrame(demoAnim);
-
-  const { stiffness, damping } = selected;
-  const start = performance.now();
-
-  if (currentDemo === 'bottom-bar') {
-    const bar = document.getElementById('demoBottomBar');
-    const isIn = demoState === 'in';
-    demoState = isIn ? 'out' : 'in';
-
-    function tick(now) {
-      const t = (now - start) / 1000;
-      const pos = springPos(t, stiffness, damping);
-      const pct = isIn ? (1 - pos) * 100 : pos * 100;
-      bar.style.transform = `translateY(${pct}%)`;
-      if (t < 5 && !isSettled(t, stiffness, damping)) {
-        demoAnim = requestAnimationFrame(tick);
-      } else {
-        bar.style.transform = isIn ? 'translateY(100%)' : 'translateY(0%)';
-      }
-    }
-    demoAnim = requestAnimationFrame(tick);
-
-  } else if (currentDemo === 'sheet') {
-    const sheet = document.getElementById('demoSheet');
-    const scrim = document.getElementById('sheetScrim');
-    const isIn = demoState === 'in';
-    demoState = isIn ? 'out' : 'in';
-
-    function tick(now) {
-      const t = (now - start) / 1000;
-      const pos = springPos(t, stiffness, damping);
-      // entering (isIn=false): pos 1→0 maps to translateY 100%→0% (slides up)
-      // dismissing (isIn=true): pos 1→0 maps to translateY 0%→100% (slides down)
-      const pct = isIn ? (1 - pos) * 100 : pos * 100;
-      const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
-      const shadowProgress = isIn ? scrimPos : (1 - scrimPos);
-      sheet.style.transform = `translateY(${pct}%)`;
-      sheet.style.boxShadow = `0 -2px 20px rgba(0,0,0,${(shadowProgress * 0.12).toFixed(3)})`;
-      scrim.style.opacity = String(isIn ? scrimPos : (1 - scrimPos));
-      if (t < 5 && !isSettled(t, stiffness, damping)) {
-        demoAnim = requestAnimationFrame(tick);
-      } else {
-        sheet.style.transform = isIn ? 'translateY(100%)' : 'translateY(0%)';
-        sheet.style.boxShadow = isIn ? '0 -2px 20px rgba(0,0,0,0)' : '0 -2px 20px rgba(0,0,0,0.12)';
-        scrim.style.opacity = isIn ? '0' : '1';
-      }
-    }
-    demoAnim = requestAnimationFrame(tick);
-
-  } else if (currentDemo === 'modal') {
-    const bd = document.getElementById('demoBackdrop');
-    const m = document.getElementById('demoModal');
-    const isIn = demoState === 'in';
-    demoState = isIn ? 'out' : 'in';
-    bd.style.pointerEvents = 'auto';
-
-    function tick(now) {
-      const t = (now - start) / 1000;
-      const pos = springPos(t, stiffness, damping);
-      const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
-      const progress = 1 - pos; // 0→1 as spring settles
-      const scrimProgress = 1 - scrimPos;
-
-      if (isIn) {
-        // dismiss: scale down, fade out
-        const scale = 0.75 + pos * 0.25;
-        m.style.transform = `scale(${scale})`;
-        m.style.opacity = pos;
-        bd.style.opacity = scrimPos * 0.4;
-      } else {
-        // enter: scale up, fade in
-        const scale = 0.75 + progress * 0.25;
-        m.style.transform = `scale(${scale})`;
-        m.style.opacity = progress;
-        bd.style.opacity = scrimProgress * 0.4;
-      }
-
-      if (t < 5 && !isSettled(t, stiffness, damping)) {
-        demoAnim = requestAnimationFrame(tick);
-      } else {
-        if (isIn) {
-          m.style.opacity = '0'; m.style.transform = 'scale(0.85)';
-          bd.style.opacity = '0'; bd.style.pointerEvents = 'none';
-        } else {
-          m.style.opacity = '1'; m.style.transform = 'scale(1)';
-          bd.style.opacity = '0.4';
-        }
-      }
-    }
-    demoAnim = requestAnimationFrame(tick);
-
-  } else if (currentDemo === 'flip') {
-    const card = document.getElementById('demoFlip');
-    const isFlipped = demoState === 'in';
-    demoState = isFlipped ? 'out' : 'in';
-    const fromDeg = isFlipped ? 180 : 0;
-    const toDeg = isFlipped ? 0 : 180;
-
-    function tick(now) {
-      const t = (now - start) / 1000;
-      const pos = springPos(t, stiffness, damping);
-      const deg = fromDeg + (toDeg - fromDeg) * (1 - pos);
-      card.style.transform = `rotateY(${deg}deg)`;
-      if (t < 5 && !isSettled(t, stiffness, damping)) {
-        demoAnim = requestAnimationFrame(tick);
-      } else {
-        card.style.transform = `rotateY(${toDeg}deg)`;
-      }
-    }
-    demoAnim = requestAnimationFrame(tick);
-
-  } else if (currentDemo === 'push') {
-    const src  = document.getElementById('pushSource');
-    const dest = document.getElementById('pushDest');
-    const scrim = document.getElementById('pushScrim');
-    const isIn = demoState === 'in'; // isIn=true means currently pushed → pop
-    demoState = isIn ? 'out' : 'in';
-
-    function tick(now) {
-      const t = (now - start) / 1000;
-      const pos = springPos(t, stiffness, damping);
-      const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
-
-      if (!isIn) {
-        // Push: dest comes from right, source retreats left 30%, scrim fades in
-        dest.style.transform = `translateX(${pos * 100}%)`;
-        src.style.transform  = `translateX(${-(1 - pos) * 30}%)`;
-        scrim.style.opacity  = String(1 - scrimPos);
-      } else {
-        // Pop: dest exits right, source returns, scrim fades out
-        dest.style.transform = `translateX(${(1 - pos) * 100}%)`;
-        src.style.transform  = `translateX(${-pos * 30}%)`;
-        scrim.style.opacity  = String(scrimPos);
-      }
-
-      if (t < 5 && !isSettled(t, stiffness, damping)) {
-        demoAnim = requestAnimationFrame(tick);
-      } else {
-        if (!isIn) {
-          dest.style.transform = 'translateX(0%)';
-          src.style.transform  = 'translateX(-30%)';
-          scrim.style.opacity  = '1';
-        } else {
-          dest.style.transform = 'translateX(100%)';
-          src.style.transform  = 'translateX(0%)';
-          scrim.style.opacity  = '0';
-        }
-      }
-    }
-    demoAnim = requestAnimationFrame(tick);
-
-  } else if (currentDemo === 'notif') {
-    const n = document.getElementById('demoNotif');
-    const isIn = demoState === 'in';
-    demoState = isIn ? 'out' : 'in';
-
-    function tick(now) {
-      const t = (now - start) / 1000;
-      const pos = springPos(t, stiffness, damping);
-
-      if (isIn) {
-        const pct = (1 - pos) * -160;
-        n.style.transform = `translateY(${pct}%)`;
-      } else {
-        const pct = pos * -160;
-        n.style.transform = `translateY(${pct}%)`;
-      }
-
-      if (t < 5 && !isSettled(t, stiffness, damping)) {
-        demoAnim = requestAnimationFrame(tick);
-      } else {
-        if (isIn) {
-          n.style.transform = 'translateY(-160%)';
-        } else {
-          n.style.transform = 'translateY(0%)';
-        }
-      }
-    }
-    demoAnim = requestAnimationFrame(tick);
-
-  } else if (currentDemo === 'tooltip') {
-    const tt = document.getElementById('demoTooltip');
-    const isIn = demoState === 'in';
-    demoState = isIn ? 'out' : 'in';
-
-    function tick(now) {
-      const t = (now - start) / 1000;
-      const pos = springPos(t, stiffness, damping);
-
-      if (!isIn) {
-        const sc = 1 - pos * 0.4;
-        tt.style.transform = `translateX(-50%) scale(${sc})`;
-        tt.style.opacity   = String(Math.min(t / 0.12, 1));
-      } else {
-        const sc = 0.6 + pos * 0.4;
-        tt.style.transform = `translateX(-50%) scale(${sc})`;
-        tt.style.opacity   = String(Math.max(1 - t / 0.12, 0));
-      }
-
-      if (t < 5 && !isSettled(t, stiffness, damping)) {
-        demoAnim = requestAnimationFrame(tick);
-      } else {
-        tt.style.transform = `translateX(-50%) scale(${isIn ? 0.6 : 1})`;
-        tt.style.opacity   = isIn ? '0' : '1';
-      }
-    }
-    demoAnim = requestAnimationFrame(tick);
-
-  } else if (currentDemo === 'zoom') {
-    const cards = document.querySelectorAll('.expand-card');
-    if (expandState) {
-      collapseCard(() => { expandCardIdx = (expandCardIdx + 1) % cards.length; });
-    } else {
-      expandCard(cards[expandCardIdx]);
-    }
-
-  } else if (currentDemo === 'tab') {
-    const travelDir = tabDir;                  // save before any flip
-    const nextIdx   = tabIdx + travelDir;
-    const outScreen = document.getElementById(`tabScreen${tabIdx}`);
-    const inScreen  = document.getElementById(`tabScreen${nextIdx}`);
-
-    // Advance both content and nav together, then ping-pong at ends
-    tabIdx = nextIdx;
-    tabNavIdx = nextIdx;
-    if (tabIdx === 0 || tabIdx === 3) tabDir *= -1;
-
-    // Snap nav icon instantly
-    for (let i = 0; i < 4; i++) {
-      const icon = document.getElementById(`tabNavIcon${i}`);
-      if (icon) icon.style.background = i === tabNavIdx ? '#FF385C' : '';
-    }
-
-    const SLIDE_PX = 40;
-    const incomingSign = travelDir;    // incoming slides from this side
-    const outgoingSign = -travelDir;   // outgoing exits opposite
-    inScreen.style.opacity = '0';
-    inScreen.style.transform = `translateX(${incomingSign * SLIDE_PX}px)`;
-
-    function tick(now) {
-      const t = (now - start) / 1000;
-      const pos = springPos(t, stiffness, damping);
-      const completion = 1 - pos;
-
-      // Outgoing: exits in outgoingSign direction, fades out over 0–40% completion
-      const outX = outgoingSign * completion * SLIDE_PX;
-      const outOpacity = Math.max(1 - completion / 0.40, 0);
-      outScreen.style.transform = `translateX(${outX}px)`;
-      outScreen.style.opacity = String(outOpacity);
-
-      // Incoming: slides from incomingSign side to 0, fades in 20–100% completion
-      const inX = incomingSign * pos * SLIDE_PX;
-      const inOpacity = Math.min(Math.max((completion - 0.20) / 0.80, 0), 1);
-      inScreen.style.transform = `translateX(${inX}px)`;
-      inScreen.style.opacity = String(inOpacity);
-
-      if (t < 5 && !isSettled(t, stiffness, damping)) {
-        demoAnim = requestAnimationFrame(tick);
-      } else {
-        outScreen.style.transform = `translateX(${outgoingSign * SLIDE_PX}px)`;
-        outScreen.style.opacity = '0';
-        inScreen.style.transform = 'translateX(0)';
-        inScreen.style.opacity = '1';
-      }
-    }
-    demoAnim = requestAnimationFrame(tick);
-
-  } else if (currentDemo === 'press') {
-    startPressLoop();
-  }
-}
-
-// ── Card Expand logic ─────────────────────────────────────────────
-let expandCardIdx = 0;
-
+// ── Card Expand logic (Spring zoom demo) ─────────────────────────
 function expandCard(card) {
   if (expandState || !card) return;
   const { stiffness, damping } = selected;
-
   const phone  = document.getElementById('expandPhone');
   const panel  = document.getElementById('expandPanel');
-
-  // Account for phone border so left:0/top:0 aligns with card coordinates
   const bx = phone.clientLeft, by = phone.clientTop;
   const phoneRect = phone.getBoundingClientRect();
   const cardRect  = card.getBoundingClientRect();
-
   const fromX = cardRect.left - phoneRect.left - bx;
   const fromY = cardRect.top  - phoneRect.top  - by;
   const fromW = cardRect.width;
   const fromH = cardRect.height;
   const fromR = 28;
   const toX = 0, toY = 0, toW = phone.clientWidth, toH = phone.clientHeight, toR = 40;
-
-  // Reset layers: card visible, detail hidden
-  document.getElementById('expandCardLayer').style.opacity  = '1';
+  document.getElementById('expandCardLayer').style.opacity   = '1';
   document.getElementById('expandDetailLayer').style.opacity = '0';
-
-  // Hide the real card — panel is the visual stand-in during animation
   card.style.visibility = 'hidden';
-
-  panel.style.left          = fromX + 'px';
-  panel.style.top           = fromY + 'px';
-  panel.style.width         = fromW + 'px';
-  panel.style.height        = fromH + 'px';
-  panel.style.borderRadius  = fromR + 'px';
-  panel.style.boxShadow     = '0 2px 8px rgba(0,0,0,0.10)';
-  panel.style.pointerEvents = 'none';
-  panel.style.zIndex        = '10';
-  panel.style.visibility    = 'hidden';
-  panel.style.display       = 'block';
+  panel.style.left = fromX + 'px'; panel.style.top = fromY + 'px';
+  panel.style.width = fromW + 'px'; panel.style.height = fromH + 'px';
+  panel.style.borderRadius = fromR + 'px';
+  panel.style.pointerEvents = 'none'; panel.style.zIndex = '10';
+  panel.style.visibility = 'hidden'; panel.style.display = 'block';
   expandState = { fromX, fromY, fromW, fromH, fromR, card };
-
   const startT = performance.now();
   if (demoAnim) cancelAnimationFrame(demoAnim);
-
   const cardLayer   = document.getElementById('expandCardLayer');
   const detailLayer = document.getElementById('expandDetailLayer');
   const expandScrim = document.getElementById('expandScrim');
@@ -3623,8 +3611,6 @@ function expandCard(card) {
     panel.style.width        = (toW + (fromW - toW) * pos) + 'px';
     panel.style.height       = (toH + (fromH - toH) * pos) + 'px';
     panel.style.borderRadius = (toR + (fromR - toR) * pos) + 'px';
-    panel.style.boxShadow    = `0 2px 8px rgba(0,0,0,${(0.10 * pos).toFixed(3)}), 0 1px 2px rgba(0,0,0,${(0.06 * pos).toFixed(3)})`;
-    panel.style.outline      = document.documentElement.getAttribute('data-theme') === 'dark' ? `1px solid rgba(255,255,255,${(0.10 * pos).toFixed(3)})` : '';
     expandScrim.style.opacity = (1 - scrimPos).toFixed(3);
     const fade = Math.min(t / 0.2, 1);
     detailLayer.style.opacity = String(fade);
@@ -3634,11 +3620,8 @@ function expandCard(card) {
     } else {
       panel.style.left = '0'; panel.style.top = '0';
       panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
-      panel.style.borderRadius = '40px';
-      panel.style.boxShadow = 'none';
-      panel.style.pointerEvents = 'auto';
-      detailLayer.style.opacity = '1';
-      cardLayer.style.opacity   = '0';
+      panel.style.borderRadius = '40px'; panel.style.pointerEvents = 'auto';
+      detailLayer.style.opacity = '1'; cardLayer.style.opacity = '0';
       expandScrim.style.opacity = '0';
     }
   }
@@ -3649,20 +3632,15 @@ function collapseCard(onDone) {
   if (!expandState) return;
   const { stiffness, damping } = selected;
   const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, card } = expandState;
-
-  const phone   = document.getElementById('expandPhone');
-  const panel   = document.getElementById('expandPanel');
-
+  const phone = document.getElementById('expandPhone');
+  const panel = document.getElementById('expandPanel');
   panel.style.pointerEvents = 'none';
-
   const fromX = 0, fromY = 0, fromW = phone.clientWidth, fromH = phone.clientHeight, fromR = 40;
   const cardLayer   = document.getElementById('expandCardLayer');
   const detailLayer = document.getElementById('expandDetailLayer');
   const expandScrim = document.getElementById('expandScrim');
   const startT = performance.now();
   if (demoAnim) cancelAnimationFrame(demoAnim);
-
-  const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
   function tick(now) {
     const t = (now - startT) / 1000;
     const pos = springPos(t, stiffness, damping);
@@ -3673,8 +3651,6 @@ function collapseCard(onDone) {
     panel.style.width        = (fromW + (toW - fromW) * p) + 'px';
     panel.style.height       = (fromH + (toH - fromH) * p) + 'px';
     panel.style.borderRadius = (fromR + (toR - fromR) * p) + 'px';
-    panel.style.boxShadow    = `0 2px 8px rgba(0,0,0,${(0.10 * p).toFixed(3)}), 0 1px 2px rgba(0,0,0,${(0.06 * p).toFixed(3)})`;
-    panel.style.outline      = isDark() ? `1px solid rgba(255,255,255,${(0.10 * p).toFixed(3)})` : '';
     expandScrim.style.opacity = scrimPos.toFixed(3);
     const fade = Math.min(t / 0.2, 1);
     detailLayer.style.opacity = String(1 - fade);
@@ -3683,15 +3659,128 @@ function collapseCard(onDone) {
       demoAnim = requestAnimationFrame(tick);
     } else {
       panel.style.display = 'none';
-      panel.style.outline = '';
-      detailLayer.style.opacity = '0';
-      cardLayer.style.opacity   = '1';
+      detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
       if (card) card.style.visibility = '';
       expandState = null;
       onDone?.();
     }
   }
   demoAnim = requestAnimationFrame(tick);
+}
+
+// ── TP Zoom expand/collapse (same logic, different IDs, fixed fast-smooth spring) ──
+let tpExpandState   = null;
+let tpExpandCardIdx = 0;
+let tpExpandAnim    = null;
+const TP_SPRING = { stiffness: 500, damping: calcDamping(500, 1.0) };
+
+function tpExpandCard(card) {
+  if (tpExpandState || !card) return;
+  const { stiffness, damping } = TP_SPRING;
+  const phone  = document.getElementById('tpPhone');
+  const panel  = document.getElementById('tpExpandPanel');
+  const bx = phone.clientLeft, by = phone.clientTop;
+  const phoneRect = phone.getBoundingClientRect();
+  const cardRect  = card.getBoundingClientRect();
+  const imgEl  = card.querySelector('.sk-carousel-img');
+  const imgRect = imgEl ? imgEl.getBoundingClientRect() : cardRect;
+  const fromX = cardRect.left - phoneRect.left - bx;
+  const fromY = cardRect.top  - phoneRect.top  - by;
+  const fromW = cardRect.width;
+  const fromH = imgRect.height;
+  const fromR = 10;
+  const toX = 0, toY = 0, toW = phone.clientWidth, toH = phone.clientHeight, toR = 40;
+  document.getElementById('tpExpandCardLayer').style.opacity   = '1';
+  document.getElementById('tpExpandDetailLayer').style.opacity = '0';
+  if (imgEl) imgEl.style.visibility = 'hidden';
+  panel.style.left = fromX + 'px'; panel.style.top = fromY + 'px';
+  panel.style.width = fromW + 'px'; panel.style.height = fromH + 'px';
+  panel.style.borderRadius = fromR + 'px';
+  panel.style.pointerEvents = 'none'; panel.style.zIndex = '12';
+  panel.style.visibility = 'hidden'; panel.style.display = 'block';
+  const detailInner = document.getElementById('tpDetailInner');
+  if (detailInner) detailInner.style.width = toW + 'px';
+  tpExpandState = { fromX, fromY, fromW, fromH, fromR, card, imgEl };
+  const startT = performance.now();
+  if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
+  const cardLayer   = document.getElementById('tpExpandCardLayer');
+  const detailLayer = document.getElementById('tpExpandDetailLayer');
+  const scrim       = document.getElementById('tpExpandScrim');
+  scrim.style.opacity = '0';
+  function tick(now) {
+    const t = (now - startT) / 1000;
+    const pos = springPos(t, stiffness, damping);
+    const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+    const curW = toW + (fromW - toW) * pos;
+    const scale = curW / toW;
+    panel.style.visibility   = '';
+    panel.style.left         = (toX + (fromX - toX) * pos) + 'px';
+    panel.style.top          = (toY + (fromY - toY) * pos) + 'px';
+    panel.style.width        = curW + 'px';
+    panel.style.height       = (toH + (fromH - toH) * pos) + 'px';
+    panel.style.borderRadius = (toR + (fromR - toR) * pos) + 'px';
+    scrim.style.opacity      = (1 - scrimPos).toFixed(3);
+    if (detailInner) detailInner.style.transform = `scale(${scale})`;
+    const fade = Math.min(t / 0.2, 1);
+    detailLayer.style.opacity = String(fade);
+    cardLayer.style.opacity   = String(1 - fade);
+    if (t < 5 && !isSettled(t, stiffness, damping)) {
+      tpExpandAnim = requestAnimationFrame(tick);
+    } else {
+      panel.style.left = '0'; panel.style.top = '0';
+      panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
+      panel.style.borderRadius = '40px'; panel.style.pointerEvents = 'auto';
+      if (detailInner) detailInner.style.transform = 'scale(1)';
+      detailLayer.style.opacity = '1'; cardLayer.style.opacity = '0';
+      scrim.style.opacity = '0';
+    }
+  }
+  tpExpandAnim = requestAnimationFrame(tick);
+}
+
+function tpCollapseCard(onDone) {
+  if (!tpExpandState) return;
+  const { stiffness, damping } = TP_SPRING;
+  const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, card, imgEl } = tpExpandState;
+  const phone = document.getElementById('tpPhone');
+  const panel = document.getElementById('tpExpandPanel');
+  panel.style.pointerEvents = 'none';
+  const fromX = 0, fromY = 0, fromW = phone.clientWidth, fromH = phone.clientHeight, fromR = 40;
+  const cardLayer   = document.getElementById('tpExpandCardLayer');
+  const detailLayer = document.getElementById('tpExpandDetailLayer');
+  const detailInner = document.getElementById('tpDetailInner');
+  const scrim       = document.getElementById('tpExpandScrim');
+  const startT = performance.now();
+  if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
+  function tick(now) {
+    const t = (now - startT) / 1000;
+    const pos = springPos(t, stiffness, damping);
+    const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+    const p = 1 - pos;
+    const curW = fromW + (toW - fromW) * p;
+    const scale = curW / fromW;
+    panel.style.left         = (fromX + (toX - fromX) * p) + 'px';
+    panel.style.top          = (fromY + (toY - fromY) * p) + 'px';
+    panel.style.width        = curW + 'px';
+    panel.style.height       = (fromH + (toH - fromH) * p) + 'px';
+    panel.style.borderRadius = (fromR + (toR - fromR) * p) + 'px';
+    scrim.style.opacity      = scrimPos.toFixed(3);
+    if (detailInner) detailInner.style.transform = `scale(${scale})`;
+    const fade = Math.min(t / 0.2, 1);
+    detailLayer.style.opacity = String(1 - fade);
+    cardLayer.style.opacity   = String(fade);
+    if (t < 5 && !isSettled(t, stiffness, damping)) {
+      tpExpandAnim = requestAnimationFrame(tick);
+    } else {
+      panel.style.display = 'none';
+      if (detailInner) detailInner.style.transform = 'scale(1)';
+      detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
+      if (imgEl) imgEl.style.visibility = '';
+      tpExpandState = null;
+      onDone?.();
+    }
+  }
+  tpExpandAnim = requestAnimationFrame(tick);
 }
 
 document.querySelectorAll('.expand-card').forEach(card => {
@@ -3708,6 +3797,18 @@ document.getElementById('expandPanel').addEventListener('click', () => { if (exp
 document.getElementById('demoStage').addEventListener('click', (e) => {
   if (currentDemo === 'zoom') return;
   if (e.target.closest('.phone-frame')) playDemo();
+});
+
+// Wire up TP carousel card clicks
+document.querySelectorAll('.tp-zoom-card').forEach(card => {
+  card.addEventListener('click', () => {
+    if (tpExpandState) { tpCollapseCard(); return; }
+    tpExpandCardIdx = [...document.querySelectorAll('.tp-zoom-card')].indexOf(card);
+    tpExpandCard(card);
+  });
+});
+document.getElementById('tpExpandPanel').addEventListener('click', () => {
+  if (tpExpandState) tpCollapseCard();
 });
 
 // ── Copy + toast ─────────────────────────────────────────────────
@@ -3828,10 +3929,10 @@ document.querySelectorAll('#bezTabsBar .demo-tab').forEach(tab => {
     tab.classList.add('active');
     history.replaceState(null, '', `#${key}`);
     const BEZ_DESCRIPTIONS = {
-      'slow-fade':    'A Standard curve is used to gently fade in content during an intro animation.',
-      'fast-fade':    'A quick Linear fade is used to show content after it loads.',
-      'modal-enter':  'An Enter curve is used to present a modal.',
-      'modal-exit':   'An Exit curve is used to quickly dismiss a modal.',
+      'slow-fade':    'Standard curve used to gently fade in content.',
+      'fast-fade':    'Linear curve used for quick fades when content loads.',
+      'modal-enter':  'Enter curve used to present a modal.',
+      'modal-exit':   'Exit curve used to quickly dismiss a modal.',
     };
     const bodyEl = document.getElementById('bezBodyCopy');
     if (bodyEl && BEZ_DESCRIPTIONS[key]) bodyEl.textContent = BEZ_DESCRIPTIONS[key];
@@ -4061,108 +4162,144 @@ setTimeout(() => {
 }, 300);
 
 // ── Match phone frame height to card grid height ──────────────────
-// ── Transition Patterns ───────────────────────────────────────────
-const TP_DESCRIPTIONS = {
-  'zoom':             'This creates a seamless transition by quickly fading content as it zooms in and out.',
-  'slide-in':         'The default nav transition pattern. By default the incoming screen slides over the outgoing, but elements like nav bars can be kept persistent if they\'re needed on both screens.',
-  'slide-in-fade':    'A subtler nav transition style, often with stepped flows or on desktop web.',
-  'slide-up':         'Used on components that enter and exit from the bottom of the screen like sheets and bars.',
-  'slide-up-fade':    'A subtler slide style, often used on desktop web.',
-  'scale-in':         'Used to introduce floating elements like Tooltips, Modals and Toasts. By default the scale origin is center, but it can be modified to link the scale to another UI element.',
-  'fade-sequence':    'A simple transition to fade out old content and fade in new content.',
-  'bounce-sequence':  'A more stylized sequence that adds a scale bounce and blur to the fading content.',
+// ── Transition Patterns registry ─────────────────────────────────
+// Each entry: { description, panel (optional HTML), play() }
+const TP_DEMOS = {
+  'zoom': {
+    description: 'Creates continuity by morphing a source element into the destination screen or floating element.',
+    play() {
+      const cards = document.querySelectorAll('.tp-zoom-card');
+      if (tpExpandState) {
+        tpCollapseCard(() => { tpExpandCardIdx = (tpExpandCardIdx + 1) % cards.length; });
+      } else {
+        tpExpandCard(cards[tpExpandCardIdx]);
+      }
+    },
+    reset() {
+      if (tpExpandAnim) { cancelAnimationFrame(tpExpandAnim); tpExpandAnim = null; }
+      const panel = document.getElementById('tpExpandPanel');
+      panel.style.display = '';
+      panel.style.transform = '';
+      document.getElementById('tpExpandCardLayer').style.opacity   = '1';
+      document.getElementById('tpExpandDetailLayer').style.opacity = '0';
+      document.getElementById('tpExpandScrim').style.opacity       = '0';
+      if (tpExpandState?.imgEl) tpExpandState.imgEl.style.visibility = '';
+      document.querySelectorAll('.tp-zoom-card .sk-carousel-img').forEach(c => c.style.visibility = '');
+      tpExpandState   = null;
+      tpExpandCardIdx = 0;
+    },
+  },
+  'slide-in':        { description: 'The default nav transition. The incoming screen slides over the outgoing with a parallax effect. Nav bars can be kept persistent if shared across both screens.',                             play() {} },
+  'slide-in-fade':   { description: 'A subtler nav transition, often used with stepped flows or on desktop web.',                                                                                                                  play() {} },
+  'slide-up':        { description: 'Used for components that enter and exit from the bottom of the screen, like sheets and bars.',                                                                                                play() {} },
+  'slide-up-fade':   { description: 'A subtler bottom slide, often used on desktop web.',                                                                                                                                         play() {} },
+  'scale-in':        { description: 'Used to introduce floating elements like tooltips, modals and toasts. The scale origin is center by default but can be linked to another UI element.',                                       play() {} },
+  'fade-sequence':   { description: 'Fades out old content then fades in new content.',                                                                                                                                           play() {} },
+  'bounce-sequence': { description: 'A more expressive sequence that adds a scale bounce and blur to the fading content.',                                                                                                        play() {} },
 };
+
+function switchTpDemo(key) {
+  const tab = document.querySelector(`.tp-tab[data-tp="${key}"]`);
+  if (!tab) return;
+  // Reset previous demo
+  const prevKey = document.querySelector('.tp-tab.active')?.dataset.tp;
+  if (prevKey && prevKey !== key) TP_DEMOS[prevKey]?.reset?.();
+  document.querySelectorAll('.tp-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  const desc = TP_DEMOS[key]?.description;
+  if (desc) document.getElementById('tpBodyCopy').textContent = desc;
+}
 
 document.querySelectorAll('.tp-tab').forEach(tab => {
   tab.addEventListener('click', () => {
-    if (tab.classList.contains('active')) { tpPlay(); return; }
-    document.querySelectorAll('.tp-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    const desc = TP_DESCRIPTIONS[tab.dataset.tp];
-    if (desc) document.getElementById('tpBodyCopy').textContent = desc;
+    const key = tab.dataset.tp;
+    if (tab.classList.contains('active')) { TP_DEMOS[key]?.play(); return; }
+    switchTpDemo(key);
+    history.replaceState(null, '', `#tp-${key}`);
   });
 });
 
-function tpPlay() {
-  // placeholder — patterns will be wired up per tab
-}
+const hashTp = location.hash.match(/^#tp-(.+)$/);
+if (hashTp) switchTpDemo(hashTp[1]);
 
-const NG_PANELS = {
-  'zoom-dismiss': `
-    <div class="ng-group">
-      <div class="ng-h1">Swipe direction</div>
-      <div class="ng-subgroup">
-        <div>
-          <div class="ng-h2">Down</div>
-          <p class="ng-body">Zoom transitions dismiss when swiping down from the top of a scroll view.</p>
-        </div>
-        <div>
-          <div class="ng-h2">Edge</div>
-          <p class="ng-body">Swiping the left edge also dismisses a fullscreen zoom transition.</p>
-        </div>
-      </div>
-    </div>
-    <div class="ng-group">
-      <div class="ng-h1">Thresholds</div>
-      <div class="ng-subgroup">
-        <div>
-          <div class="ng-h2">Position</div>
-          <p class="ng-body">A swipe beyond 100 points commits navigation on release. Releasing early reverts. Haptics confirms the threshold.</p>
-        </div>
-        <div>
-          <div class="ng-h2">Velocity</div>
-          <p class="ng-body">A swipe faster than 1000 pts/sec commits navigation on release.</p>
+document.getElementById('tpPlayBtn').addEventListener('click', () => {
+  const key = document.querySelector('.tp-tab.active')?.dataset.tp;
+  TP_DEMOS[key]?.play();
+});
+document.getElementById('tpPhone').addEventListener('click', (e) => {
+  if (e.target.closest('.tp-zoom-card') || e.target.closest('#tpExpandPanel')) return;
+  const key = document.querySelector('.tp-tab.active')?.dataset.tp;
+  TP_DEMOS[key]?.play();
+});
+
+// ── Navigation Gestures registry ──────────────────────────────────
+// Each entry: { description (optional), panel (HTML for left text area), play() }
+const NG_DEMOS = {
+  'zoom-dismiss': {
+    panel: `
+      <div class="ng-group">
+        <div class="ng-h1">Swipe direction</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Down</div><p class="ng-body">Zoom transitions dismiss when swiping down from the top of a scroll view.</p></div>
+          <div><div class="ng-h2">Edge</div><p class="ng-body">Swiping the left edge also dismisses a fullscreen zoom transition.</p></div>
         </div>
       </div>
-    </div>
-    <div class="ng-group">
-      <div class="ng-h1">Gesture driven motion</div>
-      <div class="ng-subgroup">
-        <div>
-          <div class="ng-h2">Resistance</div>
-          <p class="ng-body">The further you swipe toward the opposite edge, the less it follows your input.</p>
-        </div>
-        <div>
-          <div class="ng-h2">Scale</div>
-          <p class="ng-body">Elements scale down as they're dismissed.</p>
-        </div>
-        <div>
-          <div class="ng-h2">Scrim</div>
-          <p class="ng-body">The scrim fades out during dismiss swipes.</p>
+      <div class="ng-group">
+        <div class="ng-h1">Thresholds</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Position</div><p class="ng-body">A swipe beyond 100 points commits navigation on release. Releasing early reverts. Haptics confirms the threshold.</p></div>
+          <div><div class="ng-h2">Velocity</div><p class="ng-body">A swipe faster than 1000 pts/sec commits navigation on release.</p></div>
         </div>
       </div>
-    </div>`,
-  'back-navigation': `
-    <div class="ng-group">
-      <div class="ng-h1">Edge swipes</div>
-      <p class="ng-body">On iOS swiping the left edge of the screen will navigate back using direct manipulation. Android uses both edges of the screen to go back, but does not use direct manipulation. Instead, edge swipes trigger a back transition on-release.</p>
-    </div>`,
+      <div class="ng-group">
+        <div class="ng-h1">Gesture driven motion</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Resistance</div><p class="ng-body">The further you swipe toward the opposite edge, the less it follows your input.</p></div>
+          <div><div class="ng-h2">Scale</div><p class="ng-body">Elements scale down as they're dismissed.</p></div>
+          <div><div class="ng-h2">Scrim</div><p class="ng-body">The scrim fades out during dismiss swipes.</p></div>
+        </div>
+      </div>`,
+    play() {},
+  },
+  'back-navigation': {
+    panel: `
+      <div class="ng-group">
+        <div class="ng-h1">Edge swipes</div>
+        <p class="ng-body">On iOS swiping the left edge of the screen will navigate back using direct manipulation. Android uses both edges of the screen to go back, but does not use direct manipulation. Instead, edge swipes trigger a back transition on-release.</p>
+      </div>`,
+    play() {},
+  },
 };
+
+function switchNgDemo(key) {
+  const tab = document.querySelector(`.ng-tab[data-ng="${key}"]`);
+  if (!tab) return;
+  document.querySelectorAll('.ng-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  const panel = NG_DEMOS[key]?.panel;
+  if (panel) document.getElementById('ngTextPanel').innerHTML = panel;
+}
 
 document.querySelectorAll('.ng-tab').forEach(tab => {
   tab.addEventListener('click', () => {
-    if (tab.classList.contains('active')) return;
-    document.querySelectorAll('.ng-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    const html = NG_PANELS[tab.dataset.ng];
-    if (html) document.getElementById('ngTextPanel').innerHTML = html;
+    const key = tab.dataset.ng;
+    if (tab.classList.contains('active')) { NG_DEMOS[key]?.play(); return; }
+    switchNgDemo(key);
+    history.replaceState(null, '', `#ng-${key}`);
   });
 });
-document.getElementById('ngPlayBtn').addEventListener('click', () => {});
-document.getElementById('ngPhone').addEventListener('click', () => {});
 
-document.querySelectorAll('.acc-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    if (tab.classList.contains('active')) return;
-    document.querySelectorAll('.acc-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-  });
+const hashNg = location.hash.match(/^#ng-(.+)$/);
+if (hashNg) switchNgDemo(hashNg[1]);
+
+document.getElementById('ngPlayBtn').addEventListener('click', () => {
+  const key = document.querySelector('.ng-tab.active')?.dataset.ng;
+  NG_DEMOS[key]?.play();
 });
-document.getElementById('accPlayBtn').addEventListener('click', () => {});
-document.getElementById('accPhone').addEventListener('click', () => {});
-
-document.getElementById('tpPlayBtn').addEventListener('click', tpPlay);
-document.getElementById('tpPhone').addEventListener('click', tpPlay);
+document.getElementById('ngPhone').addEventListener('click', () => {
+  const key = document.querySelector('.ng-tab.active')?.dataset.ng;
+  NG_DEMOS[key]?.play();
+});
 document.querySelector('.bez-demo-panel').addEventListener('click', (e) => {
   if (e.target.closest('#ffCardWrap')) return;
   if (e.target.closest('.desktop-bezel')) runBezDemo();
@@ -4234,6 +4371,18 @@ updateNavActive();
   window.addEventListener('scroll', updateIntro, { passive: true });
   updateIntro();
 })();
+
+// Reserve bold width on demo-tabs to prevent layout shift on active
+function reserveTabWidths(scope) {
+  (scope || document).querySelectorAll('.demo-tab').forEach(tab => {
+    const orig = tab.style.fontWeight;
+    tab.style.fontWeight = '500';
+    const boldW = tab.getBoundingClientRect().width;
+    tab.style.fontWeight = orig;
+    tab.style.minWidth = boldW + 'px';
+  });
+}
+reserveTabWidths();
 </script>
 <div class="toast" id="toast"></div>
 </body>
