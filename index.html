@@ -2771,27 +2771,7 @@
           <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
         </button>
         <div class="phone-frame" id="accPhone">
-          <div class="phone-content">
-            <div class="sk-search"></div>
-            <div class="sk-cats">
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-              <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-            </div>
-            <div class="sk-divider"></div>
-            <div class="sk-card-img"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-            <div class="sk-section-label"></div>
-            <div class="sk-card-img partial"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-            <div class="sk-sub"></div>
-            <div class="sk-card-img partial"></div>
-            <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-            <div class="sk-sub"></div>
-          </div>
+          <div class="phone-content"></div>
           <div class="sk-bottom-nav">
             <div class="sk-nav-icon"></div>
             <div class="sk-nav-icon"></div>
@@ -3006,6 +2986,7 @@ function stampTemplate(templateId, targetEl) {
     document.querySelector('#tpPushSource .phone-content'),
     document.querySelector('#pushSource .phone-content'),
     document.getElementById('ngPhone') ? document.getElementById('ngPhone').querySelector('.phone-content') : null,
+    document.querySelector('#accPhone .phone-content'),
   ];
   listTargets.forEach(function(el) {
     if (el) stampTemplate('tpl-list-screen', el);
