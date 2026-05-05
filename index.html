@@ -1782,6 +1782,26 @@
     .dt-card-row--sub   { width: 55%; }
     .dt-card-row--price { width: 35%; }
 
+    .phone-frame { cursor: none; }
+
+    #touchDot {
+      position: fixed;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(0, 100, 255, 0.22);
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(1);
+      transition: opacity 0.15s, transform 0.12s, background 0.12s;
+      opacity: 0;
+      z-index: 99999;
+    }
+    #touchDot.visible { opacity: 1; }
+    #touchDot.pressed {
+      transform: translate(-50%, -50%) scale(0.6);
+      background: rgba(0, 100, 255, 0.45);
+      transition: opacity 0.15s, transform 0.08s, background 0.08s;
+    }
   </style>
 </head>
 <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
@@ -1833,7 +1853,7 @@
     <div class="demo-tab tp-tab" data-tp="fade-sequence">Fade Sequence</div>
     <div class="demo-tab tp-tab" data-tp="bounce-sequence">Bounce Sequence</div>
   </div>
-  <p class="section-body" id="tpBodyCopy">This creates a seamless transition by quickly fading content as it zooms in and out.</p>
+  <p class="section-body" id="tpBodyCopy"></p>
   <div class="section-content">
   <div style="background:var(--c-demo-bg); border-radius:24px; display:flex; align-items:center; justify-content:center; padding:32px; position:relative; min-height:680px;" id="tpDemoContainer">
     <button class="play-circle" id="tpPlayBtn">
@@ -1890,6 +1910,12 @@
               <div class="push-detail-row med"></div>
               <div class="push-detail-row short"></div>
               <div class="push-detail-row full"></div>
+              <div class="push-detail-row med"></div>
+              <div class="push-detail-divider"></div>
+              <div class="push-detail-row med"></div>
+              <div class="push-detail-row short"></div>
+              <div class="push-detail-row full"></div>
+              <div class="push-detail-row short"></div>
             </div>
           </div>
         </div>
@@ -3592,6 +3618,7 @@ function expandCard(card) {
   panel.style.left = fromX + 'px'; panel.style.top = fromY + 'px';
   panel.style.width = fromW + 'px'; panel.style.height = fromH + 'px';
   panel.style.borderRadius = fromR + 'px';
+  panel.style.boxShadow = '0 2px 8px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06)';
   panel.style.pointerEvents = 'none'; panel.style.zIndex = '10';
   panel.style.visibility = 'hidden'; panel.style.display = 'block';
   expandState = { fromX, fromY, fromW, fromH, fromR, card };
@@ -3611,6 +3638,7 @@ function expandCard(card) {
     panel.style.width        = (toW + (fromW - toW) * pos) + 'px';
     panel.style.height       = (toH + (fromH - toH) * pos) + 'px';
     panel.style.borderRadius = (toR + (fromR - toR) * pos) + 'px';
+    panel.style.boxShadow    = `0 ${2*pos}px ${8*pos}px rgba(0,0,0,${0.10*pos}), 0 ${1*pos}px ${2*pos}px rgba(0,0,0,${0.06*pos})`;
     expandScrim.style.opacity = (1 - scrimPos).toFixed(3);
     const fade = Math.min(t / 0.2, 1);
     detailLayer.style.opacity = String(fade);
@@ -3621,6 +3649,7 @@ function expandCard(card) {
       panel.style.left = '0'; panel.style.top = '0';
       panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
       panel.style.borderRadius = '40px'; panel.style.pointerEvents = 'auto';
+      panel.style.boxShadow = 'none';
       detailLayer.style.opacity = '1'; cardLayer.style.opacity = '0';
       expandScrim.style.opacity = '0';
     }
@@ -3635,7 +3664,11 @@ function collapseCard(onDone) {
   const phone = document.getElementById('expandPhone');
   const panel = document.getElementById('expandPanel');
   panel.style.pointerEvents = 'none';
-  const fromX = 0, fromY = 0, fromW = phone.clientWidth, fromH = phone.clientHeight, fromR = 40;
+  const fromX = parseFloat(panel.style.left) || 0;
+  const fromY = parseFloat(panel.style.top)  || 0;
+  const fromW = parseFloat(panel.style.width)  || phone.clientWidth;
+  const fromH = parseFloat(panel.style.height) || phone.clientHeight;
+  const fromR = parseFloat(panel.style.borderRadius) || 40;
   const cardLayer   = document.getElementById('expandCardLayer');
   const detailLayer = document.getElementById('expandDetailLayer');
   const expandScrim = document.getElementById('expandScrim');
@@ -3651,6 +3684,7 @@ function collapseCard(onDone) {
     panel.style.width        = (fromW + (toW - fromW) * p) + 'px';
     panel.style.height       = (fromH + (toH - fromH) * p) + 'px';
     panel.style.borderRadius = (fromR + (toR - fromR) * p) + 'px';
+    panel.style.boxShadow    = `0 ${2*p}px ${8*p}px rgba(0,0,0,${0.10*p}), 0 ${1*p}px ${2*p}px rgba(0,0,0,${0.06*p})`;
     expandScrim.style.opacity = scrimPos.toFixed(3);
     const fade = Math.min(t / 0.2, 1);
     detailLayer.style.opacity = String(1 - fade);
@@ -3659,6 +3693,7 @@ function collapseCard(onDone) {
       demoAnim = requestAnimationFrame(tick);
     } else {
       panel.style.display = 'none';
+      panel.style.boxShadow = 'none';
       detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
       if (card) card.style.visibility = '';
       expandState = null;
@@ -3707,24 +3742,26 @@ function tpExpandCard(card) {
   const detailLayer = document.getElementById('tpExpandDetailLayer');
   const scrim       = document.getElementById('tpExpandScrim');
   scrim.style.opacity = '0';
+  const DELAY = 0.05;
   function tick(now) {
     const t = (now - startT) / 1000;
-    const pos = springPos(t, stiffness, damping);
+    const posXW = springPos(t,           stiffness, damping); // X/width lead
+    const posYH = springPos(Math.max(0, t - DELAY), stiffness, damping); // Y/height trail
     const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
-    const curW = toW + (fromW - toW) * pos;
+    const curW = toW + (fromW - toW) * posXW;
     const scale = curW / toW;
     panel.style.visibility   = '';
-    panel.style.left         = (toX + (fromX - toX) * pos) + 'px';
-    panel.style.top          = (toY + (fromY - toY) * pos) + 'px';
+    panel.style.left         = (toX + (fromX - toX) * posXW) + 'px';
+    panel.style.top          = (toY + (fromY - toY) * posYH) + 'px';
     panel.style.width        = curW + 'px';
-    panel.style.height       = (toH + (fromH - toH) * pos) + 'px';
-    panel.style.borderRadius = (toR + (fromR - toR) * pos) + 'px';
+    panel.style.height       = (toH + (fromH - toH) * posYH) + 'px';
+    panel.style.borderRadius = (toR + (fromR - toR) * posXW) + 'px';
     scrim.style.opacity      = (1 - scrimPos).toFixed(3);
     if (detailInner) detailInner.style.transform = `scale(${scale})`;
     const fade = Math.min(t / 0.2, 1);
     detailLayer.style.opacity = String(fade);
     cardLayer.style.opacity   = String(1 - fade);
-    if (t < 5 && !isSettled(t, stiffness, damping)) {
+    if (t < 5 && (!isSettled(t, stiffness, damping) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
       tpExpandAnim = requestAnimationFrame(tick);
     } else {
       panel.style.left = '0'; panel.style.top = '0';
@@ -3745,31 +3782,38 @@ function tpCollapseCard(onDone) {
   const phone = document.getElementById('tpPhone');
   const panel = document.getElementById('tpExpandPanel');
   panel.style.pointerEvents = 'none';
-  const fromX = 0, fromY = 0, fromW = phone.clientWidth, fromH = phone.clientHeight, fromR = 40;
+  const fromX = parseFloat(panel.style.left) || 0;
+  const fromY = parseFloat(panel.style.top)  || 0;
+  const fromW = parseFloat(panel.style.width)  || phone.clientWidth;
+  const fromH = parseFloat(panel.style.height) || phone.clientHeight;
+  const fromR = parseFloat(panel.style.borderRadius) || 40;
   const cardLayer   = document.getElementById('tpExpandCardLayer');
   const detailLayer = document.getElementById('tpExpandDetailLayer');
   const detailInner = document.getElementById('tpDetailInner');
   const scrim       = document.getElementById('tpExpandScrim');
   const startT = performance.now();
   if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
+  const DELAY = 0.05;
   function tick(now) {
     const t = (now - startT) / 1000;
-    const pos = springPos(t, stiffness, damping);
+    const posYH = springPos(t,           stiffness, damping); // Y/height lead
+    const posXW = springPos(Math.max(0, t - DELAY), stiffness, damping); // X/width trail
     const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
-    const p = 1 - pos;
-    const curW = fromW + (toW - fromW) * p;
+    const pYH = 1 - posYH;
+    const pXW = 1 - posXW;
+    const curW = fromW + (toW - fromW) * pXW;
     const scale = curW / fromW;
-    panel.style.left         = (fromX + (toX - fromX) * p) + 'px';
-    panel.style.top          = (fromY + (toY - fromY) * p) + 'px';
+    panel.style.left         = (fromX + (toX - fromX) * pXW) + 'px';
+    panel.style.top          = (fromY + (toY - fromY) * pYH) + 'px';
     panel.style.width        = curW + 'px';
-    panel.style.height       = (fromH + (toH - fromH) * p) + 'px';
-    panel.style.borderRadius = (fromR + (toR - fromR) * p) + 'px';
+    panel.style.height       = (fromH + (toH - fromH) * pYH) + 'px';
+    panel.style.borderRadius = (fromR + (toR - fromR) * pXW) + 'px';
     scrim.style.opacity      = scrimPos.toFixed(3);
     if (detailInner) detailInner.style.transform = `scale(${scale})`;
     const fade = Math.min(t / 0.2, 1);
     detailLayer.style.opacity = String(1 - fade);
     cardLayer.style.opacity   = String(fade);
-    if (t < 5 && !isSettled(t, stiffness, damping)) {
+    if (t < 5 && (!isSettled(t, stiffness, damping) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
       tpExpandAnim = requestAnimationFrame(tick);
     } else {
       panel.style.display = 'none';
@@ -3801,13 +3845,15 @@ document.getElementById('demoStage').addEventListener('click', (e) => {
 
 // Wire up TP carousel card clicks
 document.querySelectorAll('.tp-zoom-card').forEach(card => {
-  card.addEventListener('click', () => {
+  card.addEventListener('click', (e) => {
+    e.stopPropagation();
     if (tpExpandState) { tpCollapseCard(); return; }
     tpExpandCardIdx = [...document.querySelectorAll('.tp-zoom-card')].indexOf(card);
     tpExpandCard(card);
   });
 });
-document.getElementById('tpExpandPanel').addEventListener('click', () => {
+document.getElementById('tpExpandPanel').addEventListener('click', (e) => {
+  e.stopPropagation();
   if (tpExpandState) tpCollapseCard();
 });
 
@@ -4220,15 +4266,20 @@ document.querySelectorAll('.tp-tab').forEach(tab => {
 });
 
 const hashTp = location.hash.match(/^#tp-(.+)$/);
-if (hashTp) switchTpDemo(hashTp[1]);
+if (hashTp) {
+  switchTpDemo(hashTp[1]);
+} else {
+  const defaultTpKey = document.querySelector('.tp-tab.active')?.dataset.tp;
+  if (defaultTpKey) switchTpDemo(defaultTpKey);
+}
 
 document.getElementById('tpPlayBtn').addEventListener('click', () => {
   const key = document.querySelector('.tp-tab.active')?.dataset.tp;
   TP_DEMOS[key]?.play();
 });
 document.getElementById('tpPhone').addEventListener('click', (e) => {
-  if (e.target.closest('.tp-zoom-card') || e.target.closest('#tpExpandPanel')) return;
   const key = document.querySelector('.tp-tab.active')?.dataset.tp;
+  if (key === 'zoom') return; // zoom uses card/panel click handlers only
   TP_DEMOS[key]?.play();
 });
 
@@ -4383,6 +4434,38 @@ function reserveTabWidths(scope) {
   });
 }
 reserveTabWidths();
+
+// ── Touch cursor dot ──────────────────────────────────────────────
+(function() {
+  const dot = document.createElement('div');
+  dot.id = 'touchDot';
+  document.body.appendChild(dot);
+
+  let insidePhone = false;
+
+  document.addEventListener('mousemove', (e) => {
+    dot.style.left = e.clientX + 'px';
+    dot.style.top  = e.clientY + 'px';
+    const inside = !!e.target.closest('.phone-frame') && !e.target.closest('.desktop-bezel') && !e.target.closest('#accDemoContainer');
+    if (inside !== insidePhone) {
+      insidePhone = inside;
+      dot.classList.toggle('visible', inside);
+    }
+  });
+
+  document.addEventListener('mousedown', (e) => {
+    if (insidePhone) dot.classList.add('pressed');
+  });
+
+  document.addEventListener('mouseup', () => {
+    dot.classList.remove('pressed');
+  });
+
+  document.addEventListener('mouseleave', () => {
+    insidePhone = false;
+    dot.classList.remove('visible', 'pressed');
+  });
+})();
 </script>
 <div class="toast" id="toast"></div>
 </body>
