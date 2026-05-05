@@ -1895,29 +1895,7 @@
         <div id="tpExpandCardLayer" style="position:absolute;inset:0;background:var(--sk);">
         </div>
         <div id="tpExpandDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
-          <div id="tpDetailInner" style="position:absolute;top:0;left:0;width:var(--tp-phone-w,200px);transform-origin:top left;display:flex;flex-direction:column;">
-            <div class="push-hero" style="height:220px;flex-shrink:0;"></div>
-            <div class="expand-detail-content">
-              <div class="push-detail-row title"></div>
-              <div class="push-detail-row sub"></div>
-              <div class="push-detail-divider"></div>
-              <div class="push-detail-row med"></div>
-              <div class="push-detail-row short"></div>
-              <div class="push-detail-row full"></div>
-              <div class="push-detail-row med"></div>
-              <div class="push-detail-divider"></div>
-              <div class="push-detail-row title"></div>
-              <div class="push-detail-row med"></div>
-              <div class="push-detail-row short"></div>
-              <div class="push-detail-row full"></div>
-              <div class="push-detail-row med"></div>
-              <div class="push-detail-divider"></div>
-              <div class="push-detail-row med"></div>
-              <div class="push-detail-row short"></div>
-              <div class="push-detail-row full"></div>
-              <div class="push-detail-row short"></div>
-            </div>
-          </div>
+          <div id="tpDetailInner" style="position:absolute;top:0;left:0;width:var(--tp-phone-w,200px);transform-origin:top left;display:flex;flex-direction:column;"></div>
         </div>
       </div>
       <!-- slide-in: push screens -->
@@ -1999,31 +1977,7 @@
         <div class="phone-content"></div>
         <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
         <div class="push-scrim" id="tpSheetScrim" style="opacity:0;z-index:10;"></div>
-        <div class="sheet" id="tpSheet" style="transform:translateY(100%);box-shadow:0 -2px 20px rgba(0,0,0,0);">
-          <div class="sheet-handle"></div>
-          <div class="sheet-line med"></div>
-          <div class="sheet-line short thin"></div>
-          <div class="sheet-section-gap"></div>
-          <div class="sheet-tag-row">
-            <div class="sheet-tag" style="width:54px;"></div>
-            <div class="sheet-tag" style="width:44px;"></div>
-            <div class="sheet-tag" style="width:62px;"></div>
-          </div>
-          <div class="sheet-img-row">
-            <div class="sheet-thumb"></div>
-            <div class="sheet-thumb-lines">
-              <div class="sheet-line" style="margin-bottom:0;"></div>
-              <div class="sheet-line short thin" style="margin-bottom:0;"></div>
-            </div>
-          </div>
-          <div class="sheet-img-row">
-            <div class="sheet-thumb"></div>
-            <div class="sheet-thumb-lines">
-              <div class="sheet-line" style="margin-bottom:0;"></div>
-              <div class="sheet-line med thin" style="margin-bottom:0;"></div>
-            </div>
-          </div>
-        </div>
+        <div class="sheet" id="tpSheet" style="transform:translateY(100%);box-shadow:0 -2px 20px rgba(0,0,0,0);"></div>
       </div>
 
       <!-- scale-in: modal -->
@@ -2043,19 +1997,12 @@
     </div>
 
     <!-- slide-up-fade: desktop bezel (shown instead of phone) -->
-    <div id="tpDesktopWrap" style="display:none;position:absolute;inset:0;flex:1;overflow:hidden;">
-      <div class="dt-ui" id="tpDesktopBg" style="flex:1;"></div>
-      <div id="tpSufScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:0;pointer-events:none;"></div>
-      <div id="tpSufModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 30px));background:var(--c-surface-0);border-radius:16px;padding:20px 20px 24px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
-        <div style="height:10px;width:60%;background:var(--sk);border-radius:5px;margin-bottom:16px;"></div>
-        <div style="height:120px;width:100%;background:var(--sk);border-radius:8px;margin-bottom:14px;"></div>
-        <div style="height:7px;width:90%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
-        <div style="height:7px;width:70%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
-        <div style="height:7px;width:80%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
-        <div style="height:7px;width:55%;background:var(--sk);border-radius:4px;margin-bottom:20px;"></div>
-        <div style="display:flex;gap:8px;">
-          <div style="flex:1;height:34px;background:var(--c-text-primary);border-radius:10px;opacity:0.12;"></div>
-          <div style="flex:1;height:34px;background:var(--sk);border-radius:10px;"></div>
+    <div id="tpDesktopWrap" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;">
+      <div class="desktop-bezel" style="cursor:default;">
+        <div style="flex:1;position:relative;overflow:hidden;display:flex;">
+          <div class="dt-ui" id="tpDesktopBg" style="flex:1;"></div>
+          <div id="tpSufScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:0;pointer-events:none;"></div>
+          <div id="tpSufModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 30px));background:var(--c-surface-0);border-radius:16px;padding:20px 20px 24px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></div>
         </div>
       </div>
     </div>
@@ -2177,48 +2124,7 @@
             <div class="sk-nav-icon"></div>
           </div>
           <div class="push-scrim" id="sheetScrim" style="z-index:10;"></div>
-          <div class="sheet" id="demoSheet" style="transform: translateY(100%)">
-            <div class="sheet-handle"></div>
-            <!-- Title + subtitle -->
-            <div class="sheet-line med"></div>
-            <div class="sheet-line short thin"></div>
-            <div class="sheet-section-gap"></div>
-            <!-- Tag pills -->
-            <div class="sheet-tag-row">
-              <div class="sheet-tag" style="width:54px;"></div>
-              <div class="sheet-tag" style="width:44px;"></div>
-              <div class="sheet-tag" style="width:62px;"></div>
-            </div>
-            <!-- List rows with thumbnail -->
-            <div class="sheet-img-row">
-              <div class="sheet-thumb"></div>
-              <div class="sheet-thumb-lines">
-                <div class="sheet-line" style="margin-bottom:0;"></div>
-                <div class="sheet-line short thin" style="margin-bottom:0;"></div>
-              </div>
-            </div>
-            <div class="sheet-img-row">
-              <div class="sheet-thumb"></div>
-              <div class="sheet-thumb-lines">
-                <div class="sheet-line" style="margin-bottom:0;"></div>
-                <div class="sheet-line med thin" style="margin-bottom:0;"></div>
-              </div>
-            </div>
-            <div class="sheet-img-row">
-              <div class="sheet-thumb"></div>
-              <div class="sheet-thumb-lines">
-                <div class="sheet-line" style="margin-bottom:0;"></div>
-                <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
-              </div>
-            </div>
-            <div class="sheet-img-row">
-              <div class="sheet-thumb"></div>
-              <div class="sheet-thumb-lines">
-                <div class="sheet-line" style="margin-bottom:0;"></div>
-                <div class="sheet-line med thin" style="margin-bottom:0;"></div>
-              </div>
-            </div>
-          </div>
+          <div class="sheet" id="demoSheet" style="transform: translateY(100%)"></div>
         </div>
       </div>
 
@@ -2387,29 +2293,7 @@
               </div>
             </div>
             <!-- Detail state: fades in on expand, fades out on collapse -->
-            <div id="expandDetailLayer" style="position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;">
-              <div class="push-hero" style="height:220px;flex-shrink:0;"></div>
-              <div class="expand-detail-content" id="expandDetail">
-                <div class="push-detail-row title"></div>
-                <div class="push-detail-row sub"></div>
-                <div class="push-detail-divider"></div>
-                <div class="push-detail-row med"></div>
-                <div class="push-detail-row short"></div>
-                <div class="push-detail-row full"></div>
-                <div class="push-detail-row med"></div>
-                <div class="push-detail-divider"></div>
-                <div class="push-detail-row title"></div>
-                <div class="push-detail-row med"></div>
-                <div class="push-detail-row short"></div>
-                <div class="push-detail-row full"></div>
-                <div class="push-detail-row med"></div>
-                <div class="push-detail-divider"></div>
-                <div class="push-detail-row med"></div>
-                <div class="push-detail-row short"></div>
-                <div class="push-detail-row full"></div>
-                <div class="push-detail-row short"></div>
-              </div>
-            </div>
+            <div id="expandDetailLayer" style="position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;"></div>
           </div>
           <button class="expand-back-btn" id="expandBackBtn" style="display:none"></button>
         </div>
@@ -2419,23 +2303,7 @@
       <div class="demo-view" id="view-bottom-bar" style="display:none; align-items:center; justify-content:center;">
         <div class="phone-frame">
           <!-- Details page as background -->
-          <div class="push-hero"></div>
-          <div class="push-detail-body">
-            <div class="push-detail-row title"></div>
-            <div class="push-detail-row sub"></div>
-            <div class="push-detail-divider"></div>
-            <div class="push-detail-row med"></div>
-            <div class="push-detail-row short"></div>
-            <div class="push-detail-row full"></div>
-            <div class="push-detail-divider"></div>
-            <div class="push-detail-row title"></div>
-            <div class="push-detail-row med"></div>
-            <div class="push-detail-row short"></div>
-            <div class="push-detail-row full"></div>
-            <div class="push-detail-divider"></div>
-            <div class="push-detail-row med"></div>
-            <div class="push-detail-row short"></div>
-          </div>
+          <div id="bottomBarDetail"></div>
           <!-- Bottom bar: starts offscreen -->
           <div class="bottom-bar" id="demoBottomBar" style="transform: translateY(100%)">
             <div class="bottom-bar-text">
@@ -2820,36 +2688,14 @@
         <!-- scrim -->
         <div id="meScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:0;pointer-events:none;"></div>
         <!-- floating modal -->
-        <div id="meModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 50px));background:var(--c-surface-0);border-radius:16px;padding:20px 20px 24px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
-          <div style="height:10px;width:60%;background:var(--sk);border-radius:5px;margin-bottom:16px;"></div>
-          <div style="height:120px;width:100%;background:var(--sk);border-radius:8px;margin-bottom:14px;"></div>
-          <div style="height:7px;width:90%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
-          <div style="height:7px;width:70%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
-          <div style="height:7px;width:80%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
-          <div style="height:7px;width:55%;background:var(--sk);border-radius:4px;margin-bottom:20px;"></div>
-          <div style="display:flex;gap:8px;">
-            <div style="flex:1;height:34px;background:var(--c-text-primary);border-radius:10px;opacity:0.12;"></div>
-            <div style="flex:1;height:34px;background:var(--sk);border-radius:10px;"></div>
-          </div>
-        </div>
+        <div id="meModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 50px));background:var(--c-surface-0);border-radius:16px;padding:20px 20px 24px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></div>
       </div>
 
       <!-- Modal exit UI: same grid + modal starts visible -->
       <div id="mxUI" style="display:none; flex:1; position:relative; overflow:hidden;">
         <div class="dt-ui" id="mxUiBg" style="flex:1;"></div>
         <div id="mxScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:1;pointer-events:none;"></div>
-        <div id="mxModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(-50%);background:var(--c-surface-0);border-radius:16px;padding:20px 20px 24px;opacity:1;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);">
-          <div style="height:10px;width:60%;background:var(--sk);border-radius:5px;margin-bottom:16px;"></div>
-          <div style="height:120px;width:100%;background:var(--sk);border-radius:8px;margin-bottom:14px;"></div>
-          <div style="height:7px;width:90%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
-          <div style="height:7px;width:70%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
-          <div style="height:7px;width:80%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
-          <div style="height:7px;width:55%;background:var(--sk);border-radius:4px;margin-bottom:20px;"></div>
-          <div style="display:flex;gap:8px;">
-            <div style="flex:1;height:34px;background:var(--c-text-primary);border-radius:10px;opacity:0.12;"></div>
-            <div style="flex:1;height:34px;background:var(--sk);border-radius:10px;"></div>
-          </div>
-        </div>
+        <div id="mxModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(-50%);background:var(--c-surface-0);border-radius:16px;padding:20px 20px 24px;opacity:1;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></div>
       </div>
 
       <!-- Fast fade UI: single card -->
@@ -2961,6 +2807,83 @@
 </div><!-- end content-cover -->
 
 <!-- ── Shared templates ─────────────────────────────────────────── -->
+
+<template id="tpl-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-line med"></div>
+  <div class="sheet-line short thin"></div>
+  <div class="sheet-section-gap"></div>
+  <div class="sheet-tag-row">
+    <div class="sheet-tag" style="width:54px;"></div>
+    <div class="sheet-tag" style="width:44px;"></div>
+    <div class="sheet-tag" style="width:62px;"></div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line short thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-zoom-detail">
+  <div class="push-hero" style="height:220px;flex-shrink:0;"></div>
+  <div class="expand-detail-content">
+    <div class="push-detail-row title"></div>
+    <div class="push-detail-row sub"></div>
+    <div class="push-detail-divider"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-row short"></div>
+    <div class="push-detail-row full"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-divider"></div>
+    <div class="push-detail-row title"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-row short"></div>
+    <div class="push-detail-row full"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-divider"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-row short"></div>
+    <div class="push-detail-row full"></div>
+    <div class="push-detail-row short"></div>
+  </div>
+</template>
+
+<template id="tpl-desktop-modal">
+  <div style="height:10px;width:60%;background:var(--sk);border-radius:5px;margin-bottom:16px;"></div>
+  <div style="height:120px;width:100%;background:var(--sk);border-radius:8px;margin-bottom:14px;"></div>
+  <div style="height:7px;width:90%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+  <div style="height:7px;width:70%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+  <div style="height:7px;width:80%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+  <div style="height:7px;width:55%;background:var(--sk);border-radius:4px;margin-bottom:20px;"></div>
+  <div style="display:flex;gap:8px;">
+    <div style="flex:1;height:34px;background:var(--c-text-primary);border-radius:10px;opacity:0.12;"></div>
+    <div style="flex:1;height:34px;background:var(--sk);border-radius:10px;"></div>
+  </div>
+</template>
 
 <template id="tpl-list-screen">
   <div class="sk-search"></div>
@@ -3100,6 +3023,20 @@ function stampTemplate(templateId, targetEl) {
   stampTemplate('tpl-desktop-bg', document.getElementById('meUiBg'));
   stampTemplate('tpl-desktop-bg', document.getElementById('mxUiBg'));
   stampTemplate('tpl-desktop-bg', document.getElementById('tpDesktopBg'));
+
+  // tpl-desktop-modal targets
+  stampTemplate('tpl-desktop-modal', document.getElementById('meModal'));
+  stampTemplate('tpl-desktop-modal', document.getElementById('mxModal'));
+  stampTemplate('tpl-desktop-modal', document.getElementById('tpSufModal'));
+
+  // tpl-zoom-detail targets
+  stampTemplate('tpl-zoom-detail', document.getElementById('tpDetailInner'));
+  stampTemplate('tpl-zoom-detail', document.getElementById('expandDetailLayer'));
+  stampTemplate('tpl-zoom-detail', document.getElementById('bottomBarDetail'));
+
+  // tpl-sheet targets
+  stampTemplate('tpl-sheet', document.getElementById('demoSheet'));
+  stampTemplate('tpl-sheet', document.getElementById('tpSheet'));
 })();
 
 // ── Spring definitions ────────────────────────────────────────────
@@ -4559,6 +4496,10 @@ document.getElementById('tpPlayBtn').addEventListener('click', () => {
 document.getElementById('tpPhone').addEventListener('click', (e) => {
   const key = document.querySelector('.tp-tab.active')?.dataset.tp;
   if (key === 'zoom') return; // zoom uses card/panel click handlers only
+  TP_DEMOS[key]?.play();
+});
+document.getElementById('tpDesktopWrap').addEventListener('click', () => {
+  const key = document.querySelector('.tp-tab.active')?.dataset.tp;
   TP_DEMOS[key]?.play();
 });
 
