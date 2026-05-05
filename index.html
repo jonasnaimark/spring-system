@@ -4029,8 +4029,9 @@ document.querySelectorAll('#bezTabsBar .demo-tab').forEach(tab => {
 });
 
 function playSlowFade() {
-  const cards = Array.from(document.querySelectorAll('.dt-grid .dt-card'));
-  const titles = Array.from(document.querySelectorAll('.dt-grid .dt-section-title'));
+  const sfUI = document.getElementById('sfUI');
+  const cards = Array.from(sfUI.querySelectorAll('.dt-grid .dt-card'));
+  const titles = Array.from(sfUI.querySelectorAll('.dt-grid .dt-section-title'));
   const allItems = [...titles, ...cards];
   const easing = BEZ_CURVES[activeBezCurve] ?? BEZ_CURVES.standard;
 
@@ -4049,7 +4050,7 @@ function playSlowFade() {
     });
     allItems[0]?.offsetHeight; // force reflow
 
-    const domOrder = Array.from(document.querySelectorAll('.dt-grid .dt-card, .dt-grid .dt-section-title'));
+    const domOrder = Array.from(sfUI.querySelectorAll('.dt-grid .dt-card, .dt-grid .dt-section-title'));
     domOrder.forEach((el, i) => {
       const delay = i * 20;
       el.style.transition = `opacity ${activeBezDuration}ms ${easing} ${delay}ms, transform ${activeBezDuration}ms ${easing} ${delay}ms`;
