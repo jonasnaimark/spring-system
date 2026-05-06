@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UI Templates</title>
+  <style>
+    /* ── Fonts & variables (shared with index.html) ── */
+    :root {
+      --c-bg:              #ffffff;
+      --c-surface-0:       #ffffff;
+      --c-surface-1:       #fafafa;
+      --c-surface-2:       #f7f7f9;
+      --c-surface-3:       #f2f2f7;
+      --c-text-primary:    #1c1c1e;
+      --c-text-secondary:  #3a3a3c;
+      --c-text-tertiary:   #636366;
+      --c-text-quaternary: #8e8e93;
+      --c-border-faint:    rgba(0,0,0,0.04);
+      --c-border-subtle:   rgba(0,0,0,0.09);
+      --c-border-default:  rgba(0,0,0,0.08);
+      --c-border-medium:   rgba(0,0,0,0.14);
+      --c-border-strong:   rgba(0,0,0,0.24);
+      --c-demo-bg:         #f5f5f7;
+      --c-accent:          #FF385C;
+      --sk:                #e5e5ea;
+      --sk-dark:           #d1d1d6;
+    }
+
+    [data-theme="dark"] {
+      --c-bg:              #1c1c1e;
+      --c-surface-0:       #1c1c1e;
+      --c-surface-1:       #2c2c2e;
+      --c-surface-2:       #3a3a3c;
+      --c-surface-3:       #48484a;
+      --c-text-primary:    #ffffff;
+      --c-text-secondary:  #ebebf5;
+      --c-text-tertiary:   #ebebf599;
+      --c-text-quaternary: #ebebf54d;
+      --c-border-faint:    rgba(255,255,255,0.05);
+      --c-border-subtle:   rgba(255,255,255,0.10);
+      --c-border-default:  rgba(255,255,255,0.13);
+      --c-border-medium:   rgba(255,255,255,0.18);
+      --c-border-strong:   rgba(255,255,255,0.28);
+      --c-demo-bg:         #2c2c2e;
+      --sk:                #2c2c2e;
+      --sk-dark:           #3a3a3c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--c-bg);
+      color: var(--c-text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      padding: 48px;
+    }
+
+    /* ── Page layout ── */
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: var(--c-text-primary);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: var(--c-text-tertiary);
+      margin-bottom: 48px;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px 32px;
+    }
+
+    .template-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .template-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--c-text-tertiary);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .template-id {
+      font-size: 11px;
+      color: var(--c-text-quaternary);
+      font-family: monospace;
+      margin-top: 2px;
+    }
+
+    /* ── Theme toggle ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 48px;
+    }
+
+    .theme-btn {
+      background: var(--c-surface-2);
+      border: 1px solid var(--c-border-subtle);
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 13px;
+      color: var(--c-text-secondary);
+      cursor: pointer;
+    }
+
+    /* ── Phone frame ── */
+    .phone-frame {
+      width: auto;
+      height: 480px;
+      aspect-ratio: 340 / 680;
+      border: 6px solid #1c1c1e;
+      border-radius: 46px;
+      background: var(--c-surface-0);
+      position: relative;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .phone-frame { border-color: #48484a; }
+
+    .phone-content {
+      padding: 36px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      height: 100%;
+      position: relative;
+    }
+
+    .sk-bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 68px;
+      background: var(--c-surface-0);
+      border-top: 1px solid var(--sk);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-around;
+      padding: 12px 8px 0;
+      z-index: 10;
+    }
+
+    .sk-nav-icon {
+      width: 20px;
+      height: 20px;
+      background: var(--sk);
+      border-radius: 4px;
+    }
+
+    /* ── Skeleton list screen ── */
+    .sk-search {
+      height: 34px;
+      border-radius: 17px;
+      background: var(--sk);
+      flex-shrink: 0;
+    }
+
+    .sk-cats {
+      display: flex;
+      gap: 14px;
+      flex-shrink: 0;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+
+    .sk-cat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      flex: 1;
+    }
+
+    .sk-cat-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--sk);
+    }
+
+    .sk-cat-label {
+      height: 7px;
+      width: 65%;
+      background: var(--sk);
+      border-radius: 4px;
+    }
+
+    .sk-divider {
+      height: 1px;
+      background: var(--sk);
+      margin: 2px -18px 2px;
+      flex-shrink: 0;
+    }
+
+    .sk-card-img {
+      width: 100%;
+      height: 170px;
+      background: var(--sk);
+      border-radius: 12px;
+      flex-shrink: 0;
+      margin-top: 10px;
+    }
+
+    .sk-card-img.partial { height: 170px; background: var(--sk); margin-top: 10px; }
+
+    .sk-card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .sk-title  { height: 9px; width: 55%; background: var(--sk); border-radius: 5px; }
+    .sk-price  { height: 9px; width: 18%; background: var(--sk); border-radius: 5px; }
+    .sk-sub    { height: 8px; width: 38%; background: var(--sk); border-radius: 4px; flex-shrink: 0; }
+    .sk-section-label { height: 8px; width: 30%; background: var(--sk); border-radius: 4px; flex-shrink: 0; }
+
+    /* ── Detail screen ── */
+    .push-screen {
+      position: absolute;
+      inset: 0;
+      background: var(--c-surface-0);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .push-hero {
+      width: 100%;
+      height: 210px;
+      background: var(--sk);
+      flex-shrink: 0;
+    }
+
+    .push-detail-body {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .push-detail-row {
+      height: 8px;
+      background: var(--sk);
+      border-radius: 4px;
+    }
+
+    .push-detail-row.title { height: 11px; width: 72%; border-radius: 6px; margin-bottom: 2px; }
+    .push-detail-row.sub   { width: 48%; }
+    .push-detail-row.med   { width: 82%; }
+    .push-detail-row.short { width: 55%; }
+    .push-detail-row.full  { width: 100%; }
+
+    .push-detail-divider { height: 1px; background: var(--sk); margin: 4px 0; }
+
+    /* ── Zoom detail ── */
+    .expand-detail-content {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* ── Modal card ── */
+    .modal-card {
+      width: 220px;
+      background: var(--c-surface-0);
+      border-radius: 18px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    }
+
+    [data-theme="dark"] .modal-card { outline: 1px solid var(--c-border-subtle); }
+
+    .modal-line { height: 8px; background: var(--sk); border-radius: 4px; }
+    .modal-line.short { width: 55%; }
+
+    .modal-btn-row { display: flex; gap: 6px; margin-top: 4px; }
+
+    .modal-btn { flex: 1; height: 28px; border-radius: 7px; background: var(--sk); }
+    .modal-btn.primary { background: #FF385C; }
+
+    /* ── Sheet ── */
+    .sheet-standalone {
+      width: 220px;
+      background: var(--c-surface-0);
+      border-radius: 22px;
+      padding: 14px 18px;
+      box-shadow: 0 -2px 20px rgba(0,0,0,0.10);
+    }
+
+    .sheet-handle {
+      width: 40px;
+      height: 5px;
+      background: var(--sk);
+      border-radius: 3px;
+      margin: 0 auto 16px;
+    }
+
+    .sheet-line {
+      height: 10px;
+      background: var(--sk);
+      border-radius: 5px;
+      margin-bottom: 9px;
+    }
+
+    .sheet-line.short  { width: 55%; }
+    .sheet-line.med    { width: 70%; }
+    .sheet-line.xshort { width: 35%; }
+    .sheet-line.thin   { height: 7px; }
+
+    .sheet-section-gap { height: 14px; }
+
+    .sheet-img-row { display: flex; gap: 8px; margin-bottom: 10px; }
+
+    .sheet-thumb { width: 52px; height: 52px; border-radius: 8px; background: var(--sk); flex-shrink: 0; }
+
+    .sheet-thumb-lines { flex: 1; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+
+    .sheet-tag-row { display: flex; gap: 6px; margin-bottom: 10px; }
+    .sheet-tag { height: 22px; border-radius: 11px; background: var(--sk); }
+
+    /* ── Desktop modal ── */
+    .desktop-modal-standalone {
+      width: 280px;
+      background: var(--c-surface-0);
+      border-radius: 16px;
+      padding: 20px 20px 24px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    }
+
+    [data-theme="dark"] .desktop-modal-standalone { outline: 1px solid var(--c-border-subtle); }
+
+    /* ── Desktop bg ── */
+    .desktop-bg-wrap {
+      width: 480px;
+      height: 260px;
+      border: 4px solid #1c1c1e;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    [data-theme="dark"] .desktop-bg-wrap { border-color: #48484a; }
+
+    .dt-ui {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--c-surface-0);
+    }
+
+    .dt-topbar {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .dt-logo { width: 18px; height: 18px; border-radius: 3px; background: var(--sk); flex-shrink: 0; }
+
+    .dt-search {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 180px;
+      height: 22px;
+      background: var(--sk);
+      border-radius: 11px;
+    }
+
+    .dt-nav-icons { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+    .dt-nav-icon  { width: 16px; height: 16px; border-radius: 2px; background: var(--sk); }
+    .dt-nav-icon--avatar { border-radius: 50%; }
+
+    .dt-pills {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      padding: 6px 12px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--c-border-subtle);
+    }
+
+    .dt-pill { height: 14px; width: 36px; border-radius: 7px; background: var(--sk); flex-shrink: 0; }
+
+    .dt-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 12px 16px 0;
+      overflow: hidden;
+      align-content: start;
+    }
+
+    .dt-section-title { background: var(--sk); border-radius: 4px; }
+
+    .dt-card {
+      background: var(--c-surface-0);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      outline: 1px solid var(--c-border-subtle);
+    }
+
+    .dt-card-img { width: 100%; height: 60px; background: var(--sk); }
+
+    .dt-card-body { padding: 5px 6px 6px; display: flex; flex-direction: column; gap: 3px; }
+
+    .dt-card-row { height: 5px; border-radius: 3px; background: var(--sk); }
+    .dt-card-row--title { width: 80%; }
+    .dt-card-row--sub   { width: 55%; }
+    .dt-card-row--price { width: 35%; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>UI Templates</h1>
+    <p class="subtitle">Shared placeholder layouts used across the Motion System demos.</p>
+  </div>
+  <button class="theme-btn" id="themeToggle">Toggle dark mode</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<!-- ── Shared templates (copied from index.html) ── -->
+
+<template id="tpl-list-screen">
+  <div class="sk-search"></div>
+  <div class="sk-cats">
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+  </div>
+  <div class="sk-divider"></div>
+  <div class="sk-card-img"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+  <div class="sk-section-label"></div>
+  <div class="sk-card-img partial"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+  <div class="sk-sub"></div>
+  <div class="sk-card-img partial"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+</template>
+
+<template id="tpl-detail-screen">
+  <div class="push-hero"></div>
+  <div class="push-detail-body">
+    <div class="push-detail-row title"></div>
+    <div class="push-detail-row sub"></div>
+    <div class="push-detail-divider"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-row short"></div>
+    <div class="push-detail-row full"></div>
+    <div class="push-detail-divider"></div>
+    <div class="push-detail-row title"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-row short"></div>
+    <div class="push-detail-row full"></div>
+    <div class="push-detail-divider"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-row short"></div>
+    <div class="push-detail-row med"></div>
+  </div>
+</template>
+
+<template id="tpl-zoom-detail">
+  <div class="push-hero" style="height:220px;flex-shrink:0;"></div>
+  <div class="expand-detail-content">
+    <div class="push-detail-row title"></div>
+    <div class="push-detail-row sub"></div>
+    <div class="push-detail-divider"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-row short"></div>
+    <div class="push-detail-row full"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-divider"></div>
+    <div class="push-detail-row title"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-row short"></div>
+    <div class="push-detail-row full"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-divider"></div>
+    <div class="push-detail-row med"></div>
+    <div class="push-detail-row short"></div>
+    <div class="push-detail-row full"></div>
+    <div class="push-detail-row short"></div>
+  </div>
+</template>
+
+<template id="tpl-modal-card">
+  <div class="modal-line"></div>
+  <div class="modal-line short"></div>
+  <div class="modal-line"></div>
+  <div class="modal-btn-row">
+    <div class="modal-btn"></div>
+    <div class="modal-btn primary"></div>
+  </div>
+</template>
+
+<template id="tpl-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-line med"></div>
+  <div class="sheet-line short thin"></div>
+  <div class="sheet-section-gap"></div>
+  <div class="sheet-tag-row">
+    <div class="sheet-tag" style="width:54px;"></div>
+    <div class="sheet-tag" style="width:44px;"></div>
+    <div class="sheet-tag" style="width:62px;"></div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line short thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-desktop-modal">
+  <div style="height:10px;width:60%;background:var(--sk);border-radius:5px;margin-bottom:16px;"></div>
+  <div style="height:120px;width:100%;background:var(--sk);border-radius:8px;margin-bottom:14px;"></div>
+  <div style="height:7px;width:90%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+  <div style="height:7px;width:70%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+  <div style="height:7px;width:80%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
+  <div style="height:7px;width:55%;background:var(--sk);border-radius:4px;margin-bottom:20px;"></div>
+  <div style="display:flex;gap:8px;">
+    <div style="flex:1;height:34px;background:var(--c-text-primary);border-radius:10px;opacity:0.12;"></div>
+    <div style="flex:1;height:34px;background:var(--sk);border-radius:10px;"></div>
+  </div>
+</template>
+
+<template id="tpl-desktop-bg">
+  <div class="dt-topbar">
+    <div class="dt-logo"></div>
+    <div class="dt-search"></div>
+    <div class="dt-nav-icons">
+      <div class="dt-nav-icon"></div>
+      <div class="dt-nav-icon"></div>
+      <div class="dt-nav-icon dt-nav-icon--avatar"></div>
+    </div>
+  </div>
+  <div class="dt-pills">
+    <div class="dt-pill dt-pill--active"></div>
+    <div class="dt-pill"></div>
+    <div class="dt-pill"></div>
+    <div class="dt-pill"></div>
+    <div class="dt-pill"></div>
+    <div class="dt-pill"></div>
+  </div>
+  <div class="dt-grid">
+    <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:30%; border-radius:4px; margin-top:4px;"></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+    <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:25%; border-radius:4px; margin-top:8px;"></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
+  </div>
+</template>
+
+<script>
+  // Theme
+  const html = document.documentElement;
+  const isDark = localStorage.getItem('theme') === 'dark';
+  if (isDark) html.setAttribute('data-theme', 'dark');
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const dark = html.getAttribute('data-theme') === 'dark';
+    dark ? html.removeAttribute('data-theme') : html.setAttribute('data-theme', 'dark');
+    localStorage.setItem('theme', dark ? 'light' : 'dark');
+  });
+
+  function stamp(templateId) {
+    const tpl = document.getElementById(templateId);
+    if (!tpl) return document.createDocumentFragment();
+    return tpl.content.cloneNode(true);
+  }
+
+  function makeItem(label, id, previewEl) {
+    const item = document.createElement('div');
+    item.className = 'template-item';
+    item.appendChild(previewEl);
+    const info = document.createElement('div');
+    info.style.textAlign = 'center';
+    info.innerHTML = `<div class="template-label">${label}</div><div class="template-id">#${id}</div>`;
+    item.appendChild(info);
+    return item;
+  }
+
+  const grid = document.getElementById('grid');
+
+  // ── tpl-list-screen ──
+  const listPhone = document.createElement('div');
+  listPhone.className = 'phone-frame';
+  const listContent = document.createElement('div');
+  listContent.className = 'phone-content';
+  listContent.appendChild(stamp('tpl-list-screen'));
+  listPhone.appendChild(listContent);
+  const listNav = document.createElement('div');
+  listNav.className = 'sk-bottom-nav';
+  listNav.innerHTML = '<div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div>';
+  listPhone.appendChild(listNav);
+  grid.appendChild(makeItem('List Screen', 'tpl-list-screen', listPhone));
+
+  // ── tpl-detail-screen ──
+  const detailPhone = document.createElement('div');
+  detailPhone.className = 'phone-frame';
+  const detailScreen = document.createElement('div');
+  detailScreen.className = 'push-screen';
+  detailScreen.appendChild(stamp('tpl-detail-screen'));
+  detailPhone.appendChild(detailScreen);
+  grid.appendChild(makeItem('Detail Screen', 'tpl-detail-screen', detailPhone));
+
+  // ── tpl-zoom-detail ──
+  const zoomPhone = document.createElement('div');
+  zoomPhone.className = 'phone-frame';
+  const zoomInner = document.createElement('div');
+  zoomInner.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;';
+  zoomInner.appendChild(stamp('tpl-zoom-detail'));
+  zoomPhone.appendChild(zoomInner);
+  grid.appendChild(makeItem('Zoom Detail', 'tpl-zoom-detail', zoomPhone));
+
+  // ── tpl-modal-card ──
+  const modalCard = document.createElement('div');
+  modalCard.className = 'modal-card';
+  modalCard.appendChild(stamp('tpl-modal-card'));
+  grid.appendChild(makeItem('Modal Card', 'tpl-modal-card', modalCard));
+
+  // ── tpl-sheet ──
+  const sheetWrap = document.createElement('div');
+  sheetWrap.className = 'sheet-standalone';
+  sheetWrap.appendChild(stamp('tpl-sheet'));
+  grid.appendChild(makeItem('Sheet', 'tpl-sheet', sheetWrap));
+
+  // ── tpl-desktop-modal ──
+  const dtModal = document.createElement('div');
+  dtModal.className = 'desktop-modal-standalone';
+  dtModal.appendChild(stamp('tpl-desktop-modal'));
+  grid.appendChild(makeItem('Desktop Modal', 'tpl-desktop-modal', dtModal));
+
+  // ── tpl-desktop-bg ──
+  const dtWrap = document.createElement('div');
+  dtWrap.className = 'desktop-bg-wrap';
+  const dtUi = document.createElement('div');
+  dtUi.className = 'dt-ui';
+  dtUi.appendChild(stamp('tpl-desktop-bg'));
+  dtWrap.appendChild(dtUi);
+  grid.appendChild(makeItem('Desktop Background', 'tpl-desktop-bg', dtWrap));
+</script>
+</body>
+</html>
