@@ -637,7 +637,7 @@
   const detailPhone = document.createElement('div');
   detailPhone.className = 'phone-frame';
   const detailInner = document.createElement('div');
-  detailInner.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;';
+  detailInner.className = 'push-screen';
   detailInner.appendChild(stamp('tpl-detail'));
   detailPhone.appendChild(detailInner);
   grid.appendChild(makeItem('Detail Screen', 'tpl-detail', detailPhone));
