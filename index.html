@@ -4572,7 +4572,7 @@ if (hashTp) {
     } else if (key === 'slide-up-fade') {
       // desktop modal: enter hold exit hold
       TP_DEMOS[key].play(); // enter
-      scheduleNext(900, () => {
+      scheduleNext(1700, () => {
         if (!tpPlaying) return;
         TP_DEMOS[key].play(); // exit
         scheduleNext(1700, onCycle);
@@ -4580,10 +4580,10 @@ if (hashTp) {
     } else {
       // standard enter/exit toggle demos
       TP_DEMOS[key]?.play(); // enter
-      scheduleNext(800, () => {
+      scheduleNext(1700, () => {
         if (!tpPlaying) return;
         TP_DEMOS[key]?.play(); // exit
-        scheduleNext(1600, onCycle);
+        scheduleNext(1700, onCycle);
       });
     }
   }
