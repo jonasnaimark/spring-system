@@ -44,6 +44,7 @@
       color: var(--c-text-primary);
       font-family: 'Cereal', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
       min-height: 100vh;
+      padding-bottom: 300px;
     }
 
 /* ── Theme toggle ── */
@@ -514,7 +515,7 @@
     #tpDemoContainer .phone-frame { height: 580px; }
     #ngDemoContainer .phone-frame { height: 660px; }
     #accDemoContainer .phone-frame { height: 500px; }
-    .acc-phones { display: flex; gap: 32px; align-items: flex-end; }
+    .acc-phones { display: flex; gap: 56px; align-items: flex-end; }
     .acc-phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
     .acc-phone-label { font-size: 13px; color: var(--c-text-tertiary); font-weight: 500; }
     [data-theme="dark"] .desktop-bezel { border-color: #48484a; }
@@ -2750,7 +2751,7 @@
           </div>
         </div>
       </div>
-      <div style="flex:1; min-width:0; background:var(--c-demo-bg); border-radius:24px; display:flex; align-items:center; justify-content:center; padding:32px; position:relative; overflow:hidden;" id="accDemoContainer">
+      <div style="flex:1; min-width:0; background:var(--c-demo-bg); border-radius:24px; display:flex; align-items:center; justify-content:center; padding:64px 48px 48px; position:relative; overflow:hidden;" id="accDemoContainer">
         <button class="play-circle" id="accPlayBtn">
           <svg id="accIconPlay" width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
           <svg id="accIconPause" width="13" height="13" viewBox="0 0 12 12" fill="currentColor" style="display:none"><rect x="2" y="2" width="3" height="8" rx="1"/><rect x="7" y="2" width="3" height="8" rx="1"/></svg>
@@ -4711,15 +4712,17 @@ reserveTabWidths();
         scrim.style.opacity   = String(scrimPos);
       }
 
-      // reduced: crossfade with 150ms linear
+      // reduced: dissolve — new screen fades in on top, old screen stays opaque underneath
       const elapsed = (now - startT);
       const cf = Math.min(elapsed / 150, 1);
       if (!isIn) {
-        rmSrc.style.opacity = String(cf < 1 ? 1 - cf : 0);
+        // pushing in: dest fades in over src
+        rmSrc.style.opacity = '1';
         rmDst.style.opacity = String(cf);
       } else {
-        rmDst.style.opacity = String(cf < 1 ? 1 - cf : 0);
-        rmSrc.style.opacity = String(cf);
+        // going back: dest (detail) fades out revealing src underneath
+        rmSrc.style.opacity = '1';
+        rmDst.style.opacity = String(1 - cf);
       }
 
       if (t < 5 && !isSettled(t, stiffness, damping)) {
