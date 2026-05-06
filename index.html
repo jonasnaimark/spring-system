@@ -4987,36 +4987,44 @@ const NG_DEMOS = {
     const rawDX = e.clientX - startX;
     const rawDY = e.clientY - startY;
 
-    // Only track the primary axis
-    const rawDrag = isEdgeSwipe
-      ? Math.max(0, rawDX)   // edge: only leftward? no — rightward is dismiss for edge swipe (swipe right = go back)
-      : Math.max(0, rawDY);  // down: only downward
-
-    // Resistance
+    // Primary drag axis: 1:1 direct manipulation up to RUBBER_BAND_START,
+    // then rubber-band resistance applies to additional travel
+    const RUBBER_BAND_START = 60;
+    const rawDrag = isEdgeSwipe ? Math.max(0, rawDX) : Math.max(0, rawDY);
     const maxTravel = isEdgeSwipe ? phone.clientWidth : phone.clientHeight;
-    const drag = rubberBand(rawDrag, maxTravel * 0.5);
-    const progress = Math.min(drag / maxTravel, 1);
 
-    // Interpolate panel toward card target
-    const { fromX: cardX, fromY: cardY, fromW: cardW, fromH: cardH, fromR: cardR } = ngExpandState;
-    panel.style.left         = (toX + (cardX - toX) * progress) + 'px';
-    panel.style.top          = (toY + (cardY - toY) * progress) + 'px';
-    panel.style.width        = (toW + (cardW - toW) * progress) + 'px';
-    panel.style.height       = (toH + (cardH - toH) * progress) + 'px';
-    panel.style.borderRadius = (toR + (cardR - toR) * progress) + 'px';
+    let drag;
+    if (rawDrag <= RUBBER_BAND_START) {
+      drag = rawDrag; // 1:1 tracking
+    } else {
+      const excess = rawDrag - RUBBER_BAND_START;
+      drag = RUBBER_BAND_START + rubberBand(excess, maxTravel * 0.4);
+    }
+
+    // Panel position follows finger directly (translate only, keep full-screen size initially)
+    const panelX = isEdgeSwipe ? drag : toX;
+    const panelY = isEdgeSwipe ? toY  : drag;
+
+    // Scale down uniformly as drag progresses (iOS-style shrink, not toward card origin)
+    const progress = Math.min(drag / maxTravel, 1);
+    const scaleDown = 1 - progress * 0.22; // shrinks to ~0.78 at full travel
+    const cornerR   = toR + (40 - toR) * progress; // rounds corners as you drag
+
+    panel.style.left         = panelX + 'px';
+    panel.style.top          = panelY + 'px';
+    panel.style.width        = (toW * scaleDown) + 'px';
+    panel.style.height       = (toH * scaleDown) + 'px';
+    panel.style.borderRadius = cornerR + 'px';
     panel.style.transform    = '';
 
     const detailInner = document.getElementById('ngDetailInner');
-    if (detailInner) {
-      const curW = toW + (cardW - toW) * progress;
-      detailInner.style.transform = `scale(${curW / phone.clientWidth})`;
-    }
+    if (detailInner) detailInner.style.transform = `scale(${scaleDown})`;
 
     const scrim = document.getElementById('ngExpandScrim');
     scrim.style.opacity = (1 - progress).toFixed(3);
 
-    document.getElementById('ngExpandDetailLayer').style.opacity = (1 - progress * 2).toFixed(3);
-    document.getElementById('ngExpandCardLayer').style.opacity   = (progress * 2).toFixed(3);
+    document.getElementById('ngExpandDetailLayer').style.opacity = Math.max(0, 1 - progress * 3).toFixed(3);
+    document.getElementById('ngExpandCardLayer').style.opacity   = Math.min(1, progress * 3).toFixed(3);
   });
 
   function onGestureEnd(e) {
