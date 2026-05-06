@@ -4714,7 +4714,8 @@ const NG_DEMOS = {
 
 // ── Zoom dismiss gesture demo ─────────────────────────────────────
 (function() {
-  const SPRING_K = 600, SPRING_D = calcDamping(600, 0.7); // snappy medium-bounce
+  const SPRING_K = 500, SPRING_D = calcDamping(500, 1.0);          // smooth — used for open
+  const DISMISS_K = 600, DISMISS_D = calcDamping(600, 0.7); // snappy medium-bounce — used for dismiss
   const DISMISS_POS_THRESHOLD = 80;  // px of rubber-banded travel to commit
   const DISMISS_VEL_THRESHOLD = 600; // px/s to commit regardless of position
   const EDGE_WIDTH = 28; // px from left edge to trigger edge-swipe mode
@@ -4859,11 +4860,11 @@ const NG_DEMOS = {
       const dt = Math.min((now - lastTime) / 1000, 0.033);
       lastTime = now;
 
-      simX.step(dt, SPRING_K, SPRING_D);
-      simY.step(dt, SPRING_K, SPRING_D);
-      simW.step(dt, SPRING_K, SPRING_D);
-      simH.step(dt, SPRING_K, SPRING_D);
-      simR.step(dt, SPRING_K, SPRING_D);
+      simX.step(dt, DISMISS_K, DISMISS_D);
+      simY.step(dt, DISMISS_K, DISMISS_D);
+      simW.step(dt, DISMISS_K, DISMISS_D);
+      simH.step(dt, DISMISS_K, DISMISS_D);
+      simR.step(dt, DISMISS_K, DISMISS_D);
       simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
 
       const scale = simW.x / phone.clientWidth;
@@ -4924,11 +4925,11 @@ const NG_DEMOS = {
       const dt = Math.min((now - lastTime) / 1000, 0.033);
       lastTime = now;
 
-      simX.step(dt, SPRING_K, SPRING_D);
-      simY.step(dt, SPRING_K, SPRING_D);
-      simW.step(dt, SPRING_K, SPRING_D);
-      simH.step(dt, SPRING_K, SPRING_D);
-      simR.step(dt, SPRING_K, SPRING_D);
+      simX.step(dt, DISMISS_K, DISMISS_D);
+      simY.step(dt, DISMISS_K, DISMISS_D);
+      simW.step(dt, DISMISS_K, DISMISS_D);
+      simH.step(dt, DISMISS_K, DISMISS_D);
+      simR.step(dt, DISMISS_K, DISMISS_D);
 
       const scale = simW.x / phone.clientWidth;
       panel.style.left         = simX.x + 'px';
@@ -4994,9 +4995,9 @@ const NG_DEMOS = {
     //                     negative = opposite direction (immediately rubber-bands)
     function applyRubberBandSigned(raw, max) {
       if (raw >= 0) {
-        // dismiss direction: free until threshold, then rubber-band
+        // dismiss direction: free until threshold, then gentle rubber-band
         if (raw <= RUBBER_BAND_START) return raw;
-        return RUBBER_BAND_START + rubberBand(raw - RUBBER_BAND_START, max * 0.4);
+        return RUBBER_BAND_START + rubberBand(raw - RUBBER_BAND_START, max * 0.7);
       } else {
         // opposite direction: immediate rubber-band resistance
         return -rubberBand(-raw, max * 0.25);
