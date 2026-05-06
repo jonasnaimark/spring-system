@@ -1791,7 +1791,7 @@
 
     .phone-frame { cursor: none; }
     #accDemoContainer .phone-frame { cursor: default; }
-    #ngPhone .sk-card-img { cursor: pointer; }
+    #ngPhone .sk-carousel-card { cursor: pointer; }
     #ngExpandPanel { cursor: grab; user-select: none; }
     #ngExpandPanel:active { cursor: grabbing; }
 
@@ -1872,34 +1872,7 @@
       <svg id="tpIconPause" width="13" height="13" viewBox="0 0 12 12" fill="currentColor" style="display:none"><rect x="2" y="2" width="3" height="8" rx="1"/><rect x="7" y="2" width="3" height="8" rx="1"/></svg>
     </button>
     <div class="phone-frame" id="tpPhone">
-      <div class="phone-content" id="tpPhoneContent">
-        <div class="sk-search"></div>
-        <div class="sk-cats">
-          <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-          <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-          <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-          <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-        </div>
-        <div class="sk-divider"></div>
-        <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
-        <div class="sk-carousel">
-          <div class="sk-carousel-card tp-zoom-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-          <div class="sk-carousel-card tp-zoom-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-          <div class="sk-carousel-card tp-zoom-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-        </div>
-        <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
-        <div class="sk-carousel">
-          <div class="sk-carousel-card tp-zoom-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-          <div class="sk-carousel-card tp-zoom-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-          <div class="sk-carousel-card tp-zoom-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-        </div>
-        <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
-        <div class="sk-carousel">
-          <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-          <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-          <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-        </div>
-      </div>
+      <div class="phone-content" id="tpPhoneContent"></div>
       <!-- Scrim -->
       <div id="tpExpandScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.32);opacity:0;pointer-events:none;z-index:11;"></div>
       <!-- Flying panel -->
@@ -2911,6 +2884,34 @@
   <div class="sk-sub"></div>
 </template>
 
+<template id="tpl-list-screen-carousels">
+  <div class="sk-search"></div>
+  <div class="sk-cats">
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+  </div>
+  <div class="sk-divider"></div>
+  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+  <div class="sk-carousel">
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+  </div>
+  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+  <div class="sk-carousel">
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+  </div>
+  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+  <div class="sk-carousel">
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+  </div>
+</template>
 
 <template id="tpl-modal-card">
   <div class="modal-line"></div>
@@ -3004,6 +3005,12 @@ function stampTemplate(templateId, targetEl) {
   stampTemplate('tpl-detail', document.getElementById('accDest'));
   stampTemplate('tpl-detail', document.getElementById('accRmDest'));
   stampTemplate('tpl-detail', document.getElementById('ngDetailInner'));
+
+  // tpl-list-screen-carousels targets
+  stampTemplate('tpl-list-screen-carousels', document.getElementById('tpPhoneContent'));
+  stampTemplate('tpl-list-screen-carousels', document.getElementById('ngPhoneContent'));
+  // Mark first 6 cards in tpPhoneContent as tp-zoom-card (rows 1+2)
+  Array.from(document.querySelectorAll('#tpPhoneContent .sk-carousel-card')).slice(0, 6).forEach(c => c.classList.add('tp-zoom-card'));
 
   // tpl-modal-card targets
   stampTemplate('tpl-modal-card', document.getElementById('demoModal'));
@@ -4741,12 +4748,12 @@ const NG_DEMOS = {
     const panel     = document.getElementById('ngExpandPanel');
     const phoneRect = phone.getBoundingClientRect();
     const cardRect  = card.getBoundingClientRect();
-    const imgEl     = card.querySelector('.sk-carousel-img') || null;
-    const imgRect   = imgEl ? imgEl.getBoundingClientRect() : cardRect;
+    const imgEl   = card.querySelector('.sk-carousel-img') || null;
+    const imgRect = imgEl ? imgEl.getBoundingClientRect() : cardRect;
     const fromX = cardRect.left - phoneRect.left - phone.clientLeft;
     const fromY = cardRect.top  - phoneRect.top  - phone.clientTop;
     const fromW = cardRect.width;
-    const fromH = cardRect.height; // use full card height for sk-card-img
+    const fromH = imgRect.height;
     const fromR = 10;
     const toX = 0, toY = 0, toW = phone.clientWidth, toH = phone.clientHeight, toR = 40;
 
@@ -5037,11 +5044,11 @@ const NG_DEMOS = {
   panel.addEventListener('pointercancel', onGestureEnd);
 
   // ── Card click to expand ───────────────────────────────────────
-  // Use sk-card-img blocks as tap targets (from tpl-list-screen)
+  // Click any carousel card to expand
   document.getElementById('ngPhone').addEventListener('click', (e) => {
     if (ngExpandState) return;
-    const card = e.target.closest('.sk-card-img');
-    if (!card) return;
+    const card = e.target.closest('.sk-carousel-card');
+    if (!card || !document.getElementById('ngPhoneContent').contains(card)) return;
     e.stopPropagation();
     ngExpandCard(card);
   });
