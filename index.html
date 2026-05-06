@@ -1803,9 +1803,8 @@
 
     .phone-frame { cursor: none; }
     #accDemoContainer .phone-frame { cursor: default; }
-    #ngPhone .sk-carousel-card { cursor: pointer; }
-    #ngExpandPanel { cursor: grab; user-select: none; }
-    #ngExpandPanel:active { cursor: grabbing; }
+    #ngDemoContainer .phone-frame { cursor: none; }
+    #ngExpandPanel { cursor: none; user-select: none; }
 
     #touchDot {
       position: fixed;
@@ -4718,7 +4717,7 @@ const NG_DEMOS = {
 // ── Zoom dismiss gesture demo ─────────────────────────────────────
 (function() {
   const SPRING_K = 500, SPRING_D = calcDamping(500, 1.0);          // smooth — used for open
-  const DISMISS_K = 300, DISMISS_D = calcDamping(300, 0.7); // default medium-bounce — used for dismiss
+  const DISMISS_K = 150, DISMISS_D = calcDamping(150, 0.7); // slow.medium-bounce — used for dismiss
   const DISMISS_POS_THRESHOLD = 80;  // px of rubber-banded travel to commit
   const DISMISS_VEL_THRESHOLD = 600; // px/s to commit regardless of position
   const EDGE_WIDTH = 28; // px from left edge to trigger edge-swipe mode
