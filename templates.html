@@ -778,6 +778,7 @@
   listScreenPhone.className = 'phone-frame';
   const listScreenContent = document.createElement('div');
   listScreenContent.className = 'phone-content';
+  listScreenContent.style.paddingTop = '16px';
   listScreenContent.appendChild(stamp('tpl-list-screen'));
   listScreenPhone.appendChild(listScreenContent);
   grid.appendChild(makeItem('List Screen', 'tpl-list-screen', listScreenPhone));
