@@ -1865,7 +1865,8 @@
   <div class="section-content">
   <div style="background:var(--c-demo-bg); border-radius:24px; display:flex; align-items:center; justify-content:center; padding:32px; position:relative; min-height:680px;" id="tpDemoContainer">
     <button class="play-circle" id="tpPlayBtn">
-      <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
+      <svg id="tpIconPlay" width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
+      <svg id="tpIconPause" width="13" height="13" viewBox="0 0 12 12" fill="currentColor" style="display:none"><rect x="2" y="2" width="3" height="8" rx="1"/><rect x="7" y="2" width="3" height="8" rx="1"/></svg>
     </button>
     <div class="phone-frame" id="tpPhone">
       <div class="phone-content" id="tpPhoneContent">
@@ -3849,6 +3850,8 @@ document.getElementById('demoStage').addEventListener('click', (e) => {
 document.querySelectorAll('.tp-zoom-card').forEach(card => {
   card.addEventListener('click', (e) => {
     e.stopPropagation();
+    // If auto-playing, pause first then handle click
+    if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
     if (tpExpandState) { tpCollapseCard(); return; }
     tpExpandCardIdx = [...document.querySelectorAll('.tp-zoom-card')].indexOf(card);
     tpExpandCard(card);
@@ -4512,9 +4515,13 @@ function switchTpDemo(key) {
 document.querySelectorAll('.tp-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const key = tab.dataset.tp;
-    if (tab.classList.contains('active')) { TP_DEMOS[key]?.play(); return; }
     switchTpDemo(key);
     history.replaceState(null, '', `#tp-${key}`);
+    // Restart auto-play loop for new demo if currently playing
+    if (window._tpAutoPlay?.isPlaying()) {
+      window._tpAutoPlay.stop();
+      window._tpAutoPlay.start();
+    }
   });
 });
 
@@ -4526,19 +4533,113 @@ if (hashTp) {
   if (defaultTpKey) switchTpDemo(defaultTpKey);
 }
 
-document.getElementById('tpPlayBtn').addEventListener('click', () => {
-  const key = document.querySelector('.tp-tab.active')?.dataset.tp;
-  TP_DEMOS[key]?.play();
-});
-document.getElementById('tpPhone').addEventListener('click', (e) => {
-  const key = document.querySelector('.tp-tab.active')?.dataset.tp;
-  if (key === 'zoom') return; // zoom uses card/panel click handlers only
-  TP_DEMOS[key]?.play();
-});
-document.getElementById('tpDesktopWrap').addEventListener('click', () => {
-  const key = document.querySelector('.tp-tab.active')?.dataset.tp;
-  TP_DEMOS[key]?.play();
-});
+// ── Transition Patterns auto-play ────────────────────────────────
+(function() {
+  let tpPlaying   = false;
+  let tpLoopTimer = null;
+
+  function tpActiveKey() {
+    return document.querySelector('.tp-tab.active')?.dataset.tp;
+  }
+
+  function cancelLoop() {
+    if (tpLoopTimer) { clearTimeout(tpLoopTimer); tpLoopTimer = null; }
+  }
+
+  function scheduleNext(ms, fn) {
+    cancelLoop();
+    tpLoopTimer = setTimeout(fn, ms);
+  }
+
+  // Run one full enter→exit cycle for the current demo, then call onCycle
+  function runCycle(key, onCycle) {
+    if (!tpPlaying) return;
+    if (key === 'zoom') {
+      // expand current card, hold, collapse, hold, then advance
+      const cards = document.querySelectorAll('.tp-zoom-card');
+      tpExpandCard(cards[tpExpandCardIdx]);
+      scheduleNext(900, () => {
+        if (!tpPlaying) return;
+        tpCollapseCard(() => {
+          tpExpandCardIdx = (tpExpandCardIdx + 1) % cards.length;
+          scheduleNext(500, onCycle);
+        });
+      });
+    } else if (key === 'scale-in') {
+      // scale-in self-sequences (~3.3s total): just fire play and wait
+      TP_DEMOS['scale-in'].play();
+      scheduleNext(3600, onCycle);
+    } else if (key === 'slide-up-fade') {
+      // desktop modal: enter hold exit hold
+      TP_DEMOS[key].play(); // enter
+      scheduleNext(900, () => {
+        if (!tpPlaying) return;
+        TP_DEMOS[key].play(); // exit
+        scheduleNext(700, onCycle);
+      });
+    } else {
+      // standard enter/exit toggle demos
+      TP_DEMOS[key]?.play(); // enter
+      scheduleNext(800, () => {
+        if (!tpPlaying) return;
+        TP_DEMOS[key]?.play(); // exit
+        scheduleNext(600, onCycle);
+      });
+    }
+  }
+
+  function loop() {
+    const key = tpActiveKey();
+    if (!key || !tpPlaying) return;
+    runCycle(key, loop);
+  }
+
+  function startTp() {
+    tpPlaying = true;
+    document.getElementById('tpIconPlay').style.display  = 'none';
+    document.getElementById('tpIconPause').style.display = '';
+    const key = tpActiveKey();
+    TP_DEMOS[key]?.reset?.();
+    scheduleNext(300, loop);
+  }
+
+  function stopTp() {
+    tpPlaying = false;
+    cancelLoop();
+    document.getElementById('tpIconPlay').style.display  = '';
+    document.getElementById('tpIconPause').style.display = 'none';
+  }
+
+  // Expose so tab switching can restart
+  window._tpAutoPlay = { start: startTp, stop: stopTp, isPlaying: () => tpPlaying };
+
+  // Play button toggles
+  document.getElementById('tpPlayBtn').addEventListener('click', () => {
+    tpPlaying ? stopTp() : startTp();
+  });
+
+  // When paused: phone click plays current demo; zoom card clicks work via existing handlers
+  document.getElementById('tpPhone').addEventListener('click', (e) => {
+    if (tpPlaying) return;
+    const key = tpActiveKey();
+    if (key === 'zoom') return; // zoom card/panel handlers own this
+    TP_DEMOS[key]?.play();
+  });
+  document.getElementById('tpDesktopWrap').addEventListener('click', () => {
+    if (tpPlaying) return;
+    const key = tpActiveKey();
+    TP_DEMOS[key]?.play();
+  });
+
+  // Auto-start when section scrolls into view
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !tpPlaying) startTp();
+      if (!e.isIntersecting && tpPlaying) stopTp();
+    });
+  }, { threshold: 0.3 });
+  observer.observe(document.getElementById('tpDemoContainer'));
+})();
 
 // ── Navigation Gestures registry ──────────────────────────────────
 // Each entry: { description (optional), panel (HTML for left text area), play() }
