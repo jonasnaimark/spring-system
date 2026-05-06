@@ -4379,24 +4379,37 @@ const TP_DEMOS = {
 
   'scale-in': {
     description: 'Used to introduce floating elements like tooltips, modals and toasts. The scale origin is center by default but can be linked to another UI element.',
-    reset() {
-      tpDemoState = 'out';
+    _seqTimer: null,
+    _cancelSeq() {
+      if (this._seqTimer) { clearTimeout(this._seqTimer); this._seqTimer = null; }
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
+    },
+    reset() {
+      this._cancelSeq();
+      tpDemoState = 'out';
       const bd = document.getElementById('tpModalBackdrop');
       const m  = document.getElementById('tpModal');
       const tt = document.getElementById('tpTooltip');
       bd.style.opacity = '0'; bd.style.pointerEvents = 'none';
       m.style.opacity  = '0'; m.style.transform = 'scale(0.75)'; m.style.pointerEvents = 'none';
-      tt.style.opacity = '0'; tt.style.transform = 'translateX(-50%) scale(0.6)';
+      tt.style.opacity = '0'; tt.style.transform = 'translateX(-50%) scale(0.75)';
     },
     play() {
+      this._cancelSeq();
+      // also snap elements to hidden so sequence always starts clean
       const bd  = document.getElementById('tpModalBackdrop');
       const m   = document.getElementById('tpModal');
       const tt  = document.getElementById('tpTooltip');
-      const spring = { stiffness: 600, damping: calcDamping(600, 0.7) };
-      let seqTimer = null;
+      bd.style.opacity = '0';
+      m.style.opacity  = '0'; m.style.transform = 'scale(0.75)';
+      tt.style.opacity = '0'; tt.style.transform = 'translateX(-50%) scale(0.75)';
 
-      function animateModal(entering, onDone) {
+      const spring = { stiffness: 600, damping: calcDamping(600, 0.7) };
+      const self = this;
+
+      const after = (ms, fn) => { self._seqTimer = setTimeout(fn, ms); };
+
+      const animateModal = (entering, onDone) => {
         tpSpringAnimate((t) => {
           const pos      = springPos(t, spring.stiffness, spring.damping);
           const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
@@ -4408,11 +4421,10 @@ const TP_DEMOS = {
             bd.style.opacity  = String(scrimPos * 0.4);
           }
         }, spring);
-        // call onDone after spring settles (~700ms for this spring)
-        seqTimer = setTimeout(onDone, 700);
-      }
+        after(700, onDone);
+      };
 
-      function animateTooltip(entering, onDone) {
+      const animateTooltip = (entering, onDone) => {
         const startT = performance.now();
         const { stiffness, damping } = spring;
         function tick(now) {
@@ -4435,21 +4447,21 @@ const TP_DEMOS = {
         }
         if (tpAnim) cancelAnimationFrame(tpAnim);
         tpAnim = requestAnimationFrame(tick);
-      }
+      };
 
-      // sequence: modal enter → modal exit → tooltip enter → tooltip exit
+      // modal enter → pause → modal exit → pause → tooltip enter → pause → tooltip exit
       animateModal(true, () => {
-        seqTimer = setTimeout(() => {
+        after(600, () => {
           animateModal(false, () => {
-            seqTimer = setTimeout(() => {
+            after(400, () => {
               animateTooltip(true, () => {
-                seqTimer = setTimeout(() => {
+                after(700, () => {
                   animateTooltip(false, null);
-                }, 700);
+                });
               });
-            }, 400);
+            });
           });
-        }, 600);
+        });
       });
     },
   },
