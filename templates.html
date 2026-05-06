@@ -360,6 +360,35 @@
     .ls-thumb { width: 44px; height: 44px; border-radius: 7px; background: var(--sk); flex-shrink: 0; }
     .ls-thumb-lines { flex: 1; display: flex; flex-direction: column; gap: 5px; justify-content: center; }
 
+    /* ── Checkout screen ── */
+    .co-screen { position: absolute; inset: 0; background: var(--c-surface-0); display: flex; flex-direction: column; overflow: hidden; }
+    .co-titlebar { display: flex; align-items: center; justify-content: center; padding: 14px 16px; flex-shrink: 0; position: relative; }
+    .co-title { height: 10px; width: 52%; background: var(--sk); border-radius: 5px; }
+    .co-close { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; border-radius: 50%; background: var(--sk); }
+    .co-body { flex: 1; overflow: hidden; padding: 0 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+    .co-card { border: 1px solid var(--c-border-subtle); border-radius: 14px; overflow: hidden; }
+    .co-listing { display: flex; gap: 10px; padding: 12px; }
+    .co-listing-img { width: 56px; height: 52px; border-radius: 8px; background: var(--sk); flex-shrink: 0; }
+    .co-listing-lines { flex: 1; display: flex; flex-direction: column; gap: 5px; justify-content: center; }
+    .co-line { height: 8px; border-radius: 4px; background: var(--sk); flex-shrink: 0; }
+    .co-line.title { height: 10px; border-radius: 5px; }
+    .co-line.short { width: 45%; }
+    .co-line.med   { width: 65%; }
+    .co-line.full  { width: 90%; }
+    .co-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; gap: 8px; }
+    .co-row-lines { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+    .co-btn { height: 26px; width: 52px; border-radius: 8px; background: var(--sk); flex-shrink: 0; }
+    .co-divider { height: 1px; background: var(--c-border-subtle); margin: 0 12px; }
+    .co-section-title { height: 10px; width: 55%; background: var(--sk); border-radius: 5px; flex-shrink: 0; }
+    .co-option-row { display: flex; align-items: center; padding: 12px; gap: 10px; }
+    .co-option-lines { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+    .co-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--sk); flex-shrink: 0; }
+    .co-radio.selected { background: var(--sk); }
+    .co-payment-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 12px; }
+    .co-payment-lines { display: flex; gap: 6px; align-items: center; }
+    .co-card-chip { width: 28px; height: 9px; border-radius: 3px; background: var(--sk); }
+    .co-chevron { width: 7px; height: 12px; border-right: 2px solid var(--sk); border-top: 2px solid var(--sk); transform: rotate(45deg); border-radius: 1px; }
+
     /* ── Desktop modal ── */
     .desktop-modal-standalone {
       width: 280px;
@@ -551,6 +580,91 @@
     <div class="push-detail-row" style="width:78%;"></div>
     <div class="push-detail-row" style="width:85%;"></div>
     <div class="push-detail-row short"></div>
+  </div>
+</template>
+
+<template id="tpl-checkout">
+  <div class="co-titlebar">
+    <div class="co-title"></div>
+    <div class="co-close"></div>
+  </div>
+  <div class="co-body">
+    <!-- Listing summary card -->
+    <div class="co-card">
+      <div class="co-listing">
+        <div class="co-listing-img"></div>
+        <div class="co-listing-lines">
+          <div class="co-line title full"></div>
+          <div class="co-line title med"></div>
+          <div class="co-line short"></div>
+        </div>
+      </div>
+      <div class="co-divider"></div>
+      <!-- Dates row -->
+      <div class="co-row">
+        <div class="co-row-lines">
+          <div class="co-line title" style="width:38%;"></div>
+          <div class="co-line short"></div>
+        </div>
+        <div class="co-btn"></div>
+      </div>
+      <div class="co-divider"></div>
+      <!-- Guests row -->
+      <div class="co-row">
+        <div class="co-row-lines">
+          <div class="co-line title" style="width:32%;"></div>
+          <div class="co-line" style="width:28%;"></div>
+        </div>
+        <div class="co-btn"></div>
+      </div>
+      <div class="co-divider"></div>
+      <!-- Price row -->
+      <div class="co-row">
+        <div class="co-row-lines">
+          <div class="co-line title" style="width:42%;"></div>
+          <div class="co-line med"></div>
+        </div>
+        <div class="co-btn"></div>
+      </div>
+      <div class="co-divider"></div>
+      <!-- Cancellation -->
+      <div class="co-row">
+        <div class="co-row-lines">
+          <div class="co-line title" style="width:55%;"></div>
+          <div class="co-line full"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Choose when to pay -->
+    <div class="co-section-title"></div>
+    <div class="co-card">
+      <div class="co-option-row">
+        <div class="co-option-lines">
+          <div class="co-line title" style="width:60%;"></div>
+        </div>
+        <div class="co-radio selected"></div>
+      </div>
+      <div class="co-divider"></div>
+      <div class="co-option-row">
+        <div class="co-option-lines">
+          <div class="co-line title" style="width:72%;"></div>
+          <div class="co-line med"></div>
+          <div class="co-line short"></div>
+        </div>
+        <div class="co-radio"></div>
+      </div>
+    </div>
+    <!-- Payment method -->
+    <div class="co-section-title" style="width:48%;"></div>
+    <div class="co-card">
+      <div class="co-payment-row">
+        <div class="co-payment-lines">
+          <div class="co-card-chip"></div>
+          <div class="co-line" style="width:32px;"></div>
+        </div>
+        <div class="co-chevron"></div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -773,6 +887,15 @@
   detailInner.appendChild(stamp('tpl-detail'));
   detailPhone.appendChild(detailInner);
   grid.appendChild(makeItem('Detail Screen', 'tpl-detail', detailPhone));
+
+  // ── tpl-checkout ──
+  const checkoutPhone = document.createElement('div');
+  checkoutPhone.className = 'phone-frame';
+  const checkoutScreen = document.createElement('div');
+  checkoutScreen.className = 'co-screen';
+  checkoutScreen.appendChild(stamp('tpl-checkout'));
+  checkoutPhone.appendChild(checkoutScreen);
+  grid.appendChild(makeItem('Checkout Screen', 'tpl-checkout', checkoutPhone));
 
   // ── tpl-modal-card ──
   const modalCard = document.createElement('div');
