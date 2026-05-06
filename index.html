@@ -2447,7 +2447,7 @@
       <div class="demo-view" id="view-tooltip" style="display:none; align-items:center; justify-content:center;">
         <div class="phone-frame">
           <div class="phone-content" style="position:relative;">
-            <div class="demo-tooltip" id="demoTooltip" style="top:68px; left:50%;">
+            <div class="demo-tooltip" id="demoTooltip" style="top:98px; left:calc(50% + 20px);">
               <div class="tooltip-caret"></div>
               <div class="tooltip-bubble">
                 <div class="tooltip-tl"></div>
@@ -4383,11 +4383,13 @@ const TP_DEMOS = {
         const pos      = springPos(t, spring.stiffness, spring.damping);
         const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
         if (!isIn) {
-          m.style.transform = `scale(${0.75 + pos * 0.25})`; m.style.opacity = String(pos);
-          bd.style.opacity  = String(scrimPos * 0.4);
-        } else {
+          // enter: 0→1
           m.style.transform = `scale(${0.75 + (1 - pos) * 0.25})`; m.style.opacity = String(1 - pos);
           bd.style.opacity  = String((1 - scrimPos) * 0.4);
+        } else {
+          // exit: 1→0
+          m.style.transform = `scale(${0.75 + pos * 0.25})`; m.style.opacity = String(pos);
+          bd.style.opacity  = String(scrimPos * 0.4);
         }
       }, spring);
     },
