@@ -352,7 +352,7 @@
     .ls-line { height: 8px; width: 100%; background: var(--sk); border-radius: 4px; margin-bottom: 7px; }
     .ls-line.short  { width: 55%; }
     .ls-line.med    { width: 72%; }
-    .ls-line.thin   { height: 6px; }
+    .ls-line.thin   { height: 7px; }
     .ls-section-gap { height: 10px; }
     .ls-tag-row { display: flex; gap: 5px; margin-bottom: 8px; }
     .ls-tag { height: 18px; border-radius: 9px; background: var(--sk); }
@@ -598,6 +598,7 @@
 </template>
 
 <template id="tpl-list-screen">
+  <div style="height:20px;flex-shrink:0;"></div>
   <div class="ls-line med"></div>
   <div class="ls-line short thin"></div>
   <div class="ls-section-gap"></div>
@@ -632,6 +633,27 @@
     <div class="ls-thumb-lines">
       <div class="ls-line" style="margin-bottom:0;"></div>
       <div class="ls-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="ls-img-row">
+    <div class="ls-thumb"></div>
+    <div class="ls-thumb-lines">
+      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line short thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="ls-img-row">
+    <div class="ls-thumb"></div>
+    <div class="ls-thumb-lines">
+      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="ls-img-row">
+    <div class="ls-thumb"></div>
+    <div class="ls-thumb-lines">
+      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line short thin" style="margin-bottom:0;"></div>
     </div>
   </div>
 </template>
