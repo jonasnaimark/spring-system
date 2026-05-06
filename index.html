@@ -5031,7 +5031,11 @@ const NG_DEMOS = {
       else if (!isEdgeSwipe && absX > 8) ngGesture.intent = 'cancelled';
       else if (isEdgeSwipe && absX > 8) ngGesture.intent = 'dismiss';
     }
-    if (ngGesture.intent === 'cancelled') return;
+    if (ngGesture.intent === 'cancelled') {
+      ngRevertToExpanded(0, 0);
+      ngGesture = null;
+      return;
+    }
 
     const dragX = isEdgeSwipe || ngGesture.intent === 'dismiss'
       ? applyRubberBandSigned(rawDX, phone.clientWidth) : 0;
