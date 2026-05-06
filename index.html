@@ -1110,6 +1110,16 @@
       overflow: hidden;
     }
 
+    /* Scale dest screen content to 278px reference density, matching phone-content. */
+    .push-dest-inner {
+      transform-origin: top left;
+      transform: scale(var(--phone-scale, 1));
+      width: calc(100% / var(--phone-scale, 1));
+      height: calc(100% / var(--phone-scale, 1));
+      display: flex;
+      flex-direction: column;
+    }
+
     [data-theme="dark"] .push-scrim { background: rgba(0,0,0,0.55); }
     [data-theme="dark"] .modal-backdrop { --scrim-modal: 0.92; }
     [data-theme="dark"] .modal-card { outline: 1px solid var(--c-border-subtle); }
@@ -1902,7 +1912,7 @@
           <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
         </div>
         <div class="push-scrim" id="tpPushScrim" style="opacity:0;"></div>
-        <div class="push-screen" id="tpPushDest" style="transform:translateX(100%);"></div>
+        <div class="push-screen" id="tpPushDest" style="transform:translateX(100%);"><div class="push-dest-inner"></div></div>
       </div>
 
       <!-- slide-in-fade: tab screens -->
@@ -2238,7 +2248,7 @@
           <!-- Scrim sits above source (incl. bottom nav) but below dest -->
           <div class="push-scrim" id="pushScrim"></div>
           <!-- Destination screen (detail) -->
-          <div class="push-screen" id="pushDest" style="transform: translateX(100%)"></div>
+          <div class="push-screen" id="pushDest" style="transform: translateX(100%)"><div class="push-dest-inner"></div></div>
         </div>
       </div>
 
@@ -2775,7 +2785,7 @@
                 <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
               </div>
               <div class="push-scrim" id="accScrim" style="opacity:0;"></div>
-              <div class="push-screen" id="accDest" style="transform:translateX(100%);"></div>
+              <div class="push-screen" id="accDest" style="transform:translateX(100%);"><div class="push-dest-inner"></div></div>
             </div>
             <div class="acc-phone-label">Default motion</div>
           </div>
@@ -2786,7 +2796,7 @@
                 <div class="phone-content"></div>
                 <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
               </div>
-              <div class="push-screen" id="accRmDest" style="position:absolute;inset:0;opacity:0;"></div>
+              <div class="push-screen" id="accRmDest" style="position:absolute;inset:0;opacity:0;"><div class="push-dest-inner"></div></div>
             </div>
             <div class="acc-phone-label">Reduced motion</div>
           </div>
@@ -3020,11 +3030,11 @@ function stampTemplate(templateId, targetEl) {
     if (el) stampTemplate('tpl-home-screen', el);
   });
 
-  // tpl-detail targets
-  stampTemplate('tpl-detail', document.getElementById('pushDest'));
-  stampTemplate('tpl-detail', document.getElementById('tpPushDest'));
-  stampTemplate('tpl-detail', document.getElementById('accDest'));
-  stampTemplate('tpl-detail', document.getElementById('accRmDest'));
+  // tpl-detail targets (stamp into .push-dest-inner so push-screen translateX stays correct)
+  stampTemplate('tpl-detail', document.querySelector('#pushDest .push-dest-inner'));
+  stampTemplate('tpl-detail', document.querySelector('#tpPushDest .push-dest-inner'));
+  stampTemplate('tpl-detail', document.querySelector('#accDest .push-dest-inner'));
+  stampTemplate('tpl-detail', document.querySelector('#accRmDest .push-dest-inner'));
   stampTemplate('tpl-detail', document.getElementById('ngDetailInner'));
 
   // tpl-home-screen-carousels targets
