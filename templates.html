@@ -598,7 +598,6 @@
 </template>
 
 <template id="tpl-list-screen">
-  <div style="height:20px;flex-shrink:0;"></div>
   <div class="ls-line" style="height:11px;width:68%;border-radius:6px;margin-bottom:5px;"></div>
   <div class="ls-line" style="height:8px;width:45%;border-radius:4px;"></div>
   <div class="ls-section-gap"></div>
@@ -781,10 +780,6 @@
   listScreenContent.className = 'phone-content';
   listScreenContent.appendChild(stamp('tpl-list-screen'));
   listScreenPhone.appendChild(listScreenContent);
-  const listScreenNav = document.createElement('div');
-  listScreenNav.className = 'sk-bottom-nav';
-  listScreenNav.innerHTML = '<div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div>';
-  listScreenPhone.appendChild(listScreenNav);
   grid.appendChild(makeItem('List Screen', 'tpl-list-screen', listScreenPhone));
 
   // ── tpl-sheet ──
