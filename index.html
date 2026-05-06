@@ -2072,7 +2072,7 @@
         </div>
       </div>
       <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:16px;">
-      <div style="background:var(--c-demo-bg); border-radius:24px; flex:1; display:flex; align-items:center; justify-content:center; padding:32px; position:relative; overflow:hidden;" id="ngDemoContainer">
+      <div style="background:var(--c-demo-bg); border-radius:24px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px; gap:20px; position:relative; overflow:hidden;" id="ngDemoContainer">
         <button class="play-circle" id="ngPlayBtn">
           <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
         </button>
@@ -2094,8 +2094,8 @@
             </div>
           </div>
         </div>
+        <p style="font-size:13px; color:var(--c-text-tertiary); text-align:center; margin:0; flex-shrink:0;">Try pulling down or from the left edge to dismiss</p>
       </div>
-      <p style="font-size:13px; color:var(--c-text-tertiary); text-align:center; margin:0;">Try pulling down or from the left edge to dismiss</p>
       </div>
     </div>
   </div>
@@ -5008,7 +5008,7 @@ const NG_DEMOS = {
       }
     }
 
-    const dragX = isEdgeSwipe ? applyRubberBandSigned(rawDX, phone.clientWidth)  : applyRubberBandSigned(rawDX, phone.clientWidth * 0.15);
+    const dragX = isEdgeSwipe ? applyRubberBandSigned(rawDX, phone.clientWidth) : 0;
     const dragY = applyRubberBandSigned(rawDY, phone.clientHeight);
 
     // Progress: max of Y (always active) and X (only if edge swipe)
@@ -5016,16 +5016,20 @@ const NG_DEMOS = {
     const progressX = isEdgeSwipe ? Math.min(Math.max(0, rawDX) / phone.clientWidth, 1) : 0;
     const progress  = Math.max(progressY, progressX);
 
-    const panelX = toX + dragX;
-    const panelY = toY + dragY;
-
     const scaleDown = 1 - progress * 0.45;
+    const scaledW = toW * scaleDown;
+    const scaledH = toH * scaleDown;
+
+    // Edge swipe: keep vertically centered as it scales; pull-down: top follows finger
+    const panelX = toX + dragX;
+    const panelY = isEdgeSwipe ? toY + (toH - scaledH) / 2 : toY + dragY;
+
     const cornerR   = toR + (40 - toR) * progress;
 
     panel.style.left         = panelX + 'px';
     panel.style.top          = panelY + 'px';
-    panel.style.width        = (toW * scaleDown) + 'px';
-    panel.style.height       = (toH * scaleDown) + 'px';
+    panel.style.width        = scaledW + 'px';
+    panel.style.height       = scaledH + 'px';
     panel.style.borderRadius = cornerR + 'px';
     panel.style.transform    = '';
 
