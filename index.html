@@ -2094,8 +2094,8 @@
             </div>
           </div>
         </div>
+        <p style="font-size:13px; color:var(--c-text-tertiary); text-align:center; margin:16px 0 0;">Try pulling down or from the left edge to dismiss</p>
       </div>
-      <p style="font-size:13px; color:var(--c-text-tertiary); text-align:center; margin:0;">Try pulling down or from the left edge to dismiss</p>
       </div>
     </div>
   </div>
@@ -4716,11 +4716,12 @@ const NG_DEMOS = {
 
 // ── Zoom dismiss gesture demo ─────────────────────────────────────
 (function() {
-  const SPRING_K = 500, SPRING_D = calcDamping(500, 1.0);          // smooth — used for open
-  const DISMISS_K = 150, DISMISS_D = calcDamping(150, 0.7); // slow.medium-bounce — used for dismiss
+  const SPRING_K = 500, SPRING_D = calcDamping(500, 1.0);        // smooth — used for open
+  const DISMISS_K = 100, DISMISS_D = calcDamping(100, 0.8);      // slow.small-bounce — used for dismiss
   const DISMISS_POS_THRESHOLD = 80;  // px of rubber-banded travel to commit
   const DISMISS_VEL_THRESHOLD = 600; // px/s to commit regardless of position
   const EDGE_WIDTH = 28; // px from left edge to trigger edge-swipe mode
+  const DETAIL_REF_W = 278; // reference content width (matches TP phone inner)
 
   let ngExpandState = null; // { fromX, fromY, fromW, fromH, fromR, card, imgEl }
   let ngExpandAnim  = null;
@@ -4781,7 +4782,7 @@ const NG_DEMOS = {
     panel.style.visibility = 'hidden'; panel.style.display = 'block';
     panel.style.transform = ''; panel.style.transformOrigin = '';
     const detailInner = document.getElementById('ngDetailInner');
-    if (detailInner) detailInner.style.width = toW + 'px';
+    if (detailInner) detailInner.style.width = DETAIL_REF_W + 'px';
     ngExpandState = { fromX, fromY, fromW, fromH, fromR, toX, toY, toW, toH, toR, card, imgEl };
 
     const startT = performance.now();
@@ -4797,7 +4798,7 @@ const NG_DEMOS = {
       const posXW = springPos(t,                   SPRING_K, SPRING_D);
       const posYH = springPos(Math.max(0, t - DELAY), SPRING_K, SPRING_D);
       const curW = toW + (fromW - toW) * posXW;
-      const scale = curW / toW;
+      const scale = curW / DETAIL_REF_W;
       panel.style.visibility = '';
       panel.style.left         = (toX + (fromX - toX) * posXW) + 'px';
       panel.style.top          = (toY + (fromY - toY) * posYH) + 'px';
@@ -4816,7 +4817,7 @@ const NG_DEMOS = {
         panel.style.left = '0'; panel.style.top = '0';
         panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
         panel.style.borderRadius = toR + 'px'; panel.style.pointerEvents = 'auto';
-        if (detailInner) detailInner.style.transform = 'scale(1)';
+        if (detailInner) detailInner.style.transform = `scale(${toW / DETAIL_REF_W})`;
         detailLayer.style.opacity = '1'; cardLayer.style.opacity = '0';
         scrim.style.opacity = '0';
       }
@@ -4869,7 +4870,7 @@ const NG_DEMOS = {
       simR.step(dt, DISMISS_K, DISMISS_D);
       simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
 
-      const scale = simW.x / phone.clientWidth;
+      const scale = simW.x / DETAIL_REF_W;
       panel.style.left         = simX.x + 'px';
       panel.style.top          = simY.x + 'px';
       panel.style.width        = simW.x + 'px';
@@ -4888,7 +4889,7 @@ const NG_DEMOS = {
       } else {
         panel.style.display = 'none';
         panel.style.transform = '';
-        if (detailInner) detailInner.style.transform = 'scale(1)';
+        if (detailInner) detailInner.style.transform = `scale(${toW / DETAIL_REF_W})`;
         detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
         if (imgEl) imgEl.style.visibility = '';
         ngExpandState = null;
@@ -4933,7 +4934,7 @@ const NG_DEMOS = {
       simH.step(dt, DISMISS_K, DISMISS_D);
       simR.step(dt, DISMISS_K, DISMISS_D);
 
-      const scale = simW.x / phone.clientWidth;
+      const scale = simW.x / DETAIL_REF_W;
       panel.style.left         = simX.x + 'px';
       panel.style.top          = simY.x + 'px';
       panel.style.width        = simW.x + 'px';
@@ -4949,7 +4950,7 @@ const NG_DEMOS = {
         panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
         panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
         panel.style.borderRadius = toR + 'px';
-        if (detailInner) detailInner.style.transform = 'scale(1)';
+        if (detailInner) detailInner.style.transform = `scale(${toW / DETAIL_REF_W})`;
         scrim.style.opacity = '0';
       }
     }
@@ -5029,7 +5030,7 @@ const NG_DEMOS = {
     panel.style.transform    = '';
 
     const detailInner = document.getElementById('ngDetailInner');
-    if (detailInner) detailInner.style.transform = `scale(${scaleDown})`;
+    if (detailInner) detailInner.style.transform = `scale(${scaleDown * phone.clientWidth / DETAIL_REF_W})`;
 
     // Keep detail/card layers at their expand-settled state during drag — only fade on release
     document.getElementById('ngExpandDetailLayer').style.opacity = '1';
