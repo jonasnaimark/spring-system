@@ -4714,7 +4714,7 @@ const NG_DEMOS = {
 
 // ── Zoom dismiss gesture demo ─────────────────────────────────────
 (function() {
-  const SPRING_K = 500, SPRING_D = calcDamping(500, 1.0); // TP_SPRING equivalent
+  const SPRING_K = 600, SPRING_D = calcDamping(600, 0.7); // snappy medium-bounce
   const DISMISS_POS_THRESHOLD = 80;  // px of rubber-banded travel to commit
   const DISMISS_VEL_THRESHOLD = 600; // px/s to commit regardless of position
   const EDGE_WIDTH = 28; // px from left edge to trigger edge-swipe mode
@@ -5014,7 +5014,7 @@ const NG_DEMOS = {
     const panelX = toX + dragX;
     const panelY = toY + dragY;
 
-    const scaleDown = 1 - progress * 0.35;
+    const scaleDown = 1 - progress * 0.45;
     const cornerR   = toR + (40 - toR) * progress;
 
     panel.style.left         = panelX + 'px';
@@ -5032,7 +5032,7 @@ const NG_DEMOS = {
     document.getElementById('ngExpandCardLayer').style.opacity   = '0';
 
     const scrim = document.getElementById('ngExpandScrim');
-    scrim.style.opacity = (1 - progress).toFixed(3);
+    scrim.style.opacity = (1 - progress * 0.5).toFixed(3);
   });
 
   function onGestureEnd(e) {
