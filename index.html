@@ -4064,11 +4064,23 @@ function playSlowFade() {
     allItems[0]?.offsetHeight; // force reflow
 
     const domOrder = Array.from(sfUI.querySelectorAll('.dt-grid .dt-card, .dt-grid .dt-section-title'));
+    const SF_K = 300, SF_D = calcDamping(300, 1.0); // default.smooth
+    const OFFSET = 28;
     domOrder.forEach((el, i) => {
       const delay = i * 20;
-      el.style.transition = `opacity ${activeBezDuration}ms ${easing} ${delay}ms, transform ${activeBezDuration}ms ${BEZ_CURVES.enter} ${delay}ms`;
+      // opacity: CSS with selected curve
+      el.style.transition = `opacity ${activeBezDuration}ms ${easing} ${delay}ms`;
       el.style.opacity = '1';
-      el.style.transform = 'translateY(0px)';
+      // transform: JS spring
+      const startT = performance.now() + delay;
+      function animY(now) {
+        const t = Math.max(0, now - startT) / 1000;
+        const pos = springPos(t, SF_K, SF_D);
+        el.style.transform = `translateY(${OFFSET * pos}px)`;
+        if (!isSettled(t, SF_K, SF_D)) requestAnimationFrame(animY);
+        else el.style.transform = 'translateY(0px)';
+      }
+      requestAnimationFrame(animY);
     });
   }, 50);
 }
