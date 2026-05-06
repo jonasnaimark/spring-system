@@ -4568,14 +4568,14 @@ if (hashTp) {
     } else if (key === 'scale-in') {
       // scale-in self-sequences (~3.3s total): just fire play and wait
       TP_DEMOS['scale-in'].play();
-      scheduleNext(3600, onCycle);
+      scheduleNext(4100, onCycle);
     } else if (key === 'slide-up-fade') {
       // desktop modal: enter hold exit hold
       TP_DEMOS[key].play(); // enter
       scheduleNext(900, () => {
         if (!tpPlaying) return;
         TP_DEMOS[key].play(); // exit
-        scheduleNext(700, onCycle);
+        scheduleNext(1200, onCycle);
       });
     } else {
       // standard enter/exit toggle demos
@@ -4583,7 +4583,7 @@ if (hashTp) {
       scheduleNext(800, () => {
         if (!tpPlaying) return;
         TP_DEMOS[key]?.play(); // exit
-        scheduleNext(600, onCycle);
+        scheduleNext(1100, onCycle);
       });
     }
   }
