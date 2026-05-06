@@ -4921,6 +4921,8 @@ const NG_DEMOS = {
     const simW = new SpringSim(curW); simW.target = toW;
     const simH = new SpringSim(curH); simH.target = toH;
     const simR = new SpringSim(curR); simR.target = toR;
+    const curScrim = parseFloat(scrim.style.opacity) || 0;
+    const simScrim = new SpringSim(curScrim); simScrim.target = 0;
 
     let lastTime = null;
     function tick(now) {
@@ -4933,6 +4935,7 @@ const NG_DEMOS = {
       simW.step(dt, DISMISS_K, DISMISS_D);
       simH.step(dt, DISMISS_K, DISMISS_D);
       simR.step(dt, DISMISS_K, DISMISS_D);
+      simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
 
       const scale = simW.x / DETAIL_REF_W;
       panel.style.left         = simX.x + 'px';
@@ -4941,7 +4944,7 @@ const NG_DEMOS = {
       panel.style.height       = simH.x + 'px';
       panel.style.borderRadius = Math.max(0, simR.x) + 'px';
       panel.style.transform    = '';
-      scrim.style.opacity      = '0';
+      scrim.style.opacity      = Math.max(0, simScrim.x).toFixed(3);
       if (detailInner) detailInner.style.transform = `scale(${Math.max(0.01, scale)})`;
 
       if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
