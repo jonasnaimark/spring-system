@@ -5012,8 +5012,11 @@ const NG_DEMOS = {
       }
     }
 
-    // X only for edge swipes; center drag is vertical only
-    const dragX = isEdgeSwipe ? applyRubberBandSigned(rawDX, phone.clientWidth) : 0;
+    // Unlock X once a downward pull has started (rawDY > 12px); edge swipes always have X
+    if (!isEdgeSwipe && rawDY > 12) ngGesture.xUnlocked = true;
+    const xFree = isEdgeSwipe || ngGesture.xUnlocked;
+
+    const dragX = xFree ? applyRubberBandSigned(rawDX, phone.clientWidth) : 0;
     const dragY = applyRubberBandSigned(rawDY, phone.clientHeight);
 
     const progressY = Math.min(Math.max(0, rawDY) / phone.clientHeight, 1);
