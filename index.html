@@ -2877,7 +2877,7 @@
   </div>
 </template>
 
-<template id="tpl-list-screen">
+<template id="tpl-home-screen">
   <div class="sk-search"></div>
   <div class="sk-cats">
     <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
@@ -2899,7 +2899,7 @@
   <div class="sk-sub"></div>
 </template>
 
-<template id="tpl-list-screen-carousels">
+<template id="tpl-home-screen-carousels">
   <div class="sk-search"></div>
   <div class="sk-cats">
     <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
@@ -2938,7 +2938,7 @@
   </div>
 </template>
 
-<template id="tpl-desktop-bg">
+<template id="tpl-desktop-home-screen">
   <div class="dt-topbar">
     <div class="dt-logo"></div>
     <div class="dt-search"></div>
@@ -2996,7 +2996,7 @@ function stampTemplate(templateId, targetEl) {
 
 // Stamp all templates at load
 (function() {
-  // tpl-list-screen targets (tooltip has custom phone-content so it is excluded)
+  // tpl-home-screen targets (tooltip has custom phone-content so it is excluded)
   const listTargets = [
     document.querySelector('#view-sheet .phone-frame .phone-content'),
     document.querySelector('#view-modal .phone-frame .phone-content'),
@@ -3010,7 +3010,7 @@ function stampTemplate(templateId, targetEl) {
     document.querySelector('#view-tooltip .phone-content'),
   ];
   listTargets.forEach(function(el) {
-    if (el) stampTemplate('tpl-list-screen', el);
+    if (el) stampTemplate('tpl-home-screen', el);
   });
 
   // tpl-detail targets
@@ -3020,9 +3020,9 @@ function stampTemplate(templateId, targetEl) {
   stampTemplate('tpl-detail', document.getElementById('accRmDest'));
   stampTemplate('tpl-detail', document.getElementById('ngDetailInner'));
 
-  // tpl-list-screen-carousels targets
-  stampTemplate('tpl-list-screen-carousels', document.getElementById('tpPhoneContent'));
-  stampTemplate('tpl-list-screen-carousels', document.getElementById('ngPhoneContent'));
+  // tpl-home-screen-carousels targets
+  stampTemplate('tpl-home-screen-carousels', document.getElementById('tpPhoneContent'));
+  stampTemplate('tpl-home-screen-carousels', document.getElementById('ngPhoneContent'));
   // Mark first 6 cards in tpPhoneContent as tp-zoom-card (rows 1+2)
   Array.from(document.querySelectorAll('#tpPhoneContent .sk-carousel-card')).slice(0, 6).forEach(c => c.classList.add('tp-zoom-card'));
 
@@ -3030,10 +3030,10 @@ function stampTemplate(templateId, targetEl) {
   stampTemplate('tpl-modal-card', document.getElementById('demoModal'));
   stampTemplate('tpl-modal-card', document.getElementById('tpModal'));
 
-  // tpl-desktop-bg targets
-  stampTemplate('tpl-desktop-bg', document.getElementById('meUiBg'));
-  stampTemplate('tpl-desktop-bg', document.getElementById('mxUiBg'));
-  stampTemplate('tpl-desktop-bg', document.getElementById('tpDesktopBg'));
+  // tpl-desktop-home-screen targets
+  stampTemplate('tpl-desktop-home-screen', document.getElementById('meUiBg'));
+  stampTemplate('tpl-desktop-home-screen', document.getElementById('mxUiBg'));
+  stampTemplate('tpl-desktop-home-screen', document.getElementById('tpDesktopBg'));
 
   // tpl-desktop-modal targets
   stampTemplate('tpl-desktop-modal', document.getElementById('meModal'));

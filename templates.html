@@ -418,8 +418,8 @@
       flex: 1;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      padding: 12px 16px 0;
+      gap: 14px;
+      padding: 20px 32px 0;
       overflow: hidden;
       align-content: start;
     }
@@ -428,16 +428,16 @@
 
     .dt-card {
       background: var(--c-surface-0);
-      border-radius: 10px;
+      border-radius: 16px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       outline: 1px solid var(--c-border-subtle);
     }
 
-    .dt-card-img { width: 100%; height: 60px; background: var(--sk); }
+    .dt-card-img { width: 100%; height: 120px; background: var(--sk); }
 
-    .dt-card-body { padding: 5px 6px 6px; display: flex; flex-direction: column; gap: 3px; }
+    .dt-card-body { padding: 8px 9px 9px; display: flex; flex-direction: column; gap: 4px; }
 
     .dt-card-row { height: 5px; border-radius: 3px; background: var(--sk); }
     .dt-card-row--title { width: 80%; }
@@ -459,7 +459,7 @@
 
 <!-- ── Shared templates (copied from index.html) ── -->
 
-<template id="tpl-list-screen">
+<template id="tpl-home-screen">
   <div class="sk-search"></div>
   <div class="sk-cats">
     <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
@@ -481,7 +481,7 @@
   <div class="sk-sub"></div>
 </template>
 
-<template id="tpl-list-screen-carousels">
+<template id="tpl-home-screen-carousels">
   <div class="sk-search"></div>
   <div class="sk-cats">
     <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
@@ -597,7 +597,7 @@
   </div>
 </template>
 
-<template id="tpl-desktop-bg">
+<template id="tpl-desktop-home-screen">
   <div class="dt-topbar">
     <div class="dt-logo"></div>
     <div class="dt-search"></div>
@@ -659,31 +659,31 @@
 
   const grid = document.getElementById('grid');
 
-  // ── tpl-list-screen ──
+  // ── tpl-home-screen ──
   const listPhone = document.createElement('div');
   listPhone.className = 'phone-frame';
   const listContent = document.createElement('div');
   listContent.className = 'phone-content';
-  listContent.appendChild(stamp('tpl-list-screen'));
+  listContent.appendChild(stamp('tpl-home-screen'));
   listPhone.appendChild(listContent);
   const listNav = document.createElement('div');
   listNav.className = 'sk-bottom-nav';
   listNav.innerHTML = '<div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div>';
   listPhone.appendChild(listNav);
-  grid.appendChild(makeItem('List Screen', 'tpl-list-screen', listPhone));
+  grid.appendChild(makeItem('Home Screen', 'tpl-home-screen', listPhone));
 
-  // ── tpl-list-screen-carousels ──
+  // ── tpl-home-screen-carousels ──
   const carouselPhone = document.createElement('div');
   carouselPhone.className = 'phone-frame';
   const carouselContent = document.createElement('div');
   carouselContent.className = 'phone-content';
-  carouselContent.appendChild(stamp('tpl-list-screen-carousels'));
+  carouselContent.appendChild(stamp('tpl-home-screen-carousels'));
   carouselPhone.appendChild(carouselContent);
   const carouselNav = document.createElement('div');
   carouselNav.className = 'sk-bottom-nav';
   carouselNav.innerHTML = '<div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div>';
   carouselPhone.appendChild(carouselNav);
-  grid.appendChild(makeItem('List Screen (Carousels)', 'tpl-list-screen-carousels', carouselPhone));
+  grid.appendChild(makeItem('Home Screen Carousels', 'tpl-home-screen-carousels', carouselPhone));
 
   // ── tpl-detail ──
   const detailPhone = document.createElement('div');
@@ -712,14 +712,14 @@
   dtModal.appendChild(stamp('tpl-desktop-modal'));
   grid.appendChild(makeItem('Desktop Modal', 'tpl-desktop-modal', dtModal));
 
-  // ── tpl-desktop-bg ──
+  // ── tpl-desktop-home-screen ──
   const dtWrap = document.createElement('div');
   dtWrap.className = 'desktop-bg-wrap';
   const dtUi = document.createElement('div');
   dtUi.className = 'dt-ui';
-  dtUi.appendChild(stamp('tpl-desktop-bg'));
+  dtUi.appendChild(stamp('tpl-desktop-home-screen'));
   dtWrap.appendChild(dtUi);
-  grid.appendChild(makeItem('Desktop Background', 'tpl-desktop-bg', dtWrap));
+  grid.appendChild(makeItem('Desktop Home Screen', 'tpl-desktop-home-screen', dtWrap));
 </script>
 </body>
 </html>
