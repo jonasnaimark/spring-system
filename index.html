@@ -4987,28 +4987,28 @@ const NG_DEMOS = {
     const rawDX = e.clientX - startX;
     const rawDY = e.clientY - startY;
 
-    // Primary drag axis: 1:1 direct manipulation up to RUBBER_BAND_START,
-    // then rubber-band resistance applies to additional travel
+    // Both axes follow finger 1:1 up to RUBBER_BAND_START, then rubber-band resistance
     const RUBBER_BAND_START = 60;
-    const rawDrag = isEdgeSwipe ? Math.max(0, rawDX) : Math.max(0, rawDY);
-    const maxTravel = isEdgeSwipe ? phone.clientWidth : phone.clientHeight;
 
-    let drag;
-    if (rawDrag <= RUBBER_BAND_START) {
-      drag = rawDrag; // 1:1 tracking
-    } else {
-      const excess = rawDrag - RUBBER_BAND_START;
-      drag = RUBBER_BAND_START + rubberBand(excess, maxTravel * 0.4);
+    function applyRubberBand(raw, max) {
+      const clamped = Math.max(0, raw);
+      if (clamped <= RUBBER_BAND_START) return clamped;
+      return RUBBER_BAND_START + rubberBand(clamped - RUBBER_BAND_START, max * 0.4);
     }
 
-    // Panel position follows finger directly (translate only, keep full-screen size initially)
-    const panelX = isEdgeSwipe ? drag : toX;
-    const panelY = isEdgeSwipe ? toY  : drag;
+    const dragX = applyRubberBand(rawDX, phone.clientWidth);
+    const dragY = applyRubberBand(rawDY, phone.clientHeight);
 
-    // Scale down uniformly as drag progresses (iOS-style shrink, not toward card origin)
-    const progress = Math.min(drag / maxTravel, 1);
-    const scaleDown = 1 - progress * 0.22; // shrinks to ~0.78 at full travel
-    const cornerR   = toR + (40 - toR) * progress; // rounds corners as you drag
+    // Progress driven by primary axis for scale/scrim
+    const primaryRaw = isEdgeSwipe ? Math.max(0, rawDX) : Math.max(0, rawDY);
+    const primaryMax = isEdgeSwipe ? phone.clientWidth  : phone.clientHeight;
+    const progress = Math.min(primaryRaw / primaryMax, 1);
+
+    const panelX = toX + dragX;
+    const panelY = toY + dragY;
+
+    const scaleDown = 1 - progress * 0.35; // shrinks to ~0.65 at full travel
+    const cornerR   = toR + (40 - toR) * progress;
 
     panel.style.left         = panelX + 'px';
     panel.style.top          = panelY + 'px';
