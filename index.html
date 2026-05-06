@@ -4289,7 +4289,8 @@ const TP_DEMOS = {
       }
     },
     play() {
-      const { stiffness, damping } = { stiffness: 300, damping: calcDamping(300, 1.0) };
+      const spring = { stiffness: 300, damping: calcDamping(300, 1.0) };
+      const { stiffness, damping } = spring;
       const travelDir = tpTabDir;
       const nextIdx   = tpTabIdx + travelDir;
       const outScreen = document.getElementById(`tpTabScreen${tpTabIdx}`);
@@ -4310,7 +4311,7 @@ const TP_DEMOS = {
         outScreen.style.opacity   = String(Math.max(1 - completion / 0.40, 0));
         inScreen.style.transform  = `translateX(${travelDir * pos * SLIDE_PX}px)`;
         inScreen.style.opacity    = String(Math.min(Math.max((completion - 0.20) / 0.80, 0), 1));
-      });
+      }, spring);
     },
   },
 
