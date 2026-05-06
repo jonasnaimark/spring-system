@@ -230,6 +230,15 @@
     .sk-sub    { height: 8px; width: 38%; background: var(--sk); border-radius: 4px; flex-shrink: 0; }
     .sk-section-label { height: 8px; width: 30%; background: var(--sk); border-radius: 4px; flex-shrink: 0; }
 
+    /* ── Carousel list screen ── */
+    .sk-section-row { display: flex; align-items: center; flex-shrink: 0; margin-top: 12px; }
+    .sk-section-row-title { height: 10px; width: 55%; background: var(--sk); border-radius: 5px; }
+    .sk-carousel { display: flex; gap: 8px; flex-shrink: 0; margin-top: 6px; margin-right: -18px; overflow: hidden; }
+    .sk-carousel-card { flex: 0 0 105px; display: flex; flex-direction: column; gap: 4px; }
+    .sk-carousel-img { width: 105px; height: 100px; border-radius: 10px; background: var(--sk); flex-shrink: 0; }
+    .sk-carousel-title { height: 7px; width: 80%; background: var(--sk); border-radius: 4px; }
+    .sk-carousel-sub   { height: 7px; width: 60%; background: var(--sk); border-radius: 4px; }
+
     /* ── Detail screen ── */
     .push-screen {
       position: absolute;
@@ -265,6 +274,7 @@
     .push-detail-row.med   { width: 82%; }
     .push-detail-row.short { width: 55%; }
     .push-detail-row.full  { width: 100%; }
+    .push-detail-row.section-title { height: 11px; width: 60%; border-radius: 6px; margin-bottom: 6px; }
 
     .push-detail-divider { height: 1px; background: var(--sk); margin: 4px 0; }
 
@@ -471,26 +481,55 @@
   <div class="sk-sub"></div>
 </template>
 
+<template id="tpl-list-screen-carousels">
+  <div class="sk-search"></div>
+  <div class="sk-cats">
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+  </div>
+  <div class="sk-divider"></div>
+  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+  <div class="sk-carousel">
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+  </div>
+  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+  <div class="sk-carousel">
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+  </div>
+  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+  <div class="sk-carousel">
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+  </div>
+</template>
+
 <template id="tpl-detail">
   <div class="push-hero" style="flex-shrink:0;"></div>
   <div class="expand-detail-content">
-    <div class="push-detail-row title"></div>
-    <div class="push-detail-row sub"></div>
+    <div class="push-detail-row title" style="margin:8px auto 3px;"></div>
+    <div class="push-detail-row sub" style="margin:0 auto 10px;"></div>
     <div class="push-detail-divider"></div>
-    <div class="push-detail-row med"></div>
-    <div class="push-detail-row short"></div>
-    <div class="push-detail-row full"></div>
-    <div class="push-detail-row med"></div>
-    <div class="push-detail-divider"></div>
-    <div class="push-detail-row title"></div>
-    <div class="push-detail-row med"></div>
-    <div class="push-detail-row short"></div>
-    <div class="push-detail-row full"></div>
+    <div class="push-detail-row section-title" style="width:68%;"></div>
+    <div class="push-detail-row" style="width:74%;"></div>
+    <div class="push-detail-row" style="width:88%;"></div>
     <div class="push-detail-row med"></div>
     <div class="push-detail-divider"></div>
+    <div class="push-detail-row section-title" style="width:72%;"></div>
+    <div class="push-detail-row" style="width:68%;"></div>
+    <div class="push-detail-row" style="width:55%;"></div>
+    <div class="push-detail-row" style="width:92%;"></div>
     <div class="push-detail-row med"></div>
-    <div class="push-detail-row short"></div>
-    <div class="push-detail-row full"></div>
+    <div class="push-detail-divider"></div>
+    <div class="push-detail-row section-title" style="width:64%;"></div>
+    <div class="push-detail-row" style="width:78%;"></div>
+    <div class="push-detail-row" style="width:85%;"></div>
     <div class="push-detail-row short"></div>
   </div>
 </template>
