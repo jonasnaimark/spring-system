@@ -4289,7 +4289,7 @@ const TP_DEMOS = {
       }
     },
     play() {
-      const { stiffness, damping } = TP_SPRING;
+      const { stiffness, damping } = { stiffness: 300, damping: calcDamping(300, 1.0) };
       const travelDir = tpTabDir;
       const nextIdx   = tpTabIdx + travelDir;
       const outScreen = document.getElementById(`tpTabScreen${tpTabIdx}`);
