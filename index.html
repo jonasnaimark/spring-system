@@ -2841,7 +2841,14 @@
 </template>
 
 <template id="tpl-detail">
-  <div class="push-hero" style="flex-shrink:0;"></div>
+  <div class="push-hero" style="flex-shrink:0;position:relative;">
+    <div style="position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="1" y1="1" x2="9" y2="9" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="9" y1="1" x2="1" y2="9" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
   <div class="expand-detail-content">
     <div class="push-detail-row title" style="margin:8px auto 3px;"></div>
     <div class="push-detail-row sub" style="margin:0 auto 10px;"></div>
