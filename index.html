@@ -1988,9 +1988,17 @@
         <div class="sheet" id="tpSheet" style="transform:translateY(100%);box-shadow:0 -2px 20px rgba(0,0,0,0);"></div>
       </div>
 
-      <!-- scale-in: modal -->
+      <!-- scale-in: modal + tooltip -->
       <div id="tpModalContent" style="display:none;position:absolute;inset:0;">
-        <div class="phone-content"></div>
+        <div class="phone-content" style="position:relative;">
+          <div class="demo-tooltip" id="tpTooltip" style="top:129px; left:calc(50% + 34px);">
+            <div class="tooltip-caret"></div>
+            <div class="tooltip-bubble">
+              <div class="tooltip-tl"></div>
+              <div class="tooltip-tl short"></div>
+            </div>
+          </div>
+        </div>
         <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
         <div class="modal-backdrop" id="tpModalBackdrop" style="opacity:0;pointer-events:none;"></div>
         <div class="modal-card" id="tpModal" style="opacity:0; transform: scale(0.75); position:absolute; top:50%; left:50%; margin-top:-70px; margin-left:-110px; z-index:12; pointer-events:none;"></div>
@@ -2455,7 +2463,7 @@
       <div class="demo-view" id="view-tooltip" style="display:none; align-items:center; justify-content:center;">
         <div class="phone-frame">
           <div class="phone-content" style="position:relative;">
-            <div class="demo-tooltip" id="demoTooltip" style="top:129px; left:calc(50% + 32px);">
+            <div class="demo-tooltip" id="demoTooltip" style="top:129px; left:calc(50% + 34px);">
               <div class="tooltip-caret"></div>
               <div class="tooltip-bubble">
                 <div class="tooltip-tl"></div>
@@ -4376,30 +4384,73 @@ const TP_DEMOS = {
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
       const bd = document.getElementById('tpModalBackdrop');
       const m  = document.getElementById('tpModal');
+      const tt = document.getElementById('tpTooltip');
       bd.style.opacity = '0'; bd.style.pointerEvents = 'none';
       m.style.opacity  = '0'; m.style.transform = 'scale(0.75)'; m.style.pointerEvents = 'none';
+      tt.style.opacity = '0'; tt.style.transform = 'translateX(-50%) scale(0.6)';
     },
     play() {
       const bd  = document.getElementById('tpModalBackdrop');
       const m   = document.getElementById('tpModal');
-      // snappy + medium.bounce: stiffness 750 * 0.8 = 600, ratio 0.7
+      const tt  = document.getElementById('tpTooltip');
       const spring = { stiffness: 600, damping: calcDamping(600, 0.7) };
-      const isIn = tpDemoState === 'in';
-      tpDemoState = isIn ? 'out' : 'in';
-      bd.style.pointerEvents = 'auto';
-      tpSpringAnimate((t) => {
-        const pos      = springPos(t, spring.stiffness, spring.damping);
-        const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
-        if (!isIn) {
-          // enter: 0→1
-          m.style.transform = `scale(${0.75 + (1 - pos) * 0.25})`; m.style.opacity = String(1 - pos);
-          bd.style.opacity  = String((1 - scrimPos) * 0.4);
-        } else {
-          // exit: 1→0
-          m.style.transform = `scale(${0.75 + pos * 0.25})`; m.style.opacity = String(pos);
-          bd.style.opacity  = String(scrimPos * 0.4);
+      let seqTimer = null;
+
+      function animateModal(entering, onDone) {
+        tpSpringAnimate((t) => {
+          const pos      = springPos(t, spring.stiffness, spring.damping);
+          const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+          if (entering) {
+            m.style.transform = `scale(${0.75 + (1 - pos) * 0.25})`; m.style.opacity = String(1 - pos);
+            bd.style.opacity  = String((1 - scrimPos) * 0.4);
+          } else {
+            m.style.transform = `scale(${0.75 + pos * 0.25})`; m.style.opacity = String(pos);
+            bd.style.opacity  = String(scrimPos * 0.4);
+          }
+        }, spring);
+        // call onDone after spring settles (~700ms for this spring)
+        seqTimer = setTimeout(onDone, 700);
+      }
+
+      function animateTooltip(entering, onDone) {
+        const startT = performance.now();
+        const { stiffness, damping } = spring;
+        function tick(now) {
+          const t   = (now - startT) / 1000;
+          const pos = springPos(t, stiffness, damping);
+          if (entering) {
+            tt.style.transform = `translateX(-50%) scale(${0.75 + (1 - pos) * 0.25})`;
+            tt.style.opacity   = String(Math.min(t / 0.10, 1));
+          } else {
+            tt.style.transform = `translateX(-50%) scale(${0.75 + pos * 0.25})`;
+            tt.style.opacity   = String(Math.max(1 - t / 0.10, 0));
+          }
+          if (t < 5 && !isSettled(t, stiffness, damping)) {
+            tpAnim = requestAnimationFrame(tick);
+          } else {
+            tt.style.transform = `translateX(-50%) scale(${entering ? 1 : 0.75})`;
+            tt.style.opacity   = entering ? '1' : '0';
+            if (onDone) onDone();
+          }
         }
-      }, spring);
+        if (tpAnim) cancelAnimationFrame(tpAnim);
+        tpAnim = requestAnimationFrame(tick);
+      }
+
+      // sequence: modal enter → modal exit → tooltip enter → tooltip exit
+      animateModal(true, () => {
+        seqTimer = setTimeout(() => {
+          animateModal(false, () => {
+            seqTimer = setTimeout(() => {
+              animateTooltip(true, () => {
+                seqTimer = setTimeout(() => {
+                  animateTooltip(false, null);
+                }, 700);
+              });
+            }, 400);
+          });
+        }, 600);
+      });
     },
   },
 
