@@ -5012,11 +5012,17 @@ const NG_DEMOS = {
       }
     }
 
-    // Unlock X once a downward pull has started (rawDY > 12px); edge swipes always have X
-    if (!isEdgeSwipe && rawDY > 12) ngGesture.xUnlocked = true;
-    const xFree = isEdgeSwipe || ngGesture.xUnlocked;
+    // Determine intent on first significant movement
+    if (!ngGesture.intent) {
+      const absX = Math.abs(rawDX), absY = Math.abs(rawDY);
+      if (absY > 8) ngGesture.intent = 'dismiss';
+      else if (!isEdgeSwipe && absX > 8) ngGesture.intent = 'cancelled';
+      else if (isEdgeSwipe && absX > 8) ngGesture.intent = 'dismiss';
+    }
+    if (ngGesture.intent === 'cancelled') return;
 
-    const dragX = xFree ? applyRubberBandSigned(rawDX, phone.clientWidth) : 0;
+    const dragX = isEdgeSwipe || ngGesture.intent === 'dismiss'
+      ? applyRubberBandSigned(rawDX, phone.clientWidth) : 0;
     const dragY = applyRubberBandSigned(rawDY, phone.clientHeight);
 
     const progressY = Math.min(Math.max(0, rawDY) / phone.clientHeight, 1);
@@ -5052,8 +5058,9 @@ const NG_DEMOS = {
 
   function onGestureEnd(e) {
     if (!ngGesture || !ngExpandState) return;
-    const { startX, startY, isEdgeSwipe, history } = ngGesture;
+    const { startX, startY, isEdgeSwipe, history, intent } = ngGesture;
     ngGesture = null;
+    if (intent === 'cancelled') return;
 
     // Compute velocity from recent pointer history
     let velX = 0, velY = 0;
