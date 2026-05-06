@@ -348,6 +348,18 @@
     .sheet-tag-row { display: flex; gap: 6px; margin-bottom: 10px; }
     .sheet-tag { height: 22px; border-radius: 11px; background: var(--sk); }
 
+    /* ── List screen (full-screen) ── */
+    .ls-line { height: 11px; width: 100%; background: var(--sk); border-radius: 6px; margin-bottom: 10px; }
+    .ls-line.short  { width: 55%; }
+    .ls-line.med    { width: 72%; }
+    .ls-line.thin   { height: 8px; }
+    .ls-section-gap { height: 16px; }
+    .ls-tag-row { display: flex; gap: 6px; margin-bottom: 12px; }
+    .ls-tag { height: 24px; border-radius: 12px; background: var(--sk); }
+    .ls-img-row { display: flex; gap: 10px; margin-bottom: 14px; }
+    .ls-thumb { width: 64px; height: 64px; border-radius: 10px; background: var(--sk); flex-shrink: 0; }
+    .ls-thumb-lines { flex: 1; display: flex; flex-direction: column; gap: 7px; justify-content: center; }
+
     /* ── Desktop modal ── */
     .desktop-modal-standalone {
       width: 280px;
@@ -372,10 +384,8 @@
     [data-theme="dark"] .desktop-bg-wrap { border-color: #48484a; }
 
     .dt-ui {
-      width: 720px;
-      height: 512px;
-      transform: scale(calc(480 / 720));
-      transform-origin: top left;
+      width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -421,8 +431,8 @@
       flex: 1;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      padding: 20px 32px 0;
+      gap: 10px;
+      padding: 14px 20px 0;
       overflow: hidden;
       align-content: start;
     }
@@ -431,16 +441,16 @@
 
     .dt-card {
       background: var(--c-surface-0);
-      border-radius: 16px;
+      border-radius: 12px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       outline: 1px solid var(--c-border-subtle);
     }
 
-    .dt-card-img { width: 100%; height: 120px; background: var(--sk); }
+    .dt-card-img { width: 100%; height: 80px; background: var(--sk); }
 
-    .dt-card-body { padding: 8px 9px 9px; display: flex; flex-direction: column; gap: 4px; }
+    .dt-card-body { padding: 6px 7px 7px; display: flex; flex-direction: column; gap: 3px; }
 
     .dt-card-row { height: 5px; border-radius: 3px; background: var(--sk); }
     .dt-card-row--title { width: 80%; }
@@ -587,6 +597,45 @@
   </div>
 </template>
 
+<template id="tpl-list-screen">
+  <div class="ls-line med"></div>
+  <div class="ls-line short thin"></div>
+  <div class="ls-section-gap"></div>
+  <div class="ls-tag-row">
+    <div class="ls-tag" style="width:58px;"></div>
+    <div class="ls-tag" style="width:48px;"></div>
+    <div class="ls-tag" style="width:66px;"></div>
+  </div>
+  <div class="ls-img-row">
+    <div class="ls-thumb"></div>
+    <div class="ls-thumb-lines">
+      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line short thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="ls-img-row">
+    <div class="ls-thumb"></div>
+    <div class="ls-thumb-lines">
+      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="ls-img-row">
+    <div class="ls-thumb"></div>
+    <div class="ls-thumb-lines">
+      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line short thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="ls-img-row">
+    <div class="ls-thumb"></div>
+    <div class="ls-thumb-lines">
+      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+</template>
+
 <template id="tpl-desktop-modal">
   <div style="height:10px;width:60%;background:var(--sk);border-radius:5px;margin-bottom:16px;"></div>
   <div style="height:120px;width:100%;background:var(--sk);border-radius:8px;margin-bottom:14px;"></div>
@@ -702,6 +751,19 @@
   modalCard.className = 'modal-card';
   modalCard.appendChild(stamp('tpl-modal-card'));
   grid.appendChild(makeItem('Modal Card', 'tpl-modal-card', modalCard));
+
+  // ── tpl-list-screen ──
+  const listScreenPhone = document.createElement('div');
+  listScreenPhone.className = 'phone-frame';
+  const listScreenContent = document.createElement('div');
+  listScreenContent.className = 'phone-content';
+  listScreenContent.appendChild(stamp('tpl-list-screen'));
+  listScreenPhone.appendChild(listScreenContent);
+  const listScreenNav = document.createElement('div');
+  listScreenNav.className = 'sk-bottom-nav';
+  listScreenNav.innerHTML = '<div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div>';
+  listScreenPhone.appendChild(listScreenNav);
+  grid.appendChild(makeItem('List Screen', 'tpl-list-screen', listScreenPhone));
 
   // ── tpl-sheet ──
   const sheetWrap = document.createElement('div');
