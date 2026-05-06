@@ -5018,15 +5018,18 @@ const NG_DEMOS = {
     const progress  = Math.max(progressY, progressX);
 
     const scaleDown = 1 - progress * 0.45;
-    const panelX = toX + dragX;
-    const panelY = toY + dragY;
+    const scaledW = toW * scaleDown;
+    const scaledH = toH * scaleDown;
+    // Offset by half the lost size so the panel scales around its center, not top-left
+    const panelX = toX + dragX + (toW - scaledW) / 2;
+    const panelY = toY + dragY + (toH - scaledH) / 2;
 
     const cornerR   = toR + (40 - toR) * progress;
 
     panel.style.left         = panelX + 'px';
     panel.style.top          = panelY + 'px';
-    panel.style.width        = (toW * scaleDown) + 'px';
-    panel.style.height       = (toH * scaleDown) + 'px';
+    panel.style.width        = scaledW + 'px';
+    panel.style.height       = scaledH + 'px';
     panel.style.borderRadius = cornerR + 'px';
     panel.style.transform    = '';
 
