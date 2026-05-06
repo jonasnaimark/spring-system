@@ -1098,7 +1098,7 @@
     [data-theme="dark"] .modal-card { outline: 1px solid var(--c-border-subtle); }
     [data-theme="dark"] #expandScrim { background: rgba(0,0,0,0.8) !important; }
 
-    [data-theme="dark"] .expand-card { outline: 1px solid var(--c-border-subtle); }
+    [data-theme="dark"] .expand-card, [data-theme="dark"] .expand-card-inert { outline: 1px solid var(--c-border-subtle); }
     [data-theme="dark"] .notif { outline: 1px solid var(--c-border-subtle); }
     [data-theme="dark"] .demo-tooltip { filter: drop-shadow(0 0 0.5px rgba(255,255,255,0.28)) drop-shadow(0 0 0.5px rgba(255,255,255,0.28)); }
     [data-theme="dark"] .flip-front { outline: 1px solid var(--c-border-subtle); }
@@ -1201,14 +1201,15 @@
       flex: 1;
     }
 
-    .expand-card {
+    .expand-card, .expand-card-inert {
       background: var(--c-surface-0);
       border-radius: 28px;
       overflow: hidden;
       box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06);
-      cursor: pointer;
       flex-shrink: 0;
     }
+    .expand-card { cursor: pointer; }
+    .expand-card-inert { pointer-events: none; }
 
     .expand-card-img {
       width: 100%;
@@ -2263,7 +2264,7 @@
                   </div>
                 </div>
               </div>
-              <div class="expand-card" data-expand="3">
+              <div class="expand-card-inert" data-expand="3">
                 <div class="expand-card-img"></div>
                 <div class="expand-card-body">
                   <div class="expand-card-row title"></div>
