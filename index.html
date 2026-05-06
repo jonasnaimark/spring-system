@@ -1252,6 +1252,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      flex: 1;
     }
 
     .expand-back-btn {
@@ -2807,8 +2808,8 @@
   </div>
 </template>
 
-<template id="tpl-zoom-detail">
-  <div class="push-hero" style="height:220px;flex-shrink:0;"></div>
+<template id="tpl-detail">
+  <div class="push-hero" style="flex-shrink:0;"></div>
   <div class="expand-detail-content">
     <div class="push-detail-row title"></div>
     <div class="push-detail-row sub"></div>
@@ -2866,26 +2867,6 @@
   <div class="sk-sub"></div>
 </template>
 
-<template id="tpl-detail-screen">
-  <div class="push-hero"></div>
-  <div class="push-detail-body">
-    <div class="push-detail-row title"></div>
-    <div class="push-detail-row sub"></div>
-    <div class="push-detail-divider"></div>
-    <div class="push-detail-row med"></div>
-    <div class="push-detail-row short"></div>
-    <div class="push-detail-row full"></div>
-    <div class="push-detail-divider"></div>
-    <div class="push-detail-row title"></div>
-    <div class="push-detail-row med"></div>
-    <div class="push-detail-row short"></div>
-    <div class="push-detail-row full"></div>
-    <div class="push-detail-divider"></div>
-    <div class="push-detail-row med"></div>
-    <div class="push-detail-row short"></div>
-    <div class="push-detail-row med"></div>
-  </div>
-</template>
 
 <template id="tpl-modal-card">
   <div class="modal-line"></div>
@@ -2972,9 +2953,9 @@ function stampTemplate(templateId, targetEl) {
     if (el) stampTemplate('tpl-list-screen', el);
   });
 
-  // tpl-detail-screen targets
-  stampTemplate('tpl-detail-screen', document.getElementById('pushDest'));
-  stampTemplate('tpl-detail-screen', document.getElementById('tpPushDest'));
+  // tpl-detail targets
+  stampTemplate('tpl-detail', document.getElementById('pushDest'));
+  stampTemplate('tpl-detail', document.getElementById('tpPushDest'));
 
   // tpl-modal-card targets
   stampTemplate('tpl-modal-card', document.getElementById('demoModal'));
@@ -2990,10 +2971,10 @@ function stampTemplate(templateId, targetEl) {
   stampTemplate('tpl-desktop-modal', document.getElementById('mxModal'));
   stampTemplate('tpl-desktop-modal', document.getElementById('tpSufModal'));
 
-  // tpl-zoom-detail targets
-  stampTemplate('tpl-zoom-detail', document.getElementById('tpDetailInner'));
-  stampTemplate('tpl-zoom-detail', document.getElementById('expandDetailLayer'));
-  stampTemplate('tpl-zoom-detail', document.getElementById('bottomBarDetail'));
+  // tpl-detail targets (zoom/expand)
+  stampTemplate('tpl-detail', document.getElementById('tpDetailInner'));
+  stampTemplate('tpl-detail', document.getElementById('expandDetailLayer'));
+  stampTemplate('tpl-detail', document.getElementById('bottomBarDetail'));
 
   // tpl-sheet targets
   stampTemplate('tpl-sheet', document.getElementById('demoSheet'));

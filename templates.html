@@ -268,12 +268,12 @@
 
     .push-detail-divider { height: 1px; background: var(--sk); margin: 4px 0; }
 
-    /* ── Zoom detail ── */
     .expand-detail-content {
       padding: 14px 16px;
       display: flex;
       flex-direction: column;
       gap: 8px;
+      flex: 1;
     }
 
     /* ── Modal card ── */
@@ -471,29 +471,8 @@
   <div class="sk-sub"></div>
 </template>
 
-<template id="tpl-detail-screen">
-  <div class="push-hero"></div>
-  <div class="push-detail-body">
-    <div class="push-detail-row title"></div>
-    <div class="push-detail-row sub"></div>
-    <div class="push-detail-divider"></div>
-    <div class="push-detail-row med"></div>
-    <div class="push-detail-row short"></div>
-    <div class="push-detail-row full"></div>
-    <div class="push-detail-divider"></div>
-    <div class="push-detail-row title"></div>
-    <div class="push-detail-row med"></div>
-    <div class="push-detail-row short"></div>
-    <div class="push-detail-row full"></div>
-    <div class="push-detail-divider"></div>
-    <div class="push-detail-row med"></div>
-    <div class="push-detail-row short"></div>
-    <div class="push-detail-row med"></div>
-  </div>
-</template>
-
-<template id="tpl-zoom-detail">
-  <div class="push-hero" style="height:220px;flex-shrink:0;"></div>
+<template id="tpl-detail">
+  <div class="push-hero" style="flex-shrink:0;"></div>
   <div class="expand-detail-content">
     <div class="push-detail-row title"></div>
     <div class="push-detail-row sub"></div>
@@ -654,23 +633,14 @@
   listPhone.appendChild(listNav);
   grid.appendChild(makeItem('List Screen', 'tpl-list-screen', listPhone));
 
-  // ── tpl-detail-screen ──
+  // ── tpl-detail ──
   const detailPhone = document.createElement('div');
   detailPhone.className = 'phone-frame';
-  const detailScreen = document.createElement('div');
-  detailScreen.className = 'push-screen';
-  detailScreen.appendChild(stamp('tpl-detail-screen'));
-  detailPhone.appendChild(detailScreen);
-  grid.appendChild(makeItem('Detail Screen', 'tpl-detail-screen', detailPhone));
-
-  // ── tpl-zoom-detail ──
-  const zoomPhone = document.createElement('div');
-  zoomPhone.className = 'phone-frame';
-  const zoomInner = document.createElement('div');
-  zoomInner.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;';
-  zoomInner.appendChild(stamp('tpl-zoom-detail'));
-  zoomPhone.appendChild(zoomInner);
-  grid.appendChild(makeItem('Zoom Detail', 'tpl-zoom-detail', zoomPhone));
+  const detailInner = document.createElement('div');
+  detailInner.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;';
+  detailInner.appendChild(stamp('tpl-detail'));
+  detailPhone.appendChild(detailInner);
+  grid.appendChild(makeItem('Detail Screen', 'tpl-detail', detailPhone));
 
   // ── tpl-modal-card ──
   const modalCard = document.createElement('div');
