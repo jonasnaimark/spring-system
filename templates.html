@@ -366,13 +366,16 @@
       border: 4px solid #1c1c1e;
       border-radius: 14px;
       overflow: hidden;
+      position: relative;
     }
 
     [data-theme="dark"] .desktop-bg-wrap { border-color: #48484a; }
 
     .dt-ui {
-      width: 100%;
-      height: 100%;
+      width: 720px;
+      height: 390px;
+      transform: scale(calc(480 / 720));
+      transform-origin: top left;
       display: flex;
       flex-direction: column;
       overflow: hidden;
