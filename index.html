@@ -2842,8 +2842,8 @@
 <template id="tpl-detail">
   <div class="push-hero" style="flex-shrink:0;"></div>
   <div class="expand-detail-content">
-    <div class="push-detail-row title" style="margin-left:auto;margin-right:auto;"></div>
-    <div class="push-detail-row sub" style="margin-left:auto;margin-right:auto;"></div>
+    <div class="push-detail-row title" style="margin:8px auto 6px;"></div>
+    <div class="push-detail-row sub" style="margin:0 auto 10px;"></div>
     <div class="push-detail-divider"></div>
     <div class="push-detail-row med"></div>
     <div class="push-detail-row short"></div>
@@ -5008,28 +5008,25 @@ const NG_DEMOS = {
       }
     }
 
-    const dragX = isEdgeSwipe ? applyRubberBandSigned(rawDX, phone.clientWidth) : 0;
+    // Both axes follow finger directly once gesture is initiated
+    const dragX = applyRubberBandSigned(rawDX, phone.clientWidth);
     const dragY = applyRubberBandSigned(rawDY, phone.clientHeight);
 
-    // Progress: max of Y (always active) and X (only if edge swipe)
+    // Scale/opacity driven by displacement in the dismiss direction (right or down)
     const progressY = Math.min(Math.max(0, rawDY) / phone.clientHeight, 1);
-    const progressX = isEdgeSwipe ? Math.min(Math.max(0, rawDX) / phone.clientWidth, 1) : 0;
+    const progressX = Math.min(Math.max(0, rawDX) / phone.clientWidth, 1);
     const progress  = Math.max(progressY, progressX);
 
     const scaleDown = 1 - progress * 0.45;
-    const scaledW = toW * scaleDown;
-    const scaledH = toH * scaleDown;
-
-    // Edge swipe: keep vertically centered as it scales; pull-down: top follows finger
     const panelX = toX + dragX;
-    const panelY = isEdgeSwipe ? toY + (toH - scaledH) / 2 : toY + dragY;
+    const panelY = toY + dragY;
 
     const cornerR   = toR + (40 - toR) * progress;
 
     panel.style.left         = panelX + 'px';
     panel.style.top          = panelY + 'px';
-    panel.style.width        = scaledW + 'px';
-    panel.style.height       = scaledH + 'px';
+    panel.style.width        = (toW * scaleDown) + 'px';
+    panel.style.height       = (toH * scaleDown) + 'px';
     panel.style.borderRadius = cornerR + 'px';
     panel.style.transform    = '';
 
