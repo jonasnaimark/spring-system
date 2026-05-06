@@ -4987,19 +4987,26 @@ const NG_DEMOS = {
     const rawDX = e.clientX - startX;
     const rawDY = e.clientY - startY;
 
-    // Both axes follow finger 1:1 up to RUBBER_BAND_START, then rubber-band resistance
+    // Both axes: 1:1 in dismiss direction, rubber-band in both directions past RUBBER_BAND_START
     const RUBBER_BAND_START = 60;
 
-    function applyRubberBand(raw, max) {
-      const clamped = Math.max(0, raw);
-      if (clamped <= RUBBER_BAND_START) return clamped;
-      return RUBBER_BAND_START + rubberBand(clamped - RUBBER_BAND_START, max * 0.4);
+    // Signed rubber-band: positive = dismiss direction (tracks freely to threshold, then resists)
+    //                     negative = opposite direction (immediately rubber-bands)
+    function applyRubberBandSigned(raw, max) {
+      if (raw >= 0) {
+        // dismiss direction: free until threshold, then rubber-band
+        if (raw <= RUBBER_BAND_START) return raw;
+        return RUBBER_BAND_START + rubberBand(raw - RUBBER_BAND_START, max * 0.4);
+      } else {
+        // opposite direction: immediate rubber-band resistance
+        return -rubberBand(-raw, max * 0.25);
+      }
     }
 
-    const dragX = applyRubberBand(rawDX, phone.clientWidth);
-    const dragY = applyRubberBand(rawDY, phone.clientHeight);
+    const dragX = applyRubberBandSigned(rawDX, phone.clientWidth);
+    const dragY = applyRubberBandSigned(rawDY, phone.clientHeight);
 
-    // Progress driven by primary axis for scale/scrim
+    // Progress for scale/scrim: driven by magnitude of drag in either axis
     const primaryRaw = isEdgeSwipe ? Math.max(0, rawDX) : Math.max(0, rawDY);
     const primaryMax = isEdgeSwipe ? phone.clientWidth  : phone.clientHeight;
     const progress = Math.min(primaryRaw / primaryMax, 1);
@@ -5007,7 +5014,7 @@ const NG_DEMOS = {
     const panelX = toX + dragX;
     const panelY = toY + dragY;
 
-    const scaleDown = 1 - progress * 0.35; // shrinks to ~0.65 at full travel
+    const scaleDown = 1 - progress * 0.35;
     const cornerR   = toR + (40 - toR) * progress;
 
     panel.style.left         = panelX + 'px';
@@ -5020,11 +5027,12 @@ const NG_DEMOS = {
     const detailInner = document.getElementById('ngDetailInner');
     if (detailInner) detailInner.style.transform = `scale(${scaleDown})`;
 
+    // Keep detail/card layers at their expand-settled state during drag — only fade on release
+    document.getElementById('ngExpandDetailLayer').style.opacity = '1';
+    document.getElementById('ngExpandCardLayer').style.opacity   = '0';
+
     const scrim = document.getElementById('ngExpandScrim');
     scrim.style.opacity = (1 - progress).toFixed(3);
-
-    document.getElementById('ngExpandDetailLayer').style.opacity = Math.max(0, 1 - progress * 3).toFixed(3);
-    document.getElementById('ngExpandCardLayer').style.opacity   = Math.min(1, progress * 3).toFixed(3);
   });
 
   function onGestureEnd(e) {
