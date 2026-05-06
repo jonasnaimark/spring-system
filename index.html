@@ -4354,7 +4354,7 @@ const TP_DEMOS = {
         const pos        = springPos(t, stiffness, damping);
         const completion = 1 - pos;
         outScreen.style.transform = `translateX(${-travelDir * completion * SLIDE_PX}px)`;
-        outScreen.style.opacity   = String(Math.max(1 - completion / 0.50, 0));
+        outScreen.style.opacity   = String(Math.max(1 - Math.max(completion - 0.05, 0) / 0.45, 0));
         inScreen.style.transform  = `translateX(${travelDir * pos * SLIDE_PX}px)`;
         inScreen.style.opacity    = String(Math.min(completion, 1));
       }, spring);
