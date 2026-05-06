@@ -2072,7 +2072,8 @@
           </div>
         </div>
       </div>
-      <div style="flex:1; min-width:0; background:var(--c-demo-bg); border-radius:24px; display:flex; align-items:center; justify-content:center; padding:32px; position:relative; overflow:hidden;" id="ngDemoContainer">
+      <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:16px;">
+      <div style="background:var(--c-demo-bg); border-radius:24px; flex:1; display:flex; align-items:center; justify-content:center; padding:32px; position:relative; overflow:hidden;" id="ngDemoContainer">
         <button class="play-circle" id="ngPlayBtn">
           <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
         </button>
@@ -2094,6 +2095,8 @@
             </div>
           </div>
         </div>
+      </div>
+      <p style="font-size:13px; color:var(--c-text-tertiary); text-align:center; margin:0;">Try pulling down or from the left edge to dismiss</p>
       </div>
     </div>
   </div>
@@ -4963,14 +4966,15 @@ const NG_DEMOS = {
     if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
 
     const phoneRect = phone.getBoundingClientRect();
-    const startX = e.clientX - phoneRect.left;
-    const isEdgeSwipe = startX <= EDGE_WIDTH;
-    const isDownSwipe = !isEdgeSwipe;
+    const startXInPhone = e.clientX - phoneRect.left - phone.clientLeft;
+    // Edge swipe: only from left EDGE_WIDTH px of the panel
+    const isEdgeSwipe = startXInPhone <= EDGE_WIDTH;
+    // Down swipe: anywhere on the panel
 
     e.currentTarget.setPointerCapture(e.pointerId);
     ngGesture = {
       startX: e.clientX, startY: e.clientY,
-      isEdgeSwipe, isDownSwipe,
+      isEdgeSwipe,
       history: [{ x: e.clientX, y: e.clientY, t: performance.now() }],
     };
   });
@@ -5004,13 +5008,13 @@ const NG_DEMOS = {
       }
     }
 
-    const dragX = applyRubberBandSigned(rawDX, phone.clientWidth);
+    const dragX = isEdgeSwipe ? applyRubberBandSigned(rawDX, phone.clientWidth)  : applyRubberBandSigned(rawDX, phone.clientWidth * 0.15);
     const dragY = applyRubberBandSigned(rawDY, phone.clientHeight);
 
-    // Progress for scale/scrim: driven by magnitude of drag in either axis
-    const primaryRaw = isEdgeSwipe ? Math.max(0, rawDX) : Math.max(0, rawDY);
-    const primaryMax = isEdgeSwipe ? phone.clientWidth  : phone.clientHeight;
-    const progress = Math.min(primaryRaw / primaryMax, 1);
+    // Progress: max of Y (always active) and X (only if edge swipe)
+    const progressY = Math.min(Math.max(0, rawDY) / phone.clientHeight, 1);
+    const progressX = isEdgeSwipe ? Math.min(Math.max(0, rawDX) / phone.clientWidth, 1) : 0;
+    const progress  = Math.max(progressY, progressX);
 
     const panelX = toX + dragX;
     const panelY = toY + dragY;
@@ -5053,14 +5057,14 @@ const NG_DEMOS = {
       }
     }
 
-    const rawDX = (e.clientX ?? (history[history.length-1]?.x ?? startX)) - startX;
-    const rawDY = (e.clientY ?? (history[history.length-1]?.y ?? startY)) - startY;
-    const rawDrag = isEdgeSwipe ? Math.max(0, rawDX) : Math.max(0, rawDY);
-    const vel = isEdgeSwipe ? velX : velY;
-    const maxTravel = isEdgeSwipe ? phone.clientWidth : phone.clientHeight;
-    const drag = rubberBand(rawDrag, maxTravel * 0.5);
+    const lastPt = history[history.length - 1];
+    const rawDX = (lastPt?.x ?? startX) - startX;
+    const rawDY = (lastPt?.y ?? startY) - startY;
 
-    const committed = drag > DISMISS_POS_THRESHOLD || vel > DISMISS_VEL_THRESHOLD;
+    // Commit if either axis crosses threshold
+    const committedDown = Math.max(0, rawDY) > DISMISS_POS_THRESHOLD || velY > DISMISS_VEL_THRESHOLD;
+    const committedEdge = isEdgeSwipe && (Math.max(0, rawDX) > DISMISS_POS_THRESHOLD || velX > DISMISS_VEL_THRESHOLD);
+    const committed = committedDown || committedEdge;
     if (committed) {
       ngCollapseCard(velX, velY);
     } else {
@@ -5083,6 +5087,12 @@ const NG_DEMOS = {
 
   // Hide play button for zoom-dismiss (gesture only)
   document.getElementById('ngPlayBtn').style.display = 'none';
+
+  // Start on detail page — expand first card after a short delay
+  setTimeout(() => {
+    const firstCard = document.querySelector('#ngPhoneContent .sk-carousel-card');
+    if (firstCard) ngExpandCard(firstCard);
+  }, 300);
 })();
 
 function switchNgDemo(key) {
