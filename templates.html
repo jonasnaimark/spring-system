@@ -672,6 +672,19 @@
   listPhone.appendChild(listNav);
   grid.appendChild(makeItem('List Screen', 'tpl-list-screen', listPhone));
 
+  // ── tpl-list-screen-carousels ──
+  const carouselPhone = document.createElement('div');
+  carouselPhone.className = 'phone-frame';
+  const carouselContent = document.createElement('div');
+  carouselContent.className = 'phone-content';
+  carouselContent.appendChild(stamp('tpl-list-screen-carousels'));
+  carouselPhone.appendChild(carouselContent);
+  const carouselNav = document.createElement('div');
+  carouselNav.className = 'sk-bottom-nav';
+  carouselNav.innerHTML = '<div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div>';
+  carouselPhone.appendChild(carouselNav);
+  grid.appendChild(makeItem('List Screen (Carousels)', 'tpl-list-screen-carousels', carouselPhone));
+
   // ── tpl-detail ──
   const detailPhone = document.createElement('div');
   detailPhone.className = 'phone-frame';
