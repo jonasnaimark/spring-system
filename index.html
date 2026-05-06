@@ -4066,7 +4066,7 @@ function playSlowFade() {
     const domOrder = Array.from(sfUI.querySelectorAll('.dt-grid .dt-card, .dt-grid .dt-section-title'));
     domOrder.forEach((el, i) => {
       const delay = i * 20;
-      el.style.transition = `opacity ${activeBezDuration}ms ${easing} ${delay}ms, transform ${activeBezDuration}ms ${easing} ${delay}ms`;
+      el.style.transition = `opacity ${activeBezDuration}ms ${easing} ${delay}ms, transform ${activeBezDuration}ms ${BEZ_CURVES.enter} ${delay}ms`;
       el.style.opacity = '1';
       el.style.transform = 'translateY(0px)';
     });
