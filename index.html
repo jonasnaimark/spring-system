@@ -5012,13 +5012,12 @@ const NG_DEMOS = {
       }
     }
 
-    // Both axes follow finger directly once gesture is initiated
-    const dragX = applyRubberBandSigned(rawDX, phone.clientWidth);
+    // X only for edge swipes; center drag is vertical only
+    const dragX = isEdgeSwipe ? applyRubberBandSigned(rawDX, phone.clientWidth) : 0;
     const dragY = applyRubberBandSigned(rawDY, phone.clientHeight);
 
-    // Scale/opacity driven by displacement in the dismiss direction (right or down)
     const progressY = Math.min(Math.max(0, rawDY) / phone.clientHeight, 1);
-    const progressX = Math.min(Math.max(0, rawDX) / phone.clientWidth, 1);
+    const progressX = isEdgeSwipe ? Math.min(Math.max(0, rawDX) / phone.clientWidth, 1) : 0;
     const progress  = Math.max(progressY, progressX);
 
     const scaleDown = 1 - progress * 0.45;
