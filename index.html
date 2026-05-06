@@ -452,6 +452,12 @@
       flex-direction: column;
       gap: 5px;
       height: 100%;
+      /* Scale content to fill the phone's actual inner width.
+         --phone-scale is set per container; defaults to 1 (278px reference). */
+      transform: scale(var(--phone-scale, 1));
+      transform-origin: top left;
+      width: calc(100% / var(--phone-scale, 1));
+      height: calc(100% / var(--phone-scale, 1));
     }
 
     /* ── Type scale ── */
@@ -513,8 +519,14 @@
 
     [data-theme="dark"] .phone-frame { border-color: #48484a; }
     #tpDemoContainer .phone-frame { height: 580px; }
-    #ngDemoContainer .phone-frame { height: 660px; }
+    #ngDemoContainer .phone-frame  { height: 660px; }
     #accDemoContainer .phone-frame { height: 520px; border-radius: 38px; }
+
+    /* Scale phone-content to reference width (278px = TP inner width) */
+    #tpDemoContainer .phone-frame  { --phone-scale: 1; }
+    .phone-frame                   { --phone-scale: calc(298 / 278); } /* global 620px phones */
+    #ngDemoContainer .phone-frame  { --phone-scale: calc(318 / 278); }
+    #accDemoContainer .phone-frame { --phone-scale: calc(248 / 278); } /* 520px -> 248px inner */
     .acc-phones { display: flex; gap: 80px; align-items: flex-end; }
     .acc-phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
     .acc-phone-label { font-size: 13px; color: var(--c-text-tertiary); font-weight: 500; }
