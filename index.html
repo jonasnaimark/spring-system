@@ -4064,7 +4064,7 @@ function playSlowFade() {
     allItems[0]?.offsetHeight; // force reflow
 
     const domOrder = Array.from(sfUI.querySelectorAll('.dt-grid .dt-card, .dt-grid .dt-section-title'));
-    const SF_K = 300, SF_D = calcDamping(300, 1.0); // default.smooth
+    const SF_K = 100, SF_D = calcDamping(100, 1.0); // slow.smooth
     const OFFSET = 28;
     domOrder.forEach((el, i) => {
       const delay = i * 20;
