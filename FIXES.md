@@ -22,6 +22,48 @@ const fromR = parseFloat(panel.style.borderRadius) || 40;
 
 Apply the same fix to both `collapseCard` (spring zoom demo) and `tpCollapseCard` (transition patterns zoom demo).
 
+---
+
+## Zoom expand: content scale mismatch when phone is inside a CSS scale() container
+
+**Symptom:** The detail screen inside the expand panel appears larger than the same detail screen in a sibling phone that uses `push-dest-inner`. Content density looks different between the two phones.
+
+**Cause (two parts):**
+
+1. `parseFloat(getComputedStyle(phone).getPropertyValue('--phone-scale'))` returns `NaN` when the custom property value is a `calc()` expression (e.g. `calc(248 / 278)`). The fallback of `|| 1` silently made the detail content render at 1:1 scale instead of the intended downscale.
+
+2. `getBoundingClientRect()` returns values in scaled viewport pixels. When the phone is inside a container with a CSS `scale()` transform (e.g. `accPhonesScaler`), the card rect deltas must be divided by that scale factor to get phone-frame-local CSS coordinates for the panel's `left/top/width/height`.
+
+**Fix:**
+
+```js
+// Instead of trying to parse the CSS custom property:
+const phoneContentScale = parseFloat(phoneCS.getPropertyValue('--phone-scale')) || 1; // BROKEN
+
+// Derive it from clientWidth vs. the 278px reference:
+const DETAIL_REF_W = 278;
+const phoneContentScale = phone.clientWidth / DETAIL_REF_W;
+
+// Divide getBoundingClientRect deltas by the outer scaler's scale:
+const m = scalerEl.style.transform.match(/scale\(([^)]+)\)/);
+const scalerScale = m ? parseFloat(m[1]) : 1;
+const fromX = (cardRect.left - phoneRect.left) / scalerScale - phone.clientLeft;
+const fromY = (cardRect.top  - phoneRect.top)  / scalerScale - phone.clientTop;
+const fromW = cardRect.width  / scalerScale;
+const fromH = imgRect.height  / scalerScale;
+```
+
+Set `detailInner.style.width` to `278px` (the reference width) and compose `phoneContentScale` into the animated scale:
+
+```js
+const scale = (curW / toW) * phoneContentScale; // during expand
+const scale = (curW / fromW) * phoneContentScale; // during collapse
+```
+
+At the settled end state, set `detailInner.style.transform = \`scale(${phoneContentScale})\`` (not `scale(1)`).
+
+**Rule:** Never parse `--phone-scale` with `parseFloat` — CSS `calc()` values are not resolved by `getPropertyValue`. Always derive the scale from `phone.clientWidth / DETAIL_REF_W`.
+
 **Note:** This fix alone was not sufficient — see "Zoom jitter: double-fire from phone click handler" below for the complete fix.
 
 ---
