@@ -1111,7 +1111,7 @@
       flex-direction: column;
     }
 
-    #pushDest, #tpPushDest, #accDest {
+    #pushDest, #tpPushDest {
       border-radius: 40px 0 0 40px;
       overflow: hidden;
     }
@@ -2823,15 +2823,18 @@
         </button>
         <div id="accPhonesScaler" style="transform-origin:center center;">
         <div class="acc-phones">
-          <!-- Left: default motion (slide-in) -->
+          <!-- Left: default motion (zoom) -->
           <div class="acc-phone-wrap">
             <div class="phone-frame" id="accPhone">
-              <div class="push-screen" id="accSrc">
-                <div class="phone-content"></div>
-                <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
+              <div class="phone-content" id="accPhoneContent"></div>
+              <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
+              <div id="accExpandScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.32);opacity:0;pointer-events:none;z-index:11;"></div>
+              <div class="expand-hero-panel" id="accExpandPanel" style="display:none;">
+                <div id="accExpandCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
+                <div id="accExpandDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
+                  <div id="accDetailInner" style="position:absolute;top:0;left:0;width:200px;transform-origin:top left;display:flex;flex-direction:column;"></div>
+                </div>
               </div>
-              <div class="push-scrim" id="accScrim" style="opacity:0;"></div>
-              <div class="push-screen" id="accDest" style="transform:translateX(100%);"><div class="push-dest-inner"></div></div>
             </div>
             <div class="acc-phone-label">Default motion</div>
           </div>
@@ -3109,13 +3112,12 @@ function stampTemplate(templateId, targetEl) {
     document.querySelector('#view-notif .phone-frame .phone-content'),
     document.querySelector('#tpSheetContent .phone-content'),
     document.querySelector('#tpModalContent .phone-content'),
-    document.querySelector('#accSrc .phone-content'),
-    document.querySelector('#accRmSrc .phone-content'),
     document.querySelector('#view-tooltip .phone-content'),
   ];
   listTargets.forEach(function(el) {
     if (el) stampTemplate('tpl-home-screen', el);
   });
+  stampTemplate('tpl-home-screen-carousels', document.querySelector('#accRmSrc .phone-content'));
 
   // tpl-detail targets (stamp into .push-dest-inner so push-screen translateX stays correct)
   stampTemplate('tpl-detail', document.querySelector('#pushSource .push-dest-inner'));
@@ -3129,8 +3131,11 @@ function stampTemplate(templateId, targetEl) {
       document.querySelector(sel).appendChild(coScreen);
     });
   })();
-  stampTemplate('tpl-detail', document.querySelector('#accDest .push-dest-inner'));
+  stampTemplate('tpl-detail', document.getElementById('accDetailInner'));
   stampTemplate('tpl-detail', document.querySelector('#accRmDest .push-dest-inner'));
+  // Mark first card in accPhoneContent for zoom expand
+  stampTemplate('tpl-home-screen-carousels', document.getElementById('accPhoneContent'));
+  Array.from(document.querySelectorAll('#accPhoneContent .sk-carousel-card')).slice(0, 1).forEach(c => c.classList.add('acc-zoom-card'));
   stampTemplate('tpl-detail', document.getElementById('ngDetailInner'));
 
   // tpl-home-screen-carousels targets
@@ -5413,76 +5418,178 @@ reserveTabWidths();
 
 // ── A11y demo: side-by-side default vs reduced motion ─────────────
 (function() {
-  const DEFAULT_SPRING = { stiffness: 300, damping: calcDamping(300, 1.0) };
-  const INTERVAL_MS = 2200;
+  const ACC_SPRING = { stiffness: 500, damping: calcDamping(500, 1.0) };
+  const INTERVAL_MS = 2800;
 
-  let accState = 'out'; // 'out' | 'in'
-  let accAnim  = null;
+  let accExpandState = null; // null | { fromX, fromY, fromW, fromH, fromR, card, imgEl }
+  let accExpandAnim  = null;
   let accTimer = null;
   let accPlaying = false;
 
   function resetAcc() {
-    if (accAnim) { cancelAnimationFrame(accAnim); accAnim = null; }
-    accState = 'out';
-    document.getElementById('accSrc').style.transform   = 'translateX(0%)';
-    document.getElementById('accDest').style.transform  = 'translateX(100%)';
-    document.getElementById('accScrim').style.opacity   = '0';
-    document.getElementById('accRmSrc').style.opacity   = '1';
-    document.getElementById('accRmDest').style.opacity  = '0';
+    if (accExpandAnim) { cancelAnimationFrame(accExpandAnim); accExpandAnim = null; }
+    accExpandState = null;
+    const panel = document.getElementById('accExpandPanel');
+    panel.style.display = 'none';
+    document.getElementById('accExpandScrim').style.opacity = '0';
+    document.getElementById('accExpandCardLayer').style.opacity = '1';
+    document.getElementById('accExpandDetailLayer').style.opacity = '0';
+    const detailInner = document.getElementById('accDetailInner');
+    if (detailInner) detailInner.style.transform = 'scale(1)';
+    // make cards visible again
+    document.querySelectorAll('#accPhoneContent .acc-zoom-card').forEach(c => {
+      const img = c.querySelector('.sk-carousel-img');
+      if (img) img.style.visibility = '';
+    });
+    // reduced motion phone reset
+    document.getElementById('accRmSrc').style.opacity  = '1';
+    document.getElementById('accRmDest').style.opacity = '0';
+  }
+
+  function accExpand(card) {
+    if (accExpandState || !card) return;
+    const { stiffness, damping } = ACC_SPRING;
+    const phone = document.getElementById('accPhone');
+    const panel = document.getElementById('accExpandPanel');
+    const phoneRect = phone.getBoundingClientRect();
+    const cardRect  = card.getBoundingClientRect();
+    const imgEl  = card.querySelector('.sk-carousel-img');
+    const imgRect = imgEl ? imgEl.getBoundingClientRect() : cardRect;
+    const fromX = cardRect.left - phoneRect.left;
+    const fromY = cardRect.top  - phoneRect.top;
+    const fromW = cardRect.width;
+    const fromH = imgRect.height;
+    const fromR = 10;
+    const toX = 0, toY = 0, toW = phone.clientWidth, toH = phone.clientHeight, toR = 40;
+    document.getElementById('accExpandCardLayer').style.opacity   = '1';
+    document.getElementById('accExpandDetailLayer').style.opacity = '0';
+    if (imgEl) imgEl.style.visibility = 'hidden';
+    panel.style.left = fromX + 'px'; panel.style.top = fromY + 'px';
+    panel.style.width = fromW + 'px'; panel.style.height = fromH + 'px';
+    panel.style.borderRadius = fromR + 'px';
+    panel.style.pointerEvents = 'none'; panel.style.display = 'block';
+    const detailInner = document.getElementById('accDetailInner');
+    if (detailInner) detailInner.style.width = toW + 'px';
+    accExpandState = { fromX, fromY, fromW, fromH, fromR, card, imgEl };
+    const startT = performance.now();
+    if (accExpandAnim) cancelAnimationFrame(accExpandAnim);
+    const cardLayer   = document.getElementById('accExpandCardLayer');
+    const detailLayer = document.getElementById('accExpandDetailLayer');
+    const scrim       = document.getElementById('accExpandScrim');
+    scrim.style.opacity = '0';
+    const DELAY = 0.05;
+    function tick(now) {
+      const t = (now - startT) / 1000;
+      const posXW = springPos(t,           stiffness, damping);
+      const posYH = springPos(Math.max(0, t - DELAY), stiffness, damping);
+      const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+      const curW = toW + (fromW - toW) * posXW;
+      const scale = curW / toW;
+      panel.style.left         = (toX + (fromX - toX) * posXW) + 'px';
+      panel.style.top          = (toY + (fromY - toY) * posYH) + 'px';
+      panel.style.width        = curW + 'px';
+      panel.style.height       = (toH + (fromH - toH) * posYH) + 'px';
+      panel.style.borderRadius = (toR + (fromR - toR) * posXW) + 'px';
+      scrim.style.opacity      = (1 - scrimPos).toFixed(3);
+      if (detailInner) detailInner.style.transform = `scale(${scale})`;
+      const fade = Math.min(t / 0.2, 1);
+      detailLayer.style.opacity = String(fade);
+      cardLayer.style.opacity   = String(1 - fade);
+      if (t < 5 && (!isSettled(t, stiffness, damping) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
+        accExpandAnim = requestAnimationFrame(tick);
+      } else {
+        panel.style.left = '0'; panel.style.top = '0';
+        panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
+        panel.style.borderRadius = '40px'; panel.style.pointerEvents = 'auto';
+        if (detailInner) detailInner.style.transform = 'scale(1)';
+        detailLayer.style.opacity = '1'; cardLayer.style.opacity = '0';
+        scrim.style.opacity = '0';
+        accExpandAnim = null;
+      }
+    }
+    accExpandAnim = requestAnimationFrame(tick);
+  }
+
+  function accCollapse(onDone) {
+    if (!accExpandState) return;
+    const { stiffness, damping } = ACC_SPRING;
+    const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, card, imgEl } = accExpandState;
+    const phone = document.getElementById('accPhone');
+    const panel = document.getElementById('accExpandPanel');
+    panel.style.pointerEvents = 'none';
+    const fromX = parseFloat(panel.style.left) || 0;
+    const fromY = parseFloat(panel.style.top)  || 0;
+    const fromW = parseFloat(panel.style.width)  || phone.clientWidth;
+    const fromH = parseFloat(panel.style.height) || phone.clientHeight;
+    const fromR = parseFloat(panel.style.borderRadius) || 40;
+    const cardLayer   = document.getElementById('accExpandCardLayer');
+    const detailLayer = document.getElementById('accExpandDetailLayer');
+    const detailInner = document.getElementById('accDetailInner');
+    const scrim       = document.getElementById('accExpandScrim');
+    const startT = performance.now();
+    if (accExpandAnim) cancelAnimationFrame(accExpandAnim);
+    const DELAY = 0.05;
+    function tick(now) {
+      const t = (now - startT) / 1000;
+      const posYH = springPos(t,           stiffness, damping);
+      const posXW = springPos(Math.max(0, t - DELAY), stiffness, damping);
+      const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+      const pYH = 1 - posYH;
+      const pXW = 1 - posXW;
+      const curW = fromW + (toW - fromW) * pXW;
+      const scale = curW / fromW;
+      panel.style.left         = (fromX + (toX - fromX) * pXW) + 'px';
+      panel.style.top          = (fromY + (toY - fromY) * pYH) + 'px';
+      panel.style.width        = curW + 'px';
+      panel.style.height       = (fromH + (toH - fromH) * pYH) + 'px';
+      panel.style.borderRadius = (fromR + (toR - fromR) * pXW) + 'px';
+      scrim.style.opacity      = scrimPos.toFixed(3);
+      if (detailInner) detailInner.style.transform = `scale(${scale})`;
+      const fade = Math.min(t / 0.2, 1);
+      detailLayer.style.opacity = String(1 - fade);
+      cardLayer.style.opacity   = String(fade);
+      if (t < 5 && (!isSettled(t, stiffness, damping) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
+        accExpandAnim = requestAnimationFrame(tick);
+      } else {
+        panel.style.display = 'none';
+        if (detailInner) detailInner.style.transform = 'scale(1)';
+        detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
+        if (imgEl) imgEl.style.visibility = '';
+        accExpandState = null;
+        accExpandAnim = null;
+        onDone?.();
+      }
+    }
+    accExpandAnim = requestAnimationFrame(tick);
   }
 
   function playAccStep() {
-    const isIn = accState === 'in';
-    accState = isIn ? 'out' : 'in';
-
-    const src   = document.getElementById('accSrc');
-    const dest  = document.getElementById('accDest');
-    const scrim = document.getElementById('accScrim');
+    // reduced motion phone — crossfade
     const rmSrc = document.getElementById('accRmSrc');
     const rmDst = document.getElementById('accRmDest');
-
-    const { stiffness, damping } = DEFAULT_SPRING;
+    const isIn  = !!accExpandState;
     const startT = performance.now();
-
-    if (accAnim) cancelAnimationFrame(accAnim);
-
-    function tick(now) {
-      const t = (now - startT) / 1000;
-      const pos      = springPos(t, stiffness, damping);
-      const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
-
-      if (!isIn) {
-        // push in
-        dest.style.transform  = `translateX(${pos * 100}%)`;
-        src.style.transform   = `translateX(${-(1 - pos) * 30}%)`;
-        scrim.style.opacity   = String(1 - scrimPos);
-      } else {
-        // push out
-        dest.style.transform  = `translateX(${(1 - pos) * 100}%)`;
-        src.style.transform   = `translateX(${-pos * 30}%)`;
-        scrim.style.opacity   = String(scrimPos);
-      }
-
-      // reduced: dissolve — new screen fades in on top, old screen stays opaque underneath
-      const elapsed = (now - startT);
+    function tickRm(now) {
+      const elapsed = now - startT;
       const cf = Math.min(elapsed / 150, 1);
       if (!isIn) {
-        // pushing in: dest fades in over src
         rmSrc.style.opacity = '1';
         rmDst.style.opacity = String(cf);
       } else {
-        // going back: dest (detail) fades out revealing src underneath
         rmSrc.style.opacity = '1';
         rmDst.style.opacity = String(1 - cf);
       }
-
-      if (t < 5 && !isSettled(t, stiffness, damping)) {
-        accAnim = requestAnimationFrame(tick);
-      } else {
-        accAnim = null;
-      }
+      if (elapsed < 200) requestAnimationFrame(tickRm);
     }
-    accAnim = requestAnimationFrame(tick);
+    requestAnimationFrame(tickRm);
+
+    // default motion phone — zoom
+    if (!isIn) {
+      const card = document.querySelector('#accPhoneContent .acc-zoom-card');
+      accExpand(card);
+    } else {
+      accCollapse();
+    }
   }
 
   function startAcc() {
@@ -5500,7 +5607,7 @@ reserveTabWidths();
     document.getElementById('accIconPause').style.display = 'none';
     clearInterval(accTimer);
     accTimer = null;
-    if (accAnim) { cancelAnimationFrame(accAnim); accAnim = null; }
+    if (accExpandAnim) { cancelAnimationFrame(accExpandAnim); accExpandAnim = null; }
   }
 
   document.getElementById('accPlayBtn').addEventListener('click', () => {
@@ -5516,11 +5623,14 @@ reserveTabWidths();
   }, { threshold: 0.4 });
   observer.observe(document.getElementById('accDemoContainer'));
 
-  // A11y push demo: close button on detail screen triggers exit
-  const accClose = document.querySelector('#accDest .push-hero > div');
-  if (accClose) accClose.addEventListener('click', (e) => {
+  // Tapping the zoom card expands it; tapping the expanded panel collapses it
+  document.getElementById('accPhone').addEventListener('click', (e) => {
+    const card = e.target.closest('.acc-zoom-card');
+    if (card && !accExpandState) { e.stopPropagation(); accExpand(card); }
+  });
+  document.getElementById('accExpandPanel').addEventListener('click', (e) => {
     e.stopPropagation();
-    if (accState === 'in') playAccStep();
+    if (accExpandState) accCollapse();
   });
 })();
 
