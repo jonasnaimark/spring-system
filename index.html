@@ -2832,7 +2832,7 @@
               <div class="expand-hero-panel" id="accExpandPanel" style="display:none;">
                 <div id="accExpandCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
                 <div id="accExpandDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
-                  <div id="accDetailInner" style="position:absolute;top:0;left:0;width:200px;transform-origin:top left;display:flex;flex-direction:column;"></div>
+                  <div id="accDetailInner" style="position:absolute;top:0;left:0;width:278px;transform-origin:top left;display:flex;flex-direction:column;"></div>
                 </div>
               </div>
             </div>
@@ -5465,7 +5465,8 @@ reserveTabWidths();
     const fromH = imgRect.height  / scalerScale;
     const phoneCS = window.getComputedStyle(phone);
     const toR = Math.max(0, parseFloat(phoneCS.borderRadius) - parseFloat(phoneCS.borderWidth));
-    const phoneContentScale = parseFloat(phoneCS.getPropertyValue('--phone-scale')) || 1;
+    const DETAIL_REF_W = 278;
+    const phoneContentScale = phone.clientWidth / DETAIL_REF_W;
     const fromR = 10 * phoneContentScale;
     const toX = 0, toY = 0, toW = phone.clientWidth, toH = phone.clientHeight;
     document.getElementById('accExpandCardLayer').style.opacity   = '1';
@@ -5475,7 +5476,6 @@ reserveTabWidths();
     panel.style.width = fromW + 'px'; panel.style.height = fromH + 'px';
     panel.style.borderRadius = fromR + 'px';
     panel.style.pointerEvents = 'none'; panel.style.zIndex = '12'; panel.style.display = 'block';
-    const DETAIL_REF_W = 278;
     const detailInner = document.getElementById('accDetailInner');
     if (detailInner) detailInner.style.width = DETAIL_REF_W + 'px';
     accExpandState = { fromX, fromY, fromW, fromH, fromR, card, imgEl, phoneContentScale };
