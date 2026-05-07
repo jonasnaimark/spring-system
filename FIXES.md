@@ -84,3 +84,52 @@ document.getElementById('tpExpandPanel').addEventListener('click', (e) => {
 ```
 
 **Pattern to follow for any future zoom-style demo:** the phone-level click handler should always be gated by demo key, and individual interactive elements should always `stopPropagation`.
+
+---
+
+## Phone scale system: consistent UI density across phone sizes
+
+**Problem:** Different demo sections use phones of different sizes (TP: 278px inner, Spring/Nav: 298px, NG: 318px, A11y: 248px). Without scaling, the same template content looks denser on smaller phones and more spread out on larger ones.
+
+**Solution:** A CSS custom property `--phone-scale` set per container, and a `.push-dest-inner` / `.phone-content` class that applies a compensating transform so all content renders at the 278px reference density.
+
+**CSS (index.html):**
+```css
+/* Set scale per container — 278px is the reference width */
+#tpDemoContainer .phone-frame  { --phone-scale: 1; }            /* 278px inner */
+.phone-frame                   { --phone-scale: calc(298/278); } /* 620px phones */
+#ngDemoContainer .phone-frame  { --phone-scale: calc(318/278); }
+#accDemoContainer .phone-frame { --phone-scale: calc(248/278); }
+
+/* phone-content and push-dest-inner both apply the same scaling trick */
+.phone-content, .push-dest-inner {
+  transform-origin: top left;
+  transform: scale(var(--phone-scale, 1));
+  width: calc(100% / var(--phone-scale, 1));
+  height: calc(100% / var(--phone-scale, 1));
+}
+.push-dest-inner { position: relative; display: flex; flex-direction: column; }
+```
+
+**Rules for adding new template content:**
+
+1. **Home-screen style content** (scrolling list, fills phone width): stamp into a `.phone-content` div — scaling is automatic.
+
+2. **Full-screen destination content** (detail, checkout, etc. that fills the whole phone): stamp into a `.push-dest-inner` div inside a `.push-screen`. For content that needs to fill the full phone *height* too (not just width), wrap in a `co-screen`-style div with `position:absolute;inset:0` so `flex:1` has a defined parent height to fill.
+
+3. **Never stamp full-screen templates directly into `.push-screen`** without the `.push-dest-inner` wrapper — the scaling won't apply and the content will look inconsistent across phone sizes.
+
+**Example — adding a new dest screen:**
+```html
+<!-- HTML -->
+<div class="push-screen" id="myDest" style="transform:translateX(100%);">
+  <div class="push-dest-inner"></div>
+</div>
+```
+```js
+// JS stamping
+const wrapper = document.createElement('div');
+wrapper.className = 'co-screen'; // or any position:absolute;inset:0 wrapper
+stampTemplate('tpl-my-screen', wrapper);
+document.querySelector('#myDest .push-dest-inner').appendChild(wrapper);
+```

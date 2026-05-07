@@ -1106,12 +1106,13 @@
     }
 
     #pushDest, #tpPushDest, #accDest {
-      border-radius: 36px 0 0 36px;
+      border-radius: 40px 0 0 40px;
       overflow: hidden;
     }
 
     /* Scale dest screen content to 278px reference density, matching phone-content. */
     .push-dest-inner {
+      position: relative;
       transform-origin: top left;
       transform: scale(var(--phone-scale, 1));
       width: calc(100% / var(--phone-scale, 1));
@@ -1141,7 +1142,7 @@
 
     .push-hero {
       width: 100%;
-      aspect-ratio: 278 / 160;
+      aspect-ratio: 278 / 200;
       background: var(--sk);
       flex-shrink: 0;
     }
@@ -1178,6 +1179,33 @@
       background: var(--sk);
       margin: 4px 0;
     }
+
+    /* ── Checkout template ── */
+    .co-screen { position: absolute; inset: 0; background: var(--c-surface-0); display: flex; flex-direction: column; overflow: hidden; }
+    .co-titlebar { display: flex; align-items: center; justify-content: center; padding: 34px 16px 18px; flex-shrink: 0; }
+    .co-title { height: 10px; width: 52%; background: var(--sk); border-radius: 5px; }
+    .co-body { flex: 1; overflow: hidden; padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .co-card { border: 1px solid var(--c-border-subtle); border-radius: 14px; overflow: hidden; }
+    .co-listing { display: flex; gap: 10px; padding: 12px; }
+    .co-listing-img { width: 56px; height: 52px; border-radius: 8px; background: var(--sk); flex-shrink: 0; }
+    .co-listing-lines { flex: 1; display: flex; flex-direction: column; gap: 5px; justify-content: center; }
+    .co-line { height: 8px; border-radius: 4px; background: var(--sk); flex-shrink: 0; }
+    .co-line.short { width: 45%; }
+    .co-line.med   { width: 65%; }
+    .co-line.full  { width: 90%; }
+    .co-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; gap: 8px; }
+    .co-row-lines { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+    .co-btn { height: 20px; width: 48px; border-radius: 6px; background: var(--sk); flex-shrink: 0; }
+    .co-divider { height: 1px; background: var(--c-border-subtle); margin: 0 12px; }
+    .co-section-title { height: 10px; width: 55%; background: var(--sk); border-radius: 5px; flex-shrink: 0; }
+    .co-option-row { display: flex; align-items: center; padding: 10px 12px; gap: 10px; }
+    .co-option-lines { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+    .co-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--sk); flex-shrink: 0; }
+    .co-radio.selected { background: var(--sk); }
+    .co-payment-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 12px; }
+    .co-payment-lines { display: flex; gap: 6px; align-items: center; }
+    .co-card-chip { width: 28px; height: 9px; border-radius: 3px; background: var(--sk); }
+    .co-chevron { width: 7px; height: 12px; border-right: 2px solid var(--sk); border-top: 2px solid var(--sk); transform: rotate(45deg); border-radius: 1px; }
 
     /* ── Tooltip demo ── */
     .demo-tooltip {
@@ -1274,6 +1302,13 @@
     }
 
     .expand-hero-panel .push-hero { flex-shrink: 0; }
+
+    .detail-close-btn {
+      transition: background 150ms ease;
+    }
+    .detail-close-btn:hover {
+      background: rgba(0,0,0,0.22) !important;
+    }
 
     .expand-detail-content {
       padding: 14px 16px;
@@ -1907,10 +1942,7 @@
       </div>
       <!-- slide-in: push screens -->
       <div id="tpPushContent" style="display:none;position:absolute;inset:0;">
-        <div class="push-screen" id="tpPushSource">
-          <div class="phone-content"></div>
-          <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
-        </div>
+        <div class="push-screen" id="tpPushSource"><div class="push-dest-inner"></div></div>
         <div class="push-scrim" id="tpPushScrim" style="opacity:0;"></div>
         <div class="push-screen" id="tpPushDest" style="transform:translateX(100%);"><div class="push-dest-inner"></div></div>
       </div>
@@ -2003,7 +2035,7 @@
         <div class="modal-card" id="tpModal" style="opacity:0; transform: scale(0.75); position:absolute; top:50%; left:50%; margin-top:-70px; margin-left:-110px; z-index:12; pointer-events:none;"></div>
       </div>
 
-      <div class="sk-bottom-nav">
+      <div class="sk-bottom-nav" id="tpPhoneBottomNav">
         <div class="sk-nav-icon"></div>
         <div class="sk-nav-icon"></div>
         <div class="sk-nav-icon"></div>
@@ -2852,8 +2884,8 @@
 
 <template id="tpl-detail">
   <div class="push-hero" style="flex-shrink:0;position:relative;">
-    <div style="position:absolute;top:16px;left:16px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;">
-      <svg width="8" height="8" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div class="detail-close-btn" style="position:absolute;top:20px;left:20px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.10);display:flex;align-items:center;justify-content:center;">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
         <line x1="1" y1="1" x2="9" y2="9" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
         <line x1="9" y1="1" x2="1" y2="9" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
@@ -2987,6 +3019,43 @@
   </div>
 </template>
 
+<template id="tpl-checkout">
+  <div class="co-titlebar"><div class="co-title"></div></div>
+  <div class="co-body">
+    <div class="co-card">
+      <div class="co-listing">
+        <div class="co-listing-img"></div>
+        <div class="co-listing-lines">
+          <div class="co-line full"></div>
+          <div class="co-line med"></div>
+          <div class="co-line short"></div>
+        </div>
+      </div>
+      <div class="co-divider"></div>
+      <div class="co-row"><div class="co-row-lines"><div class="co-line" style="width:38%;"></div><div class="co-line short"></div></div><div class="co-btn"></div></div>
+      <div class="co-divider"></div>
+      <div class="co-row"><div class="co-row-lines"><div class="co-line" style="width:32%;"></div><div class="co-line" style="width:28%;"></div></div><div class="co-btn"></div></div>
+      <div class="co-divider"></div>
+      <div class="co-row"><div class="co-row-lines"><div class="co-line" style="width:42%;"></div><div class="co-line med"></div></div><div class="co-btn"></div></div>
+      <div class="co-divider"></div>
+      <div class="co-row" style="padding-bottom:12px;"><div class="co-row-lines"><div class="co-line" style="width:55%;"></div><div class="co-line full"></div></div></div>
+    </div>
+    <div class="co-section-title" style="margin-top:16px;margin-bottom:4px;"></div>
+    <div class="co-card">
+      <div class="co-option-row"><div class="co-option-lines"><div class="co-line" style="width:60%;"></div></div><div class="co-radio selected"></div></div>
+      <div class="co-divider"></div>
+      <div class="co-option-row"><div class="co-option-lines"><div class="co-line" style="width:72%;"></div></div><div class="co-radio"></div></div>
+    </div>
+    <div class="co-section-title" style="width:48%;margin-top:16px;margin-bottom:4px;"></div>
+    <div class="co-card">
+      <div class="co-payment-row">
+        <div class="co-payment-lines"><div class="co-card-chip"></div><div class="co-line" style="width:32px;"></div></div>
+        <div class="co-chevron"></div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script>
 // ── Theme toggle ──────────────────────────────────────────────────
 (function() {
@@ -3020,7 +3089,6 @@ function stampTemplate(templateId, targetEl) {
     document.querySelector('#view-notif .phone-frame .phone-content'),
     document.querySelector('#tpSheetContent .phone-content'),
     document.querySelector('#tpModalContent .phone-content'),
-    document.querySelector('#tpPushSource .phone-content'),
     document.querySelector('#pushSource .phone-content'),
     document.querySelector('#accSrc .phone-content'),
     document.querySelector('#accRmSrc .phone-content'),
@@ -3032,7 +3100,14 @@ function stampTemplate(templateId, targetEl) {
 
   // tpl-detail targets (stamp into .push-dest-inner so push-screen translateX stays correct)
   stampTemplate('tpl-detail', document.querySelector('#pushDest .push-dest-inner'));
-  stampTemplate('tpl-detail', document.querySelector('#tpPushDest .push-dest-inner'));
+  stampTemplate('tpl-detail', document.querySelector('#tpPushSource .push-dest-inner'));
+  // tpPushDest: checkout screen wrapped in co-screen so it fills the phone height
+  (function() {
+    const coScreen = document.createElement('div');
+    coScreen.className = 'co-screen';
+    stampTemplate('tpl-checkout', coScreen);
+    document.querySelector('#tpPushDest .push-dest-inner').appendChild(coScreen);
+  })();
   stampTemplate('tpl-detail', document.querySelector('#accDest .push-dest-inner'));
   stampTemplate('tpl-detail', document.querySelector('#accRmDest .push-dest-inner'));
   stampTemplate('tpl-detail', document.getElementById('ngDetailInner'));
@@ -4574,6 +4649,10 @@ function switchTpDemo(key) {
     const el = document.getElementById(id);
     if (el) el.style.display = id === activeLayer ? '' : 'none';
   });
+
+  // Hide persistent bottom nav for slide-in (detail→checkout has no nav bar)
+  const tpBottomNav = document.getElementById('tpPhoneBottomNav');
+  if (tpBottomNav) tpBottomNav.style.display = key === 'slide-in' ? 'none' : '';
 }
 
 document.querySelectorAll('.tp-tab').forEach(tab => {
@@ -4863,6 +4942,7 @@ const NG_DEMOS = {
     const phone     = document.getElementById('ngPhone');
     const panel     = document.getElementById('ngExpandPanel');
     panel.style.pointerEvents = 'none';
+    ngExpandState = null; // allow card taps immediately while collapse animates
 
     // Current animated position (from gesture or settled full-screen)
     const curX = parseFloat(panel.style.left)         || 0;
@@ -4922,7 +5002,6 @@ const NG_DEMOS = {
         if (detailInner) detailInner.style.transform = `scale(${toW / DETAIL_REF_W})`;
         detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
         if (imgEl) imgEl.style.visibility = '';
-        ngExpandState = null;
       }
     }
     ngExpandAnim = requestAnimationFrame(tick);
@@ -4996,6 +5075,7 @@ const NG_DEMOS = {
 
   panel.addEventListener('pointerdown', (e) => {
     if (!ngExpandState) return;
+    if (e.target.closest('.detail-close-btn')) return; // let click handler take it
     if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
 
     const phoneRect = phone.getBoundingClientRect();
@@ -5133,6 +5213,13 @@ const NG_DEMOS = {
     if (!card || !document.getElementById('ngPhoneContent').contains(card)) return;
     e.stopPropagation();
     ngExpandCard(card);
+  });
+
+  // Close button on NG detail screen collapses back
+  const ngCloseBtn = document.querySelector('#ngDetailInner .push-hero .detail-close-btn');
+  if (ngCloseBtn) ngCloseBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (ngExpandState) ngCollapseCard(0, 0);
   });
 
   // Hide play button for zoom-dismiss (gesture only)
@@ -5394,6 +5481,30 @@ reserveTabWidths();
     });
   }, { threshold: 0.4 });
   observer.observe(document.getElementById('accDemoContainer'));
+
+  // A11y push demo: close button on detail screen triggers exit
+  const accClose = document.querySelector('#accDest .push-hero > div');
+  if (accClose) accClose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (accState === 'in') playAccStep();
+  });
+})();
+
+// ── Detail screen close buttons ───────────────────────────────────
+(function() {
+  function closeBtn(containerId) {
+    return document.querySelector('#' + containerId + ' .push-hero > div');
+  }
+
+  // Spring tokens push demo
+  const pushClose = closeBtn('pushDest');
+  if (pushClose) pushClose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (demoState === 'in') playDemo();
+  });
+
+  // TP slide-in demo
+  // tpPushDest is now a checkout screen (no close button); slide-in toggles on phone tap
 })();
 </script>
 <div class="toast" id="toast"></div>
