@@ -240,6 +240,12 @@
     .topnav .nav-item.active { background: transparent; color: var(--c-text-primary); font-weight: 600; }
     .topnav .nav-item::after { content: attr(data-label); display: block; font-weight: 600; height: 0; overflow: hidden; visibility: hidden; pointer-events: none; }
 
+    @media (max-width: 960px) {
+      .topnav .nav-item { font-size: 0; }
+      .topnav .nav-item::before { content: attr(data-short); font-size: var(--text-ui); }
+      .topnav .nav-item::after { content: attr(data-short); }
+    }
+
     .main-columns {
       display: flex;
       gap: 24px;
@@ -845,7 +851,7 @@
     }
 
     .modal-btn.primary {
-      background: #FF385C;
+      background: var(--c-text-primary);
     }
 
     /* ── Card flip demo ── */
@@ -947,7 +953,7 @@
       width: 32px;
       height: 32px;
       border-radius: 8px;
-      background: #FF385C;
+      background: var(--c-text-primary);
       flex-shrink: 0;
     }
 
@@ -1204,8 +1210,8 @@
     .co-radio.selected { background: var(--sk); }
     .co-payment-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 12px; }
     .co-payment-lines { display: flex; gap: 6px; align-items: center; }
-    .co-card-chip { width: 28px; height: 9px; border-radius: 3px; background: var(--sk); }
-    .co-chevron { width: 7px; height: 12px; border-right: 2px solid var(--sk); border-top: 2px solid var(--sk); transform: rotate(45deg); border-radius: 1px; }
+    .co-card-chip { width: 28px; height: 8px; border-radius: 3px; background: var(--sk); }
+    .co-chevron { width: 7px; height: 7px; border-right: 2px solid var(--sk); border-top: 2px solid var(--sk); transform: rotate(45deg); border-radius: 1px; }
 
     /* ── Tooltip demo ── */
     .demo-tooltip {
@@ -1628,14 +1634,25 @@
     }
 
     .desktop-bezel {
-      width: calc(100% - 16px);
-      height: 512px;
+      width: 100%;
+      max-width: 720px;
+      aspect-ratio: 720 / 512;
       border: 5px solid #1c1c1e;
       border-radius: 20px;
       background: var(--c-surface-0);
-      display: flex;
       overflow: hidden;
       cursor: pointer;
+      position: relative;
+    }
+
+    .dt-scaler {
+      position: absolute;
+      top: 0; left: 0;
+      width: 720px;
+      height: 512px;
+      transform-origin: top left;
+      transform: scale(var(--dt-scale, 1));
+      display: flex;
     }
 
     /* ── Desktop placeholder UI ── */
@@ -1879,11 +1896,11 @@
 <div class="topnav" id="topnav">
   <div class="topnav-inner">
     <div class="topnav-links">
-      <a class="nav-item" data-target="sec-transition" data-label="Transition Patterns">Transition Patterns</a>
-      <a class="nav-item" data-target="sec-gestures" data-label="Navigation Gestures">Navigation Gestures</a>
-      <a class="nav-item" data-target="sec-spring" data-label="Spring Tokens">Spring Tokens</a>
-      <a class="nav-item" data-target="sec-curve" data-label="Curves & Durations">Curves & Durations</a>
-      <a class="nav-item" data-target="sec-accessibility" data-label="Accessibility">Accessibility</a>
+      <a class="nav-item" data-target="sec-transition" data-label="Transition Patterns" data-short="Transitions">Transition Patterns</a>
+      <a class="nav-item" data-target="sec-gestures" data-label="Navigation Gestures" data-short="Gestures">Navigation Gestures</a>
+      <a class="nav-item" data-target="sec-spring" data-label="Spring Tokens" data-short="Springs">Spring Tokens</a>
+      <a class="nav-item" data-target="sec-curve" data-label="Curves & Durations" data-short="Curves">Curves & Durations</a>
+      <a class="nav-item" data-target="sec-accessibility" data-label="Accessibility" data-short="A11Y">Accessibility</a>
     </div>
   </div>
   <div class="topnav-theme">
@@ -2119,6 +2136,7 @@
         <button class="play-circle" id="ngPlayBtn">
           <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
         </button>
+        <div id="ngDemoScaler" style="transform-origin:center center; display:flex; flex-direction:column; align-items:center; gap:16px;">
         <div class="phone-frame" id="ngPhone">
           <div class="phone-content" id="ngPhoneContent"></div>
           <div class="sk-bottom-nav">
@@ -2138,6 +2156,7 @@
           </div>
         </div>
         <p style="font-size:13px; color:var(--c-text-tertiary); text-align:center; margin:0; flex-shrink:0;">Try pulling down or from the left edge to dismiss</p>
+        </div><!-- end ngDemoScaler -->
       </div>
       </div>
     </div>
@@ -2267,19 +2286,11 @@
       <!-- Push / Nav demo -->
       <div class="demo-view" id="view-push" style="display:none; align-items:center; justify-content:center;">
         <div class="phone-frame">
-          <!-- Source screen (list) -->
-          <div class="push-screen" id="pushSource">
-            <div class="phone-content"></div>
-            <div class="sk-bottom-nav">
-              <div class="sk-nav-icon"></div>
-              <div class="sk-nav-icon"></div>
-              <div class="sk-nav-icon"></div>
-              <div class="sk-nav-icon"></div>
-            </div>
-          </div>
-          <!-- Scrim sits above source (incl. bottom nav) but below dest -->
+          <!-- Source screen (detail) -->
+          <div class="push-screen" id="pushSource"><div class="push-dest-inner"></div></div>
+          <!-- Scrim sits above source but below dest -->
           <div class="push-scrim" id="pushScrim"></div>
-          <!-- Destination screen (detail) -->
+          <!-- Destination screen (checkout) -->
           <div class="push-screen" id="pushDest" style="transform: translateX(100%)"><div class="push-dest-inner"></div></div>
         </div>
       </div>
@@ -2684,7 +2695,8 @@
 
   <!-- Desktop demo area -->
   <div class="bez-demo-panel">
-    <div class="desktop-bezel">
+    <div class="desktop-bezel" id="desktopBezel">
+      <div class="dt-scaler" id="dtScaler">
 
       <!-- Slow fade UI: grid -->
       <div class="dt-ui" id="sfUI" style="flex:1;">
@@ -2759,6 +2771,7 @@
         </div>
       </div>
 
+      </div><!-- end dt-scaler -->
     </div>
     <button class="play-circle" id="bezPlayBtn">
       <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
@@ -2808,6 +2821,7 @@
           <svg id="accIconPlay" width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
           <svg id="accIconPause" width="13" height="13" viewBox="0 0 12 12" fill="currentColor" style="display:none"><rect x="2" y="2" width="3" height="8" rx="1"/><rect x="7" y="2" width="3" height="8" rx="1"/></svg>
         </button>
+        <div id="accPhonesScaler" style="transform-origin:center center;">
         <div class="acc-phones">
           <!-- Left: default motion (slide-in) -->
           <div class="acc-phone-wrap">
@@ -2833,6 +2847,7 @@
             <div class="acc-phone-label">Reduced motion</div>
           </div>
         </div>
+        </div><!-- end accPhonesScaler -->
       </div>
     </div>
   </div>
@@ -3049,8 +3064,13 @@
     <div class="co-section-title" style="width:48%;margin-top:16px;margin-bottom:4px;"></div>
     <div class="co-card">
       <div class="co-payment-row">
-        <div class="co-payment-lines"><div class="co-card-chip"></div><div class="co-line" style="width:32px;"></div></div>
-        <div class="co-chevron"></div>
+        <div class="co-line" style="width:76px;"></div>
+        <div class="co-chevron" style="margin-right:8px;"></div>
+      </div>
+      <div class="co-divider"></div>
+      <div class="co-payment-row">
+        <div class="co-line" style="width:88px;"></div>
+        <div class="co-chevron" style="margin-right:8px;"></div>
       </div>
     </div>
   </div>
@@ -3089,7 +3109,6 @@ function stampTemplate(templateId, targetEl) {
     document.querySelector('#view-notif .phone-frame .phone-content'),
     document.querySelector('#tpSheetContent .phone-content'),
     document.querySelector('#tpModalContent .phone-content'),
-    document.querySelector('#pushSource .phone-content'),
     document.querySelector('#accSrc .phone-content'),
     document.querySelector('#accRmSrc .phone-content'),
     document.querySelector('#view-tooltip .phone-content'),
@@ -3099,14 +3118,16 @@ function stampTemplate(templateId, targetEl) {
   });
 
   // tpl-detail targets (stamp into .push-dest-inner so push-screen translateX stays correct)
-  stampTemplate('tpl-detail', document.querySelector('#pushDest .push-dest-inner'));
+  stampTemplate('tpl-detail', document.querySelector('#pushSource .push-dest-inner'));
   stampTemplate('tpl-detail', document.querySelector('#tpPushSource .push-dest-inner'));
-  // tpPushDest: checkout screen wrapped in co-screen so it fills the phone height
+  // pushDest + tpPushDest: checkout screen wrapped in co-screen so it fills the phone height
   (function() {
-    const coScreen = document.createElement('div');
-    coScreen.className = 'co-screen';
-    stampTemplate('tpl-checkout', coScreen);
-    document.querySelector('#tpPushDest .push-dest-inner').appendChild(coScreen);
+    ['#pushDest .push-dest-inner', '#tpPushDest .push-dest-inner'].forEach(sel => {
+      const coScreen = document.createElement('div');
+      coScreen.className = 'co-screen';
+      stampTemplate('tpl-checkout', coScreen);
+      document.querySelector(sel).appendChild(coScreen);
+    });
   })();
   stampTemplate('tpl-detail', document.querySelector('#accDest .push-dest-inner'));
   stampTemplate('tpl-detail', document.querySelector('#accRmDest .push-dest-inner'));
@@ -4333,6 +4354,19 @@ function playModalExit() {
 }
 
 document.getElementById('bezPlayBtn').addEventListener('click', runBezDemo);
+
+// ── Desktop bezel uniform scale ───────────────────────────────────
+(function() {
+  const bezel = document.getElementById('desktopBezel');
+  const scaler = document.getElementById('dtScaler');
+  function updateDtScale() {
+    const scale = bezel.clientWidth / 720;
+    scaler.style.setProperty('--dt-scale', scale);
+    scaler.style.transform = `scale(${scale})`;
+  }
+  updateDtScale();
+  new ResizeObserver(updateDtScale).observe(bezel);
+})();
 document.getElementById('springPlayBtn').addEventListener('click', playDemo);
 document.getElementById('ffCardWrap').addEventListener('click', playFastFade);
 
@@ -5490,21 +5524,47 @@ reserveTabWidths();
   });
 })();
 
+// ── Gesture demo uniform scale ────────────────────────────────────
+(function() {
+  const container = document.getElementById('ngDemoContainer');
+  const scaler    = document.getElementById('ngDemoScaler');
+  const PADDING   = 64; // 32px each side
+  let naturalW    = 0;
+
+  function updateNgScale() {
+    if (!naturalW) naturalW = scaler.scrollWidth;
+    const available = container.clientWidth - PADDING;
+    const scale = Math.min(1, available / naturalW);
+    scaler.style.transform = `scale(${scale})`;
+  }
+  updateNgScale();
+  new ResizeObserver(updateNgScale).observe(container);
+})();
+
+// ── A11y phones uniform scale ─────────────────────────────────────
+(function() {
+  const container = document.getElementById('accDemoContainer');
+  const scaler    = document.getElementById('accPhonesScaler');
+  const PADDING   = 96; // 48px each side
+  let naturalW    = 0;
+
+  function updateAccScale() {
+    if (!naturalW) naturalW = scaler.scrollWidth;
+    const available = container.clientWidth - PADDING;
+    const scale = Math.min(1, available / naturalW);
+    scaler.style.transform = `scale(${scale})`;
+  }
+  updateAccScale();
+  new ResizeObserver(updateAccScale).observe(container);
+})();
+
 // ── Detail screen close buttons ───────────────────────────────────
 (function() {
   function closeBtn(containerId) {
     return document.querySelector('#' + containerId + ' .push-hero > div');
   }
 
-  // Spring tokens push demo
-  const pushClose = closeBtn('pushDest');
-  if (pushClose) pushClose.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (demoState === 'in') playDemo();
-  });
-
-  // TP slide-in demo
-  // tpPushDest is now a checkout screen (no close button); slide-in toggles on phone tap
+  // Push demos: source=detail, dest=checkout — no close button needed, phone tap toggles
 })();
 </script>
 <div class="toast" id="toast"></div>
