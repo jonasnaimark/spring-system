@@ -859,7 +859,7 @@
       height: 108px;
       background: var(--sk);
       border-radius: 10px;
-      margin: 24px 0 12px;
+      margin: 24px 0 14px;
     }
     .inset-modal-badge {
       height: 18px;
@@ -875,8 +875,8 @@
       height: 36px;
       border-radius: 10px;
       background: var(--sk);
-      margin-top: 14px;
-      margin-bottom: 2px;
+      margin-top: 12px;
+      margin-bottom: 0;
     }
 
     /* ── Modal demo ── */
@@ -2038,7 +2038,7 @@
       <div class="expand-hero-panel" id="tpModalPanel" style="display:none;box-shadow:0 8px 32px rgba(0,0,0,0.28);">
         <div id="tpModalCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
         <div id="tpModalContentLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
-          <div id="tpModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px 16px 20px;"></div>
+          <div id="tpModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px 16px 12px;"></div>
         </div>
       </div>
       <!-- slide-in: push screens -->
@@ -4864,11 +4864,17 @@ function applyTpZoomMode(mode) {
 document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (btn.dataset.mode === tpZoomMode) return;
-    if (tpExpandState) {
-      tpCollapseCard(() => applyTpZoomMode(btn.dataset.mode));
-    } else {
-      applyTpZoomMode(btn.dataset.mode);
-    }
+    // Cancel any in-flight animation and hard-reset both panels before switching
+    if (tpExpandAnim) { cancelAnimationFrame(tpExpandAnim); tpExpandAnim = null; }
+    const fsPanel = document.getElementById('tpExpandPanel');
+    const modPanel = document.getElementById('tpModalPanel');
+    const scrim    = document.getElementById('tpExpandScrim');
+    fsPanel.style.display = 'none';
+    modPanel.style.display = 'none'; modPanel.style.boxShadow = 'none';
+    scrim.style.opacity = '0'; scrim.style.pointerEvents = 'none';
+    if (tpExpandState?.imgEl) tpExpandState.imgEl.style.visibility = '';
+    tpExpandState = null;
+    applyTpZoomMode(btn.dataset.mode);
   });
 });
 
