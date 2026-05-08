@@ -4852,6 +4852,26 @@ function switchTpDemo(key) {
   document.getElementById('tpZoomModeToggle').style.display = key === 'zoom' ? '' : 'none';
 }
 
+// Zoom mode toggle (Fullscreen / Modal) — defined before tab click handlers that reference it
+let tpZoomMode = 'fullscreen';
+function applyTpZoomMode(mode) {
+  tpZoomMode = mode;
+  document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.mode === tpZoomMode)
+  );
+  history.replaceState(null, '', `#tp-zoom${tpZoomMode === 'modal' ? '-modal' : ''}`);
+}
+document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.mode === tpZoomMode) return;
+    if (tpExpandState) {
+      tpCollapseCard(() => applyTpZoomMode(btn.dataset.mode));
+    } else {
+      applyTpZoomMode(btn.dataset.mode);
+    }
+  });
+});
+
 document.querySelectorAll('.tp-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const key = tab.dataset.tp;
@@ -4878,26 +4898,6 @@ if (hashTp) {
   const defaultTpKey = document.querySelector('.tp-tab.active')?.dataset.tp;
   if (defaultTpKey) switchTpDemo(defaultTpKey);
 }
-
-// Zoom mode toggle (Fullscreen / Modal)
-let tpZoomMode = 'fullscreen';
-function applyTpZoomMode(mode) {
-  tpZoomMode = mode;
-  document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(b =>
-    b.classList.toggle('active', b.dataset.mode === tpZoomMode)
-  );
-  history.replaceState(null, '', `#tp-zoom${tpZoomMode === 'modal' ? '-modal' : ''}`);
-}
-document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (btn.dataset.mode === tpZoomMode) return;
-    if (tpExpandState) {
-      tpCollapseCard(() => applyTpZoomMode(btn.dataset.mode));
-    } else {
-      applyTpZoomMode(btn.dataset.mode);
-    }
-  });
-});
 
 // ── Transition Patterns auto-play ────────────────────────────────
 (function() {
