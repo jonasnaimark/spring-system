@@ -348,6 +348,69 @@
     .sheet-tag-row { display: flex; gap: 6px; margin-bottom: 10px; }
     .sheet-tag { height: 22px; border-radius: 11px; background: var(--sk); }
 
+    /* ── Inset modal ── */
+    /* Gap between phone inner edge and modal = 10px; radius = phone-inner-radius - gap = 30 - 10 = 20px */
+    .inset-modal-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .inset-modal-scrim {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.40);
+    }
+    .inset-modal {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      background: var(--c-surface-0);
+      border-radius: 20px;
+      padding: 16px 16px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .inset-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--sk);
+      flex-shrink: 0;
+    }
+    .inset-modal-img {
+      width: 100px;
+      height: 88px;
+      background: var(--sk);
+      border-radius: 10px;
+      margin: 8px 0 14px;
+    }
+    .inset-modal-badge {
+      height: 18px;
+      width: 72px;
+      border-radius: 9px;
+      background: var(--sk);
+      margin-bottom: 10px;
+    }
+    .inset-modal-title-1 { height: 11px; width: 80%; background: var(--sk); border-radius: 5px; margin-bottom: 6px; }
+    .inset-modal-title-2 { height: 11px; width: 60%; background: var(--sk); border-radius: 5px; margin-bottom: 10px; }
+    .inset-modal-body-1  { height: 7px;  width: 88%; background: var(--sk); border-radius: 4px; margin-bottom: 5px; opacity: 0.55; }
+    .inset-modal-body-2  { height: 7px;  width: 72%; background: var(--sk); border-radius: 4px; margin-bottom: 16px; opacity: 0.55; }
+    .inset-modal-cta {
+      width: 100%;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--c-text-primary);
+      margin-bottom: 10px;
+    }
+    .inset-modal-legal-1 { height: 6px; width: 90%; background: var(--sk); border-radius: 3px; margin-bottom: 4px; opacity: 0.35; }
+    .inset-modal-legal-2 { height: 6px; width: 78%; background: var(--sk); border-radius: 3px; opacity: 0.35; }
+
     /* ── List screen (full-screen) ── */
     .ls-line { height: 8px; width: 100%; background: var(--sk); border-radius: 4px; margin-bottom: 7px; flex-shrink: 0; }
     .ls-line.short  { width: 55%; }
@@ -715,6 +778,24 @@
   </div>
 </template>
 
+<template id="tpl-inset-modal">
+  <div class="inset-modal-wrap">
+    <div class="inset-modal-scrim"></div>
+    <div class="inset-modal">
+      <div class="inset-modal-close"></div>
+      <div class="inset-modal-img"></div>
+      <div class="inset-modal-badge"></div>
+      <div class="inset-modal-title-1"></div>
+      <div class="inset-modal-title-2"></div>
+      <div class="inset-modal-body-1"></div>
+      <div class="inset-modal-body-2"></div>
+      <div class="inset-modal-cta"></div>
+      <div class="inset-modal-legal-1"></div>
+      <div class="inset-modal-legal-2"></div>
+    </div>
+  </div>
+</template>
+
 <template id="tpl-list-screen">
   <div class="ls-line" style="height:11px;width:68%;border-radius:6px;margin-bottom:5px;"></div>
   <div class="ls-line" style="height:8px;width:45%;border-radius:4px;"></div>
@@ -915,6 +996,12 @@
   sheetWrap.className = 'sheet-standalone';
   sheetWrap.appendChild(stamp('tpl-sheet'));
   grid.appendChild(makeItem('Sheet', 'tpl-sheet', sheetWrap));
+
+  // ── tpl-inset-modal ──
+  const insetModalPhone = document.createElement('div');
+  insetModalPhone.className = 'phone-frame';
+  insetModalPhone.appendChild(stamp('tpl-inset-modal'));
+  grid.appendChild(makeItem('Inset Modal', 'tpl-inset-modal', insetModalPhone));
 
   // ── tpl-desktop-modal ──
   const dtModal = document.createElement('div');
