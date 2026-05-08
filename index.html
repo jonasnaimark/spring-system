@@ -1933,7 +1933,7 @@
       <a class="nav-item" data-target="sec-transition" data-label="Transitions" data-short="Transitions">Transitions</a>
       <a class="nav-item" data-target="sec-gestures" data-label="Gestures" data-short="Gestures">Gestures</a>
       <a class="nav-item" data-target="sec-spring" data-label="Springs" data-short="Springs">Springs</a>
-      <a class="nav-item" data-target="sec-curve" data-label="Curves & Duration" data-short="Curves">Curves & Duration</a>
+      <a class="nav-item" data-target="sec-curve" data-label="Curves & Durations" data-short="Curves">Curves & Durations</a>
       <a class="nav-item" data-target="sec-accessibility" data-label="Accessibility" data-short="A11Y">Accessibility</a>
     </div>
   </div>
@@ -1993,6 +1993,13 @@
         </div>
         <div id="tpExpandDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
           <div id="tpDetailInner" style="position:absolute;top:0;left:0;width:var(--tp-phone-w,200px);transform-origin:top left;display:flex;flex-direction:column;"></div>
+        </div>
+      </div>
+      <!-- Modal flying panel (zoom→modal mode) -->
+      <div class="expand-hero-panel" id="tpModalPanel" style="display:none;box-shadow:0 8px 32px rgba(0,0,0,0.28);">
+        <div id="tpModalCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
+        <div id="tpModalContentLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
+          <div id="tpModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;"></div>
         </div>
       </div>
       <!-- slide-in: push screens -->
@@ -2602,7 +2609,7 @@
 
 <!-- ── Curves & Durations Tokens section ── -->
 <div class="section-wrap" id="sec-curve">
-  <h1 class="section-title">Curves & Duration</h1>
+  <h1 class="section-title">Curves & Durations</h1>
   <p class="section-body">Curves are used for simple animations like fades or slides. Some common Curve & Duration combos:</p>
   <div class="demo-tabs-bar section-chips" id="bezTabsBar">
     <div class="demo-tab active" data-bez="slow-fade">Slow Fade</div>
@@ -3175,6 +3182,7 @@ function stampTemplate(templateId, targetEl) {
   stampTemplate('tpl-home-screen-carousels', document.getElementById('accPhoneContent'));
   Array.from(document.querySelectorAll('#accPhoneContent .sk-carousel-card')).slice(0, 1).forEach(c => c.classList.add('acc-zoom-card'));
   stampTemplate('tpl-detail', document.getElementById('ngDetailInner'));
+  stampTemplate('tpl-inset-modal', document.getElementById('tpModalInner'));
 
   // tpl-home-screen-carousels targets
   stampTemplate('tpl-home-screen-carousels', document.getElementById('tpPhoneContent'));
@@ -3902,11 +3910,34 @@ function tpSpringAnimate(tick, spring) {
   tpAnim = requestAnimationFrame(frame);
 }
 
+function tpGetModalDest(phone) {
+  // Compute inset modal destination rect in phone-local CSS coords
+  // Equal 10px inset on left/right/bottom; height measured from rendered tpModalInner
+  const gap = 10;
+  const toX = gap;
+  const toW = phone.clientWidth - gap * 2;
+  const toR = 20;
+  const inner = document.getElementById('tpModalInner');
+  // Temporarily make panel visible off-screen to measure natural height
+  const panel = document.getElementById('tpModalPanel');
+  const wasDisplay = panel.style.display;
+  panel.style.display = 'block';
+  panel.style.visibility = 'hidden';
+  panel.style.left = toX + 'px';
+  panel.style.width = toW + 'px';
+  panel.style.height = 'auto';
+  if (inner) inner.style.transform = 'scale(1)';
+  const toH = panel.scrollHeight || 320;
+  panel.style.display = wasDisplay;
+  panel.style.visibility = '';
+  const toY = phone.clientHeight - toH - gap;
+  return { toX, toY, toW, toH, toR };
+}
+
 function tpExpandCard(card) {
   if (tpExpandState || !card) return;
   const { stiffness, damping } = TP_SPRING;
   const phone  = document.getElementById('tpPhone');
-  const panel  = document.getElementById('tpExpandPanel');
   const bx = phone.clientLeft, by = phone.clientTop;
   const phoneRect = phone.getBoundingClientRect();
   const cardRect  = card.getBoundingClientRect();
@@ -3917,29 +3948,43 @@ function tpExpandCard(card) {
   const fromW = cardRect.width;
   const fromH = imgRect.height;
   const fromR = 10;
-  const toX = 0, toY = 0, toW = phone.clientWidth, toH = phone.clientHeight, toR = 40;
-  document.getElementById('tpExpandCardLayer').style.opacity   = '1';
-  document.getElementById('tpExpandDetailLayer').style.opacity = '0';
+
+  const isModal = tpZoomMode === 'modal';
+  const panel     = isModal ? document.getElementById('tpModalPanel')     : document.getElementById('tpExpandPanel');
+  const cardLayer = isModal ? document.getElementById('tpModalCardLayer') : document.getElementById('tpExpandCardLayer');
+  const detailLayer = isModal ? document.getElementById('tpModalContentLayer') : document.getElementById('tpExpandDetailLayer');
+  const detailInner = isModal ? document.getElementById('tpModalInner')   : document.getElementById('tpDetailInner');
+  const scrim     = document.getElementById('tpExpandScrim');
+
+  let toX, toY, toW, toH, toR;
+  if (isModal) {
+    ({ toX, toY, toW, toH, toR } = tpGetModalDest(phone));
+    if (detailInner) detailInner.style.width = toW + 'px';
+    panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0.28)';
+  } else {
+    toX = 0; toY = 0; toW = phone.clientWidth; toH = phone.clientHeight; toR = 40;
+    if (detailInner) detailInner.style.width = toW + 'px';
+  }
+
+  cardLayer.style.opacity   = '1';
+  detailLayer.style.opacity = '0';
   if (imgEl) imgEl.style.visibility = 'hidden';
   panel.style.left = fromX + 'px'; panel.style.top = fromY + 'px';
   panel.style.width = fromW + 'px'; panel.style.height = fromH + 'px';
   panel.style.borderRadius = fromR + 'px';
   panel.style.pointerEvents = 'none'; panel.style.zIndex = '12';
   panel.style.visibility = 'hidden'; panel.style.display = 'block';
-  const detailInner = document.getElementById('tpDetailInner');
-  if (detailInner) detailInner.style.width = toW + 'px';
-  tpExpandState = { fromX, fromY, fromW, fromH, fromR, card, imgEl };
+  scrim.style.opacity = '0';
+
+  tpExpandState = { fromX, fromY, fromW, fromH, fromR, card, imgEl, isModal, toX, toY, toW, toH, toR };
   const startT = performance.now();
   if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
-  const cardLayer   = document.getElementById('tpExpandCardLayer');
-  const detailLayer = document.getElementById('tpExpandDetailLayer');
-  const scrim       = document.getElementById('tpExpandScrim');
-  scrim.style.opacity = '0';
+
   const DELAY = 0.05;
   function tick(now) {
     const t = (now - startT) / 1000;
-    const posXW = springPos(t,           stiffness, damping); // X/width lead
-    const posYH = springPos(Math.max(0, t - DELAY), stiffness, damping); // Y/height trail
+    const posXW = springPos(t, stiffness, damping);
+    const posYH = springPos(Math.max(0, t - DELAY), stiffness, damping);
     const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
     const curW = toW + (fromW - toW) * posXW;
     const scale = curW / toW;
@@ -3957,12 +4002,15 @@ function tpExpandCard(card) {
     if (t < 5 && (!isSettled(t, stiffness, damping) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
       tpExpandAnim = requestAnimationFrame(tick);
     } else {
-      panel.style.left = '0'; panel.style.top = '0';
+      panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
       panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
-      panel.style.borderRadius = '40px'; panel.style.pointerEvents = 'auto';
+      panel.style.borderRadius = toR + 'px'; panel.style.pointerEvents = 'auto';
       if (detailInner) detailInner.style.transform = 'scale(1)';
       detailLayer.style.opacity = '1'; cardLayer.style.opacity = '0';
-      scrim.style.opacity = '0';
+      // modal: keep scrim visible; fullscreen: clear it
+      scrim.style.opacity = isModal ? '1' : '0';
+      scrim.style.pointerEvents = isModal ? 'auto' : 'none';
+      tpExpandAnim = null;
     }
   }
   tpExpandAnim = requestAnimationFrame(tick);
@@ -3971,26 +4019,27 @@ function tpExpandCard(card) {
 function tpCollapseCard(onDone) {
   if (!tpExpandState) return;
   const { stiffness, damping } = TP_SPRING;
-  const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, card, imgEl } = tpExpandState;
+  const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, card, imgEl, isModal } = tpExpandState;
   const phone = document.getElementById('tpPhone');
-  const panel = document.getElementById('tpExpandPanel');
+  const panel     = isModal ? document.getElementById('tpModalPanel')        : document.getElementById('tpExpandPanel');
+  const cardLayer = isModal ? document.getElementById('tpModalCardLayer')    : document.getElementById('tpExpandCardLayer');
+  const detailLayer = isModal ? document.getElementById('tpModalContentLayer') : document.getElementById('tpExpandDetailLayer');
+  const detailInner = isModal ? document.getElementById('tpModalInner')      : document.getElementById('tpDetailInner');
+  const scrim     = document.getElementById('tpExpandScrim');
   panel.style.pointerEvents = 'none';
+  scrim.style.pointerEvents = 'none';
   const fromX = parseFloat(panel.style.left) || 0;
   const fromY = parseFloat(panel.style.top)  || 0;
   const fromW = parseFloat(panel.style.width)  || phone.clientWidth;
   const fromH = parseFloat(panel.style.height) || phone.clientHeight;
-  const fromR = parseFloat(panel.style.borderRadius) || 40;
-  const cardLayer   = document.getElementById('tpExpandCardLayer');
-  const detailLayer = document.getElementById('tpExpandDetailLayer');
-  const detailInner = document.getElementById('tpDetailInner');
-  const scrim       = document.getElementById('tpExpandScrim');
+  const fromR = parseFloat(panel.style.borderRadius) || (isModal ? 20 : 40);
   const startT = performance.now();
   if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
   const DELAY = 0.05;
   function tick(now) {
     const t = (now - startT) / 1000;
-    const posYH = springPos(t,           stiffness, damping); // Y/height lead
-    const posXW = springPos(Math.max(0, t - DELAY), stiffness, damping); // X/width trail
+    const posYH = springPos(t, stiffness, damping);
+    const posXW = springPos(Math.max(0, t - DELAY), stiffness, damping);
     const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
     const pYH = 1 - posYH;
     const pXW = 1 - posXW;
@@ -4010,10 +4059,13 @@ function tpCollapseCard(onDone) {
       tpExpandAnim = requestAnimationFrame(tick);
     } else {
       panel.style.display = 'none';
+      panel.style.boxShadow = 'none';
       if (detailInner) detailInner.style.transform = 'scale(1)';
       detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
+      scrim.style.opacity = '0';
       if (imgEl) imgEl.style.visibility = '';
       tpExpandState = null;
+      tpExpandAnim = null;
       onDone?.();
     }
   }
@@ -4048,6 +4100,14 @@ document.querySelectorAll('.tp-zoom-card').forEach(card => {
   });
 });
 document.getElementById('tpExpandPanel').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (tpExpandState) tpCollapseCard();
+});
+document.getElementById('tpModalPanel').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (tpExpandState) tpCollapseCard();
+});
+document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
   e.stopPropagation();
   if (tpExpandState) tpCollapseCard();
 });
@@ -4761,11 +4821,20 @@ let tpZoomMode = 'fullscreen';
 document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (btn.dataset.mode === tpZoomMode) return;
-    tpZoomMode = btn.dataset.mode;
-    document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(b =>
-      b.classList.toggle('active', b.dataset.mode === tpZoomMode)
-    );
-    // TODO: switch zoom demo behaviour
+    // Collapse any open panel before switching modes
+    if (tpExpandState) {
+      tpCollapseCard(() => {
+        tpZoomMode = btn.dataset.mode;
+        document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(b =>
+          b.classList.toggle('active', b.dataset.mode === tpZoomMode)
+        );
+      });
+    } else {
+      tpZoomMode = btn.dataset.mode;
+      document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.mode === tpZoomMode)
+      );
+    }
   });
 });
 
