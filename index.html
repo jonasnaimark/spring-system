@@ -4864,17 +4864,24 @@ function applyTpZoomMode(mode) {
 document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (btn.dataset.mode === tpZoomMode) return;
-    // Cancel any in-flight animation and hard-reset both panels before switching
+    // Stop auto-play loop (clears pending setTimeout closures)
+    const wasPlaying = window._tpAutoPlay?.isPlaying();
+    window._tpAutoPlay?.stop();
+    // Cancel any in-flight rAF and hard-reset both panels
     if (tpExpandAnim) { cancelAnimationFrame(tpExpandAnim); tpExpandAnim = null; }
-    const fsPanel = document.getElementById('tpExpandPanel');
+    const fsPanel  = document.getElementById('tpExpandPanel');
     const modPanel = document.getElementById('tpModalPanel');
     const scrim    = document.getElementById('tpExpandScrim');
-    fsPanel.style.display = 'none';
+    fsPanel.style.display  = 'none';
     modPanel.style.display = 'none'; modPanel.style.boxShadow = 'none';
     scrim.style.opacity = '0'; scrim.style.pointerEvents = 'none';
-    if (tpExpandState?.imgEl) tpExpandState.imgEl.style.visibility = '';
+    // Restore any hidden card image
+    document.querySelectorAll('.tp-zoom-card .sk-carousel-img').forEach(img => img.style.visibility = '');
     tpExpandState = null;
+    tpExpandCardIdx = 0;
     applyTpZoomMode(btn.dataset.mode);
+    // Restart loop from clean state
+    if (wasPlaying) window._tpAutoPlay?.start();
   });
 });
 
