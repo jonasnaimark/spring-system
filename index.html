@@ -3088,6 +3088,20 @@
   </div>
 </template>
 
+<template id="tpl-inset-modal">
+  <div class="inset-modal-close">
+    <svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="inset-modal-img"></div>
+  <div class="inset-modal-badge"></div>
+  <div class="inset-modal-title-1"></div>
+  <div class="inset-modal-title-2"></div>
+  <div class="inset-modal-cta"></div>
+</template>
+
 <template id="tpl-desktop-home-screen">
   <div class="dt-topbar">
     <div class="dt-logo"></div>
@@ -3220,17 +3234,7 @@ function stampTemplate(templateId, targetEl) {
   stampTemplate('tpl-home-screen-carousels', document.getElementById('accPhoneContent'));
   Array.from(document.querySelectorAll('#accPhoneContent .sk-carousel-card')).slice(0, 1).forEach(c => c.classList.add('acc-zoom-card'));
   stampTemplate('tpl-detail', document.getElementById('ngDetailInner'));
-  // For the flying panel we only want the modal card's inner contents (not the wrap+scrim shell)
-  (function() {
-    const tpl = document.getElementById('tpl-inset-modal');
-    if (!tpl) return;
-    const frag = tpl.content.cloneNode(true);
-    const modalEl = frag.querySelector('.inset-modal');
-    const target = document.getElementById('tpModalInner');
-    if (modalEl && target) {
-      while (modalEl.firstChild) target.appendChild(modalEl.firstChild);
-    }
-  })();
+  stampTemplate('tpl-inset-modal', document.getElementById('tpModalInner'));
 
   // tpl-home-screen-carousels targets
   stampTemplate('tpl-home-screen-carousels', document.getElementById('tpPhoneContent'));
