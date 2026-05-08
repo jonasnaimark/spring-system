@@ -306,6 +306,40 @@
     .play-circle:hover { background: var(--c-surface-3); }
     .play-circle:active { filter: brightness(0.96); }
 
+    .demo-mode-toggle {
+      position: absolute;
+      top: 14px;
+      left: 58px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      background: var(--c-surface-0);
+      border: 1px solid var(--c-border-subtle);
+      border-radius: 18px;
+      padding: 3px;
+      gap: 2px;
+      z-index: 10;
+    }
+    .demo-mode-btn {
+      height: 28px;
+      padding: 0 12px;
+      border-radius: 14px;
+      border: none;
+      background: transparent;
+      font-size: var(--text-ui);
+      font-family: inherit;
+      color: var(--c-text-secondary);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .demo-mode-btn:hover { color: var(--c-text-primary); }
+    .demo-mode-btn.active {
+      background: var(--c-surface-3);
+      color: var(--c-text-primary);
+      font-weight: 500;
+    }
+
     .demo-tab {
       padding: 9px 18px;
       border-radius: 12px;
@@ -1945,6 +1979,10 @@
       <svg id="tpIconPlay" width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
       <svg id="tpIconPause" width="13" height="13" viewBox="0 0 12 12" fill="currentColor" style="display:none"><rect x="2" y="2" width="3" height="8" rx="1"/><rect x="7" y="2" width="3" height="8" rx="1"/></svg>
     </button>
+    <div class="demo-mode-toggle" id="tpZoomModeToggle" style="display:none;">
+      <button class="demo-mode-btn active" data-mode="fullscreen">Fullscreen</button>
+      <button class="demo-mode-btn" data-mode="modal">Modal</button>
+    </div>
     <div class="phone-frame" id="tpPhone">
       <div class="phone-content" id="tpPhoneContent"></div>
       <!-- Scrim -->
@@ -4692,6 +4730,9 @@ function switchTpDemo(key) {
   // Hide persistent bottom nav for slide-in (detail→checkout has no nav bar)
   const tpBottomNav = document.getElementById('tpPhoneBottomNav');
   if (tpBottomNav) tpBottomNav.style.display = key === 'slide-in' ? 'none' : '';
+
+  // Show zoom mode toggle only for zoom tab
+  document.getElementById('tpZoomModeToggle').style.display = key === 'zoom' ? '' : 'none';
 }
 
 document.querySelectorAll('.tp-tab').forEach(tab => {
@@ -4714,6 +4755,19 @@ if (hashTp) {
   const defaultTpKey = document.querySelector('.tp-tab.active')?.dataset.tp;
   if (defaultTpKey) switchTpDemo(defaultTpKey);
 }
+
+// Zoom mode toggle (Fullscreen / Modal)
+let tpZoomMode = 'fullscreen';
+document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.mode === tpZoomMode) return;
+    tpZoomMode = btn.dataset.mode;
+    document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.mode === tpZoomMode)
+    );
+    // TODO: switch zoom demo behaviour
+  });
+});
 
 // ── Transition Patterns auto-play ────────────────────────────────
 (function() {
