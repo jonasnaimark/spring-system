@@ -4562,11 +4562,16 @@ const TP_DEMOS = {
     reset() {
       if (tpExpandAnim) { cancelAnimationFrame(tpExpandAnim); tpExpandAnim = null; }
       const panel = document.getElementById('tpExpandPanel');
-      panel.style.display = '';
+      panel.style.display = 'none';
       panel.style.transform = '';
       document.getElementById('tpExpandCardLayer').style.opacity   = '1';
       document.getElementById('tpExpandDetailLayer').style.opacity = '0';
       document.getElementById('tpExpandScrim').style.opacity       = '0';
+      const modPanel = document.getElementById('tpModalPanel');
+      modPanel.style.display = 'none';
+      modPanel.style.boxShadow = 'none';
+      document.getElementById('tpModalCardLayer').style.opacity    = '1';
+      document.getElementById('tpModalContentLayer').style.opacity = '0';
       if (tpExpandState?.imgEl) tpExpandState.imgEl.style.visibility = '';
       document.querySelectorAll('.tp-zoom-card .sk-carousel-img').forEach(c => c.style.visibility = '');
       tpExpandState   = null;
