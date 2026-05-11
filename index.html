@@ -5071,6 +5071,52 @@ function switchTpDemo(key) {
   document.getElementById('tpSlideInModeToggle').style.display = key === 'slide-in' ? '' : 'none';
 }
 
+// ── Demo Alt Pattern ─────────────────────────────────────────────────────────
+//
+// Use this pattern to show multiple variants of the same transition demo
+// under a segmented toggle (e.g. "Fullscreen / Modal", "Fullscreen / Persistent Bar").
+//
+// CHECKLIST — add a new alt to an existing demo:
+//
+//  HTML
+//  1. Add a <div class="demo-mode-toggle" id="tp{Demo}ModeToggle" style="display:none;">
+//     with one <button class="demo-mode-btn" data-mode="your-mode"> per variant.
+//     Place it as a sibling of the phone frame inside tpDemoContainer.
+//  2. Add a new layer element (e.g. <div id="tp{Demo}AltLayer">) inside tpPhone.
+//     If it has CSS display:none as a *stylesheet rule* (not inline), note that
+//     setting el.style.display = '' will revert to that rule and stay hidden —
+//     always set it to 'block' explicitly in your apply function.
+//  3. Stamp any templates into the new layer's inner containers.
+//
+//  JS
+//  4. Declare the mode state variable near the top of the TP state block
+//     (alongside tpAnim, tpDemoState etc. — around line 4091). Using let here
+//     is fine, but it MUST be declared before TP_DEMOS references it, otherwise
+//     JS silently creates a global and the toggle appears to do nothing.
+//  5. Write an apply{Demo}Mode(mode) function that:
+//       a. Sets the mode variable
+//       b. Syncs button .active classes via querySelectorAll + classList.toggle
+//       c. Shows/hides the correct layers (use 'block', not '' for CSS-hidden elements)
+//  6. Add the toggle id to switchTpDemo's show/hide line so it appears only for
+//     its tab:
+//       document.getElementById('tp{Demo}ModeToggle').style.display = key === '{demo}' ? '' : 'none';
+//  7. Add any new layer ids to TP_ALL_LAYERS so switchTpDemo hides them when
+//     switching tabs. In the TP_ALL_LAYERS loop, show with 'block' (not '') if
+//     the element has a CSS display:none rule.
+//  8. In the demo's reset() function, only reset mode/layers when called with
+//     the sentinel argument 'leaving' (i.e. when the user switches tabs).
+//     Do NOT reset mode in the plain reset() — autoplay calls reset() on every
+//     start, which would wipe a mode the user just selected.
+//       reset(reason) {
+//         // ... animation state always ...
+//         if (reason === 'leaving') apply{Demo}Mode('default-mode');
+//       }
+//     Pass 'leaving' only from switchTpDemo: TP_DEMOS[prevKey]?.reset?.('leaving')
+//  9. In the demo's play() function, branch on the mode variable to run the
+//     correct animation for the active variant.
+//
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Zoom mode toggle (Fullscreen / Modal) — defined before tab click handlers that reference it
 let tpZoomMode = 'fullscreen';
 function applyTpZoomMode(mode) {
