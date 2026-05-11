@@ -4741,10 +4741,13 @@ const TP_DEMOS = {
       pill.style.transition = 'none';
       pill.style.marginLeft  = '0px';
       pill.style.marginRight = '0px';
+      // reset mode to fullscreen
       tpSlideInMode = 'fullscreen';
       document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(b =>
         b.classList.toggle('active', b.dataset.mode === 'fullscreen')
       );
+      document.getElementById('tpPushContent').style.display = '';
+      document.getElementById('tpPersistBar').style.display  = 'none';
     },
     play() {
       const spring = { stiffness: 300, damping: calcDamping(300, 1.0) };
@@ -5055,7 +5058,12 @@ function switchTpDemo(key) {
   if (key === 'slide-in' && tpSlideInMode === 'persistent-bar') activeLayer = 'tpPersistBar';
   TP_ALL_LAYERS.forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.style.display = id === activeLayer ? '' : 'none';
+    if (!el) return;
+    if (id === activeLayer) {
+      el.style.display = id === 'tpPersistBar' ? 'block' : '';
+    } else {
+      el.style.display = 'none';
+    }
   });
 
   // Hide global bottom nav for slide-in (both modes have their own nav or none)
@@ -5110,7 +5118,7 @@ function applyTpSlideInMode(mode) {
   );
   // Swap visible layer
   document.getElementById('tpPushContent').style.display  = mode === 'fullscreen'      ? '' : 'none';
-  document.getElementById('tpPersistBar').style.display   = mode === 'persistent-bar'  ? '' : 'none';
+  document.getElementById('tpPersistBar').style.display   = mode === 'persistent-bar'  ? 'block' : 'none';
 }
 document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
