@@ -5099,7 +5099,9 @@ function switchTpDemo(key) {
 //  5. Write an apply{Demo}Mode(mode) function that:
 //       a. Sets the mode variable
 //       b. Syncs button .active classes via querySelectorAll + classList.toggle
-//       c. Shows/hides the correct layers (use 'block', not '' for CSS-hidden elements)
+//       c. Updates the URL: history.replaceState(null, '', `#tp-{tab}${mode === 'default' ? '' : '-{mode-slug}'}`)
+//          Use the tab key + mode slug as the hash, e.g. #tp-slide-in-persistent-bar
+//       d. Shows/hides the correct layers (use 'block', not '' for CSS-hidden elements)
 //  6. Add the toggle id to switchTpDemo's show/hide line so it appears only for
 //     its tab:
 //       document.getElementById('tp{Demo}ModeToggle').style.display = key === '{demo}' ? '' : 'none';
@@ -5117,6 +5119,11 @@ function switchTpDemo(key) {
 //     Pass 'leaving' only from switchTpDemo: TP_DEMOS[prevKey]?.reset?.('leaving')
 //  9. In the demo's play() function, branch on the mode variable to run the
 //     correct animation for the active variant.
+// 10. Handle the hash at page load, right where zoom-modal is handled (~line 5194):
+//       } else if (rawKey === '{tab}-{mode-slug}') {
+//         switchTpDemo('{tab}');
+//         apply{Demo}Mode('{mode}');
+//       }
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -5159,6 +5166,7 @@ function applyTpSlideInMode(mode) {
   document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.mode === tpSlideInMode)
   );
+  history.replaceState(null, '', `#tp-slide-in${mode === 'persistent-bar' ? '-persistent-bar' : ''}`);
   // Swap visible layer
   document.getElementById('tpPushContent').style.display  = mode === 'fullscreen'      ? '' : 'none';
   document.getElementById('tpPersistBar').style.display   = mode === 'persistent-bar'  ? 'block' : 'none';
@@ -5194,6 +5202,9 @@ if (hashTp) {
   if (rawKey === 'zoom-modal') {
     switchTpDemo('zoom');
     applyTpZoomMode('modal');
+  } else if (rawKey === 'slide-in-persistent-bar') {
+    switchTpDemo('slide-in');
+    applyTpSlideInMode('persistent-bar');
   } else {
     switchTpDemo(rawKey);
   }
