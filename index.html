@@ -717,6 +717,32 @@
       margin-top: 10px;
     }
 
+    .sk-chips {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+      justify-content: center;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+
+    .sk-chip {
+      height: 22px;
+      border-radius: 11px;
+      border: 1.5px solid var(--c-border-medium);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px;
+    }
+
+    .sk-chip-label {
+      height: 7px;
+      border-radius: 4px;
+      background: var(--c-border-medium);
+    }
+
     .sk-bottom-nav {
       position: absolute;
       bottom: 0;
@@ -1257,6 +1283,73 @@
       height: 1px;
       background: var(--sk);
       margin: 4px 0;
+    }
+
+    /* ── Persistent bar slide-in ── */
+    #tpPersistBar {
+      position: absolute;
+      inset: 0;
+      display: none;
+    }
+
+    /* Scrolling screen area, inset below the persistent top bar and above the persistent bottom nav */
+    .tp-persist-screen {
+      position: absolute;
+      top: 80px; /* 36px padding-top + 34px pill + 10px gap */
+      left: 0;
+      right: 0;
+      bottom: 68px; /* bottom nav height */
+      overflow: hidden;
+      background: var(--c-surface-0);
+      will-change: transform;
+    }
+
+    #tpPersistDest {
+      transform: translateX(100%);
+    }
+
+    .tp-persist-screen-inner {
+      padding: 10px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* The persistent search bar row sitting at the top of the phone */
+    #tpPersistTopBar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: var(--c-surface-0);
+      padding: 36px 18px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 5;
+    }
+
+    #tpPersistPill {
+      flex: 1;
+      height: 34px;
+      border-radius: 17px;
+      background: var(--sk);
+      will-change: width, margin;
+    }
+
+    .tp-persist-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--c-text-tertiary);
+      opacity: 0;
+      will-change: opacity;
     }
 
     /* ── Checkout template ── */
@@ -2022,6 +2115,10 @@
       <button class="demo-mode-btn active" data-mode="fullscreen">Fullscreen</button>
       <button class="demo-mode-btn" data-mode="modal">Modal</button>
     </div>
+    <div class="demo-mode-toggle" id="tpSlideInModeToggle" style="display:none;">
+      <button class="demo-mode-btn active" data-mode="fullscreen">Fullscreen</button>
+      <button class="demo-mode-btn" data-mode="persistent-bar">Persistent Bar</button>
+    </div>
     <div class="phone-frame" id="tpPhone">
       <div class="phone-content" id="tpPhoneContent"></div>
       <!-- Scrim -->
@@ -2046,6 +2143,30 @@
         <div class="push-screen" id="tpPushSource"><div class="push-dest-inner"></div></div>
         <div class="push-scrim" id="tpPushScrim" style="opacity:0;"></div>
         <div class="push-screen" id="tpPushDest" style="transform:translateX(100%);"><div class="push-dest-inner"></div></div>
+      </div>
+
+      <!-- slide-in: persistent bar mode -->
+      <div id="tpPersistBar">
+        <!-- sliding screens (clipped between top bar and bottom nav) -->
+        <div class="tp-persist-screen" id="tpPersistSource">
+          <div class="tp-persist-screen-inner" id="tpPersistSourceInner"></div>
+        </div>
+        <div class="push-scrim" id="tpPersistScrim" style="opacity:0;top:80px;bottom:68px;"></div>
+        <div class="tp-persist-screen" id="tpPersistDest">
+          <div class="tp-persist-screen-inner" id="tpPersistDestInner"></div>
+        </div>
+        <!-- persistent top bar -->
+        <div id="tpPersistTopBar">
+          <div class="tp-persist-icon" id="tpPersistBack">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div id="tpPersistPill"></div>
+          <div class="tp-persist-icon" id="tpPersistFilter">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="1.5" rx="0.75" fill="currentColor"/><rect x="4" y="7.25" width="8" height="1.5" rx="0.75" fill="currentColor"/><rect x="6" y="10.5" width="4" height="1.5" rx="0.75" fill="currentColor"/></svg>
+          </div>
+        </div>
+        <!-- persistent bottom nav -->
+        <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
       </div>
 
       <!-- slide-in-fade: tab screens -->
@@ -3135,6 +3256,25 @@
   </div>
 </template>
 
+<template id="tpl-search-results-content">
+  <div class="sk-chips">
+    <div class="sk-chip"><div class="sk-chip-label" style="width:36px;"></div></div>
+    <div class="sk-chip"><div class="sk-chip-label" style="width:28px;"></div></div>
+    <div class="sk-chip"><div class="sk-chip-label" style="width:44px;"></div></div>
+  </div>
+  <div class="sk-card-img"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+  <div class="sk-section-label"></div>
+  <div class="sk-card-img partial"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+  <div class="sk-sub"></div>
+  <div class="sk-card-img partial"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+</template>
+
 <template id="tpl-checkout">
   <div class="co-titlebar"><div class="co-title"></div></div>
   <div class="co-body">
@@ -3240,6 +3380,9 @@ function stampTemplate(templateId, targetEl) {
   // tpl-home-screen-carousels targets
   stampTemplate('tpl-home-screen-carousels', document.getElementById('tpPhoneContent'));
   stampTemplate('tpl-home-screen-carousels', document.getElementById('ngPhoneContent'));
+  // persistent bar slide-in screens
+  stampTemplate('tpl-home-screen-carousels', document.getElementById('tpPersistSourceInner'));
+  stampTemplate('tpl-search-results-content', document.getElementById('tpPersistDestInner'));
   // Mark first 6 cards in tpPhoneContent as tp-zoom-card (rows 1+2)
   Array.from(document.querySelectorAll('#tpPhoneContent .sk-carousel-card')).slice(0, 6).forEach(c => c.classList.add('tp-zoom-card'));
 
@@ -4583,32 +4726,96 @@ const TP_DEMOS = {
     reset() {
       tpDemoState = 'out';
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
+      // fullscreen reset
       document.getElementById('tpPushSource').style.transform = 'translateX(0%)';
       document.getElementById('tpPushDest').style.transform   = 'translateX(100%)';
       document.getElementById('tpPushScrim').style.opacity    = '0';
+      // persistent bar reset
+      document.getElementById('tpPersistSource').style.transform = 'translateX(0%)';
+      document.getElementById('tpPersistDest').style.transform   = 'translateX(100%)';
+      document.getElementById('tpPersistScrim').style.opacity    = '0';
+      document.getElementById('tpPersistBack').style.opacity     = '0';
+      document.getElementById('tpPersistFilter').style.opacity   = '0';
+      // pill: full width (no margin, fills the gap between icon placeholders which are 0-opacity)
+      const pill = document.getElementById('tpPersistPill');
+      pill.style.transition = 'none';
+      pill.style.marginLeft  = '0px';
+      pill.style.marginRight = '0px';
+      tpSlideInMode = 'fullscreen';
+      document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.mode === 'fullscreen')
+      );
     },
     play() {
-      const src   = document.getElementById('tpPushSource');
-      const dest  = document.getElementById('tpPushDest');
-      const scrim = document.getElementById('tpPushScrim');
-      // default + smooth: stiffness 300, ratio 1.0
       const spring = { stiffness: 300, damping: calcDamping(300, 1.0) };
       const { stiffness, damping } = spring;
       const isIn  = tpDemoState === 'in';
       tpDemoState = isIn ? 'out' : 'in';
-      tpSpringAnimate((t) => {
-        const pos      = springPos(t, stiffness, damping);
-        const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+
+      if (tpSlideInMode !== 'persistent-bar') {
+        // ── Fullscreen mode ──
+        const src   = document.getElementById('tpPushSource');
+        const dest  = document.getElementById('tpPushDest');
+        const scrim = document.getElementById('tpPushScrim');
+        tpSpringAnimate((t) => {
+          const pos      = springPos(t, stiffness, damping);
+          const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+          if (!isIn) {
+            dest.style.transform = `translateX(${pos * 100}%)`;
+            src.style.transform  = `translateX(${-(1 - pos) * 30}%)`;
+            scrim.style.opacity  = String(1 - scrimPos);
+          } else {
+            dest.style.transform = `translateX(${(1 - pos) * 100}%)`;
+            src.style.transform  = `translateX(${-pos * 30}%)`;
+            scrim.style.opacity  = String(scrimPos);
+          }
+        }, spring);
+      } else {
+        // ── Persistent bar mode ──
+        const src    = document.getElementById('tpPersistSource');
+        const dest   = document.getElementById('tpPersistDest');
+        const scrim  = document.getElementById('tpPersistScrim');
+        const back   = document.getElementById('tpPersistBack');
+        const filter = document.getElementById('tpPersistFilter');
+        const pill   = document.getElementById('tpPersistPill');
+        // Icon width + gap that the pill needs to absorb when icons are visible
+        const ICON_W = 24 + 8; // 24px icon + 8px gap each side
+        pill.style.transition = 'none';
         if (!isIn) {
-          dest.style.transform = `translateX(${pos * 100}%)`;
-          src.style.transform  = `translateX(${-(1 - pos) * 30}%)`;
-          scrim.style.opacity  = String(1 - scrimPos);
+          // entering: pill narrows to make room for icons
+          pill.style.marginLeft  = '0px';
+          pill.style.marginRight = '0px';
+          pill.offsetWidth; // force reflow before animating
+          tpSpringAnimate((t) => {
+            const pos      = springPos(t, stiffness, damping);
+            const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+            dest.style.transform  = `translateX(${pos * 100}%)`;
+            src.style.transform   = `translateX(${-(1 - pos) * 30}%)`;
+            scrim.style.opacity   = String(1 - scrimPos);
+            // pill shrinks inward from both sides
+            const shrink = (1 - pos) * ICON_W;
+            pill.style.marginLeft  = `${shrink}px`;
+            pill.style.marginRight = `${shrink}px`;
+            // icons fade in
+            back.style.opacity   = String(1 - pos);
+            filter.style.opacity = String(1 - pos);
+          }, spring);
         } else {
-          dest.style.transform = `translateX(${(1 - pos) * 100}%)`;
-          src.style.transform  = `translateX(${-pos * 30}%)`;
-          scrim.style.opacity  = String(scrimPos);
+          // exiting: pill widens back, icons fade out
+          tpSpringAnimate((t) => {
+            const pos      = springPos(t, stiffness, damping);
+            const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+            dest.style.transform  = `translateX(${(1 - pos) * 100}%)`;
+            src.style.transform   = `translateX(${-pos * 30}%)`;
+            scrim.style.opacity   = String(scrimPos);
+            const shrink = pos * ICON_W;
+            pill.style.marginLeft  = `${shrink}px`;
+            pill.style.marginRight = `${shrink}px`;
+            back.style.opacity   = String(pos);
+            filter.style.opacity = String(pos);
+          }, spring);
         }
-      }, spring);
+      }
     },
   },
 
@@ -4818,7 +5025,7 @@ const TP_PHONE_LAYERS = {
   'slide-up':      'tpSheetContent',
   'scale-in':      'tpModalContent',
 };
-const TP_ALL_LAYERS = ['tpPhoneContent','tpPushContent','tpTabContent','tpSheetContent','tpModalContent'];
+const TP_ALL_LAYERS = ['tpPhoneContent','tpPushContent','tpPersistBar','tpTabContent','tpSheetContent','tpModalContent'];
 
 function switchTpDemo(key) {
   const tab = document.querySelector(`.tp-tab[data-tp="${key}"]`);
@@ -4843,18 +5050,22 @@ function switchTpDemo(key) {
   desktopWrap.style.display = isDesktop ? 'flex' : 'none';
 
   // Show correct layer inside phone
-  const activeLayer = TP_PHONE_LAYERS[key];
+  // For slide-in, choose between fullscreen (tpPushContent) and persistent-bar (tpPersistBar)
+  let activeLayer = TP_PHONE_LAYERS[key];
+  if (key === 'slide-in' && tpSlideInMode === 'persistent-bar') activeLayer = 'tpPersistBar';
   TP_ALL_LAYERS.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = id === activeLayer ? '' : 'none';
   });
 
-  // Hide persistent bottom nav for slide-in (detail→checkout has no nav bar)
+  // Hide global bottom nav for slide-in (both modes have their own nav or none)
   const tpBottomNav = document.getElementById('tpPhoneBottomNav');
   if (tpBottomNav) tpBottomNav.style.display = key === 'slide-in' ? 'none' : '';
 
   // Show zoom mode toggle only for zoom tab
   document.getElementById('tpZoomModeToggle').style.display = key === 'zoom' ? '' : 'none';
+  // Show slide-in mode toggle only for slide-in tab
+  document.getElementById('tpSlideInModeToggle').style.display = key === 'slide-in' ? '' : 'none';
 }
 
 // Zoom mode toggle (Fullscreen / Modal) — defined before tab click handlers that reference it
@@ -4886,6 +5097,29 @@ document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(btn => {
     tpExpandCardIdx = 0;
     applyTpZoomMode(btn.dataset.mode);
     // Restart loop from clean state
+    if (wasPlaying) window._tpAutoPlay?.start();
+  });
+});
+
+// Slide-in mode toggle (Fullscreen / Persistent Bar)
+let tpSlideInMode = 'fullscreen';
+function applyTpSlideInMode(mode) {
+  tpSlideInMode = mode;
+  document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.mode === tpSlideInMode)
+  );
+  // Swap visible layer
+  document.getElementById('tpPushContent').style.display  = mode === 'fullscreen'      ? '' : 'none';
+  document.getElementById('tpPersistBar').style.display   = mode === 'persistent-bar'  ? '' : 'none';
+}
+document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.mode === tpSlideInMode) return;
+    const wasPlaying = window._tpAutoPlay?.isPlaying();
+    window._tpAutoPlay?.stop();
+    if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
+    TP_DEMOS['slide-in'].reset();
+    applyTpSlideInMode(btn.dataset.mode);
     if (wasPlaying) window._tpAutoPlay?.start();
   });
 });

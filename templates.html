@@ -410,6 +410,56 @@
       margin-bottom: 0;
     }
 
+    /* ── Search results screen ── */
+    .sk-searchbar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .sk-icon-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--c-text-tertiary);
+    }
+
+    .sk-search-narrow {
+      flex: 1;
+      flex-shrink: 1;
+    }
+
+    .sk-chips {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+      justify-content: center;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+
+    .sk-chip {
+      height: 22px;
+      border-radius: 11px;
+      border: 1.5px solid var(--c-border-medium);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 10px;
+    }
+
+    .sk-chip-label {
+      height: 7px;
+      border-radius: 4px;
+      background: var(--c-border-medium);
+    }
+
     /* ── List screen (full-screen) ── */
     .ls-line { height: 8px; width: 100%; background: var(--sk); border-radius: 4px; margin-bottom: 7px; flex-shrink: 0; }
     .ls-line.short  { width: 55%; }
@@ -610,6 +660,40 @@
     <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
     <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
   </div>
+</template>
+
+<template id="tpl-search-results-screen">
+  <div class="sk-searchbar-row">
+    <div class="sk-icon-btn">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="sk-search sk-search-narrow"></div>
+    <div class="sk-icon-btn">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="4" width="12" height="1.5" rx="0.75" fill="currentColor"/>
+        <rect x="4" y="7.25" width="8" height="1.5" rx="0.75" fill="currentColor"/>
+        <rect x="6" y="10.5" width="4" height="1.5" rx="0.75" fill="currentColor"/>
+      </svg>
+    </div>
+  </div>
+  <div class="sk-chips">
+    <div class="sk-chip"><div class="sk-chip-label" style="width:36px;"></div></div>
+    <div class="sk-chip"><div class="sk-chip-label" style="width:28px;"></div></div>
+    <div class="sk-chip"><div class="sk-chip-label" style="width:44px;"></div></div>
+  </div>
+  <div class="sk-card-img"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+  <div class="sk-section-label"></div>
+  <div class="sk-card-img partial"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+  <div class="sk-sub"></div>
+  <div class="sk-card-img partial"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
 </template>
 
 <template id="tpl-detail">
@@ -956,6 +1040,19 @@
   carouselNav.innerHTML = '<div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div>';
   carouselPhone.appendChild(carouselNav);
   grid.appendChild(makeItem('Home Screen Carousels', 'tpl-home-screen-carousels', carouselPhone));
+
+  // ── tpl-search-results-screen ──
+  const searchResultsPhone = document.createElement('div');
+  searchResultsPhone.className = 'phone-frame';
+  const searchResultsContent = document.createElement('div');
+  searchResultsContent.className = 'phone-content';
+  searchResultsContent.appendChild(stamp('tpl-search-results-screen'));
+  searchResultsPhone.appendChild(searchResultsContent);
+  const searchResultsNav = document.createElement('div');
+  searchResultsNav.className = 'sk-bottom-nav';
+  searchResultsNav.innerHTML = '<div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div>';
+  searchResultsPhone.appendChild(searchResultsNav);
+  grid.appendChild(makeItem('Search Results Screen', 'tpl-search-results-screen', searchResultsPhone));
 
   // ── tpl-detail ──
   const detailPhone = document.createElement('div');
