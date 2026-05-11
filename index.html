@@ -1292,10 +1292,10 @@
       display: none;
     }
 
-    /* Scrolling screen area, inset below the persistent top bar and above the persistent bottom nav */
+    /* Scrolling screen area — extends full height so the transparent top bar shows content sliding behind it */
     .tp-persist-screen {
       position: absolute;
-      top: 80px; /* 36px padding-top + 34px pill + 10px gap */
+      top: 0;
       left: 0;
       right: 0;
       bottom: 68px; /* bottom nav height */
@@ -1309,7 +1309,7 @@
     }
 
     .tp-persist-screen-inner {
-      padding: 10px 18px 18px;
+      padding: 90px 18px 18px; /* 80px top bar + 10px gap */
       display: flex;
       flex-direction: column;
       gap: 5px;
@@ -2157,7 +2157,7 @@
         <div class="tp-persist-screen" id="tpPersistSource">
           <div class="tp-persist-screen-inner" id="tpPersistSourceInner"></div>
         </div>
-        <div class="push-scrim" id="tpPersistScrim" style="opacity:0;top:80px;bottom:68px;"></div>
+        <div class="push-scrim" id="tpPersistScrim" style="opacity:0;top:0;bottom:68px;"></div>
         <div class="tp-persist-screen" id="tpPersistDest">
           <div class="tp-persist-screen-inner" id="tpPersistDestInner"></div>
         </div>
