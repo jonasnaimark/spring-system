@@ -1317,6 +1317,11 @@
       overflow: hidden;
     }
 
+    /* Hide the sk-search pill inside the persistent bar screens — the pill lives in the persistent top bar instead */
+    #tpPersistSourceInner .sk-search,
+    #tpPersistSourceInner .sk-divider:first-of-type,
+    #tpPersistDestInner .sk-search { display: none; }
+
     /* The persistent search bar row sitting at the top of the phone */
     #tpPersistTopBar {
       position: absolute;
@@ -1341,7 +1346,7 @@
     }
 
     .tp-persist-icon {
-      width: 24px;
+      width: 0;
       height: 24px;
       flex-shrink: 0;
       display: flex;
@@ -1349,7 +1354,8 @@
       justify-content: center;
       color: var(--c-text-tertiary);
       opacity: 0;
-      will-change: opacity;
+      overflow: hidden;
+      will-change: opacity, width;
     }
 
     /* ── Checkout template ── */
@@ -4736,7 +4742,9 @@ const TP_DEMOS = {
       document.getElementById('tpPersistDest').style.transform   = 'translateX(100%)';
       document.getElementById('tpPersistScrim').style.opacity    = '0';
       document.getElementById('tpPersistBack').style.opacity     = '0';
+      document.getElementById('tpPersistBack').style.width       = '0px';
       document.getElementById('tpPersistFilter').style.opacity   = '0';
+      document.getElementById('tpPersistFilter').style.width     = '0px';
       const pill = document.getElementById('tpPersistPill');
       pill.style.transition = 'none';
       pill.style.marginLeft  = '0px';
@@ -4776,39 +4784,34 @@ const TP_DEMOS = {
         const back   = document.getElementById('tpPersistBack');
         const filter = document.getElementById('tpPersistFilter');
         const pill   = document.getElementById('tpPersistPill');
-        // Icon width + gap that the pill needs to absorb when icons are visible
-        const ICON_W = 24 + 8; // 24px icon + 8px gap each side
-        pill.style.transition = 'none';
+        const ICON_W = 24; // px — target width of each icon when fully visible
         if (!isIn) {
-          // entering: pill narrows to make room for icons
-          pill.style.marginLeft  = '0px';
-          pill.style.marginRight = '0px';
-          pill.offsetWidth; // force reflow before animating
+          // entering: icons grow in, pill narrows naturally as flex siblings expand
+          back.style.width   = '0px';
+          filter.style.width = '0px';
           tpSpringAnimate((t) => {
             const pos      = springPos(t, stiffness, damping);
             const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
-            dest.style.transform  = `translateX(${pos * 100}%)`;
-            src.style.transform   = `translateX(${-(1 - pos) * 30}%)`;
-            scrim.style.opacity   = String(1 - scrimPos);
-            // pill shrinks inward from both sides
-            const shrink = (1 - pos) * ICON_W;
-            pill.style.marginLeft  = `${shrink}px`;
-            pill.style.marginRight = `${shrink}px`;
-            // icons fade in
+            dest.style.transform = `translateX(${pos * 100}%)`;
+            src.style.transform  = `translateX(${-(1 - pos) * 30}%)`;
+            scrim.style.opacity  = String(1 - scrimPos);
+            const w = (1 - pos) * ICON_W;
+            back.style.width   = `${w}px`;
+            filter.style.width = `${w}px`;
             back.style.opacity   = String(1 - pos);
             filter.style.opacity = String(1 - pos);
           }, spring);
         } else {
-          // exiting: pill widens back, icons fade out
+          // exiting: icons shrink back to 0, pill widens
           tpSpringAnimate((t) => {
             const pos      = springPos(t, stiffness, damping);
             const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
-            dest.style.transform  = `translateX(${(1 - pos) * 100}%)`;
-            src.style.transform   = `translateX(${-pos * 30}%)`;
-            scrim.style.opacity   = String(scrimPos);
-            const shrink = pos * ICON_W;
-            pill.style.marginLeft  = `${shrink}px`;
-            pill.style.marginRight = `${shrink}px`;
+            dest.style.transform = `translateX(${(1 - pos) * 100}%)`;
+            src.style.transform  = `translateX(${-pos * 30}%)`;
+            scrim.style.opacity  = String(scrimPos);
+            const w = pos * ICON_W;
+            back.style.width   = `${w}px`;
+            filter.style.width = `${w}px`;
             back.style.opacity   = String(pos);
             filter.style.opacity = String(pos);
           }, spring);
