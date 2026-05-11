@@ -4727,28 +4727,22 @@ const TP_DEMOS = {
     reset() {
       tpDemoState = 'out';
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
-      // fullscreen reset
+      // fullscreen animation reset
       document.getElementById('tpPushSource').style.transform = 'translateX(0%)';
       document.getElementById('tpPushDest').style.transform   = 'translateX(100%)';
       document.getElementById('tpPushScrim').style.opacity    = '0';
-      // persistent bar reset
+      // persistent bar animation reset
       document.getElementById('tpPersistSource').style.transform = 'translateX(0%)';
       document.getElementById('tpPersistDest').style.transform   = 'translateX(100%)';
       document.getElementById('tpPersistScrim').style.opacity    = '0';
       document.getElementById('tpPersistBack').style.opacity     = '0';
       document.getElementById('tpPersistFilter').style.opacity   = '0';
-      // pill: full width (no margin, fills the gap between icon placeholders which are 0-opacity)
       const pill = document.getElementById('tpPersistPill');
       pill.style.transition = 'none';
       pill.style.marginLeft  = '0px';
       pill.style.marginRight = '0px';
-      // reset mode to fullscreen
-      tpSlideInMode = 'fullscreen';
-      document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(b =>
-        b.classList.toggle('active', b.dataset.mode === 'fullscreen')
-      );
-      document.getElementById('tpPushContent').style.display = '';
-      document.getElementById('tpPersistBar').style.display  = 'none';
+      // mode/layer reset only when leaving the tab (not when toggling between modes)
+      if (arguments[0] === 'leaving') applyTpSlideInMode('fullscreen');
     },
     play() {
       const spring = { stiffness: 300, damping: calcDamping(300, 1.0) };
@@ -5036,7 +5030,7 @@ function switchTpDemo(key) {
   if (!tab) return;
   // Reset previous demo
   const prevKey = document.querySelector('.tp-tab.active')?.dataset.tp;
-  if (prevKey && prevKey !== key) TP_DEMOS[prevKey]?.reset?.();
+  if (prevKey && prevKey !== key) TP_DEMOS[prevKey]?.reset?.('leaving');
   document.querySelectorAll('.tp-tab').forEach(t => t.classList.remove('active'));
   tab.classList.add('active');
   const desc = TP_DEMOS[key]?.description;
