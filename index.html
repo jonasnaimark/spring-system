@@ -4091,6 +4091,7 @@ const TP_SPRING = { stiffness: 500, damping: calcDamping(500, 1.0) };
 let tpAnim = null;
 let tpDemoState = 'out';
 let tpTabIdx = 0, tpTabDir = 1;
+let tpSlideInMode = 'fullscreen';
 
 function tpSpringAnimate(tick, spring) {
   if (tpAnim) cancelAnimationFrame(tpAnim);
@@ -5110,7 +5111,6 @@ document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(btn => {
 });
 
 // Slide-in mode toggle (Fullscreen / Persistent Bar)
-let tpSlideInMode = 'fullscreen';
 function applyTpSlideInMode(mode) {
   tpSlideInMode = mode;
   document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(b =>
@@ -5863,7 +5863,7 @@ reserveTabWidths();
 // ── A11y demo: side-by-side default vs reduced motion ─────────────
 (function() {
   const ACC_SPRING = { stiffness: 500, damping: calcDamping(500, 1.0) };
-  const INTERVAL_MS = 2800;
+  const INTERVAL_MS = 1500;
 
   let accExpandState = null; // null | { fromX, fromY, fromW, fromH, fromR, card, imgEl }
   let accExpandAnim  = null;
