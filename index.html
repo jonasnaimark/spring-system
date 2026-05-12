@@ -5880,7 +5880,8 @@ function reserveTabWidths(scope) {
     tab.style.minWidth = boldW + 'px';
   });
 }
-reserveTabWidths();
+// Run after fonts are loaded so bold width measurement is accurate
+document.fonts.ready.then(reserveTabWidths);
 
 // ── Touch cursor dot ──────────────────────────────────────────────
 (function() {
