@@ -162,6 +162,25 @@
       border-radius: 4px;
     }
 
+    /* ── Bottom bar template ── */
+    .sk-bottom-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 68px;
+      background: var(--c-surface-0);
+      border-top: 1px solid var(--sk);
+      display: flex;
+      align-items: flex-start;
+      padding: 12px 16px 0;
+      z-index: 10;
+    }
+    .sk-bar-left   { display: flex; align-items: center; flex: 1; justify-content: flex-start; }
+    .sk-bar-center { display: flex; align-items: center; flex: 1; justify-content: center; gap: 20px; }
+    .sk-bar-right  { display: flex; align-items: center; flex: 1; justify-content: flex-end; }
+    .sk-bar-icon-btn { width: 28px; height: 28px; border-radius: 50%; background: var(--sk); flex-shrink: 0; }
+    .sk-bar-pill { height: 28px; width: 64px; border-radius: 8px; background: var(--sk); flex-shrink: 0; }
+    .sk-bar-pill.primary { background: var(--c-text-primary); opacity: 0.12; }
+
     /* ── Skeleton list screen ── */
     .sk-search {
       height: 34px;
@@ -985,6 +1004,28 @@
   </div>
 </template>
 
+<template id="tpl-bottom-bar-nav">
+  <div class="sk-bottom-bar">
+    <div class="sk-bar-center" style="flex:unset;width:100%;justify-content:space-around;">
+      <div class="sk-nav-icon"></div>
+      <div class="sk-nav-icon"></div>
+      <div class="sk-nav-icon"></div>
+      <div class="sk-nav-icon"></div>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-bottom-bar-back-next">
+  <div class="sk-bottom-bar">
+    <div class="sk-bar-left">
+      <div class="sk-bar-icon-btn"></div>
+    </div>
+    <div class="sk-bar-right">
+      <div class="sk-bar-pill"></div>
+    </div>
+  </div>
+</template>
+
 <script>
   // Theme
   const html = document.documentElement;
@@ -1114,6 +1155,18 @@
   dtUi.appendChild(stamp('tpl-desktop-home-screen'));
   dtWrap.appendChild(dtUi);
   grid.appendChild(makeItem('Desktop Home Screen', 'tpl-desktop-home-screen', dtWrap));
+
+  // ── tpl-bottom-bar-nav ──
+  const barNavPhone = document.createElement('div');
+  barNavPhone.className = 'phone-frame';
+  barNavPhone.appendChild(stamp('tpl-bottom-bar-nav'));
+  grid.appendChild(makeItem('Bottom Bar — Nav', 'tpl-bottom-bar-nav', barNavPhone));
+
+  // ── tpl-bottom-bar-back-next ──
+  const barBackNextPhone = document.createElement('div');
+  barBackNextPhone.className = 'phone-frame';
+  barBackNextPhone.appendChild(stamp('tpl-bottom-bar-back-next'));
+  grid.appendChild(makeItem('Bottom Bar — Back / Next', 'tpl-bottom-bar-back-next', barBackNextPhone));
 </script>
 </body>
 </html>

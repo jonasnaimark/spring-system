@@ -811,6 +811,46 @@
       border-radius: 4px;
     }
 
+    /* ── Bottom bar template ── */
+    .sk-bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 68px;
+      background: var(--c-surface-0);
+      border-top: 1px solid var(--sk);
+      display: flex;
+      align-items: flex-start;
+      padding: 12px 16px 0;
+      z-index: 10;
+    }
+
+    .sk-bar-left  { display: flex; align-items: center; flex: 1; justify-content: flex-start; }
+    .sk-bar-center { display: flex; align-items: center; flex: 1; justify-content: center; gap: 20px; }
+    .sk-bar-right { display: flex; align-items: center; flex: 1; justify-content: flex-end; }
+
+    .sk-bar-icon-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--sk);
+      flex-shrink: 0;
+    }
+
+    .sk-bar-pill {
+      height: 28px;
+      width: 64px;
+      border-radius: 8px;
+      background: var(--sk);
+      flex-shrink: 0;
+    }
+
+    .sk-bar-pill.primary {
+      background: var(--c-text-primary);
+      opacity: 0.12;
+    }
+
     /* ── Sheet demo ── */
     .sheet {
       position: absolute;
@@ -3292,6 +3332,30 @@
   <div class="sk-card-img partial"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
+</template>
+
+<template id="tpl-bottom-bar-nav">
+  <!-- Global tab nav: 4 icon slots spread across center -->
+  <div class="sk-bottom-bar">
+    <div class="sk-bar-center" style="gap:0;justify-content:space-around;flex:unset;width:100%;">
+      <div class="sk-nav-icon"></div>
+      <div class="sk-nav-icon"></div>
+      <div class="sk-nav-icon"></div>
+      <div class="sk-nav-icon"></div>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-bottom-bar-back-next">
+  <!-- Step flow bar: back icon left, next pill right -->
+  <div class="sk-bottom-bar">
+    <div class="sk-bar-left">
+      <div class="sk-bar-icon-btn"></div>
+    </div>
+    <div class="sk-bar-right">
+      <div class="sk-bar-pill"></div>
+    </div>
+  </div>
 </template>
 
 <template id="tpl-checkout">
