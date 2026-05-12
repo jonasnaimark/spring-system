@@ -359,6 +359,19 @@
       position: relative;
     }
 
+    /* Reserve bold width so selecting a tab never shifts layout.
+       ::after renders the label text at bold weight but invisible,
+       locking in the wider size at all times. */
+    .demo-tab::after {
+      content: attr(data-label);
+      font-weight: 500;
+      height: 0;
+      overflow: hidden;
+      visibility: hidden;
+      display: block;
+      pointer-events: none;
+    }
+
     .demo-tab:hover { background: var(--c-surface-3); color: var(--c-text-primary); border-color: var(--c-border-medium); }
 
     .demo-tab.active {
@@ -3514,7 +3527,7 @@ const miniAnims = {};
     group.appendChild(row);
     gridEl.appendChild(group);
   }
-  setTimeout(() => { applyDemoDefault(currentDemo); reserveTabWidths(); }, 0);
+  setTimeout(() => { applyDemoDefault(currentDemo); }, 0);
 })();
 
 // ── Mini ball animations ──────────────────────────────────────────
@@ -5870,18 +5883,12 @@ updateNavActive();
   updateIntro();
 })();
 
-// Reserve bold width on demo-tabs to prevent layout shift on active
-function reserveTabWidths(scope) {
-  (scope || document).querySelectorAll('.demo-tab').forEach(tab => {
-    const orig = tab.style.fontWeight;
-    tab.style.fontWeight = '500';
-    const boldW = tab.getBoundingClientRect().width;
-    tab.style.fontWeight = orig;
-    tab.style.minWidth = boldW + 'px';
-  });
-}
-// Run after fonts are loaded so bold width measurement is accurate
-document.fonts.ready.then(reserveTabWidths);
+// Reserve bold width on demo-tabs via a CSS ::after pseudo-element trick.
+// Each tab's ::after renders its label at bold weight but invisible (height:0),
+// permanently holding the wider size so selecting a tab never shifts layout.
+document.querySelectorAll('.demo-tab').forEach(tab => {
+  tab.dataset.label = tab.textContent.trim();
+});
 
 // ── Touch cursor dot ──────────────────────────────────────────────
 (function() {
