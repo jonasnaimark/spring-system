@@ -491,9 +491,30 @@
     .ls-thumb { width: 44px; height: 44px; border-radius: 7px; background: var(--sk); flex-shrink: 0; }
     .ls-thumb-lines { flex: 1; display: flex; flex-direction: column; gap: 5px; justify-content: center; }
 
+    /* ── Large List Screen ── */
+    .ll-img-row { display: flex; gap: 10px; margin-bottom: 13px; align-items: center; }
+    .ll-thumb { width: 64px; height: 64px; border-radius: 10px; background: var(--sk); flex-shrink: 0; }
+    .ll-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+
+    /* ── Grid Screen ── */
+    .gs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 10px; }
+    .gs-card { display: flex; flex-direction: column; gap: 8px; }
+    .gs-card-img { width: 100%; aspect-ratio: 1 / 1; border-radius: 8px; background: var(--sk); }
+    .gs-card-line { height: 7px; border-radius: 4px; background: var(--sk); }
+
+    /* ── Setup Screen ── */
+    /* ── Setup Screen ── */
+    .setup-screen { display: flex; flex-direction: column; position: absolute; inset: 0; background: var(--c-surface-0); }
+    .setup-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 14px; gap: 18px; margin-bottom: 40px; }
+    .setup-img-placeholder { width: 92%; aspect-ratio: 1 / 1; background: var(--sk); border-radius: 20px; }
+    .setup-text { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; padding: 0 8px; box-sizing: border-box; }
+    .setup-title { height: 11px; border-radius: 6px; background: var(--sk); }
+    /* ── Bottom bar CTA ── */
+    .sk-bar-cta { flex: 1; height: 36px; border-radius: 10px; background: var(--sk); }
+
     /* ── Checkout screen ── */
     .co-screen { position: absolute; inset: 0; background: var(--c-surface-0); display: flex; flex-direction: column; overflow: hidden; }
-    .co-titlebar { display: flex; align-items: center; justify-content: center; padding: 34px 16px 18px; flex-shrink: 0; position: relative; }
+    .co-titlebar { display: flex; align-items: center; justify-content: center; padding: 44px 16px 18px; flex-shrink: 0; position: relative; }
     .co-title { height: 10px; width: 52%; background: var(--sk); border-radius: 5px; }
     .co-body { flex: 1; overflow: hidden; padding: 0 16px 16px; display: flex; flex-direction: column; gap: 8px; }
     .co-card { border: 1px solid var(--c-border-subtle); border-radius: 14px; overflow: hidden; }
@@ -967,8 +988,116 @@
   <div style="height:7px;width:80%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
   <div style="height:7px;width:55%;background:var(--sk);border-radius:4px;margin-bottom:20px;"></div>
   <div style="display:flex;gap:8px;">
-    <div style="flex:1;height:34px;background:var(--c-text-primary);border-radius:10px;opacity:0.12;"></div>
     <div style="flex:1;height:34px;background:var(--sk);border-radius:10px;"></div>
+    <div style="flex:1;height:34px;background:var(--sk);border-radius:10px;"></div>
+  </div>
+</template>
+
+<template id="tpl-large-list-screen">
+  <div class="ls-line" style="height:11px;width:68%;border-radius:6px;margin-bottom:5px;"></div>
+  <div class="ls-line" style="height:8px;width:45%;border-radius:4px;margin-bottom:22px;"></div>
+  <div class="ll-img-row">
+    <div class="ll-thumb"></div>
+    <div class="ll-lines">
+      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line short thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="ll-img-row">
+    <div class="ll-thumb"></div>
+    <div class="ll-lines">
+      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="ll-img-row">
+    <div class="ll-thumb"></div>
+    <div class="ll-lines">
+      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line short thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="ll-img-row">
+    <div class="ll-thumb"></div>
+    <div class="ll-lines">
+      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="ll-img-row">
+    <div class="ll-thumb"></div>
+    <div class="ll-lines">
+      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line short thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="ll-img-row">
+    <div class="ll-thumb"></div>
+    <div class="ll-lines">
+      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="ll-img-row">
+    <div class="ll-thumb"></div>
+    <div class="ll-lines">
+      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line short thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-grid-screen">
+  <div class="ls-line" style="height:11px;width:68%;border-radius:6px;margin-bottom:5px;"></div>
+  <div class="ls-line" style="height:8px;width:45%;border-radius:4px;margin-bottom:22px;"></div>
+  <div class="gs-grid">
+    <div class="gs-card">
+      <div class="gs-card-img"></div>
+      <div class="gs-card-line" style="width:80%;"></div>
+    </div>
+    <div class="gs-card">
+      <div class="gs-card-img"></div>
+      <div class="gs-card-line" style="width:65%;"></div>
+    </div>
+    <div class="gs-card">
+      <div class="gs-card-img"></div>
+      <div class="gs-card-line" style="width:75%;"></div>
+    </div>
+    <div class="gs-card">
+      <div class="gs-card-img"></div>
+      <div class="gs-card-line" style="width:55%;"></div>
+    </div>
+    <div class="gs-card">
+      <div class="gs-card-img"></div>
+      <div class="gs-card-line" style="width:70%;"></div>
+    </div>
+    <div class="gs-card">
+      <div class="gs-card-img"></div>
+      <div class="gs-card-line" style="width:60%;"></div>
+    </div>
+    <div class="gs-card">
+      <div class="gs-card-img"></div>
+      <div class="gs-card-line" style="width:78%;"></div>
+    </div>
+    <div class="gs-card">
+      <div class="gs-card-img"></div>
+      <div class="gs-card-line" style="width:63%;"></div>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-setup-screen">
+  <div class="setup-screen">
+    <div class="setup-body">
+      <div class="setup-img-placeholder"></div>
+      <div class="setup-text">
+        <div class="setup-title" style="width:75%;"></div>
+        <div class="setup-title" style="width:55%;"></div>
+      </div>
+    </div>
+    <div class="sk-bottom-bar">
+      <div class="sk-bar-cta"></div>
+    </div>
   </div>
 </template>
 
@@ -1025,6 +1154,12 @@
     <div class="sk-bar-right">
       <div class="sk-bar-pill"></div>
     </div>
+  </div>
+</template>
+
+<template id="tpl-bottom-bar-cta">
+  <div class="sk-bottom-bar">
+    <div class="sk-bar-cta"></div>
   </div>
 </template>
 
@@ -1120,10 +1255,60 @@
   listScreenPhone.className = 'phone-frame';
   const listScreenContent = document.createElement('div');
   listScreenContent.className = 'phone-content';
-  listScreenContent.style.paddingTop = '34px';
+  listScreenContent.style.paddingTop = '44px';
   listScreenContent.appendChild(stamp('tpl-list-screen'));
   listScreenPhone.appendChild(listScreenContent);
   grid.appendChild(makeItem('List Screen', 'tpl-list-screen', listScreenPhone));
+
+  // ── tpl-large-list-screen ──
+  const largeListPhone = document.createElement('div');
+  largeListPhone.className = 'phone-frame';
+  const largeListContent = document.createElement('div');
+  largeListContent.className = 'phone-content';
+  largeListContent.style.paddingTop = '44px';
+  largeListContent.appendChild(stamp('tpl-large-list-screen'));
+  largeListPhone.appendChild(largeListContent);
+  grid.appendChild(makeItem('Large List Screen', 'tpl-large-list-screen', largeListPhone));
+
+  // ── tpl-grid-screen ──
+  const gridScreenPhone = document.createElement('div');
+  gridScreenPhone.className = 'phone-frame';
+  const gridScreenContent = document.createElement('div');
+  gridScreenContent.className = 'phone-content';
+  gridScreenContent.style.paddingTop = '44px';
+  gridScreenContent.appendChild(stamp('tpl-grid-screen'));
+  gridScreenPhone.appendChild(gridScreenContent);
+  grid.appendChild(makeItem('Grid Screen', 'tpl-grid-screen', gridScreenPhone));
+
+  // ── tpl-setup-screen ──
+  const setupPhone = document.createElement('div');
+  setupPhone.className = 'phone-frame';
+  setupPhone.appendChild(stamp('tpl-setup-screen'));
+  grid.appendChild(makeItem('Setup Screen', 'tpl-setup-screen', setupPhone));
+
+  // ── tpl-inset-modal ──
+  const insetModalPhone = document.createElement('div');
+  insetModalPhone.className = 'phone-frame';
+  insetModalPhone.appendChild(stamp('tpl-inset-modal'));
+  grid.appendChild(makeItem('Inset Modal', 'tpl-inset-modal', insetModalPhone));
+
+  // ── tpl-bottom-bar-nav ──
+  const barNavPhone = document.createElement('div');
+  barNavPhone.className = 'phone-frame';
+  barNavPhone.appendChild(stamp('tpl-bottom-bar-nav'));
+  grid.appendChild(makeItem('Bottom Bar — Nav', 'tpl-bottom-bar-nav', barNavPhone));
+
+  // ── tpl-bottom-bar-back-next ──
+  const barBackNextPhone = document.createElement('div');
+  barBackNextPhone.className = 'phone-frame';
+  barBackNextPhone.appendChild(stamp('tpl-bottom-bar-back-next'));
+  grid.appendChild(makeItem('Bottom Bar — Back / Next', 'tpl-bottom-bar-back-next', barBackNextPhone));
+
+  // ── tpl-bottom-bar-cta ──
+  const barCtaPhone = document.createElement('div');
+  barCtaPhone.className = 'phone-frame';
+  barCtaPhone.appendChild(stamp('tpl-bottom-bar-cta'));
+  grid.appendChild(makeItem('Bottom Bar — CTA', 'tpl-bottom-bar-cta', barCtaPhone));
 
   // ── tpl-modal-card ──
   const modalCard = document.createElement('div');
@@ -1137,18 +1322,6 @@
   sheetWrap.appendChild(stamp('tpl-sheet'));
   grid.appendChild(makeItem('Sheet', 'tpl-sheet', sheetWrap));
 
-  // ── tpl-inset-modal ──
-  const insetModalPhone = document.createElement('div');
-  insetModalPhone.className = 'phone-frame';
-  insetModalPhone.appendChild(stamp('tpl-inset-modal'));
-  grid.appendChild(makeItem('Inset Modal', 'tpl-inset-modal', insetModalPhone));
-
-  // ── tpl-desktop-modal ──
-  const dtModal = document.createElement('div');
-  dtModal.className = 'desktop-modal-standalone';
-  dtModal.appendChild(stamp('tpl-desktop-modal'));
-  grid.appendChild(makeItem('Desktop Modal', 'tpl-desktop-modal', dtModal));
-
   // ── tpl-desktop-home-screen ──
   const dtWrap = document.createElement('div');
   dtWrap.className = 'desktop-bg-wrap';
@@ -1158,17 +1331,11 @@
   dtWrap.appendChild(dtUi);
   grid.appendChild(makeItem('Desktop Home Screen', 'tpl-desktop-home-screen', dtWrap));
 
-  // ── tpl-bottom-bar-nav ──
-  const barNavPhone = document.createElement('div');
-  barNavPhone.className = 'phone-frame';
-  barNavPhone.appendChild(stamp('tpl-bottom-bar-nav'));
-  grid.appendChild(makeItem('Bottom Bar — Nav', 'tpl-bottom-bar-nav', barNavPhone));
-
-  // ── tpl-bottom-bar-back-next ──
-  const barBackNextPhone = document.createElement('div');
-  barBackNextPhone.className = 'phone-frame';
-  barBackNextPhone.appendChild(stamp('tpl-bottom-bar-back-next'));
-  grid.appendChild(makeItem('Bottom Bar — Back / Next', 'tpl-bottom-bar-back-next', barBackNextPhone));
+  // ── tpl-desktop-modal ──
+  const dtModal = document.createElement('div');
+  dtModal.className = 'desktop-modal-standalone';
+  dtModal.appendChild(stamp('tpl-desktop-modal'));
+  grid.appendChild(makeItem('Desktop Modal', 'tpl-desktop-modal', dtModal));
 </script>
 </body>
 </html>

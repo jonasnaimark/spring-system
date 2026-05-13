@@ -51,3 +51,25 @@ See the comment block in `index.html` above the zoom mode toggle — it has a fu
 3. **`reset()` must not wipe mode** — autoplay calls `reset()` on every start. If `reset()` resets the mode variable, it undoes any mode the user just selected. Only reset mode when leaving the tab, using a sentinel argument: `reset('leaving')`.
 
 4. **Update the URL** in your `applyMode()` function: `history.replaceState(null, '', \`#tp-{tab}-{mode-slug}\`)`. Also handle the hash at page load alongside the existing zoom-modal case.
+
+---
+
+## Animating a flex pill from full-width to fitted (e.g. CTA bar → Back/Next bar)
+
+When a `flex:1` pill needs to shrink to a fixed width (e.g. from a full-width CTA button to a 64px pill), **never animate the pill's own width**. Mixing explicit `width` with `flex:1` causes layout jumps and snapping.
+
+**The correct approach:** animate a sibling element's width instead, and let flex respond naturally.
+
+```js
+// Back wrapper starts at 0, grows to push the CTA pill down to target size
+const PILL_W = 64;
+const BACK_W = bar.clientWidth - 32 - PILL_W; // bar padding is 16px each side
+
+// In animation tick:
+back.style.width = (startBackW + (endBackW - startBackW) * completion) + 'px';
+// CTA is flex:1 — never set its width. It responds automatically.
+```
+
+**Why:** `flex:1` and explicit pixel widths fight each other. Animating a sibling and letting flex fill the remainder is stable, smooth, and requires no cleanup.
+
+**Measuring the sibling target width:** don't use the icon's visual size — compute `barInnerWidth - targetPillWidth`. This ensures the pill lands at exactly the right size regardless of bar dimensions.
