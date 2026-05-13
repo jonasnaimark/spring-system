@@ -166,12 +166,12 @@
     .sk-bottom-bar {
       position: absolute;
       bottom: 0; left: 0; right: 0;
-      height: 68px;
+      height: 76px;
       background: var(--c-surface-0);
       border-top: 1px solid var(--sk);
       display: flex;
       align-items: flex-start;
-      padding: 12px 16px 0;
+      padding: 12px 16px 8px;
       z-index: 10;
     }
     .sk-bar-left   { display: flex; align-items: center; flex: 1; justify-content: flex-start; }
@@ -336,16 +336,27 @@
       box-shadow: 0 -2px 20px rgba(0,0,0,0.10);
     }
 
-    .sheet-handle {
-      width: 40px;
-      height: 5px;
-      background: var(--sk);
-      border-radius: 3px;
-      margin: 0 auto 16px;
+    .sheet-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      margin-bottom: 8px;
+      margin-top: -2px;
+      margin-right: -2px;
+    }
+    .sheet-close {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--c-text-tertiary);
     }
 
     .sheet-line {
       height: 10px;
+      width: 82%;
       background: var(--sk);
       border-radius: 5px;
       margin-bottom: 9px;
@@ -360,12 +371,15 @@
 
     .sheet-img-row { display: flex; gap: 8px; margin-bottom: 10px; }
 
-    .sheet-thumb { width: 52px; height: 52px; border-radius: 8px; background: var(--sk); flex-shrink: 0; }
+    .sheet-thumb { width: 56px; height: 56px; border-radius: 8px; background: var(--sk); flex-shrink: 0; }
 
     .sheet-thumb-lines { flex: 1; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
 
     .sheet-tag-row { display: flex; gap: 6px; margin-bottom: 10px; }
     .sheet-tag { height: 22px; border-radius: 11px; background: var(--sk); }
+    .sheet-cta { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; flex-shrink: 0; }
+    .sheet-cta-text { height: 9px; width: 52px; border-radius: 5px; background: var(--sk); }
+    .sheet-cta-btn { height: 34px; border-radius: 10px; background: var(--sk); width: 96px; }
 
     /* ── Inset modal ── */
     /* Gap between phone inner edge and modal = 10px; radius = phone-inner-radius - gap = 30 - 10 = 20px */
@@ -862,42 +876,48 @@
 </template>
 
 <template id="tpl-sheet">
-  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-close">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+        <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
   <div class="sheet-line med"></div>
   <div class="sheet-line short thin"></div>
   <div class="sheet-section-gap"></div>
-  <div class="sheet-tag-row">
-    <div class="sheet-tag" style="width:54px;"></div>
-    <div class="sheet-tag" style="width:44px;"></div>
-    <div class="sheet-tag" style="width:62px;"></div>
-  </div>
   <div class="sheet-img-row">
     <div class="sheet-thumb"></div>
     <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line" style="margin-bottom:0;width:86%;"></div>
       <div class="sheet-line short thin" style="margin-bottom:0;"></div>
     </div>
   </div>
   <div class="sheet-img-row">
     <div class="sheet-thumb"></div>
     <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line" style="margin-bottom:0;width:75%;"></div>
       <div class="sheet-line med thin" style="margin-bottom:0;"></div>
     </div>
   </div>
   <div class="sheet-img-row">
     <div class="sheet-thumb"></div>
     <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line" style="margin-bottom:0;width:82%;"></div>
       <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
     </div>
   </div>
   <div class="sheet-img-row">
     <div class="sheet-thumb"></div>
     <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line" style="margin-bottom:0;width:90%;"></div>
       <div class="sheet-line med thin" style="margin-bottom:0;"></div>
     </div>
+  </div>
+  <div class="sheet-cta">
+    <div class="sheet-cta-text"></div>
+    <div class="sheet-cta-btn"></div>
   </div>
 </template>
 

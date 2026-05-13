@@ -817,12 +817,12 @@
       bottom: 0;
       left: 0;
       right: 0;
-      height: 68px;
+      height: 76px;
       background: var(--c-surface-0);
       border-top: 1px solid var(--sk);
       display: flex;
       align-items: flex-start;
-      padding: 12px 16px 0;
+      padding: 12px 16px 8px;
       z-index: 10;
     }
 
@@ -871,12 +871,20 @@
     .sk-bar-cta { flex: 1; height: 36px; border-radius: 10px; background: var(--sk); }
 
     /* ── Sheet demo ── */
+    .sheet-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      border-radius: 22px 22px 0 0;
+      pointer-events: none;
+      opacity: 0;
+    }
     .sheet {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
-      height: calc(55% + 150px);
+      height: calc(68% + 198px);
       bottom: -150px;
       background: var(--c-surface-0);
       border-radius: 22px 22px 0 0;
@@ -886,16 +894,27 @@
       z-index: 11;
     }
 
-    .sheet-handle {
-      width: 40px;
-      height: 5px;
-      background: var(--sk);
-      border-radius: 3px;
-      margin: 0 auto 16px;
+    .sheet-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      margin-bottom: 8px;
+      margin-top: -2px;
+      margin-right: -2px;
+    }
+    .sheet-close {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--c-text-tertiary);
     }
 
     .sheet-line {
       height: 10px;
+      width: 82%;
       background: var(--sk);
       border-radius: 5px;
       margin-bottom: 9px;
@@ -914,8 +933,8 @@
       margin-bottom: 10px;
     }
     .sheet-thumb {
-      width: 52px;
-      height: 52px;
+      width: 56px;
+      height: 56px;
       border-radius: 8px;
       background: var(--sk);
       flex-shrink: 0;
@@ -936,6 +955,27 @@
       height: 22px;
       border-radius: 11px;
       background: var(--sk);
+    }
+    .sheet-cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      margin-bottom: 10px;
+      flex-shrink: 0;
+    }
+    .sheet-cta-text {
+      height: 9px;
+      width: 52px;
+      border-radius: 5px;
+      background: var(--sk);
+    }
+    .sheet-cta-btn {
+      height: 34px;
+      padding: 0 16px;
+      border-radius: 10px;
+      background: var(--sk);
+      width: 96px;
     }
 
     /* ── Inset modal template ── */
@@ -2293,19 +2333,21 @@
         <div id="tpSetupBar" class="sk-bottom-bar" style="z-index:5;">
           <div id="tpSetupBack" style="width:0;overflow:visible;flex-shrink:0;">
             <div id="tpSetupBackBtn" class="sk-bar-icon-btn" style="display:flex;align-items:center;justify-content:center;color:var(--c-text-tertiary);transform:scale(0);transform-origin:center;">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 2L3.5 6L7.5 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-left:-1px;"><path d="M7.5 2L3.5 6L7.5 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
           </div>
           <div id="tpSetupCta" style="height:28px;border-radius:8px;background:var(--sk);flex:1;min-width:0;"></div>
         </div>
       </div>
 
-      <!-- slide-up: sheet -->
+      <!-- slide-up: sheet stack -->
       <div id="tpSheetContent" style="display:none;position:absolute;inset:0;">
         <div class="phone-content"></div>
         <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
-        <div class="push-scrim" id="tpSheetScrim" style="opacity:0;z-index:10;"></div>
-        <div class="sheet" id="tpSheet" style="transform:translateY(100%);box-shadow:0 -2px 20px rgba(0,0,0,0);"></div>
+        <div class="push-scrim" id="tpSheetScrim" style="opacity:0;z-index:10;pointer-events:auto;"></div>
+        <div class="sheet" id="tpSheet0" style="transform:translateY(100%);z-index:11;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);"></div>
+        <div class="sheet" id="tpSheet1" style="transform:translateY(100%);z-index:12;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);"></div>
+        <div class="sheet" id="tpSheet2" style="transform:translateY(100%);z-index:13;transform-origin:top center;opacity:0;box-shadow:0 -2px 20px rgba(0,0,0,0);"></div>
       </div>
 
       <!-- scale-in: modal + tooltip -->
@@ -3133,42 +3175,48 @@
 <!-- ── Shared templates ─────────────────────────────────────────── -->
 
 <template id="tpl-sheet">
-  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-close">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+        <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
   <div class="sheet-line med"></div>
   <div class="sheet-line short thin"></div>
   <div class="sheet-section-gap"></div>
-  <div class="sheet-tag-row">
-    <div class="sheet-tag" style="width:54px;"></div>
-    <div class="sheet-tag" style="width:44px;"></div>
-    <div class="sheet-tag" style="width:62px;"></div>
-  </div>
   <div class="sheet-img-row">
     <div class="sheet-thumb"></div>
     <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line" style="margin-bottom:0;width:86%;"></div>
       <div class="sheet-line short thin" style="margin-bottom:0;"></div>
     </div>
   </div>
   <div class="sheet-img-row">
     <div class="sheet-thumb"></div>
     <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line" style="margin-bottom:0;width:75%;"></div>
       <div class="sheet-line med thin" style="margin-bottom:0;"></div>
     </div>
   </div>
   <div class="sheet-img-row">
     <div class="sheet-thumb"></div>
     <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line" style="margin-bottom:0;width:82%;"></div>
       <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
     </div>
   </div>
   <div class="sheet-img-row">
     <div class="sheet-thumb"></div>
     <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;"></div>
+      <div class="sheet-line" style="margin-bottom:0;width:90%;"></div>
       <div class="sheet-line med thin" style="margin-bottom:0;"></div>
     </div>
+  </div>
+  <div class="sheet-cta">
+    <div class="sheet-cta-text"></div>
+    <div class="sheet-cta-btn"></div>
   </div>
 </template>
 
@@ -3614,7 +3662,12 @@ function stampTemplate(templateId, targetEl) {
 
   // tpl-sheet targets
   stampTemplate('tpl-sheet', document.getElementById('demoSheet'));
-  stampTemplate('tpl-sheet', document.getElementById('tpSheet'));
+  stampTemplate('tpl-sheet', document.getElementById('tpSheet0'));
+  stampTemplate('tpl-sheet', document.getElementById('tpSheet1'));
+  stampTemplate('tpl-sheet', document.getElementById('tpSheet2'));
+  // Overlay scrims for pushed sheets
+  const tpSheetOverlay0 = document.createElement('div'); tpSheetOverlay0.className = 'sheet-overlay'; document.getElementById('tpSheet0').appendChild(tpSheetOverlay0);
+  const tpSheetOverlay1 = document.createElement('div'); tpSheetOverlay1.className = 'sheet-overlay'; document.getElementById('tpSheet1').appendChild(tpSheetOverlay1);
 })();
 
 // ── Spring definitions ────────────────────────────────────────────
@@ -4298,6 +4351,7 @@ const TP_SPRING = { stiffness: 500, damping: calcDamping(500, 1.0) };
 let tpAnim = null;
 let tpDemoState = 'out';
 let tpTabIdx = 0, tpTabDir = 1;
+let tpSlideUpStep = 0;
 let tpSlideInMode = 'fullscreen';
 
 function tpSpringAnimate(tick, spring, onDone) {
@@ -5044,6 +5098,7 @@ const TP_DEMOS = {
       const dir = forceDir !== undefined ? forceDir : tpTabDir;
       const nextIdx = tpTabIdx + dir;
       if (nextIdx < 0 || nextIdx > 2) return;
+      window._tpFlashSetupPress?.(dir);
       const travelDir = dir;
       const outScreen = document.getElementById(`tpTabScreen${tpTabIdx}`);
       const inScreen  = document.getElementById(`tpTabScreen${nextIdx}`);
@@ -5097,27 +5152,101 @@ const TP_DEMOS = {
   'slide-up': {
     description: 'Used for components that enter and exit from the bottom of the screen, like sheets and bars.',
     reset() {
-      tpDemoState = 'out';
+      tpSlideUpStep = 0;
+      tpSheetAnimating = false;
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
-      const sheet = document.getElementById('tpSheet');
       const scrim = document.getElementById('tpSheetScrim');
-      sheet.style.transform = 'translateY(100%)';
-      sheet.style.boxShadow = '0 -2px 20px rgba(0,0,0,0)';
-      scrim.style.opacity   = '0';
+      scrim.style.opacity = '0';
+      [0,1,2].forEach(i => {
+        const s = document.getElementById(`tpSheet${i}`);
+        s.style.transform = 'translateY(100%)';
+        s.style.opacity   = '1';
+        s.style.boxShadow = '0 -2px 20px rgba(0,0,0,0)';
+        const ov = s.querySelector('.sheet-overlay');
+        if (ov) ov.style.opacity = '0';
+      });
     },
     play() {
-      const sheet = document.getElementById('tpSheet');
-      const scrim = document.getElementById('tpSheetScrim');
+      if (tpSheetAnimating) return;
       const { stiffness, damping } = TP_SPRING;
-      const isIn  = tpDemoState === 'in';
-      tpDemoState = isIn ? 'out' : 'in';
-      tpSpringAnimate((t) => {
-        const pos      = springPos(t, stiffness, damping);
-        const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
-        sheet.style.transform  = `translateY(${isIn ? (1 - pos) * 100 : pos * 100}%)`;
-        sheet.style.boxShadow  = `0 -2px 20px rgba(0,0,0,${isIn ? scrimPos * 0.15 : (1 - scrimPos) * 0.15})`;
-        scrim.style.opacity    = String(isIn ? scrimPos : 1 - scrimPos);
-      });
+      const step  = tpSlideUpStep;
+      const scrim = document.getElementById('tpSheetScrim');
+      const s0    = document.getElementById('tpSheet0');
+      const s1    = document.getElementById('tpSheet1');
+      const s2    = document.getElementById('tpSheet2');
+
+      // pushedY: just move up so the top peeks 12px above the incoming sheet's top edge.
+      // The incoming sheet starts at top of its visible area, so we move the bg sheet up by 12px.
+      const pushedY = -8; // px, negative = upward
+      const SC1 = 0.94, SC2 = 0.88;
+      const ov0 = s0.querySelector('.sheet-overlay');
+      const ov1 = s1.querySelector('.sheet-overlay');
+
+      tpSheetAnimating = true;
+      if (window._tpSheetAnimTimeout) clearTimeout(window._tpSheetAnimTimeout);
+      window._tpSheetAnimTimeout = setTimeout(() => { tpSheetAnimating = false; }, 800);
+      const done = (cb) => () => { tpSheetAnimating = false; tpSheetClickCooldown = performance.now() + 150; clearTimeout(window._tpSheetAnimTimeout); if (cb) cb(); };
+
+      if (step === 0) {
+        tpSpringAnimate((t) => {
+          const p  = springPos(t, stiffness, damping);
+          const sp = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+          s0.style.transform  = `translateY(${p * 100}%)`;
+          s0.style.boxShadow  = `0 -2px 20px rgba(0,0,0,${(1-sp) * 0.15})`;
+          scrim.style.opacity = String(1 - sp);
+        }, null, done(() => { tpSlideUpStep++; }));
+
+      } else if (step === 1) {
+        tpSpringAnimate((t) => {
+          const p = springPos(t, stiffness, damping);
+          const c = 1 - p;
+          s1.style.transform = `translateY(${p * 100}%)`;
+          s1.style.boxShadow = `0 -2px 20px rgba(0,0,0,${c * 0.15})`;
+          s0.style.transform = `translateY(${pushedY * c}px) scale(${1 - (1 - SC1) * c})`;
+          if (ov0) ov0.style.opacity = String(c * 0.3);
+        }, null, done(() => { tpSlideUpStep++; }));
+
+      } else if (step === 2) {
+        tpSpringAnimate((t) => {
+          const p = springPos(t, stiffness, damping);
+          const c = 1 - p;
+          s2.style.transform = `translateY(${p * 100}%)`;
+          s2.style.boxShadow = `0 -2px 20px rgba(0,0,0,${c * 0.15})`;
+          s1.style.transform = `translateY(${pushedY * c}px) scale(${1 - (1 - SC1) * c})`;
+          if (ov1) ov1.style.opacity = String(c * 0.3);
+          s0.style.opacity = String(1 - c);
+        }, null, done(() => { s0.style.opacity = '0'; tpSlideUpStep++; }));
+
+      } else if (step === 3) {
+        tpSpringAnimate((t) => {
+          const p = springPos(t, stiffness, damping);
+          const c = 1 - p;
+          s2.style.transform = `translateY(${c * 100}%)`;
+          s2.style.boxShadow = `0 -2px 20px rgba(0,0,0,${p * 0.15})`;
+          s1.style.transform = `translateY(${pushedY * p}px) scale(${1 - (1 - SC1) * p})`;
+          if (ov1) ov1.style.opacity = String(p * 0.3);
+          s0.style.opacity = String(c);
+        }, null, done(() => { tpSlideUpStep++; }));
+
+      } else if (step === 4) {
+        tpSpringAnimate((t) => {
+          const p = springPos(t, stiffness, damping);
+          const c = 1 - p;
+          s1.style.transform = `translateY(${c * 100}%)`;
+          s1.style.boxShadow = `0 -2px 20px rgba(0,0,0,${p * 0.15})`;
+          s0.style.transform = `translateY(${pushedY * p}px) scale(${1 - (1 - SC1) * p})`;
+          if (ov0) ov0.style.opacity = String(p * 0.3);
+        }, null, done(() => { tpSlideUpStep++; }));
+
+      } else if (step === 5) {
+        tpSpringAnimate((t) => {
+          const p  = springPos(t, stiffness, damping);
+          const sp = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+          s0.style.transform  = `translateY(${(1 - p) * 100}%)`;
+          s0.style.boxShadow  = `0 -2px 20px rgba(0,0,0,${p * 0.15})`;
+          scrim.style.opacity = String(p);
+        }, null, done(() => { this.reset(); }));
+      }
     },
   },
 
@@ -5489,6 +5618,15 @@ if (hashTp) {
         TP_DEMOS[key].play(); // exit
         scheduleNext(1700, onCycle);
       });
+    } else if (key === 'slide-up') {
+      // step-based: fire each of 6 steps with a pause between, then loop
+      function nextStep() {
+        if (!tpPlaying) return;
+        TP_DEMOS['slide-up'].play();
+        const isLast = tpSlideUpStep === 0; // reset() was called after step 5
+        scheduleNext(isLast ? 800 : 1400, isLast ? onCycle : nextStep);
+      }
+      nextStep();
     } else {
       // standard enter/exit toggle demos
       TP_DEMOS[key]?.play(); // enter
@@ -5534,23 +5672,48 @@ if (hashTp) {
     tpPlaying ? stopTp() : startTp();
   });
 
+  // Press flash: scale down then spring back. baseScale is the resting scale (1 for CTA, varies for backBtn)
+  function flashPress(el, baseScale = 1) {
+    el.style.transition = 'transform 80ms ease-out';
+    el.style.transform = `scale(${baseScale * 0.88})`;
+    setTimeout(() => {
+      el.style.transition = 'transform 320ms cubic-bezier(0.34,1.56,0.64,1)';
+      el.style.transform = `scale(${baseScale})`;
+      setTimeout(() => { el.style.transition = ''; }, 320);
+    }, 80);
+  }
+
+  // Expose so play() can trigger press feedback on autoplay
+  window._tpFlashSetupPress = (dir) => {
+    if (dir > 0) {
+      flashPress(document.getElementById('tpSetupCta'), 1);
+    } else {
+      // Skip flash when going back to setup (back btn is animating out via spring)
+      const goingToSetup = tpTabIdx + dir === 0;
+      if (!goingToSetup) flashPress(document.getElementById('tpSetupBackBtn'), 1);
+    }
+  };
+
   // slide-in-fade bar buttons: CTA/right pill = forward, back circle = backward
   document.getElementById('tpSetupCta').addEventListener('click', (e) => {
     e.stopPropagation();
     if (tpPlaying) return;
+    flashPress(document.getElementById('tpSetupCta'), 1);
     TP_DEMOS['slide-in-fade']?.play(1);
   });
   document.getElementById('tpSetupBackBtn').addEventListener('click', (e) => {
     e.stopPropagation();
     if (tpPlaying) return;
+    if (tpTabIdx > 1) flashPress(document.getElementById('tpSetupBackBtn'), 1);
     TP_DEMOS['slide-in-fade']?.play(-1);
   });
 
-  // Phone click: pause if playing, play if paused (zoom card/panel handlers own zoom)
+  // Phone click: pause if playing, play if paused (zoom and slide-up handle their own clicks)
   document.getElementById('tpPhone').addEventListener('click', (e) => {
+    if (tpDragDismissing) { tpDragDismissing = false; return; }
     const key = tpActiveKey();
-    if (key === 'zoom') return; // zoom card/panel handlers own this
-    if (key === 'slide-in-fade') return; // bar buttons handle this
+    if (key === 'zoom') return;
+    if (key === 'slide-up') return; // container handler owns all slide-up clicks
     if (tpPlaying) { stopTp(); return; }
     TP_DEMOS[key]?.play();
   });
@@ -5559,6 +5722,246 @@ if (hashTp) {
     const key = tpActiveKey();
     TP_DEMOS[key]?.play();
   });
+
+  // Drag-to-dismiss for slide-up sheets
+  let tpDragDismissing = false;
+  let tpSheetAnimating = false;
+  let tpSheetClickCooldown = 0; // timestamp — ignore clicks until after this
+  (() => {
+    const DISMISS_THRESHOLD_PX = 50;
+    let dragActive = false, dragStartY = 0, dragSheet = null, dragSheetBelow = null;
+    let dragSheetH = 0, dragBelowStartTY = 0, dragBelowStartSC = 1, dragBelowStartOv = 0;
+    const PUSHED_Y = -8, SC1 = 0.94;
+
+    function getTopSheet() {
+      if (tpSlideUpStep === 1) return { top: document.getElementById('tpSheet0'), below: null, belowPushedY: 0, belowSC: 1 };
+      if (tpSlideUpStep === 2) return { top: document.getElementById('tpSheet1'), below: document.getElementById('tpSheet0'), belowPushedY: PUSHED_Y, belowSC: SC1 };
+      if (tpSlideUpStep === 3) return { top: document.getElementById('tpSheet2'), below: document.getElementById('tpSheet1'), belowPushedY: PUSHED_Y, belowSC: SC1 };
+      return null;
+    }
+
+    function parseTY(el) {
+      // Use computed matrix to get actual rendered px regardless of % or px units
+      const m = new DOMMatrix(getComputedStyle(el).transform);
+      return m.m42;
+    }
+    function parseSC(el) {
+      const m = new DOMMatrix(getComputedStyle(el).transform);
+      return m.a; // scaleX (uniform scale)
+    }
+
+    // Animate sheet (and optionally below) to their resting pushed positions
+    function springBack(sheet, below, belowPushedY, belowSC, startTY, belowStartTY, belowStartSC, belowStartOv) {
+      if (startTY < 1) return;
+      const scrim   = document.getElementById('tpSheetScrim');
+      const scrimAt = parseFloat(scrim.style.opacity) || 0;
+      const noBelow = !below;
+      const startT  = performance.now(), dur = 380;
+      function frame(now) {
+        const t    = Math.min((now - startT) / dur, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        const py   = startTY * (1 - ease);
+        sheet.style.transform = `translateY(${py}px)`;
+        if (noBelow) scrim.style.opacity = String(scrimAt + (1 - scrimAt) * ease);
+        if (below) {
+          // interpolate from captured start position back to pushed resting state
+          const ty = belowStartTY + (belowPushedY - belowStartTY) * ease;
+          const sc = belowStartSC + (belowSC - belowStartSC) * ease;
+          below.style.transform = `translateY(${ty}px) scale(${sc})`;
+          const ov = below.querySelector('.sheet-overlay');
+          if (ov) ov.style.opacity = String(belowStartOv + (0.3 - belowStartOv) * ease);
+        }
+        if (t < 1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+
+    // Snap all sheets to the correct visual state for a given step
+    function snapToStep(step) {
+      const s0 = document.getElementById('tpSheet0');
+      const s1 = document.getElementById('tpSheet1');
+      const s2 = document.getElementById('tpSheet2');
+      const ov0 = s0.querySelector('.sheet-overlay');
+      const ov1 = s1.querySelector('.sheet-overlay');
+      const scrim = document.getElementById('tpSheetScrim');
+      if (step === 0) {
+        [s0,s1,s2].forEach(s => { s.style.transform='translateY(100%)'; s.style.opacity='1'; s.style.boxShadow='0 -2px 20px rgba(0,0,0,0)'; });
+        if(ov0) ov0.style.opacity='0'; if(ov1) ov1.style.opacity='0';
+        scrim.style.opacity='0';
+      } else if (step === 1) {
+        s0.style.transform='translateY(0%)'; s0.style.opacity='1'; if(ov0) ov0.style.opacity='0';
+        s1.style.transform='translateY(100%)'; s1.style.opacity='1';
+        s2.style.transform='translateY(100%)'; s2.style.opacity='1';
+        scrim.style.opacity='1';
+      } else if (step === 2) {
+        s0.style.transform=`translateY(${PUSHED_Y}px) scale(${SC1})`; s0.style.opacity='1'; if(ov0) ov0.style.opacity='0.3';
+        s1.style.transform='translateY(0%)'; s1.style.opacity='1'; if(ov1) ov1.style.opacity='0';
+        s2.style.transform='translateY(100%)'; s2.style.opacity='1';
+        scrim.style.opacity='1';
+      }
+    }
+
+    // Animate sheet off screen and simultaneously un-push the below sheet
+    function animateDismiss(sheet, below, startY, noBelow) {
+      const endY    = dragSheetH + 200;
+      const scrim   = document.getElementById('tpSheetScrim');
+      const scrimAt = parseFloat(scrim.style.opacity) || 1;
+      // Capture below sheet's current state
+      const belowStartTY = below ? parseTY(below) : 0;
+      const belowStartSC = below ? parseSC(below) : 1;
+      const belowOv      = below ? below.querySelector('.sheet-overlay') : null;
+      const belowOvStart = belowOv ? (parseFloat(belowOv.style.opacity) || 0) : 0;
+      // When going 3→2, s0 (the sheet behind below) needs to fade back in
+      const s0FadeIn = tpSlideUpStep === 3;
+      const s0El = s0FadeIn ? document.getElementById('tpSheet0') : null;
+      const startT = performance.now(), dur = 300;
+      tpSheetAnimating = true;
+      if (window._tpSheetAnimTimeout) clearTimeout(window._tpSheetAnimTimeout);
+      window._tpSheetAnimTimeout = setTimeout(() => { tpSheetAnimating = false; }, 600);
+      function frame(now) {
+        const t    = Math.min((now - startT) / dur, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        sheet.style.transform = `translateY(${startY + (endY - startY) * ease}px)`;
+        if (noBelow) scrim.style.opacity = String(scrimAt * (1 - ease));
+        if (below) {
+          const ty = belowStartTY + (0 - belowStartTY) * ease;
+          const sc = belowStartSC + (1 - belowStartSC) * ease;
+          below.style.transform = `translateY(${ty}px) scale(${sc})`;
+          if (belowOv) belowOv.style.opacity = String(belowOvStart * (1 - ease));
+        }
+        if (s0El) s0El.style.opacity = String(ease);
+        if (t < 1) { requestAnimationFrame(frame); return; }
+        tpSlideUpStep--;
+        snapToStep(tpSlideUpStep);
+        tpSheetAnimating = false;
+        tpSheetClickCooldown = performance.now() + 150;
+        clearTimeout(window._tpSheetAnimTimeout);
+      }
+      requestAnimationFrame(frame);
+    }
+
+    const container = document.getElementById('tpSheetContent');
+
+    container.addEventListener('pointerdown', (e) => {
+      if (tpPlaying) return;
+      if (tpActiveKey() !== 'slide-up') return;
+      const info = getTopSheet();
+      if (!info) return;
+      // Only start drag if pointerdown is on a sheet (not scrim area)
+      if (!e.target.closest('.sheet')) return;
+      // Cancel spring only when we actually start dragging (handled in pointermove instead)
+      dragActive     = true;
+      dragStartY     = e.clientY;
+      dragSheet      = info.top;
+      dragSheetBelow = info.below;
+      dragSheetH     = dragSheet.offsetHeight - 150;
+      // Capture current below state so spring-back can return from exact position
+      if (info.below) {
+        dragBelowStartTY = parseTY(info.below);
+        dragBelowStartSC = parseSC(info.below);
+        const ov = info.below.querySelector('.sheet-overlay');
+        dragBelowStartOv = ov ? parseFloat(ov.style.opacity) || 0 : 0;
+      }
+    }, { passive: true });
+
+    document.addEventListener('pointermove', (e) => {
+      if (!dragActive) return;
+      // Cancel spring on first real movement so it doesn't fight the drag
+      if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; tpSheetAnimating = false; }
+      const dy   = Math.max(0, e.clientY - dragStartY);
+      const prog = Math.min(dy / dragSheetH, 1);
+      dragSheet.style.transform = `translateY(${dy}px)`;
+      if (!dragSheetBelow) {
+        document.getElementById('tpSheetScrim').style.opacity = String(1 - prog);
+      } else {
+        const info = getTopSheet();
+        const ty   = info.belowPushedY * (1 - prog);
+        const sc   = info.belowSC + (1 - info.belowSC) * prog;
+        dragSheetBelow.style.transform = `translateY(${ty}px) scale(${sc})`;
+        const ov = dragSheetBelow.querySelector('.sheet-overlay');
+        if (ov) ov.style.opacity = String((1 - prog) * 0.3);
+      }
+    }, { passive: true });
+
+    document.addEventListener('pointerup', (e) => {
+      if (!dragActive) return;
+      dragActive = false;
+      const dy    = Math.max(0, e.clientY - dragStartY);
+      if (dy > 4) tpDragDismissing = true;
+      const sheet   = dragSheet, below = dragSheetBelow;
+      const info    = getTopSheet();
+      const noBelow = !below;
+      // Capture below state at drag END (current position after dragging)
+      const bTY = below ? parseTY(below) : 0;
+      const bSC = below ? parseSC(below) : 1;
+      const bOvEl = below ? below.querySelector('.sheet-overlay') : null;
+      const bOv = bOvEl ? (parseFloat(bOvEl.style.opacity) || 0) : 0;
+      dragSheet = null; dragSheetBelow = null;
+
+      if (dy > DISMISS_THRESHOLD_PX) {
+        animateDismiss(sheet, below, dy, noBelow);
+      } else {
+        springBack(sheet, below, info?.belowPushedY ?? 0, info?.belowSC ?? 1, dy, bTY, bSC, bOv);
+      }
+    });
+
+    // Click on scrim area or X button dismisses top sheet
+    function triggerDismiss() {
+      const info = getTopSheet();
+      if (!info) return;
+      if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
+      dragSheetH = info.top.offsetHeight - 150;
+      const sheet = info.top, below = info.below, noBelow = !below;
+      // Snap to resting, then wait two frames so no spring rAF can fire after us
+      sheet.style.transform = 'translateY(0px)';
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        animateDismiss(sheet, below, 0, noBelow);
+      }));
+    }
+
+    const sheetClickBlocked = () => tpSheetAnimating || performance.now() < tpSheetClickCooldown;
+
+    // Stop autoplay loop but let current animation finish before allowing interaction
+    function softStop() {
+      tpPlaying = false;
+      cancelLoop();
+      document.getElementById('tpIconPlay').style.display  = '';
+      document.getElementById('tpIconPause').style.display = 'none';
+      document.getElementById('tpPhone').classList.remove('cursor-default');
+      window._refreshTouchDot?.();
+    }
+
+    // Scrim click → dismiss top sheet (only when sheets are up)
+    document.getElementById('tpSheetScrim').addEventListener('click', (e) => {
+      if (tpActiveKey() !== 'slide-up') return;
+      if (tpSlideUpStep === 0) return;
+      e.stopPropagation();
+      if (tpDragDismissing) { tpDragDismissing = false; return; }
+      if (tpSheetAnimating) return; // always block during animation, regardless of play state
+      if (tpPlaying) { softStop(); return; }
+      if (performance.now() < tpSheetClickCooldown) return;
+      triggerDismiss();
+    });
+
+    // Container click handler
+    container.addEventListener('click', (e) => {
+      if (tpActiveKey() !== 'slide-up') return;
+      e.stopPropagation();
+      if (tpDragDismissing) { tpDragDismissing = false; return; }
+      if (tpSheetAnimating) return; // always block during animation, regardless of play state
+      if (tpPlaying) { softStop(); return; }
+      if (performance.now() < tpSheetClickCooldown) return;
+
+      const onClose = !!e.target.closest('.sheet-close');
+      const onSheet = !!e.target.closest('.sheet');
+
+      if (onClose) { triggerDismiss(); return; }
+      // Click on a sheet: open next sheet (if not at max)
+      if (onSheet && tpSlideUpStep < 3) { TP_DEMOS['slide-up'].play(); return; }
+      // Empty phone area (no sheets): open first sheet
+      if (!onSheet && tpSlideUpStep === 0) { snapToStep(0); TP_DEMOS['slide-up'].play(); return; }
+    });
+  })();
 
   // Auto-start when section scrolls into view
   const observer = new IntersectionObserver((entries) => {

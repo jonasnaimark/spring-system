@@ -36,6 +36,85 @@ document.querySelectorAll('.your-tab').forEach(tab => {
 
 **Why `flex-direction: column`:** without it, `::after` sits beside the label text as a flex sibling, doubling the width. Column stacks it below at zero height.
 
+---
+
+## Stacked sheet demo — what it took to get smooth
+
+This was a 30+ prompt slog. Document the hard-won lessons.
+
+### 1. Step counter, not toggle
+
+The demo uses a `tpSlideUpStep` integer (0–5) stepped forward by `play()` and backward by drag/click dismiss. The autoplay loop must use a custom path (`slide-up` branch in `runCycle`) that fires each step sequentially — NOT the standard enter/exit toggle which calls `play()` twice. The toggle approach completely breaks the step sequence.
+
+### 2. `snapToStep(n)` as the authoritative state reset
+
+After any dismiss animation completes, call `snapToStep(tpSlideUpStep)` to snap every sheet to its exact correct position/opacity/overlay. Do NOT try to set individual properties inline — one missed property (e.g. `s0.style.opacity`) causes invisible sheets or flashes. `snapToStep` is the single source of truth.
+
+### 3. Spring overshoot causes jump on click-dismiss
+
+The spring animation leaves the sheet slightly above resting position (negative translateY from overshoot). When a click-dismiss fires:
+1. Cancel `tpAnim` immediately: `if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }`
+2. Snap to `translateY(0px)` explicitly
+3. Wait **two rAF frames** before starting dismiss animation — one frame is not enough because the cancelled spring's final rAF callback may still fire before yours
+
+```js
+sheet.style.transform = 'translateY(0px)';
+requestAnimationFrame(() => requestAnimationFrame(() => {
+  animateDismiss(sheet, below, 0, noBelow);
+}));
+```
+
+### 4. Read actual rendered position via DOMMatrix
+
+When starting dismiss from a drag or mid-spring position, use `DOMMatrix` not regex on `style.transform` — the spring uses `%` units, regex only catches `px`:
+
+```js
+function parseTY(el) {
+  return new DOMMatrix(getComputedStyle(el).transform).m42;
+}
+function parseSC(el) {
+  return new DOMMatrix(getComputedStyle(el).transform).a;
+}
+```
+
+Capture below-sheet state at **drag end** (pointerup), not drag start — the sheet has moved by then.
+
+### 5. Drag uses document-level listeners, not container
+
+`pointermove`/`pointerup` on the container miss events when the pointer moves outside. Put them on `document`. Do NOT cancel the spring on `pointerdown` — cancel it on the first `pointermove` instead. Cancelling on `pointerdown` also clears `tpSheetAnimating`, which lets the subsequent `click` event slip through.
+
+### 6. 3→2 transition: s0 must fade in
+
+When dismissing from 3 sheets to 2, `s0` has `opacity:0` from the forward animation. `animateDismiss` must explicitly animate it back to 1 in sync:
+
+```js
+const s0FadeIn = tpSlideUpStep === 3;
+// ...in the frame loop:
+if (s0El) s0El.style.opacity = String(ease);
+```
+
+### 7. Spam click guard — two-layer approach
+
+**Layer 1: `tpSheetAnimating` flag.** Set `true` at the start of `play()` and `animateDismiss()`. Clear in `onDone` AND in `reset()`. Check this first in every click handler before anything else — even before checking `tpPlaying`. If the flag is stuck (spring cancelled mid-way), a safety `setTimeout` of 600–800ms clears it.
+
+**Layer 2: `tpSheetClickCooldown` timestamp.** After `onDone` fires, set `tpSheetClickCooldown = performance.now() + 150`. Block clicks until `performance.now() > tpSheetClickCooldown`. 150ms is enough to absorb a double-tap without feeling sluggish.
+
+**Critical gotcha:** `softStop()` (cancel loop, set `tpPlaying=false`) must only fire when `tpSheetAnimating` is false. If it fires mid-spring, the spring's `onDone` still runs, but no next step is scheduled — the demo halts mid-sequence. Always check `tpSheetAnimating` before `tpPlaying` in handlers.
+
+**Soft stop vs hard stop:** clicking during autoplay should cancel the *scheduler* (loop timer) but let the current spring finish. Use `softStop()` — cancel the `setTimeout` loop but leave `tpAnim` running. The spring completes, fires `onDone`, clears the flag, and the UI is in a clean state.
+
+```js
+function softStop() {
+  tpPlaying = false;
+  cancelLoop(); // clears tpLoopTimer only
+  // does NOT cancel tpAnim — spring runs to completion
+}
+```
+
+### 8. Pointer events on the scrim
+
+`.push-scrim` has `pointer-events: none` globally. The sheet-scrim needs `pointer-events: auto` inline to receive clicks. Give it its own listener that only fires when `tpSlideUpStep > 0` — otherwise let the click fall through to the container so the empty-state "open first sheet" path works.
+
 **Why not `min-width` in JS:** measuring bold width at runtime is font-timing dependent — if the custom font hasn't loaded yet the measurement uses the fallback font and is wrong.
 
 ---
