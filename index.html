@@ -2109,6 +2109,7 @@
     .dt-card-row--price { width: 35%; }
 
     .phone-frame { cursor: none; }
+    .phone-frame.cursor-default { cursor: default; }
     #accDemoContainer .phone-frame { cursor: default; }
     #ngDemoContainer .phone-frame { cursor: none; }
     #ngExpandPanel { cursor: none; user-select: none; }
@@ -5036,18 +5037,24 @@ const TP_DEMOS = {
       if (back)    back.style.width = '0';
       if (backBtn) backBtn.style.transform = 'scale(0)';
     },
-    play() {
+    play(forceDir) {
       const spring = { stiffness: 300, damping: calcDamping(300, 1.0) };
       const { stiffness, damping } = spring;
-      const travelDir = tpTabDir;
-      const nextIdx   = tpTabIdx + travelDir;
+      // forceDir overrides tpTabDir; validate the move is in bounds
+      const dir = forceDir !== undefined ? forceDir : tpTabDir;
+      const nextIdx = tpTabIdx + dir;
+      if (nextIdx < 0 || nextIdx > 2) return;
+      const travelDir = dir;
       const outScreen = document.getElementById(`tpTabScreen${tpTabIdx}`);
       const inScreen  = document.getElementById(`tpTabScreen${nextIdx}`);
       const back    = document.getElementById('tpSetupBack');
       const backBtn = document.getElementById('tpSetupBackBtn');
       const prevIdx = tpTabIdx;
       tpTabIdx = nextIdx;
-      if (tpTabIdx === 0 || tpTabIdx === 2) tpTabDir *= -1;
+      // Keep tpTabDir in sync: at ends reverse, otherwise follow the direction used
+      if (tpTabIdx === 0) tpTabDir = 1;
+      else if (tpTabIdx === 2) tpTabDir = -1;
+      else tpTabDir = travelDir;
 
       const SLIDE_PX   = 40;
       inScreen.style.opacity   = '0';
@@ -5415,11 +5422,9 @@ document.querySelectorAll('.tp-tab').forEach(tab => {
     const key = tab.dataset.tp;
     switchTpDemo(key);
     history.replaceState(null, '', `#tp-${key}${key === 'zoom' && tpZoomMode === 'modal' ? '-modal' : ''}`);
-    // Restart auto-play loop for new demo if currently playing
-    if (window._tpAutoPlay?.isPlaying()) {
-      window._tpAutoPlay.stop();
-      window._tpAutoPlay.start();
-    }
+    // Always restart auto-play when switching demos
+    window._tpAutoPlay?.stop();
+    window._tpAutoPlay?.start();
   });
 });
 
@@ -5503,8 +5508,10 @@ if (hashTp) {
 
   function startTp() {
     tpPlaying = true;
+    document.getElementById('tpPhone').classList.add('cursor-default');
     document.getElementById('tpIconPlay').style.display  = 'none';
     document.getElementById('tpIconPause').style.display = '';
+    window._refreshTouchDot?.();
     const key = tpActiveKey();
     TP_DEMOS[key]?.reset?.();
     scheduleNext(300, loop);
@@ -5515,6 +5522,8 @@ if (hashTp) {
     cancelLoop();
     document.getElementById('tpIconPlay').style.display  = '';
     document.getElementById('tpIconPause').style.display = 'none';
+    document.getElementById('tpPhone').classList.remove('cursor-default');
+    window._refreshTouchDot?.();
   }
 
   // Expose so tab switching can restart
@@ -5525,11 +5534,24 @@ if (hashTp) {
     tpPlaying ? stopTp() : startTp();
   });
 
-  // When paused: phone click plays current demo; zoom card clicks work via existing handlers
-  document.getElementById('tpPhone').addEventListener('click', (e) => {
+  // slide-in-fade bar buttons: CTA/right pill = forward, back circle = backward
+  document.getElementById('tpSetupCta').addEventListener('click', (e) => {
+    e.stopPropagation();
     if (tpPlaying) return;
+    TP_DEMOS['slide-in-fade']?.play(1);
+  });
+  document.getElementById('tpSetupBackBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (tpPlaying) return;
+    TP_DEMOS['slide-in-fade']?.play(-1);
+  });
+
+  // Phone click: pause if playing, play if paused (zoom card/panel handlers own zoom)
+  document.getElementById('tpPhone').addEventListener('click', (e) => {
     const key = tpActiveKey();
     if (key === 'zoom') return; // zoom card/panel handlers own this
+    if (key === 'slide-in-fade') return; // bar buttons handle this
+    if (tpPlaying) { stopTp(); return; }
     TP_DEMOS[key]?.play();
   });
   document.getElementById('tpDesktopWrap').addEventListener('click', () => {
@@ -6111,15 +6133,23 @@ document.querySelectorAll('.demo-tab').forEach(tab => {
   document.body.appendChild(dot);
 
   let insidePhone = false;
+  let lastTarget  = null;
+
+  function refreshDot() {
+    if (!lastTarget) return;
+    const inTpPhone = !!lastTarget.closest('#tpPhone');
+    const tpPaused  = inTpPhone && !window._tpAutoPlay?.isPlaying();
+    const inside = !!lastTarget.closest('.phone-frame') && !lastTarget.closest('.desktop-bezel') && !lastTarget.closest('#accDemoContainer') && (!inTpPhone || tpPaused);
+    insidePhone = inside;
+    dot.classList.toggle('visible', inside);
+  }
+  window._refreshTouchDot = refreshDot;
 
   document.addEventListener('mousemove', (e) => {
     dot.style.left = e.clientX + 'px';
     dot.style.top  = e.clientY + 'px';
-    const inside = !!e.target.closest('.phone-frame') && !e.target.closest('.desktop-bezel') && !e.target.closest('#accDemoContainer');
-    if (inside !== insidePhone) {
-      insidePhone = inside;
-      dot.classList.toggle('visible', inside);
-    }
+    lastTarget = e.target;
+    refreshDot();
   });
 
   document.addEventListener('mousedown', (e) => {
