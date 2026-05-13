@@ -3899,8 +3899,7 @@ const miniAnims = {};
         <div class="card-meta"><span class="card-meta-label">S:</span>${stiffness} · <span class="card-meta-label">DR:</span>${c.ratio} · <span class="card-meta-label">D:</span>${damping}</div>
       `;
       card.addEventListener('click', () => {
-        if (card.classList.contains('selected')) { playDemo(); return; }
-        selectSpring(name, stiffness, damping, c.ratio, card, c.color, { play: false });
+        selectSpring(name, stiffness, damping, c.ratio, card, c.color, { play: true });
       });
       row.appendChild(card);
     }
@@ -4793,10 +4792,10 @@ let activeBezDuration = 500;
 
 document.querySelectorAll('.dur-card').forEach(card => {
   card.addEventListener('click', () => {
-    if (card.classList.contains('selected')) { runBezDemo(); return; }
     document.querySelectorAll('.dur-card').forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     activeBezDuration = parseInt(card.dataset.dur);
+    runBezDemo();
   });
 });
 
@@ -4819,8 +4818,8 @@ function selectBez(key) {
 BEZ_IDS.forEach(id => {
   const key = id.replace('bez-', '');
   document.getElementById(id)?.addEventListener('click', () => {
-    if (document.getElementById(id)?.classList.contains('selected')) { runBezDemo(); return; }
     selectBez(key);
+    runBezDemo();
   });
 });
 
