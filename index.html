@@ -894,6 +894,18 @@
       z-index: 11;
     }
 
+    /* Full-height sheet variant for NG sheet-dismiss demo */
+    #ngSheetContent .sheet {
+      height: calc(100% - 50px);
+      bottom: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #ngSheetContent .sheet-cta {
+      margin-top: auto;
+    }
+
     .sheet-header {
       display: flex;
       align-items: flex-start;
@@ -929,7 +941,7 @@
 
     .sheet-img-row {
       display: flex;
-      gap: 8px;
+      gap: 16px;
       margin-bottom: 10px;
     }
     .sheet-thumb {
@@ -961,7 +973,7 @@
       align-items: center;
       justify-content: space-between;
       margin-top: 14px;
-      margin-bottom: 10px;
+      margin-bottom: 22px;
       flex-shrink: 0;
     }
     .sheet-cta-text {
@@ -2396,7 +2408,7 @@
   <p class="section-body">Gestures enable fluid, physical navigation alongside tap-based controls.</p>
   <div class="demo-tabs-bar section-chips" id="ngTabsBar">
     <div class="demo-tab ng-tab active" data-ng="zoom-dismiss">Zoom Dismiss</div>
-    <div class="demo-tab ng-tab" data-ng="back-navigation">Back Navigation</div>
+    <div class="demo-tab ng-tab" data-ng="sheet-dismiss">Sheet Dismiss</div>
   </div>
   <div class="section-content">
     <div style="display:flex; gap:24px; align-items:stretch;">
@@ -2419,7 +2431,7 @@
           <div class="ng-subgroup">
             <div>
               <div class="ng-h2">Position</div>
-              <p class="ng-body">A swipe beyond 100 points commits navigation on release. Releasing early reverts. Haptics confirms the threshold.</p>
+              <p class="ng-body">A swipe beyond 50 points commits navigation on release. Releasing early reverts. Haptics confirms the threshold.</p>
             </div>
             <div>
               <div class="ng-h2">Velocity</div>
@@ -2453,7 +2465,7 @@
         <div id="ngDemoScaler" style="transform-origin:center center; display:flex; flex-direction:column; align-items:center; gap:16px;">
         <div class="phone-frame" id="ngPhone">
           <div class="phone-content" id="ngPhoneContent"></div>
-          <div class="sk-bottom-nav">
+          <div class="sk-bottom-nav" id="ngBottomNav">
             <div class="sk-nav-icon"></div>
             <div class="sk-nav-icon"></div>
             <div class="sk-nav-icon"></div>
@@ -2468,8 +2480,15 @@
               <div id="ngDetailInner" style="position:absolute;top:0;left:0;width:200px;transform-origin:top left;display:flex;flex-direction:column;"></div>
             </div>
           </div>
+          <!-- Sheet dismiss stack -->
+          <div id="ngSheetContent" style="display:none;position:absolute;inset:0;pointer-events:none;">
+            <div class="push-scrim" id="ngSheetScrim" style="opacity:0;z-index:10;pointer-events:auto;"></div>
+            <div class="sheet" id="ngSheet0" style="transform:translateY(100%);z-index:11;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);pointer-events:auto;touch-action:none;"></div>
+            <div class="sheet" id="ngSheet1" style="transform:translateY(100%);z-index:12;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);pointer-events:auto;touch-action:none;"></div>
+            <div class="sheet" id="ngSheet2" style="transform:translateY(100%);z-index:13;transform-origin:top center;opacity:0;box-shadow:0 -2px 20px rgba(0,0,0,0);pointer-events:auto;touch-action:none;"></div>
+          </div>
         </div>
-        <p style="font-size:13px; color:var(--c-text-tertiary); text-align:center; margin:0; flex-shrink:0;">Try pulling down or from the left edge to dismiss</p>
+        <p id="ngHintText" style="font-size:13px; color:var(--c-text-tertiary); text-align:center; margin:0; flex-shrink:0;">Try pulling down or from the left edge to dismiss</p>
         </div><!-- end ngDemoScaler -->
       </div>
       </div>
@@ -3212,6 +3231,126 @@
     <div class="sheet-thumb-lines">
       <div class="sheet-line" style="margin-bottom:0;width:90%;"></div>
       <div class="sheet-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-cta">
+    <div class="sheet-cta-text"></div>
+    <div class="sheet-cta-btn"></div>
+  </div>
+</template>
+
+<template id="tpl-full-height-sheet">
+  <div class="sheet-header">
+    <div class="sheet-close">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+        <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+  <div class="sheet-line med"></div>
+  <div class="sheet-line short thin"></div>
+  <div class="sheet-section-gap"></div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb" style="width:60px;height:60px;"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;width:86%;"></div>
+      <div class="sheet-line short thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb" style="width:60px;height:60px;"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;width:75%;"></div>
+      <div class="sheet-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb" style="width:60px;height:60px;"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;width:82%;"></div>
+      <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb" style="width:60px;height:60px;"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;width:90%;"></div>
+      <div class="sheet-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb" style="width:60px;height:60px;"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;width:79%;"></div>
+      <div class="sheet-line short thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb" style="width:60px;height:60px;"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;width:88%;"></div>
+      <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-cta">
+    <div class="sheet-cta-text"></div>
+    <div class="sheet-cta-btn"></div>
+  </div>
+</template>
+
+<template id="tpl-sheet-full">
+  <div class="sheet-header">
+    <div class="sheet-close">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+        <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+  <div class="sheet-line med"></div>
+  <div class="sheet-line short thin"></div>
+  <div class="sheet-section-gap"></div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;width:86%;"></div>
+      <div class="sheet-line short thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;width:75%;"></div>
+      <div class="sheet-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;width:82%;"></div>
+      <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;width:90%;"></div>
+      <div class="sheet-line med thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;width:79%;"></div>
+      <div class="sheet-line short thin" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+  <div class="sheet-img-row">
+    <div class="sheet-thumb"></div>
+    <div class="sheet-thumb-lines">
+      <div class="sheet-line" style="margin-bottom:0;width:88%;"></div>
+      <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
     </div>
   </div>
   <div class="sheet-cta">
@@ -5177,7 +5316,7 @@ const TP_DEMOS = {
 
       // pushedY: just move up so the top peeks 12px above the incoming sheet's top edge.
       // The incoming sheet starts at top of its visible area, so we move the bg sheet up by 12px.
-      const pushedY = -8; // px, negative = upward
+      const pushedY = -10; // px, negative = upward
       const SC1 = 0.94, SC2 = 0.88;
       const ov0 = s0.querySelector('.sheet-overlay');
       const ov1 = s1.querySelector('.sheet-overlay');
@@ -5731,7 +5870,7 @@ if (hashTp) {
     const DISMISS_THRESHOLD_PX = 50;
     let dragActive = false, dragStartY = 0, dragSheet = null, dragSheetBelow = null;
     let dragSheetH = 0, dragBelowStartTY = 0, dragBelowStartSC = 1, dragBelowStartOv = 0;
-    const PUSHED_Y = -8, SC1 = 0.94;
+    const PUSHED_Y = -10, SC1 = 0.94;
 
     function getTopSheet() {
       if (tpSlideUpStep === 1) return { top: document.getElementById('tpSheet0'), below: null, belowPushedY: 0, belowSC: 1 };
@@ -5988,7 +6127,7 @@ const NG_DEMOS = {
       <div class="ng-group">
         <div class="ng-h1">Thresholds</div>
         <div class="ng-subgroup">
-          <div><div class="ng-h2">Position</div><p class="ng-body">A swipe beyond 100 points commits navigation on release. Releasing early reverts. Haptics confirms the threshold.</p></div>
+          <div><div class="ng-h2">Position</div><p class="ng-body">A swipe beyond 50 points commits navigation on release. Releasing early reverts. Haptics confirms the threshold.</p></div>
           <div><div class="ng-h2">Velocity</div><p class="ng-body">A swipe faster than 1000 pts/sec commits navigation on release.</p></div>
         </div>
       </div>
@@ -6002,11 +6141,27 @@ const NG_DEMOS = {
       </div>`,
     play() {},
   },
-  'back-navigation': {
+  'sheet-dismiss': {
     panel: `
       <div class="ng-group">
-        <div class="ng-h1">Edge swipes</div>
-        <p class="ng-body">On iOS swiping the left edge of the screen will navigate back using direct manipulation. Android uses both edges of the screen to go back, but does not use direct manipulation. Instead, edge swipes trigger a back transition on-release.</p>
+        <div class="ng-h1">Swipe direction</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Down</div><p class="ng-body">Sheets dismiss with a downward drag using direct manipulation.</p></div>
+        </div>
+      </div>
+      <div class="ng-group">
+        <div class="ng-h1">Thresholds</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Position</div><p class="ng-body">A swipe beyond 50 points commits the dismiss on release. Releasing early reverts the sheet to its resting position.</p></div>
+          <div><div class="ng-h2">Velocity</div><p class="ng-body">A swipe faster than 1000 pts/sec commits the dismiss regardless of position.</p></div>
+        </div>
+      </div>
+      <div class="ng-group">
+        <div class="ng-h1">Gesture driven motion</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Stack response</div><p class="ng-body">The sheet below scales and translates in sync with the drag, giving a sense of depth.</p></div>
+          <div><div class="ng-h2">Scrims</div><p class="ng-body">Scrims fade in and out as sheets open and dismiss.</p></div>
+        </div>
       </div>`,
     play() {},
   },
@@ -6016,8 +6171,8 @@ const NG_DEMOS = {
 (function() {
   const SPRING_K = 500, SPRING_D = calcDamping(500, 1.0);        // smooth — used for open
   const DISMISS_K = 300, DISMISS_D = calcDamping(300, 0.7);      // default.medium-bounce — used for dismiss
-  const DISMISS_POS_THRESHOLD = 80;  // px of rubber-banded travel to commit
-  const DISMISS_VEL_THRESHOLD = 600; // px/s to commit regardless of position
+  const DISMISS_POS_THRESHOLD = 50;  // px of rubber-banded travel to commit
+  const DISMISS_VEL_THRESHOLD = 1000; // px/s to commit regardless of position
   const EDGE_WIDTH = 28; // px from left edge to trigger edge-swipe mode
   const DETAIL_REF_W = 278; // reference content width (matches TP phone inner)
 
@@ -6414,12 +6569,234 @@ const NG_DEMOS = {
   // Hide play button for zoom-dismiss (gesture only)
   document.getElementById('ngPlayBtn').style.display = 'none';
 
-  // Start on detail page — expand first card after a short delay
+  // Start on detail page — expand first card after a short delay, only if zoom-dismiss is active
   setTimeout(() => {
+    const activeKey = document.querySelector('.ng-tab.active')?.dataset.ng;
+    if (activeKey !== 'zoom-dismiss') return;
     const firstCard = document.querySelector('#ngPhoneContent .sk-carousel-card');
     if (firstCard) ngExpandCard(firstCard);
   }, 300);
 })();
+
+// ── Sheet dismiss gesture demo (infinite recycling) ───────────────
+//
+// 3 DOM sheets rotate through 3 roles: TOP (z:12), BELOW (z:11), SPARE (z:9, offscreen).
+// On dismiss: TOP slides off → BELOW un-pushes to TOP → SPARE instantly teleports
+//   behind BELOW as new BELOW (fresh content, pushed-back position) → indices rotate.
+// On tap: SPARE slides up as new TOP → old TOP pushes back to BELOW → old BELOW
+//   becomes new SPARE (fresh content, parked offscreen) → indices rotate.
+// Screen is NEVER empty — always 2 sheets visible.
+//
+//   roles:  ngT = top index, ngB = below index, ngS = spare index  (all into ngPool[])
+
+const NG_PUSHED_Y = -10, NG_SC1 = 0.94;
+const NG_DISMISS_THRESHOLD = 50;
+const NG_K = 500, NG_D = calcDamping(500, 1.0);
+
+let ngPool = [];
+let ngT = 0, ngB = 1, ngS = 2; // pool indices for top / below / spare
+let ngSheetAnimating = false;
+let ngSheetDragActive = false, ngSheetDragStartY = 0, ngSheetDragSheet = null, ngSheetDragBelow = null;
+let ngSheetDragH = 0;
+let ngSheetDragDismissing = false;
+let ngSheetCooldown = 0;
+
+function ngParseTY(el) { return new DOMMatrix(getComputedStyle(el).transform).m42; }
+function ngParseSC(el) { return new DOMMatrix(getComputedStyle(el).transform).a; }
+
+function ngStamp(el) {
+  el.innerHTML = '';
+  stampTemplate('tpl-full-height-sheet', el);
+  const ov = document.createElement('div');
+  ov.className = 'sheet-overlay';
+  ov.style.opacity = '0';
+  el.appendChild(ov);
+}
+
+function ngPlaceTop(el)   { el.style.transform='translateY(0px)'; el.style.zIndex='12'; el.style.boxShadow='0 -2px 20px rgba(0,0,0,0.15)'; el.style.opacity='1'; const ov=el.querySelector('.sheet-overlay'); if(ov) ov.style.opacity='0'; }
+function ngPlaceBelow(el) { el.style.transform=`translateY(${NG_PUSHED_Y}px) scale(${NG_SC1})`; el.style.zIndex='11'; el.style.boxShadow='0 -2px 20px rgba(0,0,0,0.15)'; el.style.opacity='1'; const ov=el.querySelector('.sheet-overlay'); if(ov) ov.style.opacity='0.3'; }
+function ngPlaceSpare(el) { el.style.transform='translateY(100%)'; el.style.zIndex='9'; el.style.boxShadow='0 -2px 20px rgba(0,0,0,0)'; el.style.opacity='1'; const ov=el.querySelector('.sheet-overlay'); if(ov) ov.style.opacity='0'; }
+
+// Dismiss top, un-push below. Spare is pre-positioned silently as new below BEFORE
+// the animation so it's already in place when the top slides off.
+function ngDismiss(startY) {
+  const top   = ngPool[ngT];
+  const below = ngPool[ngB];
+  const spare = ngPool[ngS];
+  // Ensure top is fully visible — it may have residual opacity from a prior ngOpen fade
+  top.style.opacity = '1';
+  top.style.zIndex  = '12';
+  const endY  = top.offsetHeight + 100;
+  const bTY0  = ngParseTY(below);
+  const bSC0  = ngParseSC(below);
+  const bOv   = below.querySelector('.sheet-overlay');
+  const bOv0  = bOv ? parseFloat(bOv.style.opacity) || 0 : 0;
+
+  // Pre-position spare silently as the new below — hidden behind below (z:11) since spare is z:10
+  ngStamp(spare);
+  spare.style.transform = `translateY(${NG_PUSHED_Y}px) scale(${NG_SC1})`;
+  spare.style.zIndex    = '10';
+  spare.style.opacity   = '1';
+  spare.style.boxShadow = '0 -2px 20px rgba(0,0,0,0.15)';
+  const spareOv = spare.querySelector('.sheet-overlay');
+  if (spareOv) spareOv.style.opacity = '0.3';
+
+  ngSheetAnimating = true;
+  const startT = performance.now(), dur = 300;
+  function frame(now) {
+    const t    = Math.min((now - startT) / dur, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    top.style.transform   = `translateY(${startY + (endY - startY) * ease}px)`;
+    below.style.transform = `translateY(${bTY0 * (1 - ease)}px) scale(${bSC0 + (1 - bSC0) * ease})`;
+    if (bOv) bOv.style.opacity = String(bOv0 * (1 - ease));
+    if (t < 1) { requestAnimationFrame(frame); return; }
+    // Rotate: old-below→top, old-spare→below, old-top→spare(offscreen recycled)
+    const oldT = ngT, oldB = ngB, oldS = ngS;
+    ngT = oldB; ngB = oldS; ngS = oldT;
+    ngPlaceTop(ngPool[ngT]);
+    // New below (spare) is already visually in place — just fix z-index
+    ngPool[ngB].style.zIndex = '11';
+    // Recycle old top as spare offscreen
+    ngStamp(ngPool[ngS]);
+    ngPlaceSpare(ngPool[ngS]);
+    ngSheetAnimating = false;
+    ngSheetCooldown = performance.now() + 150;
+  }
+  requestAnimationFrame(frame);
+}
+
+// Open new sheet on top (tap): spare slides up over top, top pushes back to below, old below fades out
+function ngOpen() {
+  const top   = ngPool[ngT];
+  const below = ngPool[ngB];
+  const spare = ngPool[ngS];
+  ngStamp(spare);
+  spare.style.transform = 'translateY(100%)';
+  spare.style.zIndex    = '13'; // above current top (z:12)
+  spare.style.opacity   = '1';
+  spare.style.boxShadow = '0 -2px 20px rgba(0,0,0,0)';
+  const topTY0   = ngParseTY(top);
+  const topSC0   = ngParseSC(top);
+  const topOv    = top.querySelector('.sheet-overlay');
+  const topOv0   = topOv ? parseFloat(topOv.style.opacity) || 0 : 0;
+  const belowOp0 = parseFloat(below.style.opacity) || 1; // fade out old below
+  ngSheetAnimating = true;
+  const startT = performance.now();
+  function frame(now) {
+    const t = (now - startT) / 1000;
+    const p = springPos(t, NG_K, NG_D);
+    const c = 1 - p;
+    spare.style.transform = `translateY(${p * 100}%)`;
+    spare.style.boxShadow = `0 -2px 20px rgba(0,0,0,${c * 0.15})`;
+    top.style.transform   = `translateY(${topTY0 + (NG_PUSHED_Y - topTY0) * c}px) scale(${topSC0 + (NG_SC1 - topSC0) * c})`;
+    if (topOv) topOv.style.opacity = String(topOv0 + (0.3 - topOv0) * c);
+    below.style.opacity   = String(belowOp0 * p); // fade out in sync with spare coming in
+    if (p > 0.002) { requestAnimationFrame(frame); return; }
+    // Rotate: spare→top, top→below, below→spare(recycled offscreen)
+    const oldT = ngT, oldB = ngB, oldS = ngS;
+    ngT = oldS; ngB = oldT; ngS = oldB;
+    ngPlaceTop(ngPool[ngT]);
+    ngPlaceBelow(ngPool[ngB]);
+    ngStamp(ngPool[ngS]);
+    ngPlaceSpare(ngPool[ngS]);
+    ngSheetAnimating = false;
+    ngSheetCooldown = performance.now() + 150;
+  }
+  requestAnimationFrame(frame);
+}
+
+function ngSpringBack(sheet, below, startTY, bTY, bSC, bOv) {
+  const startT = performance.now(), dur = 380;
+  function frame(now) {
+    const t = Math.min((now - startT) / dur, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    sheet.style.transform = `translateY(${startTY * (1 - ease)}px)`;
+    if (below) {
+      below.style.transform = `translateY(${bTY + (NG_PUSHED_Y - bTY) * ease}px) scale(${bSC + (NG_SC1 - bSC) * ease})`;
+      const ov = below.querySelector('.sheet-overlay');
+      if (ov) ov.style.opacity = String(bOv + (0.3 - bOv) * ease);
+    }
+    if (t < 1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+let _ngSheetInited = false;
+function ngSheetInit() {
+  if (!_ngSheetInited) {
+    _ngSheetInited = true;
+    ngPool = [0,1,2].map(i => document.getElementById(`ngSheet${i}`));
+
+    document.getElementById('ngSheetContent').addEventListener('pointerdown', (e) => {
+      if (!e.target.closest('.sheet')) return;
+      if (e.target.closest('.sheet-close')) return; // X button — let click handler deal with it
+      if (ngSheetAnimating) return;
+      ngSheetDragActive = true;
+      ngSheetDragStartY = e.clientY;
+      ngSheetDragSheet  = ngPool[ngT];
+      ngSheetDragBelow  = ngPool[ngB];
+      ngSheetDragH      = ngPool[ngT].offsetHeight + 100;
+    }, { passive: true });
+
+    document.addEventListener('pointermove', (e) => {
+      if (!ngSheetDragActive) return;
+      const dy   = Math.max(0, e.clientY - ngSheetDragStartY);
+      const prog = Math.min(dy / ngSheetDragH, 1);
+      ngSheetDragSheet.style.transform = `translateY(${dy}px)`;
+      const ty = NG_PUSHED_Y * (1 - prog);
+      const sc = NG_SC1 + (1 - NG_SC1) * prog;
+      ngSheetDragBelow.style.transform = `translateY(${ty}px) scale(${sc})`;
+      const ov = ngSheetDragBelow.querySelector('.sheet-overlay');
+      if (ov) ov.style.opacity = String((1 - prog) * 0.3);
+    }, { passive: true });
+
+    document.addEventListener('pointerup', (e) => {
+      if (!ngSheetDragActive) return;
+      ngSheetDragActive = false;
+      const dy = Math.max(0, e.clientY - ngSheetDragStartY);
+      if (dy > 4) ngSheetDragDismissing = true;
+      const sheet = ngSheetDragSheet, below = ngSheetDragBelow;
+      const bTY = ngParseTY(below), bSC = ngParseSC(below);
+      const bOvEl = below.querySelector('.sheet-overlay');
+      const bOv = bOvEl ? parseFloat(bOvEl.style.opacity) || 0 : 0;
+      ngSheetDragSheet = null; ngSheetDragBelow = null;
+      if (dy > NG_DISMISS_THRESHOLD) {
+        ngDismiss(dy);
+      } else {
+        ngSpringBack(sheet, below, dy, bTY, bSC, bOv);
+      }
+    });
+
+    document.getElementById('ngSheetContent').addEventListener('click', (e) => {
+      if (ngSheetDragDismissing) { ngSheetDragDismissing = false; return; }
+      if (ngSheetAnimating || performance.now() < ngSheetCooldown) return;
+      if (e.target.closest('.sheet-close')) {
+        const top = ngPool[ngT];
+        top.style.transform = 'translateY(0px)';
+        top.style.opacity   = '1';
+        top.style.zIndex    = '12';
+        ngSheetAnimating = true;
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          ngSheetAnimating = false;
+          ngDismiss(0);
+        }));
+      } else if (e.target.closest('.sheet')) {
+        ngOpen();
+      }
+    });
+  }
+
+  // Reset on every tab activation
+  ngPool = [0,1,2].map(i => document.getElementById(`ngSheet${i}`));
+  ngPool.forEach(el => ngStamp(el));
+  ngT = 0; ngB = 1; ngS = 2;
+  ngSheetAnimating = false; ngSheetDragDismissing = false; ngSheetCooldown = 0;
+  document.getElementById('ngSheetScrim').style.opacity = '1';
+  ngPlaceBelow(ngPool[ngB]);
+  ngPlaceTop(ngPool[ngT]);
+  ngStamp(ngPool[ngS]);
+  ngPlaceSpare(ngPool[ngS]);
+}
 
 function switchNgDemo(key) {
   const tab = document.querySelector(`.ng-tab[data-ng="${key}"]`);
@@ -6428,6 +6805,39 @@ function switchNgDemo(key) {
   tab.classList.add('active');
   const panel = NG_DEMOS[key]?.panel;
   if (panel) document.getElementById('ngTextPanel').innerHTML = panel;
+  // Show/hide sheet dismiss stack and update hint text
+  const sheetContent = document.getElementById('ngSheetContent');
+  const expandPanel  = document.getElementById('ngExpandPanel');
+  const expandScrim  = document.getElementById('ngExpandScrim');
+  const hintText     = document.getElementById('ngHintText');
+  const phoneContent = document.getElementById('ngPhoneContent');
+  const bottomNav    = document.getElementById('ngBottomNav');
+  const playBtn      = document.getElementById('ngPlayBtn');
+  if (key === 'sheet-dismiss') {
+    sheetContent.style.display    = 'block';
+    sheetContent.style.pointerEvents = 'auto';
+    expandPanel.style.visibility  = 'hidden';
+    expandScrim.style.opacity     = '0';
+    phoneContent.style.visibility = 'hidden';
+    bottomNav.style.visibility    = 'hidden';
+    playBtn.style.display         = 'none';
+    hintText.textContent          = 'Try dragging down to dismiss';
+    ngSheetInit();
+  } else {
+    sheetContent.style.display    = 'none';
+    sheetContent.style.pointerEvents = 'none';
+    expandPanel.style.visibility  = '';
+    phoneContent.style.visibility = '';
+    bottomNav.style.visibility    = '';
+    hintText.textContent          = 'Try pulling down or from the left edge to dismiss';
+    // Re-trigger zoom expand if switching back to zoom-dismiss and panel isn't showing
+    if (key === 'zoom-dismiss' && expandPanel.style.display === 'none') {
+      setTimeout(() => {
+        const firstCard = document.querySelector('#ngPhoneContent .sk-carousel-card');
+        if (firstCard && !ngExpandState) ngExpandCard(firstCard);
+      }, 200);
+    }
+  }
 }
 
 document.querySelectorAll('.ng-tab').forEach(tab => {
