@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Motion System</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🌀</text></svg>">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
   <style>
     @font-face {
       font-family: 'Cereal';
@@ -260,6 +261,12 @@
       scrollbar-width: none;
     }
     .demo-tabs-bar::-webkit-scrollbar { display: none; }
+    .tab-group-sep {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: var(--c-border-medium);
+      flex-shrink: 0; align-self: center;
+      margin: 0 2px;
+    }
 
     .grid-section {
       display: flex;
@@ -730,6 +737,63 @@
       margin-top: 10px;
     }
 
+    /* loaded search pill — white with shadow and real text */
+    .sk-search-loaded {
+      height: 34px;
+      border-radius: 17px;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.13);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      gap: 6px;
+    }
+    .sk-search-loaded .material-symbols-outlined {
+      font-size: 16px;
+      color: var(--c-text-primary);
+      flex-shrink: 0;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .sk-search-loaded-text {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--c-text-primary);
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    /* loaded card */
+    .ld-card {
+      flex-shrink: 0;
+      border-radius: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+      background: var(--c-surface-0);
+      display: flex;
+      flex-direction: column;
+      margin-top: 10px;
+    }
+    .ld-card-img {
+      width: calc(100% - 16px);
+      height: 150px;
+      border-radius: 12px;
+      flex-shrink: 0;
+      margin: 8px 8px 0;
+    }
+    .ld-card-img-1 { background: #a8c8e8; }
+    .ld-card-img-2 { background: #b8d4a8; }
+    .ld-cats { display: flex; gap: 14px; flex-shrink: 0; margin-top: 6px; margin-bottom: 6px; }
+    .ld-cat {
+      display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1;
+      font-size: 9px; font-weight: 500; color: var(--c-text-tertiary); letter-spacing: 0.01em;
+    }
+    .ld-cat-dot { width: 34px; height: 34px; border-radius: 50%; background: var(--c-surface-3); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .ld-cat-dot .material-symbols-outlined { font-size: 16px; color: var(--c-text-tertiary); font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .ld-cat.active .ld-cat-dot { background: var(--sk); }
+    .ld-cat.active .ld-cat-dot .material-symbols-outlined { color: var(--c-text-primary); }
+    .ld-cat.active { color: var(--c-text-primary); font-weight: 600; }
+
     .sk-chips {
       display: flex;
       gap: 8px;
@@ -810,6 +874,42 @@
       background: var(--sk);
       border-radius: 4px;
     }
+
+    /* ── Shimmer animation (Fade In demo) ── */
+    /* Total: 1350ms. fade-out 300ms, fade-in 700ms, pause 350ms */
+    @keyframes shimmer {
+      0%      { opacity: 1;   animation-timing-function: cubic-bezier(0.4,0,0.2,1); }
+      22.22%  { opacity: 0.4; animation-timing-function: cubic-bezier(0.4,0,0.2,1); }
+      74.07%  { opacity: 1;   animation-timing-function: linear; }
+      100%    { opacity: 1; }
+    }
+    .shimmer {
+      animation: shimmer 1350ms infinite;
+    }
+    .ld-bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 68px;
+      background: var(--c-surface-0);
+      border-top: 1px solid var(--c-border-subtle);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-around;
+      padding: 12px 8px 0;
+      z-index: 20;
+    }
+    .ld-bottom-nav .material-symbols-outlined {
+      font-size: 20px;
+      color: var(--c-text-tertiary);
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .ld-bottom-nav .material-symbols-outlined.active {
+      color: var(--c-text-primary);
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .ld-bottom-nav .ld-nav-active { fill: var(--c-text-primary); }
 
     /* ── Bottom bar template ── */
     .sk-bottom-bar {
@@ -894,17 +994,48 @@
       z-index: 11;
     }
 
-    /* Full-height sheet variant for NG sheet-dismiss demo */
-    #ngSheetContent .sheet {
-      height: calc(100% - 50px);
-      bottom: 0;
+    /* Match sheet height to tp-slide-up (580px phone) so content fills without empty bottom space */
+    #view-sheet .sheet {
+      height: calc(68% + 171px);
+    }
+
+    /* Full-height sheet mode for TP slide-up demo */
+    #tpSheetContent.full-height .sheet {
+      top: 40px;
+      bottom: auto;
+      height: calc(100% - 40px);
+      border-radius: 22px 22px 0 0;
       overflow: hidden;
       display: flex;
       flex-direction: column;
     }
-    #ngSheetContent .sheet-cta {
-      margin-top: auto;
+    #tpSheetContent.full-height .sheet > * { flex-shrink: 0; }
+    #tpSheetContent.full-height .sheet,
+    #ngSheetContent .sheet { padding-bottom: 0; }
+    #tpSheetContent.full-height .phone-content,
+    #tpSheetContent.full-height .sk-bottom-nav {
+      transform-origin: center center;
     }
+    /* Dark backdrop behind home screen content — peeks at top when home screen scales down */
+    #tpSheetDarkBg {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      border-radius: 28px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Full-height sheet variant for NG sheet-dismiss demo */
+    #ngSheetContent .sheet {
+      top: 40px;
+      bottom: auto;
+      height: calc(100% - 40px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #ngSheetContent .sheet > * { flex-shrink: 0; }
 
     .sheet-header {
       display: flex;
@@ -939,25 +1070,27 @@
 
     .sheet-section-gap { height: 14px; }
 
-    .sheet-img-row {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 10px;
+    /* Extra rows hidden in fitted sheets, shown when sheet fills full height */
+    .sheet-row-extra { display: none; }
+    #ngSheetContent .sheet-row-extra,
+    #tpSheetContent.full-height .sheet-row-extra { display: flex; }
+
+    /* Scale sheet content to match the phone's --phone-scale */
+    .sheet {
+      --sheet-scale: var(--phone-scale, 1);
+      padding: calc(14px * var(--sheet-scale)) calc(18px * var(--sheet-scale));
     }
-    .sheet-thumb {
-      width: 56px;
-      height: 56px;
-      border-radius: 8px;
-      background: var(--sk);
-      flex-shrink: 0;
-    }
-    .sheet-thumb-lines {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      justify-content: center;
-    }
+    .sheet-line      { height: calc(10px * var(--sheet-scale, 1)); border-radius: calc(5px * var(--sheet-scale, 1)); margin-bottom: calc(9px * var(--sheet-scale, 1)); }
+    .sheet-line.thin { height: calc(7px  * var(--sheet-scale, 1)); }
+    .sheet-section-gap { height: calc(14px * var(--sheet-scale, 1)); }
+    .sheet-img-row   { gap: calc(16px * var(--sheet-scale, 1)); margin-bottom: calc(10px * var(--sheet-scale, 1)); }
+    .sheet-thumb     { width: calc(56px * var(--sheet-scale, 1)); height: calc(56px * var(--sheet-scale, 1)); border-radius: calc(8px * var(--sheet-scale, 1)); }
+    .sheet-thumb-lines { gap: calc(6px * var(--sheet-scale, 1)); }
+    .sheet-header    { margin-bottom: calc(8px * var(--sheet-scale, 1)); }
+
+    .sheet-img-row { display: flex; }
+    .sheet-thumb { background: var(--sk); flex-shrink: 0; }
+    .sheet-thumb-lines { flex: 1; display: flex; flex-direction: column; justify-content: center; }
     .sheet-tag-row {
       display: flex;
       gap: 6px;
@@ -973,7 +1106,6 @@
       align-items: center;
       justify-content: space-between;
       margin-top: 14px;
-      margin-bottom: 22px;
       flex-shrink: 0;
     }
     .sheet-cta-text {
@@ -983,11 +1115,10 @@
       background: var(--sk);
     }
     .sheet-cta-btn {
-      height: 34px;
-      padding: 0 16px;
-      border-radius: 10px;
+      height: calc(34px * var(--sheet-scale, 1));
+      border-radius: calc(10px * var(--sheet-scale, 1));
       background: var(--sk);
-      width: 96px;
+      width: calc(96px * var(--sheet-scale, 1));
     }
 
     /* ── Inset modal template ── */
@@ -1159,24 +1290,25 @@
     /* ── Notification demo ── */
     .notif {
       position: absolute;
-      top: 18px;
+      bottom: calc(68px + 14px);
       left: 14px;
       right: 14px;
       background: var(--c-surface-0);
       border-radius: 14px;
       padding: 12px 14px;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 10px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.12);
       will-change: transform, opacity;
+      z-index: 20;
     }
 
     .notif-icon {
       width: 32px;
       height: 32px;
       border-radius: 8px;
-      background: var(--c-text-primary);
+      background: var(--sk);
       flex-shrink: 0;
     }
 
@@ -2112,9 +2244,8 @@
     }
     .ff-price {
       font-size: var(--text-small);
-      font-weight: 600;
       line-height: 1.3;
-      color: var(--c-text-primary);
+      color: var(--c-text-tertiary);
       margin: 0;
     }
 
@@ -2224,16 +2355,19 @@
 <!-- ── Transition Patterns section ── -->
 <div class="section-wrap" id="sec-transition">
   <h1 class="section-title">Transitions</h1>
-  <p class="section-body">Transitions orient people as they navigate. Most transitions will use one of these patterns:</p>
+  <p class="section-body">Transitions orient people as they navigate. Zoom creates a sense of continuity. Push navigates to a new place. Slide Up layers content over the screen. Fades swap content in place.</p>
   <div class="demo-tabs-bar section-chips" id="tpTabsBar">
     <div class="demo-tab tp-tab active" data-tp="zoom">Zoom</div>
-    <div class="demo-tab tp-tab" data-tp="slide-in">Slide In</div>
-    <div class="demo-tab tp-tab" data-tp="slide-in-fade">Slide In & Fade</div>
+    <div class="demo-tab tp-tab" data-tp="zoom-fade">Zoom & Fade</div>
+    <div class="tab-group-sep"></div>
+    <div class="demo-tab tp-tab" data-tp="push">Push</div>
+    <div class="demo-tab tp-tab" data-tp="push-fade">Push & Fade</div>
+    <div class="tab-group-sep"></div>
     <div class="demo-tab tp-tab" data-tp="slide-up">Slide Up</div>
     <div class="demo-tab tp-tab" data-tp="slide-up-fade">Slide Up & Fade</div>
-    <div class="demo-tab tp-tab" data-tp="scale-in">Scale In</div>
-    <div class="demo-tab tp-tab" data-tp="fade-sequence">Fade Sequence</div>
-    <div class="demo-tab tp-tab" data-tp="bounce-sequence">Bounce Sequence</div>
+    <div class="tab-group-sep"></div>
+    <div class="demo-tab tp-tab" data-tp="cross-fade">Cross Fade</div>
+    <div class="demo-tab tp-tab" data-tp="fade-in">Fade In</div>
   </div>
   <p class="section-body" id="tpBodyCopy"></p>
   <div class="section-content">
@@ -2242,6 +2376,10 @@
       <svg id="tpIconPlay" width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
       <svg id="tpIconPause" width="13" height="13" viewBox="0 0 12 12" fill="currentColor" style="display:none"><rect x="2" y="2" width="3" height="8" rx="1"/><rect x="7" y="2" width="3" height="8" rx="1"/></svg>
     </button>
+    <div class="demo-mode-toggle" id="tpLoadModeToggle" style="display:none;">
+      <button class="demo-mode-btn active" data-mode="simple">Simple</button>
+      <button class="demo-mode-btn" data-mode="emphasized">Emphasized</button>
+    </div>
     <div class="demo-mode-toggle" id="tpZoomModeToggle" style="display:none;">
       <button class="demo-mode-btn active" data-mode="fullscreen">Fullscreen</button>
       <button class="demo-mode-btn" data-mode="modal">Modal</button>
@@ -2249,6 +2387,10 @@
     <div class="demo-mode-toggle" id="tpSlideInModeToggle" style="display:none;">
       <button class="demo-mode-btn active" data-mode="fullscreen">Fullscreen</button>
       <button class="demo-mode-btn" data-mode="persistent-bar">Persistent Bar</button>
+    </div>
+    <div class="demo-mode-toggle" id="tpSlideUpModeToggle" style="display:none;">
+      <button class="demo-mode-btn active" data-mode="fitted">Fitted</button>
+      <button class="demo-mode-btn" data-mode="full-height">Full Height</button>
     </div>
     <div class="phone-frame" id="tpPhone">
       <div class="phone-content" id="tpPhoneContent"></div>
@@ -2354,8 +2496,10 @@
 
       <!-- slide-up: sheet stack -->
       <div id="tpSheetContent" style="display:none;position:absolute;inset:0;">
-        <div class="phone-content"></div>
-        <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
+        <div id="tpSheetDarkBg"></div>
+        <div class="phone-content" id="tpSheetPhoneContent" style="background:var(--c-surface-0);"></div>
+        <div class="sk-bottom-nav" id="tpSheetBottomNav" style="background:var(--c-surface-0);"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
+        <div id="tpSheetHomeOverlay" style="position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:2;"></div>
         <div class="push-scrim" id="tpSheetScrim" style="opacity:0;z-index:10;pointer-events:auto;"></div>
         <div class="sheet" id="tpSheet0" style="transform:translateY(100%);z-index:11;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);"></div>
         <div class="sheet" id="tpSheet1" style="transform:translateY(100%);z-index:12;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);"></div>
@@ -2365,7 +2509,7 @@
       <!-- scale-in: modal + tooltip -->
       <div id="tpModalContent" style="display:none;position:absolute;inset:0;">
         <div class="phone-content" style="position:relative;">
-          <div class="demo-tooltip" id="tpTooltip" style="top:129px; left:calc(50% + 33px);">
+          <div class="demo-tooltip" id="tpTooltip" style="top:129px; left:calc(50% + 32px);">
             <div class="tooltip-caret"></div>
             <div class="tooltip-bubble">
               <div class="tooltip-tl"></div>
@@ -2376,6 +2520,67 @@
         <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
         <div class="modal-backdrop" id="tpModalBackdrop" style="opacity:0;pointer-events:none;"></div>
         <div class="modal-card" id="tpModal" style="opacity:0; transform: scale(0.75); position:absolute; top:50%; left:50%; margin-top:-70px; margin-left:-110px; z-index:12; pointer-events:none;"></div>
+      </div>
+
+      <!-- sequence: persistent header + swappable content -->
+      <div id="tpSeqContent" style="display:none;position:absolute;inset:0;">
+        <!-- persistent top two rows -->
+        <div id="tpSeqHeader" style="padding:36px 18px 0;flex-shrink:0;display:flex;align-items:flex-start;justify-content:space-between;">
+          <div>
+            <div class="ls-line" style="height:11px;width:120px;border-radius:6px;margin-bottom:5px;"></div>
+            <div class="ls-line" style="height:8px;width:80px;border-radius:4px;margin-bottom:0;"></div>
+          </div>
+          <!-- view toggle button -->
+          <div id="tpSeqBtn" style="width:28px;height:28px;border-radius:50%;background:var(--c-surface-3);flex-shrink:0;position:relative;margin-top:-1px;">
+            <!-- grid icon (visible when showing list, indicates switching to grid) -->
+            <div id="tpSeqIconGrid" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <rect x="1" y="1" width="4" height="4" rx="1" fill="currentColor" opacity="0.7"/>
+                <rect x="7" y="1" width="4" height="4" rx="1" fill="currentColor" opacity="0.7"/>
+                <rect x="1" y="7" width="4" height="4" rx="1" fill="currentColor" opacity="0.7"/>
+                <rect x="7" y="7" width="4" height="4" rx="1" fill="currentColor" opacity="0.7"/>
+              </svg>
+            </div>
+            <!-- list icon (hidden initially, shown when in grid view) -->
+            <div id="tpSeqIconList" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <rect x="1" y="2" width="10" height="1.5" rx="0.75" fill="currentColor" opacity="0.7"/>
+                <rect x="1" y="5.25" width="10" height="1.5" rx="0.75" fill="currentColor" opacity="0.7"/>
+                <rect x="1" y="8.5" width="10" height="1.5" rx="0.75" fill="currentColor" opacity="0.7"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <!-- list screen (default visible) -->
+        <div id="tpSeqList" style="position:absolute;top:88px;left:0;right:0;bottom:0;transform-origin:center center;padding:0 18px;">
+          <div class="ll-img-row"><div class="ll-thumb"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;"></div><div class="ls-line short thin" style="margin-bottom:0;"></div></div></div>
+          <div class="ll-img-row"><div class="ll-thumb"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;"></div><div class="ls-line med thin" style="margin-bottom:0;"></div></div></div>
+          <div class="ll-img-row"><div class="ll-thumb"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;"></div><div class="ls-line short thin" style="margin-bottom:0;"></div></div></div>
+          <div class="ll-img-row"><div class="ll-thumb"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;"></div><div class="ls-line med thin" style="margin-bottom:0;"></div></div></div>
+          <div class="ll-img-row"><div class="ll-thumb"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;"></div><div class="ls-line short thin" style="margin-bottom:0;"></div></div></div>
+          <div class="ll-img-row"><div class="ll-thumb"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;"></div><div class="ls-line med thin" style="margin-bottom:0;"></div></div></div>
+          <div class="ll-img-row"><div class="ll-thumb"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;"></div><div class="ls-line short thin" style="margin-bottom:0;"></div></div></div>
+          <div class="ll-img-row"><div class="ll-thumb"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;"></div><div class="ls-line med thin" style="margin-bottom:0;"></div></div></div>
+        </div>
+        <!-- grid screen (hidden initially) -->
+        <div id="tpSeqGrid" style="position:absolute;top:88px;left:0;right:0;bottom:0;transform-origin:center center;padding:0 18px;opacity:0;transform:scale(0.92);pointer-events:none;">
+          <div class="gs-grid">
+            <div class="gs-card"><div class="gs-card-img"></div><div class="gs-card-line" style="width:80%;"></div></div>
+            <div class="gs-card"><div class="gs-card-img"></div><div class="gs-card-line" style="width:65%;"></div></div>
+            <div class="gs-card"><div class="gs-card-img"></div><div class="gs-card-line" style="width:75%;"></div></div>
+            <div class="gs-card"><div class="gs-card-img"></div><div class="gs-card-line" style="width:55%;"></div></div>
+            <div class="gs-card"><div class="gs-card-img"></div><div class="gs-card-line" style="width:70%;"></div></div>
+            <div class="gs-card"><div class="gs-card-img"></div><div class="gs-card-line" style="width:60%;"></div></div>
+            <div class="gs-card"><div class="gs-card-img"></div><div class="gs-card-line" style="width:78%;"></div></div>
+            <div class="gs-card"><div class="gs-card-img"></div><div class="gs-card-line" style="width:50%;"></div></div>
+          </div>
+        </div>
+        <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
+      </div>
+
+      <!-- fade-in: shimmer skeleton that reveals loaded content -->
+      <div id="tpFadeInContent" style="display:none;position:absolute;inset:0;">
+        <div class="phone-content" id="tpFadeInPhone"></div>
       </div>
 
       <div class="sk-bottom-nav" id="tpPhoneBottomNav">
@@ -2482,6 +2687,7 @@
           </div>
           <!-- Sheet dismiss stack -->
           <div id="ngSheetContent" style="display:none;position:absolute;inset:0;pointer-events:none;">
+            <div style="position:absolute;inset:0;background:#000;"></div>
             <div class="push-scrim" id="ngSheetScrim" style="opacity:0;z-index:10;pointer-events:auto;"></div>
             <div class="sheet" id="ngSheet0" style="transform:translateY(100%);z-index:11;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);pointer-events:auto;touch-action:none;"></div>
             <div class="sheet" id="ngSheet1" style="transform:translateY(100%);z-index:12;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);pointer-events:auto;touch-action:none;"></div>
@@ -2504,11 +2710,11 @@
   <div class="demo-tabs-bar section-chips">
     <div class="demo-tab active" data-demo="sheet">Sheet</div>
     <div class="demo-tab" data-demo="push">Nav Transition</div>
-    <div class="demo-tab" data-demo="zoom">Zoom</div>
+    <div class="demo-tab" data-demo="zoom">Details Page</div>
     <div class="demo-tab" data-demo="bottom-bar">Bottom Bar</div>
-    <div class="demo-tab" data-demo="tab">Tab Switch</div>
+    <div class="demo-tab" data-demo="tab">Stepped Flow</div>
     <div class="demo-tab" data-demo="modal">Modal</div>
-    <div class="demo-tab" data-demo="notif">Notification</div>
+    <div class="demo-tab" data-demo="notif">Toast</div>
     <div class="demo-tab" data-demo="tooltip">Tooltip</div>
     <div class="demo-tab" data-demo="flip">Card Flip</div>
   </div>
@@ -2606,10 +2812,9 @@
             <div class="sk-nav-icon"></div>
             <div class="sk-nav-icon"></div>
           </div>
-          <div class="notif" id="demoNotif" style="transform: translateY(-160%);">
+          <div class="notif" id="demoNotif" style="transform: translateY(40px); opacity: 0;">
             <div class="notif-icon"></div>
             <div class="notif-text">
-              <div class="notif-line"></div>
               <div class="notif-line"></div>
               <div class="notif-line short"></div>
             </div>
@@ -2721,88 +2926,53 @@
       <!-- Tab switch demo -->
       <div class="demo-view" id="view-tab" style="display:none; align-items:center; justify-content:center;">
         <div class="phone-frame">
-          <!-- Sliding content area — clips to phone bounds -->
           <div class="tab-wrap">
-            <!-- Screen 0: Explore -->
+            <!-- Screen 0: Setup -->
             <div class="tab-screen" id="tabScreen0">
-              <div class="phone-content" style="padding-bottom:80px;">
-                <div class="sk-search"></div>
-                <div class="sk-cats">
-                  <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-                  <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-                  <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-                  <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+              <div class="setup-body" style="padding-bottom:0;">
+                <div class="setup-img-placeholder"></div>
+                <div class="setup-text">
+                  <div class="setup-title" style="width:75%;"></div>
+                  <div class="setup-title" style="width:55%;"></div>
                 </div>
-                <div class="sk-divider"></div>
-                <div class="sk-card-img"></div>
-                <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-                <div class="sk-sub"></div>
-                <div class="sk-section-label"></div>
-                <div class="sk-card-img partial"></div>
-                <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-                <div class="sk-sub"></div>
-                <div class="sk-sub"></div>
-                <div class="sk-card-img partial"></div>
-                <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-                <div class="sk-sub"></div>
               </div>
             </div>
-            <!-- Screen 1: Wishlists -->
-            <div class="tab-screen" id="tabScreen1" style="opacity:0; transform:translateX(40px);">
-              <div class="phone-content" style="padding-bottom:80px;">
-                <div class="sk-search"></div>
-                <div class="sk-divider"></div>
-                <div class="sk-card-img"></div>
-                <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-                <div class="sk-sub"></div>
-                <div class="sk-sub"></div>
-                <div class="sk-card-img partial"></div>
-                <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-                <div class="sk-sub"></div>
-                <div class="sk-sub"></div>
-                <div class="sk-card-img partial"></div>
-                <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-                <div class="sk-sub"></div>
+            <!-- Screen 1: Large List -->
+            <div class="tab-screen" id="tabScreen1" style="opacity:0;transform:translateX(40px);">
+              <div class="phone-content" style="padding-top:38px;padding-bottom:80px;overflow:hidden;">
+                <div class="ls-line" style="height:11px;width:68%;border-radius:6px;margin-bottom:5px;"></div>
+                <div class="ls-line" style="height:8px;width:45%;border-radius:4px;margin-bottom:22px;"></div>
+                <div class="ll-img-row"><div class="ll-thumb"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;"></div><div class="ls-line short thin" style="margin-bottom:0;"></div></div></div>
+                <div class="ll-img-row"><div class="ll-thumb"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;"></div><div class="ls-line med thin" style="margin-bottom:0;"></div></div></div>
+                <div class="ll-img-row"><div class="ll-thumb"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;"></div><div class="ls-line short thin" style="margin-bottom:0;"></div></div></div>
+                <div class="ll-img-row"><div class="ll-thumb"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;"></div><div class="ls-line med thin" style="margin-bottom:0;"></div></div></div>
+                <div class="ll-img-row"><div class="ll-thumb"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;"></div><div class="ls-line short thin" style="margin-bottom:0;"></div></div></div>
               </div>
             </div>
-            <!-- Screen 2: Messages -->
-            <div class="tab-screen" id="tabScreen2" style="opacity:0; transform:translateX(40px);">
-              <div class="phone-content" style="gap:0; padding-bottom:80px;">
-                <div class="sk-search" style="margin-bottom:10px;"></div>
-                <div class="sk-msg-row"><div class="sk-avatar"></div><div class="sk-msg-lines"><div class="sk-title"></div><div class="sk-sub"></div></div></div>
-                <div class="sk-msg-row"><div class="sk-avatar"></div><div class="sk-msg-lines"><div class="sk-title"></div><div class="sk-sub"></div></div></div>
-                <div class="sk-msg-row"><div class="sk-avatar"></div><div class="sk-msg-lines"><div class="sk-title"></div><div class="sk-sub"></div></div></div>
-                <div class="sk-msg-row"><div class="sk-avatar"></div><div class="sk-msg-lines"><div class="sk-title"></div><div class="sk-sub"></div></div></div>
-                <div class="sk-msg-row"><div class="sk-avatar"></div><div class="sk-msg-lines"><div class="sk-title"></div><div class="sk-sub"></div></div></div>
-                <div class="sk-msg-row"><div class="sk-avatar"></div><div class="sk-msg-lines"><div class="sk-title"></div><div class="sk-sub"></div></div></div>
-                <div class="sk-msg-row" style="border-bottom:none;"><div class="sk-avatar"></div><div class="sk-msg-lines"><div class="sk-title"></div><div class="sk-sub"></div></div></div>
-              </div>
-            </div>
-            <!-- Screen 3: Profile -->
-            <div class="tab-screen" id="tabScreen3" style="opacity:0; transform:translateX(40px);">
-              <div class="phone-content" style="padding-bottom:80px;">
-                <div class="sk-card-img" style="height:80px; border-radius:50%; width:80px; margin:0 auto;"></div>
-                <div class="sk-section-label" style="width:50%; margin:10px auto 0;"></div>
-                <div class="sk-divider" style="margin:14px 0;"></div>
-                <div class="sk-card-img" style="height:100px;"></div>
-                <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-                <div class="sk-sub"></div>
-                <div class="sk-sub"></div>
-                <div class="sk-card-img partial" style="margin-top:8px;"></div>
-                <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-                <div class="sk-sub"></div>
-                <div class="sk-card-img partial" style="margin-top:8px;"></div>
-                <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-                <div class="sk-sub"></div>
+            <!-- Screen 2: Grid -->
+            <div class="tab-screen" id="tabScreen2" style="opacity:0;transform:translateX(40px);">
+              <div class="phone-content" style="padding-top:38px;padding-bottom:80px;overflow:hidden;">
+                <div class="ls-line" style="height:11px;width:68%;border-radius:6px;margin-bottom:5px;"></div>
+                <div class="ls-line" style="height:8px;width:45%;border-radius:4px;margin-bottom:22px;"></div>
+                <div class="gs-grid">
+                  <div class="gs-card"><div class="gs-card-img"></div><div class="gs-card-line" style="width:80%;"></div></div>
+                  <div class="gs-card"><div class="gs-card-img"></div><div class="gs-card-line" style="width:65%;"></div></div>
+                  <div class="gs-card"><div class="gs-card-img"></div><div class="gs-card-line" style="width:75%;"></div></div>
+                  <div class="gs-card"><div class="gs-card-img"></div><div class="gs-card-line" style="width:55%;"></div></div>
+                  <div class="gs-card"><div class="gs-card-img"></div><div class="gs-card-line" style="width:70%;"></div></div>
+                  <div class="gs-card"><div class="gs-card-img"></div><div class="gs-card-line" style="width:60%;"></div></div>
+                </div>
               </div>
             </div>
           </div>
-          <!-- Static bottom nav — sits above sliding content, never animates -->
-          <div class="sk-bottom-nav" id="tabNav" style="z-index:5;">
-            <div class="sk-nav-icon" id="tabNavIcon0" style="background:#FF385C;"></div>
-            <div class="sk-nav-icon" id="tabNavIcon1"></div>
-            <div class="sk-nav-icon" id="tabNavIcon2"></div>
-            <div class="sk-nav-icon" id="tabNavIcon3"></div>
+          <!-- Persistent bottom bar -->
+          <div id="sfSetupBar" class="sk-bottom-bar" style="z-index:5;">
+            <div id="sfSetupBack" style="width:0;overflow:visible;flex-shrink:0;">
+              <div id="sfSetupBackBtn" class="sk-bar-icon-btn" style="display:flex;align-items:center;justify-content:center;color:var(--c-text-tertiary);transform:scale(0);transform-origin:center;">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-left:-1px;"><path d="M7.5 2L3.5 6L7.5 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+            <div id="sfSetupCta" style="height:28px;border-radius:8px;background:var(--sk);flex:1;min-width:0;"></div>
           </div>
         </div>
       </div>
@@ -3098,7 +3268,7 @@
               <div class="ff-title">Cozy loft in the Mission</div>
               <div class="ff-sub">San Francisco · 2 guests</div>
               <div class="ff-rating">★ 4.92 · 128 reviews</div>
-              <div class="ff-price">$189 <span style="font-weight:400; color:var(--c-text-tertiary);">/ night</span></div>
+              <div class="ff-price">$189 / night</div>
             </div>
           </div>
         </div>
@@ -3202,8 +3372,8 @@
       </svg>
     </div>
   </div>
-  <div class="sheet-line med"></div>
-  <div class="sheet-line short thin"></div>
+  <div class="sheet-line" style="width:76%;"></div>
+  <div class="sheet-line thin" style="width:58%;"></div>
   <div class="sheet-section-gap"></div>
   <div class="sheet-img-row">
     <div class="sheet-thumb"></div>
@@ -3226,136 +3396,26 @@
       <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
     </div>
   </div>
-  <div class="sheet-img-row">
+  <div class="sheet-img-row sheet-row-extra">
     <div class="sheet-thumb"></div>
     <div class="sheet-thumb-lines">
       <div class="sheet-line" style="margin-bottom:0;width:90%;"></div>
       <div class="sheet-line med thin" style="margin-bottom:0;"></div>
     </div>
   </div>
-  <div class="sheet-cta">
-    <div class="sheet-cta-text"></div>
-    <div class="sheet-cta-btn"></div>
-  </div>
-</template>
-
-<template id="tpl-full-height-sheet">
-  <div class="sheet-header">
-    <div class="sheet-close">
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-        <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-    </div>
-  </div>
-  <div class="sheet-line med"></div>
-  <div class="sheet-line short thin"></div>
-  <div class="sheet-section-gap"></div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb" style="width:60px;height:60px;"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:86%;"></div>
-      <div class="sheet-line short thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb" style="width:60px;height:60px;"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:75%;"></div>
-      <div class="sheet-line med thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb" style="width:60px;height:60px;"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:82%;"></div>
-      <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb" style="width:60px;height:60px;"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:90%;"></div>
-      <div class="sheet-line med thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb" style="width:60px;height:60px;"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:79%;"></div>
-      <div class="sheet-line short thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb" style="width:60px;height:60px;"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:88%;"></div>
-      <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-cta">
-    <div class="sheet-cta-text"></div>
-    <div class="sheet-cta-btn"></div>
-  </div>
-</template>
-
-<template id="tpl-sheet-full">
-  <div class="sheet-header">
-    <div class="sheet-close">
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-        <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-    </div>
-  </div>
-  <div class="sheet-line med"></div>
-  <div class="sheet-line short thin"></div>
-  <div class="sheet-section-gap"></div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:86%;"></div>
-      <div class="sheet-line short thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:75%;"></div>
-      <div class="sheet-line med thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:82%;"></div>
-      <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:90%;"></div>
-      <div class="sheet-line med thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-img-row">
+  <div class="sheet-img-row sheet-row-extra">
     <div class="sheet-thumb"></div>
     <div class="sheet-thumb-lines">
       <div class="sheet-line" style="margin-bottom:0;width:79%;"></div>
       <div class="sheet-line short thin" style="margin-bottom:0;"></div>
     </div>
   </div>
-  <div class="sheet-img-row">
+  <div class="sheet-img-row sheet-row-extra">
     <div class="sheet-thumb"></div>
     <div class="sheet-thumb-lines">
       <div class="sheet-line" style="margin-bottom:0;width:88%;"></div>
       <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
     </div>
-  </div>
-  <div class="sheet-cta">
-    <div class="sheet-cta-text"></div>
-    <div class="sheet-cta-btn"></div>
   </div>
 </template>
 
@@ -3423,6 +3483,38 @@
   <div class="sk-card-img partial"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
+</template>
+
+<template id="tpl-home-screen-loaded">
+  <div class="sk-search-loaded">
+    <span class="material-symbols-outlined">search</span>
+    <span class="sk-search-loaded-text">Start your search</span>
+  </div>
+  <div class="ld-cats">
+    <div class="ld-cat active"><div class="ld-cat-dot"><span class="material-symbols-outlined">globe</span></div>All</div>
+    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">home_and_garden</span></div>Homes</div>
+    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">mountain_flag</span></div>Experiences</div>
+    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">room_service</span></div>Services</div>
+  </div>
+  <div class="sk-divider"></div>
+  <div class="ld-card">
+    <div class="ld-card-img ld-card-img-1"></div>
+    <div class="ff-body">
+      <div class="ff-title">Cozy loft in the Mission</div>
+      <div class="ff-sub">San Francisco · 2 guests</div>
+      <div class="ff-rating">★ 4.92 · 128 reviews</div>
+      <div class="ff-price">$189 / night</div>
+    </div>
+  </div>
+  <div class="ld-card">
+    <div class="ld-card-img ld-card-img-2"></div>
+    <div class="ff-body">
+      <div class="ff-title">Cabin by the lake</div>
+      <div class="ff-sub">Lake Tahoe · 4 guests</div>
+      <div class="ff-rating">★ 4.87 · 94 reviews</div>
+      <div class="ff-price">$245 / night</div>
+    </div>
+  </div>
 </template>
 
 <template id="tpl-home-screen-carousels">
@@ -3735,6 +3827,24 @@ function stampTemplate(templateId, targetEl) {
   targetEl.append(tpl.content.cloneNode(true));
 }
 
+function applyShimmer(el) {
+  const DURATION = 1350;
+  // Assign each element a group delay (0–400ms). Negative offset = starts
+  // mid-cycle so the loop is seamless from the first iteration onward.
+  function setDelay(selector, groupDelay) {
+    el.querySelectorAll(selector).forEach(sk => {
+      sk.classList.add('shimmer');
+      sk.style.animationDelay = (-DURATION + groupDelay) + 'ms';
+    });
+  }
+  setDelay('.sk-search',                   0);
+  setDelay('.sk-cat-dot, .sk-cat-label', 100);
+  setDelay('.sk-divider',                100);
+  setDelay('.sk-card-img',               200);
+  setDelay('.sk-title, .sk-price',       300);
+  setDelay('.sk-sub, .sk-section-label', 400);
+}
+
 // Stamp all templates at load
 (function() {
   // tpl-home-screen targets (tooltip has custom phone-content so it is excluded)
@@ -3750,6 +3860,14 @@ function stampTemplate(templateId, targetEl) {
     if (el) stampTemplate('tpl-home-screen', el);
   });
   stampTemplate('tpl-home-screen-carousels', document.querySelector('#accRmSrc .phone-content'));
+
+  // fade-in demo: stamp skeleton and apply shimmer with top-to-bottom stagger
+  (function() {
+    const el = document.getElementById('tpFadeInPhone');
+    if (!el) return;
+    stampTemplate('tpl-home-screen', el);
+    applyShimmer(el);
+  })();
 
   // tpl-detail targets (stamp into .push-dest-inner so push-screen translateX stays correct)
   stampTemplate('tpl-detail', document.querySelector('#pushSource .push-dest-inner'));
@@ -3804,6 +3922,8 @@ function stampTemplate(templateId, targetEl) {
   stampTemplate('tpl-sheet', document.getElementById('tpSheet0'));
   stampTemplate('tpl-sheet', document.getElementById('tpSheet1'));
   stampTemplate('tpl-sheet', document.getElementById('tpSheet2'));
+  // Stamp home screen into slide-up phone content background
+  stampTemplate('tpl-home-screen-loaded', document.getElementById('tpSheetPhoneContent'));
   // Overlay scrims for pushed sheets
   const tpSheetOverlay0 = document.createElement('div'); tpSheetOverlay0.className = 'sheet-overlay'; document.getElementById('tpSheet0').appendChild(tpSheetOverlay0);
   const tpSheetOverlay1 = document.createElement('div'); tpSheetOverlay1.className = 'sheet-overlay'; document.getElementById('tpSheet1').appendChild(tpSheetOverlay1);
@@ -4074,48 +4194,70 @@ const SPRING_DEMOS = {
   },
 
   tab: {
-    description:   'A default smooth spring keeps it comfortable and easy to follow.',
-    defaultSpring: { speed: 'default', char: 'smooth'        },
+    description:   'A subtler transition compared to a Push, often used with stepped flows.',
+    defaultSpring: { speed: 'default', char: 'smooth' },
     reset() {
-      tabIdx = 0; tabNavIdx = 0; tabDir = 1;
-      for (let i = 0; i < 4; i++) {
+      tabIdx = 0; tabDir = 1;
+      for (let i = 0; i < 3; i++) {
         const s = document.getElementById(`tabScreen${i}`);
         if (s) { s.style.opacity = i === 0 ? '1' : '0'; s.style.transform = i === 0 ? 'translateX(0)' : 'translateX(40px)'; }
-        const icon = document.getElementById(`tabNavIcon${i}`);
-        if (icon) icon.style.background = i === 0 ? '#FF385C' : '';
       }
+      const back    = document.getElementById('sfSetupBack');
+      const backBtn = document.getElementById('sfSetupBackBtn');
+      if (back)    back.style.width = '0';
+      if (backBtn) backBtn.style.transform = 'scale(0)';
     },
-    play() {
-      const { stiffness, damping } = selected;
-      const travelDir = tabDir;
-      const nextIdx   = tabIdx + travelDir;
+    play(forceDir) {
+      const spring = { stiffness: 300, damping: calcDamping(300, 1.0) };
+      const { stiffness, damping } = spring;
+      const dir = forceDir !== undefined ? forceDir : tabDir;
+      const nextIdx = tabIdx + dir;
+      if (nextIdx < 0 || nextIdx > 2) return;
+      const travelDir = dir;
       const outScreen = document.getElementById(`tabScreen${tabIdx}`);
       const inScreen  = document.getElementById(`tabScreen${nextIdx}`);
-      tabIdx = nextIdx; tabNavIdx = nextIdx;
-      if (tabIdx === 0 || tabIdx === 3) tabDir *= -1;
-      for (let i = 0; i < 4; i++) {
-        const icon = document.getElementById(`tabNavIcon${i}`);
-        if (icon) icon.style.background = i === tabNavIdx ? '#FF385C' : '';
-      }
-      const SLIDE_PX    = 40;
-      const incomingSign = travelDir;
-      const outgoingSign = -travelDir;
+      const back    = document.getElementById('sfSetupBack');
+      const backBtn = document.getElementById('sfSetupBackBtn');
+      const prevIdx = tabIdx;
+      tabIdx = nextIdx;
+      if (tabIdx === 0) tabDir = 1;
+      else if (tabIdx === 2) tabDir = -1;
+      else tabDir = travelDir;
+
+      const SLIDE_PX = 40;
       inScreen.style.opacity   = '0';
-      inScreen.style.transform = `translateX(${incomingSign * SLIDE_PX}px)`;
+      inScreen.style.transform = `translateX(${travelDir * SLIDE_PX}px)`;
+
+      const bar          = document.getElementById('sfSetupBar');
+      const PILL_W       = 64;
+      const BACK_W       = Math.max(bar.clientWidth - 32 - PILL_W, 36);
+      const goingToSetup = nextIdx === 0;
+      const leavingSetup = prevIdx === 0;
+      const barTransition = goingToSetup || leavingSetup;
+      const startBackW = parseFloat(back.style.width) || 0;
+      const endBackW   = goingToSetup ? 0 : BACK_W;
+      const startScale = parseFloat(backBtn.style.transform.replace('scale(','').replace(')','')) || 0;
+      const endScale   = goingToSetup ? 0 : 1;
+
       const start = performance.now();
       function tick(now) {
         const t          = (now - start) / 1000;
         const pos        = springPos(t, stiffness, damping);
         const completion = 1 - pos;
-        outScreen.style.transform = `translateX(${outgoingSign * completion * SLIDE_PX}px)`;
-        outScreen.style.opacity   = String(Math.max(1 - completion / 0.40, 0));
-        inScreen.style.transform  = `translateX(${incomingSign * pos * SLIDE_PX}px)`;
-        inScreen.style.opacity    = String(Math.min(Math.max((completion - 0.20) / 0.80, 0), 1));
+        outScreen.style.transform = `translateX(${-travelDir * completion * SLIDE_PX}px)`;
+        outScreen.style.opacity   = String(Math.max(1 - Math.max(completion - 0.05, 0) / 0.45, 0));
+        inScreen.style.transform  = `translateX(${travelDir * pos * SLIDE_PX}px)`;
+        inScreen.style.opacity    = String(Math.min(completion, 1));
+        if (barTransition) {
+          back.style.width        = (startBackW + (endBackW - startBackW) * completion) + 'px';
+          backBtn.style.transform = `scale(${startScale + (endScale - startScale) * completion})`;
+        }
         if (t < 5 && !isSettled(t, stiffness, damping)) {
           demoAnim = requestAnimationFrame(tick);
         } else {
-          outScreen.style.transform = `translateX(${outgoingSign * SLIDE_PX}px)`; outScreen.style.opacity = '0';
+          outScreen.style.transform = `translateX(${-travelDir * SLIDE_PX}px)`; outScreen.style.opacity = '0';
           inScreen.style.transform  = 'translateX(0)'; inScreen.style.opacity = '1';
+          if (barTransition) { back.style.width = endBackW + 'px'; backBtn.style.transform = `scale(${endScale})`; }
         }
       }
       demoAnim = requestAnimationFrame(tick);
@@ -4166,25 +4308,48 @@ const SPRING_DEMOS = {
     description:   'A fast spring with medium bounce calls a bit of attention to its entrance.',
     defaultSpring: { speed: 'fast',    char: 'medium.bounce' },
     reset() {
-      document.getElementById('demoNotif').style.transform = 'translateY(-160%)';
+      const n = document.getElementById('demoNotif');
+      n.style.transform = 'translateY(40px)'; n.style.opacity = '0';
     },
     play() {
       const n   = document.getElementById('demoNotif');
       const { stiffness, damping } = selected;
       const isIn = demoState === 'in';
       demoState  = isIn ? 'out' : 'in';
-      const start = performance.now();
-      function tick(now) {
-        const t   = (now - start) / 1000;
-        const pos = springPos(t, stiffness, damping);
-        n.style.transform = `translateY(${isIn ? (1 - pos) * -160 : pos * -160}%)`;
-        if (t < 5 && !isSettled(t, stiffness, damping)) {
-          demoAnim = requestAnimationFrame(tick);
-        } else {
-          n.style.transform = isIn ? 'translateY(-160%)' : 'translateY(0%)';
+      if (demoAnim) cancelAnimationFrame(demoAnim);
+      if (isIn) {
+        // exit: ease-in slide down 60px, fade out after 50ms delay over 100ms
+        const EXIT_DUR = 0.15, FADE_DELAY = 0.05, FADE_DUR = 0.10, SLIDE_PX = 40;
+        const exitStart = performance.now();
+        function exitTick(now) {
+          const t = Math.min((now - exitStart) / 1000, EXIT_DUR);
+          const prog = (t / EXIT_DUR) * (t / EXIT_DUR); // ease-in
+          n.style.transform = `translateY(${prog * SLIDE_PX}px)`;
+          n.style.opacity = String(Math.max(1 - Math.max(t - FADE_DELAY, 0) / FADE_DUR, 0));
+          if (t < EXIT_DUR) {
+            demoAnim = requestAnimationFrame(exitTick);
+          } else {
+            n.style.transform = `translateY(${SLIDE_PX}px)`; n.style.opacity = '0';
+          }
         }
+        demoAnim = requestAnimationFrame(exitTick);
+      } else {
+        // enter: spring slide up from 80px, fade in over 150ms
+        n.style.opacity = '0';
+        const enterStart = performance.now();
+        function enterTick(now) {
+          const t = (now - enterStart) / 1000;
+          const pos = springPos(t, stiffness, damping);
+          n.style.transform = `translateY(${pos * 40}px)`;
+          n.style.opacity = String(Math.min(t / 0.15, 1));
+          if (t < 5 && !isSettled(t, stiffness, damping)) {
+            demoAnim = requestAnimationFrame(enterTick);
+          } else {
+            n.style.transform = 'translateY(0)'; n.style.opacity = '1';
+          }
+        }
+        demoAnim = requestAnimationFrame(enterTick);
       }
-      demoAnim = requestAnimationFrame(tick);
     },
   },
 
@@ -5093,6 +5258,8 @@ setTimeout(() => {
 // ── Match phone frame height to card grid height ──────────────────
 // ── Transition Patterns registry ─────────────────────────────────
 // Each entry: { description, panel (optional HTML), play() }
+let tpCrossFadeAnimating = false;
+let tpCrossFadeCooldown  = 0;
 const TP_DEMOS = {
   'zoom': {
     description: 'Creates continuity by morphing a source element into the destination screen or floating element.',
@@ -5123,7 +5290,7 @@ const TP_DEMOS = {
       tpExpandCardIdx = 0;
     },
   },
-  'slide-in': {
+  'push': {
     description: 'Our default nav transition. Nav bars can be kept persistent if shared across both screens.',
     reset() {
       tpDemoState = 'out';
@@ -5215,8 +5382,8 @@ const TP_DEMOS = {
     },
   },
 
-  'slide-in-fade': {
-    description: 'A subtler transition compared to a Slide In, often used with stepped flows.',
+  'push-fade': {
+    description: 'A subtler transition compared to a Push, often used with stepped flows.',
     reset() {
       tpTabIdx = 0; tpTabDir = 1;
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
@@ -5289,12 +5456,21 @@ const TP_DEMOS = {
 
   'slide-up': {
     description: 'Used for components that enter and exit from the bottom of the screen, like sheets and bars.',
-    reset() {
+    reset(reason) {
+      if (reason === 'leaving') applyTpSlideUpMode('fitted');
       tpSlideUpStep = 0;
       tpSheetAnimating = false;
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
       const scrim = document.getElementById('tpSheetScrim');
       scrim.style.opacity = '0';
+      const darkBg = document.getElementById('tpSheetDarkBg');
+      if (darkBg) { darkBg.style.opacity = '0'; darkBg.style.borderRadius = '28px'; }
+      const phoneContent = document.getElementById('tpSheetPhoneContent');
+      const bottomNav    = document.getElementById('tpSheetBottomNav');
+      const homeOverlay  = document.getElementById('tpSheetHomeOverlay');
+      if (phoneContent) { phoneContent.style.transform = ''; phoneContent.style.borderRadius = '40px'; }
+      if (bottomNav)    { bottomNav.style.transform = ''; bottomNav.style.borderRadius = '40px'; }
+      if (homeOverlay)  { homeOverlay.style.opacity = '0'; homeOverlay.style.borderRadius = '40px'; }
       [0,1,2].forEach(i => {
         const s = document.getElementById(`tpSheet${i}`);
         s.style.transform = 'translateY(100%)';
@@ -5312,13 +5488,21 @@ const TP_DEMOS = {
       const s0    = document.getElementById('tpSheet0');
       const s1    = document.getElementById('tpSheet1');
       const s2    = document.getElementById('tpSheet2');
+      const darkBg        = document.getElementById('tpSheetDarkBg');
+      const phoneContent  = document.getElementById('tpSheetPhoneContent');
+      const bottomNav     = document.getElementById('tpSheetBottomNav');
+      const homeOverlay   = document.getElementById('tpSheetHomeOverlay');
+      const fullHeight    = tpSlideUpMode === 'full-height';
 
       // pushedY: just move up so the top peeks 12px above the incoming sheet's top edge.
-      // The incoming sheet starts at top of its visible area, so we move the bg sheet up by 12px.
       const pushedY = -10; // px, negative = upward
       const SC1 = 0.94, SC2 = 0.88;
       const ov0 = s0.querySelector('.sheet-overlay');
       const ov1 = s1.querySelector('.sheet-overlay');
+
+      // Full-height: phone border-radius (28px) → sheet border-radius (0px at top/sides fill)
+      const PHONE_RADIUS = 28;
+      const SRC_SCALE = SC1; // home screen matches the pushed-sheet scale
 
       tpSheetAnimating = true;
       if (window._tpSheetAnimTimeout) clearTimeout(window._tpSheetAnimTimeout);
@@ -5329,9 +5513,23 @@ const TP_DEMOS = {
         tpSpringAnimate((t) => {
           const p  = springPos(t, stiffness, damping);
           const sp = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+          const c  = 1 - p;
           s0.style.transform  = `translateY(${p * 100}%)`;
           s0.style.boxShadow  = `0 -2px 20px rgba(0,0,0,${(1-sp) * 0.15})`;
-          scrim.style.opacity = String(1 - sp);
+          if (fullHeight) {
+            const sc = 1 - (1 - SRC_SCALE) * c;
+            const r  = 40 - 18 * c; // 40px (phone inner) → 22px (sheet)
+            const ty = 12 * c;
+            if (phoneContent) { phoneContent.style.transform = `translateY(${ty}px) scale(${sc})`; phoneContent.style.borderRadius = `${r}px`; }
+            if (bottomNav)    { bottomNav.style.transform    = `translateY(${ty}px) scale(${sc})`; bottomNav.style.borderRadius    = `${r}px`; }
+            if (homeOverlay)  { homeOverlay.style.opacity = String(c * 0.35); homeOverlay.style.borderRadius = `${r}px`; }
+            if (darkBg) {
+              darkBg.style.opacity      = '1';
+              darkBg.style.borderRadius = `${PHONE_RADIUS * (1 - c)}px`;
+            }
+          } else {
+            scrim.style.opacity = String(1 - sp);
+          }
         }, null, done(() => { tpSlideUpStep++; }));
 
       } else if (step === 1) {
@@ -5380,16 +5578,30 @@ const TP_DEMOS = {
         tpSpringAnimate((t) => {
           const p  = springPos(t, stiffness, damping);
           const sp = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
-          s0.style.transform  = `translateY(${(1 - p) * 100}%)`;
+          const c  = 1 - p;
+          s0.style.transform  = `translateY(${c * 100}%)`;
           s0.style.boxShadow  = `0 -2px 20px rgba(0,0,0,${p * 0.15})`;
-          scrim.style.opacity = String(p);
+          if (fullHeight) {
+            const sc = 1 - (1 - SRC_SCALE) * p;
+            const r  = 40 - 18 * p; // 40px (phone inner) → 22px (sheet)
+            const ty = 12 * p;
+            if (phoneContent) { phoneContent.style.transform = `translateY(${ty}px) scale(${sc})`; phoneContent.style.borderRadius = `${r}px`; }
+            if (bottomNav)    { bottomNav.style.transform    = `translateY(${ty}px) scale(${sc})`; bottomNav.style.borderRadius    = `${r}px`; }
+            if (homeOverlay)  { homeOverlay.style.opacity = String(p * 0.35); homeOverlay.style.borderRadius = `${r}px`; }
+            if (darkBg) {
+              darkBg.style.opacity      = '1';
+              darkBg.style.borderRadius = `${PHONE_RADIUS * p}px`;
+            }
+          } else {
+            scrim.style.opacity = String(p);
+          }
         }, null, done(() => { this.reset(); }));
       }
     },
   },
 
   'slide-up-fade': {
-    description: 'A subtler bottom slide, often used on desktop web.',
+    description: 'A subtler slide up, often used on desktop web.',
     reset() {
       tpDemoState = 'out';
       const modal = document.getElementById('tpSufModal');
@@ -5427,8 +5639,8 @@ const TP_DEMOS = {
     },
   },
 
-  'scale-in': {
-    description: 'Used to introduce floating elements like tooltips, modals and toasts. The scale origin is center by default but can be linked to another UI element.',
+  'zoom-fade': {
+    description: 'Used to introduce floating elements like tooltips, modals and toasts. Scales from center by default, or from the element that triggered it.',
     _seqTimer: null,
     _cancelSeq() {
       if (this._seqTimer) { clearTimeout(this._seqTimer); this._seqTimer = null; }
@@ -5516,18 +5728,135 @@ const TP_DEMOS = {
     },
   },
 
-  'fade-sequence':   { description: 'Fades out old content then fades in new content.',                                                                                                                                           play() {} },
-  'bounce-sequence': { description: 'A more expressive sequence that adds a scale bounce and blur to the fading content.',                                                                                                        play() {} },
+  'cross-fade': {
+    description: 'Used when the layout changes but the context stays the same.',
+    _showing: 'list',
+    reset() {
+      this._showing = 'list';
+      if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
+      tpCrossFadeAnimating = false;
+      clearTimeout(window._tpCrossFadeTimeout);
+      const list = document.getElementById('tpSeqList');
+      const grid = document.getElementById('tpSeqGrid');
+      if (list) { list.style.opacity = '1'; list.style.transform = 'scale(1)'; list.style.filter = ''; list.style.pointerEvents = ''; }
+      if (grid) { grid.style.opacity = '0'; grid.style.transform = 'scale(0.92)'; grid.style.filter = ''; grid.style.pointerEvents = 'none'; }
+      const iconGrid = document.getElementById('tpSeqIconGrid');
+      const iconList = document.getElementById('tpSeqIconList');
+      if (iconGrid) { iconGrid.style.transition = ''; iconGrid.style.opacity = '1'; iconGrid.style.transform = 'scale(1)'; iconGrid.style.filter = ''; }
+      if (iconList) { iconList.style.transition = ''; iconList.style.opacity = '0'; iconList.style.transform = 'scale(0.5)'; iconList.style.filter = 'blur(1px)'; }
+    },
+    play() {
+      const outId = this._showing === 'list' ? 'tpSeqList' : 'tpSeqGrid';
+      const inId  = this._showing === 'list' ? 'tpSeqGrid' : 'tpSeqList';
+      this._showing = this._showing === 'list' ? 'grid' : 'list';
+      const outEl = document.getElementById(outId);
+      const inEl  = document.getElementById(inId);
+      if (!outEl || !inEl) return;
+
+      const EXIT_DUR = 150; // ms
+      const EXIT_CURVE = 'cubic-bezier(0.40,0.00,1.00,1.00)';
+      const ENTER_DELAY = 100; // ms — spring starts while exit is finishing
+      const ENTER_SPRING = { stiffness: 300, damping: calcDamping(300, 1.0) };
+      const BLUR_PX = 8;
+
+      // Cross-fade the button icon: outgoing icon fades out, incoming fades in
+      const nowShowingGrid = this._showing === 'grid';
+      const iconOut = document.getElementById(nowShowingGrid ? 'tpSeqIconList' : 'tpSeqIconGrid');
+      const iconIn  = document.getElementById(nowShowingGrid ? 'tpSeqIconGrid' : 'tpSeqIconList');
+      if (iconOut && iconIn) {
+        const ICON_BLUR = 1;
+        // set incoming state
+        iconIn.style.transition = '';
+        iconIn.style.opacity   = '0';
+        iconIn.style.transform = 'scale(0.5)';
+        iconIn.style.filter    = `blur(${ICON_BLUR}px)`;
+        // exit outgoing
+        iconOut.style.transition = `opacity ${EXIT_DUR}ms ${EXIT_CURVE}, transform ${EXIT_DUR}ms ${EXIT_CURVE}, filter ${EXIT_DUR}ms ${EXIT_CURVE}`;
+        requestAnimationFrame(() => {
+          iconOut.style.opacity   = '0';
+          iconOut.style.transform = 'scale(0.5)';
+          iconOut.style.filter    = `blur(${ICON_BLUR}px)`;
+        });
+        // enter incoming after delay
+        setTimeout(() => {
+          iconOut.style.transition = '';
+          iconIn.style.transition  = `opacity ${EXIT_DUR}ms ${EXIT_CURVE}, transform 400ms cubic-bezier(0.00,0.00,0.00,1.00), filter 300ms ${EXIT_CURVE}`;
+          requestAnimationFrame(() => {
+            iconIn.style.opacity   = '1';
+            iconIn.style.transform = 'scale(1)';
+            iconIn.style.filter    = '';
+          });
+        }, ENTER_DELAY);
+      }
+
+      // Set incoming state
+      inEl.style.opacity = '0';
+      inEl.style.transform = 'scale(0.92)';
+      inEl.style.filter = `blur(${BLUR_PX}px)`;
+      inEl.style.pointerEvents = 'none';
+
+      // Exit: CSS transition on outgoing
+      outEl.style.transition = `opacity ${EXIT_DUR}ms ${EXIT_CURVE}, transform ${EXIT_DUR}ms ${EXIT_CURVE}, filter ${EXIT_DUR}ms ${EXIT_CURVE}`;
+      requestAnimationFrame(() => {
+        outEl.style.opacity   = '0';
+        outEl.style.transform = 'scale(0.92)';
+        outEl.style.filter    = `blur(${BLUR_PX}px)`;
+      });
+
+      // Enter spring starts after ENTER_DELAY
+      setTimeout(() => {
+        outEl.style.transition = '';
+        outEl.style.pointerEvents = 'none';
+        inEl.style.pointerEvents = '';
+
+        const { stiffness, damping } = ENTER_SPRING;
+        tpSpringAnimate((t) => {
+          const pos = springPos(t, stiffness, damping);
+          const completion = 1 - pos;
+          const scale = 0.92 + completion * 0.08;
+          const opacity = Math.min(completion / 0.3, 1);
+          const blur = Math.max(BLUR_PX * (1 - completion), 0);
+          inEl.style.opacity   = String(opacity);
+          inEl.style.transform = `scale(${scale})`;
+          inEl.style.filter    = blur > 0.1 ? `blur(${blur.toFixed(2)}px)` : '';
+        }, ENTER_SPRING, () => {
+          inEl.style.opacity   = '1';
+          inEl.style.transform = 'scale(1)';
+          inEl.style.filter    = '';
+          outEl.style.opacity  = '0';
+          outEl.style.transform = 'scale(0.92)';
+          clearTimeout(window._tpCrossFadeTimeout);
+          tpCrossFadeAnimating = false;
+          tpCrossFadeCooldown = performance.now() + 150;
+        });
+      }, ENTER_DELAY);
+    },
+  },
+
+  'fade-in': {
+    description: 'Skeleton placeholders shimmer while content loads, then fade in to reveal the real UI.',
+    reset() {
+      // Re-stamp so shimmer restarts cleanly on tab switch
+      const el = document.getElementById('tpFadeInPhone');
+      if (!el) return;
+      el.innerHTML = '';
+      stampTemplate('tpl-home-screen', el);
+      applyShimmer(el);
+    },
+    play() {},
+  },
 };
 
 const TP_PHONE_LAYERS = {
   'zoom':          'tpPhoneContent',
-  'slide-in':      'tpPushContent',
-  'slide-in-fade': 'tpTabContent',
+  'push':      'tpPushContent',
+  'push-fade': 'tpTabContent',
   'slide-up':      'tpSheetContent',
-  'scale-in':      'tpModalContent',
+  'zoom-fade':      'tpModalContent',
+  'cross-fade':      'tpSeqContent',
+  'fade-in':       'tpFadeInContent',
 };
-const TP_ALL_LAYERS = ['tpPhoneContent','tpPushContent','tpPersistBar','tpTabContent','tpSheetContent','tpModalContent'];
+const TP_ALL_LAYERS = ['tpPhoneContent','tpPushContent','tpPersistBar','tpTabContent','tpSheetContent','tpModalContent','tpSeqContent','tpFadeInContent'];
 
 function switchTpDemo(key) {
   const tab = document.querySelector(`.tp-tab[data-tp="${key}"]`);
@@ -5554,7 +5883,7 @@ function switchTpDemo(key) {
   // Show correct layer inside phone
   // For slide-in, choose between fullscreen (tpPushContent) and persistent-bar (tpPersistBar)
   let activeLayer = TP_PHONE_LAYERS[key];
-  if (key === 'slide-in' && tpSlideInMode === 'persistent-bar') activeLayer = 'tpPersistBar';
+  if (key === 'push' && tpSlideInMode === 'persistent-bar') activeLayer = 'tpPersistBar';
   TP_ALL_LAYERS.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -5565,14 +5894,14 @@ function switchTpDemo(key) {
     }
   });
 
-  // Hide global bottom nav for slide-in (both modes have their own nav or none)
+  // Hide global bottom nav for demos that have their own nav inside their layer
   const tpBottomNav = document.getElementById('tpPhoneBottomNav');
-  if (tpBottomNav) tpBottomNav.style.display = (key === 'slide-in' || key === 'slide-in-fade') ? 'none' : '';
+  if (tpBottomNav) tpBottomNav.style.display = (key === 'push' || key === 'push-fade' || key === 'cross-fade') ? 'none' : '';
 
   // Show zoom mode toggle only for zoom tab
   document.getElementById('tpZoomModeToggle').style.display = key === 'zoom' ? '' : 'none';
-  // Show slide-in mode toggle only for slide-in tab
-  document.getElementById('tpSlideInModeToggle').style.display = key === 'slide-in' ? '' : 'none';
+  document.getElementById('tpSlideInModeToggle').style.display = key === 'push' ? '' : 'none';
+  document.getElementById('tpSlideUpModeToggle').style.display = key === 'slide-up' ? '' : 'none';
 }
 
 // ── Demo Alt Pattern ─────────────────────────────────────────────────────────
@@ -5667,7 +5996,7 @@ function applyTpSlideInMode(mode) {
   document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.mode === tpSlideInMode)
   );
-  history.replaceState(null, '', `#tp-slide-in${mode === 'persistent-bar' ? '-persistent-bar' : ''}`);
+  history.replaceState(null, '', `#tp-push${mode === 'persistent-bar' ? '-persistent-bar' : ''}`);
   // Swap visible layer
   document.getElementById('tpPushContent').style.display  = mode === 'fullscreen'      ? '' : 'none';
   document.getElementById('tpPersistBar').style.display   = mode === 'persistent-bar'  ? 'block' : 'none';
@@ -5678,8 +6007,54 @@ document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(btn => 
     const wasPlaying = window._tpAutoPlay?.isPlaying();
     window._tpAutoPlay?.stop();
     if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
-    TP_DEMOS['slide-in'].reset();
+    TP_DEMOS['push'].reset();
     applyTpSlideInMode(btn.dataset.mode);
+    if (wasPlaying) window._tpAutoPlay?.start();
+  });
+});
+
+// Slide-up mode toggle (Fitted / Full Height)
+let tpSlideUpMode = 'fitted';
+function applyTpSlideUpMode(mode) {
+  tpSlideUpMode = mode;
+  document.querySelectorAll('#tpSlideUpModeToggle .demo-mode-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.mode === mode)
+  );
+  const content = document.getElementById('tpSheetContent');
+  const darkBg  = document.getElementById('tpSheetDarkBg');
+  if (mode === 'full-height') {
+    content.classList.add('full-height');
+    if (darkBg) { darkBg.style.opacity = '1'; darkBg.style.borderRadius = '28px'; }
+    // Re-stamp sheets with taller content
+    [0,1,2].forEach(i => {
+      const s = document.getElementById(`tpSheet${i}`);
+      s.innerHTML = '';
+      stampTemplate('tpl-sheet', s);
+      const ov = document.createElement('div');
+      ov.className = 'sheet-overlay';
+      s.appendChild(ov);
+    });
+  } else {
+    content.classList.remove('full-height');
+    [0,1,2].forEach(i => {
+      const s = document.getElementById(`tpSheet${i}`);
+      s.innerHTML = '';
+      stampTemplate('tpl-sheet', s);
+      const ov = document.createElement('div');
+      ov.className = 'sheet-overlay';
+      s.appendChild(ov);
+    });
+  }
+  history.replaceState(null, '', `#tp-slide-up${mode === 'full-height' ? '-full-height' : ''}`);
+}
+document.querySelectorAll('#tpSlideUpModeToggle .demo-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.mode === tpSlideUpMode) return;
+    const wasPlaying = window._tpAutoPlay?.isPlaying();
+    window._tpAutoPlay?.stop();
+    if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
+    TP_DEMOS['slide-up'].reset();
+    applyTpSlideUpMode(btn.dataset.mode);
     if (wasPlaying) window._tpAutoPlay?.start();
   });
 });
@@ -5701,9 +6076,12 @@ if (hashTp) {
   if (rawKey === 'zoom-modal') {
     switchTpDemo('zoom');
     applyTpZoomMode('modal');
-  } else if (rawKey === 'slide-in-persistent-bar') {
-    switchTpDemo('slide-in');
+  } else if (rawKey === 'push-persistent-bar') {
+    switchTpDemo('push');
     applyTpSlideInMode('persistent-bar');
+  } else if (rawKey === 'slide-up-full-height') {
+    switchTpDemo('slide-up');
+    applyTpSlideUpMode('full-height');
   } else {
     switchTpDemo(rawKey);
   }
@@ -5744,9 +6122,9 @@ if (hashTp) {
           scheduleNext(1000, onCycle);
         });
       });
-    } else if (key === 'scale-in') {
+    } else if (key === 'zoom-fade') {
       // scale-in self-sequences (~3.3s total): just fire play and wait
-      TP_DEMOS['scale-in'].play();
+      TP_DEMOS['zoom-fade'].play();
       scheduleNext(4600, onCycle);
     } else if (key === 'slide-up-fade') {
       // desktop modal: enter hold exit hold
@@ -5765,6 +6143,16 @@ if (hashTp) {
         scheduleNext(isLast ? 800 : 1400, isLast ? onCycle : nextStep);
       }
       nextStep();
+    } else if (key === 'cross-fade') {
+      TP_DEMOS['cross-fade'].play();
+      scheduleNext(1800, () => {
+        if (!tpPlaying) return;
+        TP_DEMOS['cross-fade'].play();
+        scheduleNext(1800, onCycle);
+      });
+    } else if (key === 'fade-in') {
+      // Shimmer loops via CSS — never interrupt it, just schedule next cycle
+      scheduleNext(5000, onCycle);
     } else {
       // standard enter/exit toggle demos
       TP_DEMOS[key]?.play(); // enter
@@ -5837,13 +6225,24 @@ if (hashTp) {
     e.stopPropagation();
     if (tpPlaying) return;
     flashPress(document.getElementById('tpSetupCta'), 1);
-    TP_DEMOS['slide-in-fade']?.play(1);
+    TP_DEMOS['push-fade']?.play(1);
   });
   document.getElementById('tpSetupBackBtn').addEventListener('click', (e) => {
     e.stopPropagation();
     if (tpPlaying) return;
     if (tpTabIdx > 1) flashPress(document.getElementById('tpSetupBackBtn'), 1);
-    TP_DEMOS['slide-in-fade']?.play(-1);
+    TP_DEMOS['push-fade']?.play(-1);
+  });
+
+  document.getElementById('sfSetupCta').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (currentDemo !== 'tab') return;
+    SPRING_DEMOS['tab'].play(1);
+  });
+  document.getElementById('sfSetupBackBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (currentDemo !== 'tab') return;
+    if (tabIdx > 0) SPRING_DEMOS['tab'].play(-1);
   });
 
   // Phone click: pause if playing, play if paused (zoom and slide-up handle their own clicks)
@@ -5852,6 +6251,15 @@ if (hashTp) {
     const key = tpActiveKey();
     if (key === 'zoom') return;
     if (key === 'slide-up') return; // container handler owns all slide-up clicks
+    if (key === 'cross-fade') {
+      if (tpCrossFadeAnimating) return;
+      if (performance.now() < tpCrossFadeCooldown) return;
+      if (tpPlaying) { stopTp(); return; }
+      tpCrossFadeAnimating = true;
+      window._tpCrossFadeTimeout = setTimeout(() => { tpCrossFadeAnimating = false; }, 800);
+      TP_DEMOS['cross-fade'].play();
+      return;
+    }
     if (tpPlaying) { stopTp(); return; }
     TP_DEMOS[key]?.play();
   });
@@ -5894,13 +6302,29 @@ if (hashTp) {
       const scrim   = document.getElementById('tpSheetScrim');
       const scrimAt = parseFloat(scrim.style.opacity) || 0;
       const noBelow = !below;
+      const fhBack  = noBelow && tpSlideUpMode === 'full-height';
+      const pc = fhBack ? document.getElementById('tpSheetPhoneContent') : null;
+      const bn = fhBack ? document.getElementById('tpSheetBottomNav') : null;
+      const ho = fhBack ? document.getElementById('tpSheetHomeOverlay') : null;
+      const pcScStart = fhBack && pc ? parseSC(pc) : 0.94;
+      const pcTyStart = fhBack && pc ? parseTY(pc) : 12;
+      const pcRStart  = fhBack && pc ? (parseFloat(pc.style.borderRadius) || 22) : 22;
+      const hoOpStart = fhBack && ho ? (parseFloat(ho.style.opacity) || 0) : 0;
       const startT  = performance.now(), dur = 380;
       function frame(now) {
         const t    = Math.min((now - startT) / dur, 1);
         const ease = 1 - Math.pow(1 - t, 3);
         const py   = startTY * (1 - ease);
         sheet.style.transform = `translateY(${py}px)`;
-        if (noBelow) scrim.style.opacity = String(scrimAt + (1 - scrimAt) * ease);
+        if (noBelow && !fhBack) scrim.style.opacity = String(scrimAt + (1 - scrimAt) * ease);
+        if (fhBack) {
+          const sc = pcScStart + (0.94 - pcScStart) * ease;
+          const ty = pcTyStart + (12 - pcTyStart) * ease;
+          const r  = pcRStart + (22 - pcRStart) * ease;
+          if (pc) { pc.style.transform = `translateY(${ty}px) scale(${sc})`; pc.style.borderRadius = `${r}px`; }
+          if (bn) { bn.style.transform = `translateY(${ty}px) scale(${sc})`; bn.style.borderRadius = `${r}px`; }
+          if (ho) { ho.style.opacity = String(hoOpStart + (0.35 - hoOpStart) * ease); ho.style.borderRadius = `${r}px`; }
+        }
         if (below) {
           // interpolate from captured start position back to pushed resting state
           const ty = belowStartTY + (belowPushedY - belowStartTY) * ease;
@@ -5922,20 +6346,42 @@ if (hashTp) {
       const ov0 = s0.querySelector('.sheet-overlay');
       const ov1 = s1.querySelector('.sheet-overlay');
       const scrim = document.getElementById('tpSheetScrim');
+      const darkBg      = document.getElementById('tpSheetDarkBg');
+      const phoneContent = document.getElementById('tpSheetPhoneContent');
+      const bottomNav    = document.getElementById('tpSheetBottomNav');
+      const homeOverlay  = document.getElementById('tpSheetHomeOverlay');
+      const fh = tpSlideUpMode === 'full-height';
+      const pushedY = -10;
+      const SRC_SC = 0.94;
       if (step === 0) {
         [s0,s1,s2].forEach(s => { s.style.transform='translateY(100%)'; s.style.opacity='1'; s.style.boxShadow='0 -2px 20px rgba(0,0,0,0)'; });
         if(ov0) ov0.style.opacity='0'; if(ov1) ov1.style.opacity='0';
         scrim.style.opacity='0';
+        if (fh) {
+          if (phoneContent) { phoneContent.style.transform=''; phoneContent.style.borderRadius='40px'; } if (bottomNav) { bottomNav.style.transform=''; bottomNav.style.borderRadius='40px'; }
+          if (homeOverlay) { homeOverlay.style.opacity='0'; homeOverlay.style.borderRadius='40px'; }
+          if (darkBg) { darkBg.style.opacity='0'; darkBg.style.borderRadius='28px'; }
+        }
       } else if (step === 1) {
         s0.style.transform='translateY(0%)'; s0.style.opacity='1'; if(ov0) ov0.style.opacity='0';
         s1.style.transform='translateY(100%)'; s1.style.opacity='1';
         s2.style.transform='translateY(100%)'; s2.style.opacity='1';
         scrim.style.opacity='1';
+        if (fh) {
+          if (phoneContent) { phoneContent.style.transform=`translateY(12px) scale(${SRC_SC})`; phoneContent.style.borderRadius='22px'; } if (bottomNav) { bottomNav.style.transform=`translateY(12px) scale(${SRC_SC})`; bottomNav.style.borderRadius='22px'; }
+          if (homeOverlay) { homeOverlay.style.opacity='0.35'; homeOverlay.style.borderRadius='22px'; }
+          if (darkBg) { darkBg.style.opacity='1'; darkBg.style.borderRadius='0px'; }
+        }
       } else if (step === 2) {
         s0.style.transform=`translateY(${PUSHED_Y}px) scale(${SC1})`; s0.style.opacity='1'; if(ov0) ov0.style.opacity='0.3';
         s1.style.transform='translateY(0%)'; s1.style.opacity='1'; if(ov1) ov1.style.opacity='0';
         s2.style.transform='translateY(100%)'; s2.style.opacity='1';
         scrim.style.opacity='1';
+        if (fh) {
+          if (phoneContent) { phoneContent.style.transform=`translateY(12px) scale(${SRC_SC})`; phoneContent.style.borderRadius='22px'; } if (bottomNav) { bottomNav.style.transform=`translateY(12px) scale(${SRC_SC})`; bottomNav.style.borderRadius='22px'; }
+          if (homeOverlay) { homeOverlay.style.opacity='0.35'; homeOverlay.style.borderRadius='22px'; }
+          if (darkBg) { darkBg.style.opacity='1'; darkBg.style.borderRadius='0px'; }
+        }
       }
     }
 
@@ -5956,18 +6402,37 @@ if (hashTp) {
       tpSheetAnimating = true;
       if (window._tpSheetAnimTimeout) clearTimeout(window._tpSheetAnimTimeout);
       window._tpSheetAnimTimeout = setTimeout(() => { tpSheetAnimating = false; }, 600);
+      const fhDismiss = tpSlideUpMode === 'full-height' && noBelow; // dismissing last sheet
+      const darkBg       = fhDismiss ? document.getElementById('tpSheetDarkBg') : null;
+      const phoneContent = fhDismiss ? document.getElementById('tpSheetPhoneContent') : null;
+      const bottomNav    = fhDismiss ? document.getElementById('tpSheetBottomNav') : null;
+      const homeOverlay  = fhDismiss ? document.getElementById('tpSheetHomeOverlay') : null;
       function frame(now) {
         const t    = Math.min((now - startT) / dur, 1);
         const ease = 1 - Math.pow(1 - t, 3);
         sheet.style.transform = `translateY(${startY + (endY - startY) * ease}px)`;
+        sheet.style.boxShadow = `0 -2px 20px rgba(0,0,0,${0.15 * (1 - ease)})`;
         if (noBelow) scrim.style.opacity = String(scrimAt * (1 - ease));
         if (below) {
           const ty = belowStartTY + (0 - belowStartTY) * ease;
           const sc = belowStartSC + (1 - belowStartSC) * ease;
           below.style.transform = `translateY(${ty}px) scale(${sc})`;
+          below.style.boxShadow = `0 -2px 20px rgba(0,0,0,${0.15 * ease})`;
           if (belowOv) belowOv.style.opacity = String(belowOvStart * (1 - ease));
         }
         if (s0El) s0El.style.opacity = String(ease);
+        if (fhDismiss) {
+          const sc = 0.94 + (1 - 0.94) * ease;
+          const r  = 22 + 18 * ease; // 22px (sheet) → 40px (phone inner)
+          const ty = 12 * (1 - ease);
+          if (phoneContent) { phoneContent.style.transform = `translateY(${ty}px) scale(${sc})`; phoneContent.style.borderRadius = `${r}px`; }
+          if (bottomNav)    { bottomNav.style.transform    = `translateY(${ty}px) scale(${sc})`; bottomNav.style.borderRadius    = `${r}px`; }
+          if (homeOverlay)  { homeOverlay.style.opacity = String(0.35 * (1 - ease)); homeOverlay.style.borderRadius = `${r}px`; }
+          if (darkBg) {
+            darkBg.style.opacity      = '1';
+            darkBg.style.borderRadius = `${28 * (1 - ease)}px`;
+          }
+        }
         if (t < 1) { requestAnimationFrame(frame); return; }
         tpSlideUpStep--;
         snapToStep(tpSlideUpStep);
@@ -6010,7 +6475,19 @@ if (hashTp) {
       const prog = Math.min(dy / dragSheetH, 1);
       dragSheet.style.transform = `translateY(${dy}px)`;
       if (!dragSheetBelow) {
-        document.getElementById('tpSheetScrim').style.opacity = String(1 - prog);
+        if (tpSlideUpMode === 'full-height') {
+          const sc = 0.94 + (1 - 0.94) * prog;
+          const r  = 22 + 18 * prog;
+          const ty = 12 * (1 - prog);
+          const pc = document.getElementById('tpSheetPhoneContent');
+          const bn = document.getElementById('tpSheetBottomNav');
+          const ho = document.getElementById('tpSheetHomeOverlay');
+          if (pc) { pc.style.transform = `translateY(${ty}px) scale(${sc})`; pc.style.borderRadius = `${r}px`; }
+          if (bn) { bn.style.transform = `translateY(${ty}px) scale(${sc})`; bn.style.borderRadius = `${r}px`; }
+          if (ho) { ho.style.opacity = String(0.35 * (1 - prog)); ho.style.borderRadius = `${r}px`; }
+        } else {
+          document.getElementById('tpSheetScrim').style.opacity = String(1 - prog);
+        }
       } else {
         const info = getTopSheet();
         const ty   = info.belowPushedY * (1 - prog);
@@ -6605,7 +7082,7 @@ function ngParseSC(el) { return new DOMMatrix(getComputedStyle(el).transform).a;
 
 function ngStamp(el) {
   el.innerHTML = '';
-  stampTemplate('tpl-full-height-sheet', el);
+  stampTemplate('tpl-sheet', el);
   const ov = document.createElement('div');
   ov.className = 'sheet-overlay';
   ov.style.opacity = '0';
