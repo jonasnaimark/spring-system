@@ -133,6 +133,65 @@ See the comment block in `index.html` above the zoom mode toggle — it has a fu
 
 ---
 
+## Three-sheet pool (NG sheet-dismiss demo) — what it took to get smooth
+
+The "sheet dismiss" demo uses three DOM elements rotating through top/below/spare roles. Getting this right took 20+ iterations. Document the hard-won lessons.
+
+### 1. Three-element pool with rotating indices
+
+`ngPool[ngT]` = top (z:12), `ngPool[ngB]` = below (z:11), `ngPool[ngS]` = spare (z:9/10). After each open or dismiss, the indices rotate:
+- Open: `ngT=oldS, ngB=oldT, ngS=oldB`
+- Dismiss: `ngT=oldB, ngB=oldS, ngS=oldT`
+
+`ngPlaceTop`, `ngPlaceBelow`, `ngHideSpare` are the single source of truth for resting state. Never set individual properties inline when the element is at rest — always call one of these.
+
+### 2. Never call ngStamp during an active pointer/gesture
+
+`ngStamp` clears and rebuilds the sheet's innerHTML. If called while a `pointerdown` is active (even before `pointermove`), the DOM mutation drops pointer capture and the gesture gets stuck. Only stamp during click events or animation done callbacks — never in `pointerdown`.
+
+### 3. Spare starts 6px below resting, not off-screen
+
+Initial attempt: spare started at `translateY(100%)` and slid in during drag — it only became visible in the last few pixels because the sheet is ~380px tall. Fix: spare lives at `NG_PUSHED_Y + NG_SPARE_OFFSET` (just 6px below its resting spot) at z:9. On `pointerdown` it surfaces to z:10 at that same offset. During drag it slides the 6px to `NG_PUSHED_Y`. Subtle but immediately visible.
+
+### 4. Capture spare's TY at pointerup, not pointerdown
+
+If you capture the spare's start position at `pointerdown` and the user drags, the spare has moved by `pointerup`. `ngDismiss` must capture `ngParseTY(spare)` at `pointerup` time so it animates from wherever the spare currently is, not where it started.
+
+### 5. Spare must use the same scale as ngPlaceBelow throughout
+
+Early version used a separate `NG_SC2 = 0.88` for the spare. When the dismiss animation landed and `ngPlaceBelow` snapped it to `NG_SC1 = 0.94`, there was a visible scale jump. Fix: use only `NG_SC1` for the spare at all times.
+
+### 6. ngSpringBack must set ngSheetAnimating = true
+
+`ngSpringBack` runs when the user drags partway and releases below the dismiss threshold. If `ngSheetAnimating` is not set, a fast tap during the spring-back fires `ngOpen` concurrently. Both animation loops write to the same element, leaving the `.sheet-overlay` opacity stuck at a partial value — the sheet appears tinted by its own scrim. Fix: set `ngSheetAnimating = true` at the start of `ngSpringBack`, clear it in its done callback.
+
+### 7. Skip spring-back entirely on clean taps (dy ≤ 4px)
+
+After adding the animation lock to `ngSpringBack`, clicks stopped working: `pointerdown` showed the spare, `pointerup` fired `ngSpringBack` (dy=0), which locked `ngSheetAnimating`, blocking the subsequent `click` event from reaching `ngOpen`. Fix: in `pointerup`, only call `ngSpringBack` if `dy > 4`. For clean taps, call `ngHideSpare` directly and let the click through.
+
+### 8. Use DOMMatrix to read computed transform, not regex
+
+The spring animation sets transforms in `%` units (e.g. `translateY(45%)`). Regex on `style.transform` only catches `px`. Always use:
+
+```js
+function ngParseTY(el) { return new DOMMatrix(getComputedStyle(el).transform).m42; }
+function ngParseSC(el) { return new DOMMatrix(getComputedStyle(el).transform).a; }
+```
+
+### 9. Clamp spring overshoot in ngOpen
+
+`springPos` returns values slightly below 0 during overshoot (underdamped spring). In `ngOpen`, `c = 1 - p` can briefly exceed 1, pushing the `.sheet-overlay` opacity past 0.3 and the transform past `NG_PUSHED_Y`. When the animation ends and `ngPlaceBelow` snaps to the correct value, there's a visible pop. Fix:
+
+```js
+const c = Math.max(0, Math.min(1, 1 - p));
+```
+
+### 10. ngSheetScrim must be below z:10
+
+The background scrim (`ngSheetScrim`) was at z:10 — same as the spare sheet. It covered the spare. Fix: set `z-index:8` on `ngSheetScrim` in the HTML.
+
+---
+
 ## Animating a flex pill from full-width to fitted (e.g. CTA bar → Back/Next bar)
 
 When a `flex:1` pill needs to shrink to a fixed width (e.g. from a full-width CTA button to a 64px pill), **never animate the pill's own width**. Mixing explicit `width` with `flex:1` causes layout jumps and snapping.
