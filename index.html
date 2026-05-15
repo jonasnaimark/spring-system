@@ -6370,8 +6370,10 @@ if (hashTp) {
         if (s0OvInit) s0OvInit.style.opacity = '0';
       }
       // Capture position AFTER init so we always start from PUSHED_Y+OFFSET, not off-screen
-      const s0TYStart = s0El ? parseTY(s0El) : 0;
-      const s0OpStart = s0El ? (parseFloat(s0El.style.opacity) || 0) : 0;
+      const s0TYStart  = s0El ? parseTY(s0El) : 0;
+      const s0OpStart  = s0El ? (parseFloat(s0El.style.opacity) || 0) : 0;
+      const s0OvEl     = s0El ? s0El.querySelector('.sheet-overlay') : null;
+      const s0OvStart  = s0OvEl ? (parseFloat(s0OvEl.style.opacity) || 0) : 0;
       const startT = performance.now(), dur = 300;
       tpSheetAnimating = true;
       if (window._tpSheetAnimTimeout) clearTimeout(window._tpSheetAnimTimeout);
@@ -6402,8 +6404,7 @@ if (hashTp) {
         if (s0El) {
           s0El.style.opacity   = String(s0OpStart + (1 - s0OpStart) * ease);
           s0El.style.transform = `translateY(${s0TYStart + (PUSHED_Y - s0TYStart) * ease}px) scale(${SC1})`;
-          const s0Ov = s0El.querySelector('.sheet-overlay');
-          if (s0Ov) s0Ov.style.opacity = String(0.3 * ease);
+          if (s0OvEl) s0OvEl.style.opacity = String(s0OvStart + (0.3 - s0OvStart) * ease);
         }
         if (fhDismiss) {
           const sc = fhScStart + (1 - fhScStart) * ease;
