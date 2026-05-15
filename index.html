@@ -2594,7 +2594,7 @@
           <!-- Sheet dismiss stack -->
           <div id="ngSheetContent" style="display:none;position:absolute;inset:0;pointer-events:none;">
             <div style="position:absolute;inset:0;background:#000;"></div>
-            <div class="push-scrim" id="ngSheetScrim" style="opacity:0;z-index:10;pointer-events:auto;"></div>
+            <div class="push-scrim" id="ngSheetScrim" style="opacity:0;z-index:8;pointer-events:auto;"></div>
             <div class="sheet" id="ngSheet0" style="transform:translateY(100%);z-index:11;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);pointer-events:auto;touch-action:none;"></div>
             <div class="sheet" id="ngSheet1" style="transform:translateY(100%);z-index:12;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);pointer-events:auto;touch-action:none;"></div>
             <div class="sheet" id="ngSheet2" style="transform:translateY(100%);z-index:13;transform-origin:top center;opacity:0;box-shadow:0 -2px 20px rgba(0,0,0,0);pointer-events:auto;touch-action:none;"></div>
@@ -3194,7 +3194,7 @@
 <!-- ── Accessibility section ── -->
 <div class="section-wrap" id="sec-accessibility">
   <h1 class="section-title">Accessibility</h1>
-  <p class="section-body">Some people experience motion as disorienting or distracting. These platform settings reduce or eliminate animation — our apps must honor them.</p>
+  <p class="section-body">Some people experience motion as disorienting or distracting. These platform settings reduce or eliminate animation.</p>
   <div class="section-content">
     <div style="display:flex; gap:24px; align-items:stretch;">
       <div style="flex:0 0 400px; width:400px; border:1px solid var(--c-border-subtle); border-radius:24px; padding:28px; display:flex; flex-direction:column; gap:36px;" id="accTextPanel">
@@ -7027,7 +7027,7 @@ const NG_DISMISS_THRESHOLD = 50;
 const NG_K = 500, NG_D = calcDamping(500, 1.0);
 
 let ngPool = [];
-let ngT = 0, ngB = 1, ngS = 2; // pool indices for top / below / spare
+let ngT = 0, ngB = 1, ngS = 2;
 let ngSheetAnimating = false;
 let ngSheetDragActive = false, ngSheetDragStartY = 0, ngSheetDragSheet = null, ngSheetDragBelow = null;
 let ngSheetDragH = 0;
@@ -7048,31 +7048,35 @@ function ngStamp(el) {
 
 function ngPlaceTop(el)   { el.style.transform='translateY(0px)'; el.style.zIndex='12'; el.style.boxShadow='0 -2px 20px rgba(0,0,0,0.15)'; el.style.opacity='1'; const ov=el.querySelector('.sheet-overlay'); if(ov) ov.style.opacity='0'; }
 function ngPlaceBelow(el) { el.style.transform=`translateY(${NG_PUSHED_Y}px) scale(${NG_SC1})`; el.style.zIndex='11'; el.style.boxShadow='0 -2px 20px rgba(0,0,0,0.15)'; el.style.opacity='1'; const ov=el.querySelector('.sheet-overlay'); if(ov) ov.style.opacity='0.3'; }
-function ngPlaceSpare(el) { el.style.transform='translateY(100%)'; el.style.zIndex='9'; el.style.boxShadow='0 -2px 20px rgba(0,0,0,0)'; el.style.opacity='1'; const ov=el.querySelector('.sheet-overlay'); if(ov) ov.style.opacity='0'; }
+const NG_SPARE_OFFSET = 6; // spare starts this many px below its resting spot, slides up during dismiss/drag
+function ngPlaceSpare(el) { el.style.transform=`translateY(${NG_PUSHED_Y + NG_SPARE_OFFSET}px) scale(${NG_SC1})`; el.style.zIndex='10'; el.style.opacity='1'; el.style.boxShadow='0 -2px 20px rgba(0,0,0,0.15)'; const ov=el.querySelector('.sheet-overlay'); if(ov) ov.style.opacity='0.3'; }
+function ngHideSpare(el)  { el.style.transform='translateY(100%)'; el.style.zIndex='9'; el.style.opacity='1'; el.style.boxShadow='0 -2px 20px rgba(0,0,0,0)'; const ov=el.querySelector('.sheet-overlay'); if(ov) ov.style.opacity='0'; }
 
-// Dismiss top, un-push below. Spare is pre-positioned silently as new below BEFORE
-// the animation so it's already in place when the top slides off.
 function ngDismiss(startY) {
   const top   = ngPool[ngT];
   const below = ngPool[ngB];
   const spare = ngPool[ngS];
-  // Ensure top is fully visible — it may have residual opacity from a prior ngOpen fade
   top.style.opacity = '1';
   top.style.zIndex  = '12';
-  const endY  = top.offsetHeight + 100;
-  const bTY0  = ngParseTY(below);
-  const bSC0  = ngParseSC(below);
-  const bOv   = below.querySelector('.sheet-overlay');
-  const bOv0  = bOv ? parseFloat(bOv.style.opacity) || 0 : 0;
+  const endY = top.offsetHeight + 100;
+  const bTY0 = ngParseTY(below);
+  const bSC0 = ngParseSC(below);
+  const bOv  = below.querySelector('.sheet-overlay');
+  const bOv0 = bOv ? parseFloat(bOv.style.opacity) || 0 : 0;
 
-  // Pre-position spare silently as the new below — hidden behind below (z:11) since spare is z:10
-  ngStamp(spare);
-  spare.style.transform = `translateY(${NG_PUSHED_Y}px) scale(${NG_SC1})`;
-  spare.style.zIndex    = '10';
-  spare.style.opacity   = '1';
-  spare.style.boxShadow = '0 -2px 20px rgba(0,0,0,0.15)';
+  // If spare not already positioned from a drag, stamp and place it at start offset
+  if (spare.style.zIndex !== '10') {
+    ngStamp(spare);
+    spare.style.transform = `translateY(${NG_PUSHED_Y + NG_SPARE_OFFSET}px) scale(${NG_SC1})`;
+    spare.style.zIndex    = '10';
+    spare.style.opacity   = '1';
+    spare.style.boxShadow = '0 -2px 20px rgba(0,0,0,0.15)';
+    const spOv = spare.querySelector('.sheet-overlay');
+    if (spOv) spOv.style.opacity = '0.3';
+  }
+  // Capture wherever spare currently is so we animate from there
+  const spareStartTY = ngParseTY(spare);
   const spareOv = spare.querySelector('.sheet-overlay');
-  if (spareOv) spareOv.style.opacity = '0.3';
 
   ngSheetAnimating = true;
   const startT = performance.now(), dur = 300;
@@ -7082,56 +7086,52 @@ function ngDismiss(startY) {
     top.style.transform   = `translateY(${startY + (endY - startY) * ease}px)`;
     below.style.transform = `translateY(${bTY0 * (1 - ease)}px) scale(${bSC0 + (1 - bSC0) * ease})`;
     if (bOv) bOv.style.opacity = String(bOv0 * (1 - ease));
+    // Spare animates from wherever it is to NG_PUSHED_Y
+    spare.style.transform = `translateY(${spareStartTY + (NG_PUSHED_Y - spareStartTY) * ease}px) scale(${NG_SC1})`;
     if (t < 1) { requestAnimationFrame(frame); return; }
-    // Rotate: old-below→top, old-spare→below, old-top→spare(offscreen recycled)
     const oldT = ngT, oldB = ngB, oldS = ngS;
     ngT = oldB; ngB = oldS; ngS = oldT;
     ngPlaceTop(ngPool[ngT]);
-    // New below (spare) is already visually in place — just fix z-index
-    ngPool[ngB].style.zIndex = '11';
-    // Recycle old top as spare offscreen
+    ngPlaceBelow(ngPool[ngB]);
     ngStamp(ngPool[ngS]);
-    ngPlaceSpare(ngPool[ngS]);
+    ngHideSpare(ngPool[ngS]);
     ngSheetAnimating = false;
     ngSheetCooldown = performance.now() + 150;
   }
   requestAnimationFrame(frame);
 }
 
-// Open new sheet on top (tap): spare slides up over top, top pushes back to below, old below fades out
+// Open new sheet on top: spare slides up over top, top pushes back to below, old below fades out
 function ngOpen() {
   const top   = ngPool[ngT];
   const below = ngPool[ngB];
   const spare = ngPool[ngS];
   ngStamp(spare);
   spare.style.transform = 'translateY(100%)';
-  spare.style.zIndex    = '13'; // above current top (z:12)
+  spare.style.zIndex    = '13';
   spare.style.opacity   = '1';
-  spare.style.boxShadow = '0 -2px 20px rgba(0,0,0,0)';
+  spare.style.boxShadow = '0 -2px 20px rgba(0,0,0,0.15)'; // set once, no per-frame animation
   const topTY0   = ngParseTY(top);
   const topSC0   = ngParseSC(top);
   const topOv    = top.querySelector('.sheet-overlay');
   const topOv0   = topOv ? parseFloat(topOv.style.opacity) || 0 : 0;
-  const belowOp0 = parseFloat(below.style.opacity) || 1; // fade out old below
+  const belowOp0 = parseFloat(below.style.opacity) || 1;
   ngSheetAnimating = true;
   const startT = performance.now();
   function frame(now) {
     const t = (now - startT) / 1000;
     const p = springPos(t, NG_K, NG_D);
-    const c = 1 - p;
+    const c = Math.max(0, Math.min(1, 1 - p));
     spare.style.transform = `translateY(${p * 100}%)`;
-    spare.style.boxShadow = `0 -2px 20px rgba(0,0,0,${c * 0.15})`;
     top.style.transform   = `translateY(${topTY0 + (NG_PUSHED_Y - topTY0) * c}px) scale(${topSC0 + (NG_SC1 - topSC0) * c})`;
     if (topOv) topOv.style.opacity = String(topOv0 + (0.3 - topOv0) * c);
-    below.style.opacity   = String(belowOp0 * p); // fade out in sync with spare coming in
+    below.style.opacity   = String(Math.max(0, belowOp0 * p));
     if (p > 0.002) { requestAnimationFrame(frame); return; }
-    // Rotate: spare→top, top→below, below→spare(recycled offscreen)
     const oldT = ngT, oldB = ngB, oldS = ngS;
     ngT = oldS; ngB = oldT; ngS = oldB;
     ngPlaceTop(ngPool[ngT]);
     ngPlaceBelow(ngPool[ngB]);
-    ngStamp(ngPool[ngS]);
-    ngPlaceSpare(ngPool[ngS]);
+    ngHideSpare(ngPool[ngS]);
     ngSheetAnimating = false;
     ngSheetCooldown = performance.now() + 150;
   }
@@ -7139,6 +7139,10 @@ function ngOpen() {
 }
 
 function ngSpringBack(sheet, below, startTY, bTY, bSC, bOv) {
+  const spare = ngPool[ngS];
+  const spareTY0 = ngParseTY(spare);
+  spare.style.zIndex = '9';
+  ngSheetAnimating = true;
   const startT = performance.now(), dur = 380;
   function frame(now) {
     const t = Math.min((now - startT) / dur, 1);
@@ -7149,7 +7153,11 @@ function ngSpringBack(sheet, below, startTY, bTY, bSC, bOv) {
       const ov = below.querySelector('.sheet-overlay');
       if (ov) ov.style.opacity = String(bOv + (0.3 - bOv) * ease);
     }
-    if (t < 1) requestAnimationFrame(frame);
+    spare.style.transform = `translateY(${spareTY0 + (NG_PUSHED_Y + NG_SPARE_OFFSET - spareTY0) * ease}px) scale(${NG_SC1})`;
+    if (t < 1) { requestAnimationFrame(frame); return; }
+    ngHideSpare(spare);
+    ngSheetAnimating = false;
+    ngSheetCooldown = performance.now() + 100;
   }
   requestAnimationFrame(frame);
 }
@@ -7162,13 +7170,21 @@ function ngSheetInit() {
 
     document.getElementById('ngSheetContent').addEventListener('pointerdown', (e) => {
       if (!e.target.closest('.sheet')) return;
-      if (e.target.closest('.sheet-close')) return; // X button — let click handler deal with it
+      if (e.target.closest('.sheet-close')) return;
       if (ngSheetAnimating) return;
       ngSheetDragActive = true;
       ngSheetDragStartY = e.clientY;
       ngSheetDragSheet  = ngPool[ngT];
       ngSheetDragBelow  = ngPool[ngB];
       ngSheetDragH      = ngPool[ngT].offsetHeight + 100;
+      // Position spare without re-stamping (already stamped) so pointer capture isn't broken
+      const sp = ngPool[ngS];
+      sp.style.transform = `translateY(${NG_PUSHED_Y + NG_SPARE_OFFSET}px) scale(${NG_SC1})`;
+      sp.style.zIndex    = '10';
+      sp.style.opacity   = '1';
+      sp.style.boxShadow = '0 -2px 20px rgba(0,0,0,0.15)';
+      const spOv = sp.querySelector('.sheet-overlay');
+      if (spOv) spOv.style.opacity = '0.3';
     }, { passive: true });
 
     document.addEventListener('pointermove', (e) => {
@@ -7181,6 +7197,8 @@ function ngSheetInit() {
       ngSheetDragBelow.style.transform = `translateY(${ty}px) scale(${sc})`;
       const ov = ngSheetDragBelow.querySelector('.sheet-overlay');
       if (ov) ov.style.opacity = String((1 - prog) * 0.3);
+      // Spare slides up in sync with drag
+      ngPool[ngS].style.transform = `translateY(${NG_PUSHED_Y + NG_SPARE_OFFSET * (1 - prog)}px) scale(${NG_SC1})`;
     }, { passive: true });
 
     document.addEventListener('pointerup', (e) => {
@@ -7195,8 +7213,10 @@ function ngSheetInit() {
       ngSheetDragSheet = null; ngSheetDragBelow = null;
       if (dy > NG_DISMISS_THRESHOLD) {
         ngDismiss(dy);
-      } else {
+      } else if (dy > 4) {
         ngSpringBack(sheet, below, dy, bTY, bSC, bOv);
+      } else {
+        ngHideSpare(ngPool[ngS]);
       }
     });
 
@@ -7228,7 +7248,7 @@ function ngSheetInit() {
   ngPlaceBelow(ngPool[ngB]);
   ngPlaceTop(ngPool[ngT]);
   ngStamp(ngPool[ngS]);
-  ngPlaceSpare(ngPool[ngS]);
+  ngHideSpare(ngPool[ngS]);
 }
 
 function switchNgDemo(key) {
