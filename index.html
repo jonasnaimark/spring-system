@@ -7532,6 +7532,10 @@ document.getElementById('ngPlayBtn').style.display = 'none';
 function applyNgGrowMode(mode) {
   ngGrowMode = mode;
 
+  // Lock text panel height before swapping content so shorter modal text doesn't shrink it
+  const textPanel = document.getElementById('ngTextPanel');
+  textPanel.style.minHeight = textPanel.offsetHeight + 'px';
+
   // Update segmented control active state
   document.querySelectorAll('#ngGrowModeToggle .demo-mode-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.ngMode === mode);
@@ -7873,6 +7877,7 @@ function switchNgDemo(key) {
 
     // Restore mode-specific text and hint
     const demo = NG_DEMOS['grow-dismiss'];
+    document.getElementById('ngTextPanel').style.minHeight = '';
     document.getElementById('ngTextPanel').innerHTML = ngGrowMode === 'modal'
       ? demo.panelModal : demo.panelFullscreen;
     hintText.textContent = ngGrowMode === 'modal'
