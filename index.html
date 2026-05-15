@@ -6329,7 +6329,7 @@ if (hashTp) {
         s0.style.transform='translateY(0%)'; s0.style.opacity='1'; if(ov0) ov0.style.opacity='0';
         s1.style.transform='translateY(100%)'; s1.style.opacity='1';
         s2.style.transform='translateY(100%)'; s2.style.opacity='1';
-        scrim.style.opacity='1';
+        if (!fh) scrim.style.opacity='1';
         if (fh) {
           if (phoneContent) { phoneContent.style.transform=`translateY(12px) scale(${SRC_SC})`; phoneContent.style.borderRadius='22px'; } if (bottomNav) { bottomNav.style.transform=`translateY(12px) scale(${SRC_SC})`; bottomNav.style.borderRadius='22px'; }
           if (homeOverlay) { homeOverlay.style.opacity='0.35'; homeOverlay.style.borderRadius='22px'; }
@@ -6339,7 +6339,7 @@ if (hashTp) {
         s0.style.transform=`translateY(${PUSHED_Y}px) scale(${SC1})`; s0.style.opacity='1'; if(ov0) ov0.style.opacity='0.3';
         s1.style.transform='translateY(0%)'; s1.style.opacity='1'; if(ov1) ov1.style.opacity='0';
         s2.style.transform='translateY(100%)'; s2.style.opacity='1';
-        scrim.style.opacity='1';
+        if (!fh) scrim.style.opacity='1';
         if (fh) {
           if (phoneContent) { phoneContent.style.transform=`translateY(12px) scale(${SRC_SC})`; phoneContent.style.borderRadius='22px'; } if (bottomNav) { bottomNav.style.transform=`translateY(12px) scale(${SRC_SC})`; bottomNav.style.borderRadius='22px'; }
           if (homeOverlay) { homeOverlay.style.opacity='0.35'; homeOverlay.style.borderRadius='22px'; }
@@ -6419,8 +6419,22 @@ if (hashTp) {
         }
         if (t < 1) { requestAnimationFrame(frame); return; }
         tpSlideUpStep--;
-        if (s0El) s0El.style.zIndex = ''; // clear inline zIndex before snapToStep
-        snapToStep(tpSlideUpStep);
+        if (s0El) {
+          // Step 3→2 done: manually place sheets to avoid snapToStep snapping the scrim
+          // (snapToStep sets scrim=1 but in full-height mode scrim stays at 0)
+          s0El.style.zIndex    = '';
+          s0El.style.opacity   = '1';
+          s0El.style.transform = `translateY(${PUSHED_Y}px) scale(${SC1})`;
+          const s0OvDone = s0El.querySelector('.sheet-overlay');
+          if (s0OvDone) s0OvDone.style.opacity = '0.3';
+          // s1 is already at translateY(0) from animation; just tidy up
+          const s1Done = document.getElementById('tpSheet1');
+          if (s1Done) { s1Done.style.opacity = '1'; const ov = s1Done.querySelector('.sheet-overlay'); if (ov) ov.style.opacity = '0'; }
+          const s2Done = document.getElementById('tpSheet2');
+          if (s2Done) s2Done.style.opacity = '1';
+        } else {
+          snapToStep(tpSlideUpStep);
+        }
         tpSheetAnimating = false;
         tpSheetClickCooldown = performance.now() + 150;
         clearTimeout(window._tpSheetAnimTimeout);
