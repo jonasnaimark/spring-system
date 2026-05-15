@@ -7004,7 +7004,7 @@ const NG_DEMOS = {
       <div class="ng-group">
         <div class="ng-h1">Gesture driven motion</div>
         <div class="ng-subgroup">
-          <div><div class="ng-h2">Horizontal resistance</div><p class="ng-body">Horizontal drag is heavily rubber-banded — the modal barely moves sideways, anchoring it visually.</p></div>
+          <div><div class="ng-h2">Resistance</div><p class="ng-body">Both axes rubber-band against the dismiss direction, but horizontal resistance is much stronger, keeping the modal anchored side to side.</p></div>
           <div><div class="ng-h2">Scale</div><p class="ng-body">The modal scales down slightly as it's dismissed.</p></div>
         </div>
       </div>`,
@@ -7076,6 +7076,29 @@ function ngRubberBand(x, max) {
   return max * (1 - Math.exp(-x / max));
 }
 
+// ── Measure inset modal destination (mirrors tpGetModalDest) ───
+function ngGetModalDest(phone) {
+  const gap = 10;
+  const toX = gap;
+  const toW = phone.clientWidth - gap * 2;
+  const phoneCS = window.getComputedStyle(phone);
+  const toR = Math.max(0, parseFloat(phoneCS.borderRadius) - parseFloat(phoneCS.borderWidth) - gap);
+  const inner = document.getElementById('ngModalInner');
+  const panel = document.getElementById('ngModalPanel');
+  const wasDisplay = panel.style.display;
+  panel.style.display = 'block';
+  panel.style.visibility = 'hidden';
+  panel.style.left = toX + 'px';
+  panel.style.width = toW + 'px';
+  panel.style.height = 'auto';
+  if (inner) inner.style.transform = 'scale(1)';
+  const toH = panel.scrollHeight || 320;
+  panel.style.display = wasDisplay;
+  panel.style.visibility = '';
+  const toY = phone.clientHeight - toH - gap;
+  return { toX, toY, toW, toH, toR };
+}
+
 // ── Expand a card ──────────────────────────────────────────────
 function ngExpandCard(card) {
   if (ngExpandState || !card) return;
@@ -7092,21 +7115,21 @@ function ngExpandCard(card) {
   const fromH = imgRect.height;
   const fromR = 10;
 
-  let toX, toY, toW, toH, toR;
-  if (isModal) {
-    const modalW = phone.clientWidth * 0.88;
-    const modalH = phone.clientHeight * 0.78;
-    toX = (phone.clientWidth - modalW) / 2;
-    toY = (phone.clientHeight - modalH) / 2;
-    toW = modalW; toH = modalH; toR = 24;
-  } else {
-    toX = 0; toY = 0; toW = phone.clientWidth; toH = phone.clientHeight; toR = 40;
-  }
-
-  document.querySelectorAll('#ngPhone .sk-carousel-img').forEach(el => el.style.visibility = '');
   const cardLayerId   = isModal ? 'ngModalCardLayer'   : 'ngExpandCardLayer';
   const detailLayerId = isModal ? 'ngModalDetailLayer' : 'ngExpandDetailLayer';
   const detailInnerId = isModal ? 'ngModalInner'       : 'ngDetailInner';
+
+  let toX, toY, toW, toH, toR;
+  if (isModal) {
+    ({ toX, toY, toW, toH, toR } = ngGetModalDest(phone));
+    if (document.getElementById(detailInnerId)) document.getElementById(detailInnerId).style.width = toW + 'px';
+    panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0)';
+  } else {
+    toX = 0; toY = 0; toW = phone.clientWidth; toH = phone.clientHeight; toR = 40;
+    if (document.getElementById(detailInnerId)) document.getElementById(detailInnerId).style.width = NG_DETAIL_REF_W + 'px';
+  }
+
+  document.querySelectorAll('#ngPhone .sk-carousel-img').forEach(el => el.style.visibility = '');
   document.getElementById(cardLayerId).style.opacity   = '1';
   document.getElementById(detailLayerId).style.opacity = '0';
   if (imgEl) imgEl.style.visibility = 'hidden';
@@ -7117,19 +7140,19 @@ function ngExpandCard(card) {
   panel.style.visibility = 'hidden'; panel.style.display = 'block';
   panel.style.transform = ''; panel.style.transformOrigin = '';
   if (!isModal) panel.style.zIndex = '12';
-  const refW = isModal ? 258 : NG_DETAIL_REF_W;
-  const detailInner = document.getElementById(detailInnerId);
-  if (detailInner && !isModal) detailInner.style.width = refW + 'px';
 
   const scrim = document.getElementById('ngExpandScrim');
-  if (!isModal) scrim.style.opacity = '0';
+  scrim.style.opacity = '0';
 
+  // refW = toW for modal (scale(1) at rest), NG_DETAIL_REF_W for fullscreen
+  const refW = isModal ? toW : NG_DETAIL_REF_W;
   ngExpandState = { fromX, fromY, fromW, fromH, fromR, toX, toY, toW, toH, toR, card, imgEl, isModal, refW };
 
   const startT = performance.now();
   if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
   const cardLayer   = document.getElementById(cardLayerId);
   const detailLayer = document.getElementById(detailLayerId);
+  const detailInner = document.getElementById(detailInnerId);
   const DELAY = 0.05;
 
   function tick(now) {
@@ -7145,20 +7168,24 @@ function ngExpandCard(card) {
     panel.style.height       = (toH + (fromH - toH) * posYH) + 'px';
     panel.style.borderRadius = (toR + (fromR - toR) * posXW) + 'px';
     panel.style.transform    = '';
-    if (!isModal) scrim.style.opacity = (1 - springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING)).toFixed(3);
+    const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+    scrim.style.opacity = isModal ? (1 - scrimPos).toFixed(3) : (1 - scrimPos).toFixed(3);
     if (detailInner) detailInner.style.transform = `scale(${scale})`;
     const fade = Math.min(t / 0.2, 1);
     detailLayer.style.opacity = String(fade);
     cardLayer.style.opacity   = String(1 - fade);
+    if (isModal) panel.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * fade).toFixed(3)})`;
     if (t < 5 && (!isSettled(t, NG_SPRING_K, NG_SPRING_D) || !isSettled(Math.max(0, t - DELAY), NG_SPRING_K, NG_SPRING_D))) {
       ngExpandAnim = requestAnimationFrame(tick);
     } else {
       panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
       panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
       panel.style.borderRadius = toR + 'px'; panel.style.pointerEvents = 'auto';
-      if (detailInner) detailInner.style.transform = `scale(${toW / refW})`;
+      if (detailInner) detailInner.style.transform = 'scale(1)';
       detailLayer.style.opacity = '1'; cardLayer.style.opacity = '0';
-      if (!isModal) scrim.style.opacity = '0';
+      if (isModal) panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0.28)';
+      scrim.style.opacity = isModal ? '1' : '0';
+      scrim.style.pointerEvents = isModal ? 'auto' : 'none';
     }
   }
   ngExpandAnim = requestAnimationFrame(tick);
@@ -7209,7 +7236,7 @@ function ngCollapseCard(velX, velY) {
     simW.step(dt, NG_DISMISS_K, NG_DISMISS_D);
     simH.step(dt, NG_DISMISS_K, NG_DISMISS_D);
     simR.step(dt, NG_DISMISS_K, NG_DISMISS_D);
-    if (!isModal) simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
+    simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
 
     const scale = simW.x / refW;
     panel.style.left         = simX.x + 'px';
@@ -7218,7 +7245,7 @@ function ngCollapseCard(velX, velY) {
     panel.style.height       = simH.x + 'px';
     panel.style.borderRadius = Math.max(0, simR.x) + 'px';
     panel.style.transform    = '';
-    if (!isModal) scrim.style.opacity = Math.max(0, simScrim.x).toFixed(3);
+    scrim.style.opacity = Math.max(0, simScrim.x).toFixed(3);
     if (detailInner) detailInner.style.transform = `scale(${Math.max(0.01, scale)})`;
 
     fadeProgress = Math.max(0, fadeProgress - dt / 0.15);
@@ -7230,8 +7257,9 @@ function ngCollapseCard(velX, velY) {
     } else {
       panel.style.display = 'none';
       panel.style.transform = '';
-      if (detailInner) detailInner.style.transform = `scale(${toW / refW})`;
+      if (detailInner) detailInner.style.transform = 'scale(1)';
       detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
+      scrim.style.opacity = '0'; scrim.style.pointerEvents = 'none';
       if (imgEl) imgEl.style.visibility = '';
     }
   }
@@ -7263,7 +7291,8 @@ function ngRevertToExpanded(velX, velY) {
   const simH = new SpringSim(curH); simH.target = toH;
   const simR = new SpringSim(curR); simR.target = toR;
   const curScrim = parseFloat(scrim.style.opacity) || 0;
-  const simScrim = new SpringSim(curScrim); simScrim.target = 0;
+  const scrimTarget = isModal ? 1 : 0;
+  const simScrim = new SpringSim(curScrim); simScrim.target = scrimTarget;
 
   let lastTime = null;
   function tick(now) {
@@ -7276,7 +7305,7 @@ function ngRevertToExpanded(velX, velY) {
     simW.step(dt, NG_DISMISS_K, NG_DISMISS_D);
     simH.step(dt, NG_DISMISS_K, NG_DISMISS_D);
     simR.step(dt, NG_DISMISS_K, NG_DISMISS_D);
-    if (!isModal) simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
+    simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
 
     const scale = simW.x / refW;
     panel.style.left         = simX.x + 'px';
@@ -7285,7 +7314,7 @@ function ngRevertToExpanded(velX, velY) {
     panel.style.height       = simH.x + 'px';
     panel.style.borderRadius = Math.max(0, simR.x) + 'px';
     panel.style.transform    = '';
-    if (!isModal) scrim.style.opacity = Math.max(0, simScrim.x).toFixed(3);
+    scrim.style.opacity = Math.max(0, simScrim.x).toFixed(3);
     if (detailInner) detailInner.style.transform = `scale(${Math.max(0.01, scale)})`;
 
     if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
@@ -7294,8 +7323,9 @@ function ngRevertToExpanded(velX, velY) {
       panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
       panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
       panel.style.borderRadius = toR + 'px';
-      if (detailInner) detailInner.style.transform = `scale(${toW / refW})`;
-      if (!isModal) scrim.style.opacity = '0';
+      if (detailInner) detailInner.style.transform = 'scale(1)';
+      scrim.style.opacity = String(scrimTarget);
+      scrim.style.pointerEvents = isModal ? 'auto' : 'none';
     }
   }
   ngExpandAnim = requestAnimationFrame(tick);
@@ -7455,6 +7485,11 @@ document.getElementById('ngModalPanel').addEventListener('click', (e) => {
   e.stopPropagation();
   if (_ngGestureDismissed) { _ngGestureDismissed = false; return; }
   if (ngExpandState) ngCollapseCard(0, 0);
+});
+
+// Scrim click dismisses modal
+document.getElementById('ngExpandScrim').addEventListener('click', () => {
+  if (ngExpandState?.isModal) ngCollapseCard(0, 0);
 });
 
 // ── Card click to expand ───────────────────────────────────────
