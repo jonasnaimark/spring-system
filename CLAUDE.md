@@ -211,3 +211,19 @@ back.style.width = (startBackW + (endBackW - startBackW) * completion) + 'px';
 **Why:** `flex:1` and explicit pixel widths fight each other. Animating a sibling and letting flex fill the remainder is stable, smooth, and requires no cleanup.
 
 **Measuring the sibling target width:** don't use the icon's visual size — compute `barInnerWidth - targetPillWidth`. This ensures the pill lands at exactly the right size regardless of bar dimensions.
+
+---
+
+## Grow-dismiss modal: scrim must lose pointer-events at collapse start
+
+When a modal expand panel closes, the dark scrim behind it (`ngExpandScrim`) still has `pointer-events:auto` while it animates out. It covers the whole phone and absorbs the next card tap, requiring two clicks to open a new card.
+
+Fix: set `pointer-events:none` on the scrim at the very start of `ngCollapseCard`, alongside the panel:
+
+```js
+panel.style.pointerEvents = 'none';
+document.getElementById('ngExpandScrim').style.pointerEvents = 'none';
+ngExpandState = null;
+```
+
+The scrim's `pointer-events` is restored to `auto` only when the next modal fully opens (in the expand done block).
