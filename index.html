@@ -7251,6 +7251,7 @@ function ngCollapseCard(velX, velY) {
     fadeProgress = Math.max(0, fadeProgress - dt / 0.15);
     detailLayer.style.opacity = fadeProgress.toFixed(3);
     cardLayer.style.opacity   = (1 - fadeProgress).toFixed(3);
+    if (isModal) panel.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * fadeProgress).toFixed(3)})`;
 
     if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
       ngExpandAnim = requestAnimationFrame(tick);
@@ -7260,6 +7261,7 @@ function ngCollapseCard(velX, velY) {
       if (detailInner) detailInner.style.transform = 'scale(1)';
       detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
       scrim.style.opacity = '0'; scrim.style.pointerEvents = 'none';
+      if (isModal) panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0)';
       if (imgEl) imgEl.style.visibility = '';
     }
   }
@@ -7429,8 +7431,11 @@ function ngAttachGestureListeners(panelEl) {
     document.getElementById(detailLayerId).style.opacity = '1';
     document.getElementById(cardLayerId).style.opacity   = '0';
 
-    if (!isModal) {
-      const scrim = document.getElementById('ngExpandScrim');
+    const scrim = document.getElementById('ngExpandScrim');
+    if (isModal) {
+      scrim.style.opacity = (1 - progress * 0.5).toFixed(3);
+      panelEl.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * (1 - progress)).toFixed(3)})`;
+    } else {
       scrim.style.opacity = (1 - progress * 0.5).toFixed(3);
     }
   });
