@@ -2599,7 +2599,7 @@
           <div class="expand-hero-panel" id="ngModalPanel" style="display:none;touch-action:none;box-shadow:0 8px 32px rgba(0,0,0,0.28);position:absolute;z-index:20;">
             <div id="ngModalCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
             <div id="ngModalDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
-              <div id="ngModalInner" style="position:absolute;top:0;left:0;width:200px;transform-origin:top left;display:flex;flex-direction:column;"></div>
+              <div id="ngModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px 16px 12px;"></div>
             </div>
           </div>
           <!-- Sheet dismiss stack -->
@@ -3749,7 +3749,7 @@ function stampTemplate(templateId, targetEl) {
   stampTemplate('tpl-home-screen-carousels', document.getElementById('accPhoneContent'));
   Array.from(document.querySelectorAll('#accPhoneContent .sk-carousel-card')).slice(0, 1).forEach(c => c.classList.add('acc-grow-card'));
   stampTemplate('tpl-detail', document.getElementById('ngDetailInner'));
-  stampTemplate('tpl-detail', document.getElementById('ngModalInner'));
+  stampTemplate('tpl-inset-modal', document.getElementById('ngModalInner'));
   stampTemplate('tpl-inset-modal', document.getElementById('tpModalInner'));
 
   // tpl-home-screen-carousels targets
@@ -6991,7 +6991,7 @@ const NG_DEMOS = {
       <div class="ng-group">
         <div class="ng-h1">Swipe direction</div>
         <div class="ng-subgroup">
-          <div><div class="ng-h2">Down</div><p class="ng-body">Modal grow transitions dismiss when swiping down.</p></div>
+          <div><div class="ng-h2">Down</div><p class="ng-body">Modals dismiss when swiping down.</p></div>
         </div>
       </div>
       <div class="ng-group">
@@ -7117,13 +7117,14 @@ function ngExpandCard(card) {
   panel.style.visibility = 'hidden'; panel.style.display = 'block';
   panel.style.transform = ''; panel.style.transformOrigin = '';
   if (!isModal) panel.style.zIndex = '12';
+  const refW = isModal ? 258 : NG_DETAIL_REF_W;
   const detailInner = document.getElementById(detailInnerId);
-  if (detailInner) detailInner.style.width = NG_DETAIL_REF_W + 'px';
+  if (detailInner && !isModal) detailInner.style.width = refW + 'px';
 
   const scrim = document.getElementById('ngExpandScrim');
   if (!isModal) scrim.style.opacity = '0';
 
-  ngExpandState = { fromX, fromY, fromW, fromH, fromR, toX, toY, toW, toH, toR, card, imgEl, isModal };
+  ngExpandState = { fromX, fromY, fromW, fromH, fromR, toX, toY, toW, toH, toR, card, imgEl, isModal, refW };
 
   const startT = performance.now();
   if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
@@ -7136,7 +7137,7 @@ function ngExpandCard(card) {
     const posXW = springPos(t,                      NG_SPRING_K, NG_SPRING_D);
     const posYH = springPos(Math.max(0, t - DELAY), NG_SPRING_K, NG_SPRING_D);
     const curW = toW + (fromW - toW) * posXW;
-    const scale = curW / NG_DETAIL_REF_W;
+    const scale = curW / refW;
     panel.style.visibility = '';
     panel.style.left         = (toX + (fromX - toX) * posXW) + 'px';
     panel.style.top          = (toY + (fromY - toY) * posYH) + 'px';
@@ -7155,7 +7156,7 @@ function ngExpandCard(card) {
       panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
       panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
       panel.style.borderRadius = toR + 'px'; panel.style.pointerEvents = 'auto';
-      if (detailInner) detailInner.style.transform = `scale(${toW / NG_DETAIL_REF_W})`;
+      if (detailInner) detailInner.style.transform = `scale(${toW / refW})`;
       detailLayer.style.opacity = '1'; cardLayer.style.opacity = '0';
       if (!isModal) scrim.style.opacity = '0';
     }
@@ -7167,7 +7168,7 @@ function ngExpandCard(card) {
 function ngCollapseCard(velX, velY) {
   if (!ngExpandState) return;
   if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
-  const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, card, imgEl, isModal } = ngExpandState;
+  const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, card, imgEl, isModal, refW } = ngExpandState;
   const phone     = document.getElementById('ngPhone');
   const panel     = isModal ? document.getElementById('ngModalPanel') : document.getElementById('ngExpandPanel');
   panel.style.pointerEvents = 'none';
@@ -7210,7 +7211,7 @@ function ngCollapseCard(velX, velY) {
     simR.step(dt, NG_DISMISS_K, NG_DISMISS_D);
     if (!isModal) simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
 
-    const scale = simW.x / NG_DETAIL_REF_W;
+    const scale = simW.x / refW;
     panel.style.left         = simX.x + 'px';
     panel.style.top          = simY.x + 'px';
     panel.style.width        = simW.x + 'px';
@@ -7229,7 +7230,7 @@ function ngCollapseCard(velX, velY) {
     } else {
       panel.style.display = 'none';
       panel.style.transform = '';
-      if (detailInner) detailInner.style.transform = `scale(${toW / NG_DETAIL_REF_W})`;
+      if (detailInner) detailInner.style.transform = `scale(${toW / refW})`;
       detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
       if (imgEl) imgEl.style.visibility = '';
     }
@@ -7241,7 +7242,7 @@ function ngCollapseCard(velX, velY) {
 function ngRevertToExpanded(velX, velY) {
   if (!ngExpandState) return;
   if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
-  const { toX, toY, toW, toH, toR, isModal } = ngExpandState;
+  const { toX, toY, toW, toH, toR, isModal, refW } = ngExpandState;
   const phone     = document.getElementById('ngPhone');
   const panel     = isModal ? document.getElementById('ngModalPanel') : document.getElementById('ngExpandPanel');
   panel.style.pointerEvents = 'auto';
@@ -7277,7 +7278,7 @@ function ngRevertToExpanded(velX, velY) {
     simR.step(dt, NG_DISMISS_K, NG_DISMISS_D);
     if (!isModal) simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
 
-    const scale = simW.x / NG_DETAIL_REF_W;
+    const scale = simW.x / refW;
     panel.style.left         = simX.x + 'px';
     panel.style.top          = simY.x + 'px';
     panel.style.width        = simW.x + 'px';
@@ -7293,7 +7294,7 @@ function ngRevertToExpanded(velX, velY) {
       panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
       panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
       panel.style.borderRadius = toR + 'px';
-      if (detailInner) detailInner.style.transform = `scale(${toW / NG_DETAIL_REF_W})`;
+      if (detailInner) detailInner.style.transform = `scale(${toW / refW})`;
       if (!isModal) scrim.style.opacity = '0';
     }
   }
@@ -7391,7 +7392,7 @@ function ngAttachGestureListeners(panelEl) {
 
     const detailInnerId = isModal ? 'ngModalInner' : 'ngDetailInner';
     const detailInner = document.getElementById(detailInnerId);
-    if (detailInner) detailInner.style.transform = `scale(${scaleDown * toW / NG_DETAIL_REF_W})`;
+    if (detailInner) detailInner.style.transform = `scale(${scaleDown * toW / (ngExpandState?.refW ?? NG_DETAIL_REF_W)})`;
 
     const detailLayerId = isModal ? 'ngModalDetailLayer' : 'ngExpandDetailLayer';
     const cardLayerId   = isModal ? 'ngModalCardLayer'   : 'ngExpandCardLayer';
