@@ -6352,7 +6352,7 @@ if (hashTp) {
     function animateDismiss(sheet, below, startY, noBelow) {
       const endY    = dragSheetH + 200;
       const scrim   = document.getElementById('tpSheetScrim');
-      const scrimAt = parseFloat(scrim.style.opacity) || 1;
+      const scrimAt = parseFloat(scrim.style.opacity ?? '0');
       // Capture below sheet's current state
       const belowStartTY = below ? parseTY(below) : 0;
       const belowStartSC = below ? parseSC(below) : 1;
