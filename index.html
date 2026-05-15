@@ -2265,7 +2265,7 @@
 <!-- ── Transition Patterns section ── -->
 <div class="section-wrap" id="sec-transition">
   <h1 class="section-title">Transitions</h1>
-  <p class="section-body">Transitions orient people as they navigate. Grow creates a sense of continuity. Push navigates to a new place. Slide Up layers content over the screen. Fades swap content in place.</p>
+  <p class="section-body">Transitions orient people as they navigate. Grow seamlessly reveals more detail. Push moves to a new screen. Slide Up layers content without losing context. Fades swap content in place.</p>
   <div class="demo-tabs-bar section-chips" id="tpTabsBar">
     <div class="demo-tab tp-tab active" data-tp="grow">Grow</div>
     <div class="demo-tab tp-tab" data-tp="grow-fade">Grow & Fade</div>
@@ -2612,13 +2612,13 @@
 
 <div class="section-wrap" id="sec-spring">
   <h1 class="section-title">Spring Tokens</h1>
-  <p class="section-body">Most animations use springs because they feel smooth and respond to gestures. Springs have two dimensions to choose from: Speed and Bounciness. These are some common examples:</p>
+  <p class="section-body">Most animations use springs because they feel smooth and respond to gestures. Each spring is tuned along two axes: Speed and Bounciness. These are some common examples:</p>
   <div class="demo-tabs-bar section-chips">
     <div class="demo-tab active" data-demo="sheet">Sheet</div>
     <div class="demo-tab" data-demo="push">Nav Transition</div>
     <div class="demo-tab" data-demo="grow">Details Page</div>
     <div class="demo-tab" data-demo="bottom-bar">Bottom Bar</div>
-    <div class="demo-tab" data-demo="tab">Stepped Flow</div>
+    <div class="demo-tab" data-demo="onboarding">Onboarding Flow</div>
     <div class="demo-tab" data-demo="modal">Modal</div>
     <div class="demo-tab" data-demo="notif">Toast</div>
     <div class="demo-tab" data-demo="tooltip">Tooltip</div>
@@ -2830,7 +2830,7 @@
       </div>
 
       <!-- Tab switch demo -->
-      <div class="demo-view" id="view-tab" style="display:none; align-items:center; justify-content:center;">
+      <div class="demo-view" id="view-onboarding" style="display:none; align-items:center; justify-content:center;">
         <div class="phone-frame">
           <div class="tab-wrap">
             <!-- Screen 0: Setup -->
@@ -3194,7 +3194,7 @@
 <!-- ── Accessibility section ── -->
 <div class="section-wrap" id="sec-accessibility">
   <h1 class="section-title">Accessibility</h1>
-  <p class="section-body">Some people find motion disorienting or distracting. Respect these platform settings:</p>
+  <p class="section-body">Some people experience motion as disorienting or distracting. These platform settings reduce or eliminate animation — our apps must honor them.</p>
   <div class="section-content">
     <div style="display:flex; gap:24px; align-items:stretch;">
       <div style="flex:0 0 400px; width:400px; border:1px solid var(--c-border-subtle); border-radius:24px; padding:28px; display:flex; flex-direction:column; gap:36px;" id="accTextPanel">
@@ -3203,11 +3203,11 @@
           <div class="ng-subgroup">
             <div>
               <div class="ng-h2">iOS & macOS</div>
-              <p class="ng-body">Dramatic transitions that scale, slide, or use parallax are replaced with simple 150ms fades.</p>
+              <p class="ng-body">Transitions that scale, slide, or use parallax are replaced with simple 150ms crossfades.</p>
             </div>
             <div>
               <div class="ng-h2">Windows & Android</div>
-              <p class="ng-body">All animation and motion is turned off.</p>
+              <p class="ng-body">All animation and motion is disabled.</p>
             </div>
           </div>
         </div>
@@ -3216,11 +3216,11 @@
           <div class="ng-subgroup">
             <div>
               <div class="ng-h2">Icons & illustrations</div>
-              <p class="ng-body">Animated illustrations and icons are replaced with static versions.</p>
+              <p class="ng-body">Animated illustrations and icons must have a static fallback.</p>
             </div>
             <div>
               <div class="ng-h2">Video</div>
-              <p class="ng-body">Auto-playing videos are paused.</p>
+              <p class="ng-body">Auto-playing video must be paused.</p>
             </div>
           </div>
         </div>
@@ -4048,8 +4048,8 @@ const SPRING_DEMOS = {
     },
   },
 
-  tab: {
-    description:   'A subtler transition compared to a Push, often used with stepped flows.',
+  onboarding: {
+    description:   'A subtler transition compared to a Push, often used in onboarding flows.',
     defaultSpring: { speed: 'default', char: 'smooth' },
     reset() {
       tabIdx = 0; tabDir = 1;
@@ -5120,7 +5120,7 @@ let tpCrossFadeAnimating = false;
 let tpCrossFadeCooldown  = 0;
 const TP_DEMOS = {
   'grow': {
-    description: 'Creates continuity by morphing a source element into the destination screen or floating element.',
+    description: 'Creates continuity as a source element grows into the destination screen or floating element.',
     play() {
       const cards = document.querySelectorAll('.tp-grow-card');
       if (tpExpandState) {
@@ -5241,7 +5241,7 @@ const TP_DEMOS = {
   },
 
   'push-fade': {
-    description: 'A subtler transition compared to a Push, often used with stepped flows.',
+    description: 'A subtler transition compared to a Push, often used in onboarding flows.',
     reset() {
       tpTabIdx = 0; tpTabDir = 1;
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
@@ -5586,7 +5586,7 @@ const TP_DEMOS = {
   },
 
   'grow-fade': {
-    description: 'Used to present floating elements. Scales from center, or from the element that triggered it.',
+    description: 'Presents floating elements. Grows from center or from the element that triggered it.',
     _seqTimer: null,
     _cancelSeq() {
       if (this._seqTimer) { clearTimeout(this._seqTimer); this._seqTimer = null; }
@@ -6170,13 +6170,13 @@ if (hashTp) {
 
   document.getElementById('sfSetupCta').addEventListener('click', (e) => {
     e.stopPropagation();
-    if (currentDemo !== 'tab') return;
-    SPRING_DEMOS['tab'].play(1);
+    if (currentDemo !== 'onboarding') return;
+    SPRING_DEMOS['onboarding'].play(1);
   });
   document.getElementById('sfSetupBackBtn').addEventListener('click', (e) => {
     e.stopPropagation();
-    if (currentDemo !== 'tab') return;
-    if (tabIdx > 0) SPRING_DEMOS['tab'].play(-1);
+    if (currentDemo !== 'onboarding') return;
+    if (tabIdx > 0) SPRING_DEMOS['onboarding'].play(-1);
   });
 
   // Phone click: pause if playing, play if paused (grow and slide-up handle their own clicks)
