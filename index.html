@@ -7048,6 +7048,7 @@ const NG_DETAIL_REF_W = 278;
 let ngGrowMode    = 'fullscreen'; // 'fullscreen' | 'modal'
 let ngExpandState = null; // { fromX, fromY, fromW, fromH, fromR, card, imgEl, isModal }
 let ngExpandAnim  = null;
+let ngAnimGen     = 0; // incremented on every new animation; ticks bail if stale
 let ngGesture     = null;
 let ngCardIdx     = 0;
 let _ngGestureDismissed = false;
@@ -7151,12 +7152,14 @@ function ngExpandCard(card) {
 
   const startT = performance.now();
   if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
+  const myGen = ++ngAnimGen;
   const cardLayer   = document.getElementById(cardLayerId);
   const detailLayer = document.getElementById(detailLayerId);
   const detailInner = document.getElementById(detailInnerId);
   const DELAY = 0.05;
 
   function tick(now) {
+    if (ngAnimGen !== myGen) return;
     const t    = (now - startT) / 1000;
     const posXW = springPos(t,                      NG_SPRING_K, NG_SPRING_D);
     const posYH = springPos(Math.max(0, t - DELAY), NG_SPRING_K, NG_SPRING_D);
@@ -7224,10 +7227,12 @@ function ngCollapseCard(velX, velY) {
   const scrimStart = parseFloat(scrim.style.opacity) || 0;
   const simScrim = new SpringSim(scrimStart); simScrim.target = 0;
 
+  const myGen = ++ngAnimGen;
   let lastTime = null;
   let fadeProgress = parseFloat(detailLayer.style.opacity) || 1;
 
   function tick(now) {
+    if (ngAnimGen !== myGen) return;
     if (!lastTime) lastTime = now;
     const dt = Math.min((now - lastTime) / 1000, 0.033);
     lastTime = now;
@@ -7257,6 +7262,7 @@ function ngCollapseCard(velX, velY) {
     if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
       ngExpandAnim = requestAnimationFrame(tick);
     } else {
+      ngExpandAnim = null;
       panel.style.display = 'none';
       panel.style.transform = '';
       if (detailInner) detailInner.style.transform = `scale(${toW / refW})`;
@@ -7297,8 +7303,10 @@ function ngRevertToExpanded(velX, velY) {
   const scrimTarget = isModal ? 1 : 0;
   const simScrim = new SpringSim(curScrim); simScrim.target = scrimTarget;
 
+  const myGen = ++ngAnimGen;
   let lastTime = null;
   function tick(now) {
+    if (ngAnimGen !== myGen) return;
     if (!lastTime) lastTime = now;
     const dt = Math.min((now - lastTime) / 1000, 0.033);
     lastTime = now;
