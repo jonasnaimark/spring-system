@@ -4644,7 +4644,7 @@ function tpExpandCard(card) {
       panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
       panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
       panel.style.borderRadius = toR + 'px'; panel.style.pointerEvents = 'auto';
-      if (detailInner) detailInner.style.transform = 'scale(1)';
+      if (detailInner) detailInner.style.transform = `scale(${toW / refW})`;
       detailLayer.style.opacity = '1'; cardLayer.style.opacity = '0';
       if (isModal) panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0.28)';
       scrim.style.opacity = isModal ? '1' : '0';
@@ -7181,7 +7181,7 @@ function ngExpandCard(card) {
       panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
       panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
       panel.style.borderRadius = toR + 'px'; panel.style.pointerEvents = 'auto';
-      if (detailInner) detailInner.style.transform = 'scale(1)';
+      if (detailInner) detailInner.style.transform = `scale(${toW / refW})`;
       detailLayer.style.opacity = '1'; cardLayer.style.opacity = '0';
       if (isModal) panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0.28)';
       scrim.style.opacity = isModal ? '1' : '0';
@@ -7258,7 +7258,7 @@ function ngCollapseCard(velX, velY) {
     } else {
       panel.style.display = 'none';
       panel.style.transform = '';
-      if (detailInner) detailInner.style.transform = 'scale(1)';
+      if (detailInner) detailInner.style.transform = `scale(${toW / refW})`;
       detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
       scrim.style.opacity = '0'; scrim.style.pointerEvents = 'none';
       if (isModal) panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0)';
@@ -7325,7 +7325,7 @@ function ngRevertToExpanded(velX, velY) {
       panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
       panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
       panel.style.borderRadius = toR + 'px';
-      if (detailInner) detailInner.style.transform = 'scale(1)';
+      if (detailInner) detailInner.style.transform = `scale(${toW / refW})`;
       scrim.style.opacity = String(scrimTarget);
       scrim.style.pointerEvents = isModal ? 'auto' : 'none';
     }
