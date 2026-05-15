@@ -2573,6 +2573,10 @@
         <button class="play-circle" id="ngPlayBtn">
           <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M320-200v-560l440 280-440 280Z"/></svg>
         </button>
+        <div class="demo-mode-toggle" id="ngGrowModeToggle">
+          <button class="demo-mode-btn active" data-ng-mode="fullscreen">Fullscreen</button>
+          <button class="demo-mode-btn" data-ng-mode="modal">Modal</button>
+        </div>
         <div id="ngDemoScaler" style="transform-origin:center center; display:flex; flex-direction:column; align-items:center; gap:16px;">
         <div class="phone-frame" id="ngPhone">
           <div class="phone-content" id="ngPhoneContent"></div>
@@ -2589,6 +2593,13 @@
             <div id="ngExpandCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
             <div id="ngExpandDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
               <div id="ngDetailInner" style="position:absolute;top:0;left:0;width:200px;transform-origin:top left;display:flex;flex-direction:column;"></div>
+            </div>
+          </div>
+          <!-- Modal panel (grow-dismiss modal mode) -->
+          <div class="expand-hero-panel" id="ngModalPanel" style="display:none;touch-action:none;box-shadow:0 8px 32px rgba(0,0,0,0.28);position:absolute;z-index:20;">
+            <div id="ngModalCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
+            <div id="ngModalDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
+              <div id="ngModalInner" style="position:absolute;top:0;left:0;width:200px;transform-origin:top left;display:flex;flex-direction:column;"></div>
             </div>
           </div>
           <!-- Sheet dismiss stack -->
@@ -3738,6 +3749,7 @@ function stampTemplate(templateId, targetEl) {
   stampTemplate('tpl-home-screen-carousels', document.getElementById('accPhoneContent'));
   Array.from(document.querySelectorAll('#accPhoneContent .sk-carousel-card')).slice(0, 1).forEach(c => c.classList.add('acc-grow-card'));
   stampTemplate('tpl-detail', document.getElementById('ngDetailInner'));
+  stampTemplate('tpl-detail', document.getElementById('ngModalInner'));
   stampTemplate('tpl-inset-modal', document.getElementById('tpModalInner'));
 
   // tpl-home-screen-carousels targets
@@ -6952,7 +6964,7 @@ if (hashTp) {
 // Each entry: { description (optional), panel (HTML for left text area), play() }
 const NG_DEMOS = {
   'grow-dismiss': {
-    panel: `
+    panelFullscreen: `
       <div class="ng-group">
         <div class="ng-h1">Swipe direction</div>
         <div class="ng-subgroup">
@@ -6975,6 +6987,28 @@ const NG_DEMOS = {
           <div><div class="ng-h2">Scrim</div><p class="ng-body">The scrim fades out during dismiss swipes.</p></div>
         </div>
       </div>`,
+    panelModal: `
+      <div class="ng-group">
+        <div class="ng-h1">Swipe direction</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Down</div><p class="ng-body">Modal grow transitions dismiss when swiping down.</p></div>
+        </div>
+      </div>
+      <div class="ng-group">
+        <div class="ng-h1">Thresholds</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Position</div><p class="ng-body">A swipe beyond 50 points commits the dismiss on release. Releasing early reverts.</p></div>
+          <div><div class="ng-h2">Velocity</div><p class="ng-body">A swipe faster than 1000 pts/sec commits navigation on release.</p></div>
+        </div>
+      </div>
+      <div class="ng-group">
+        <div class="ng-h1">Gesture driven motion</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Horizontal resistance</div><p class="ng-body">Horizontal drag is heavily rubber-banded — the modal barely moves sideways, anchoring it visually.</p></div>
+          <div><div class="ng-h2">Scale</div><p class="ng-body">The modal scales down slightly as it's dismissed.</p></div>
+        </div>
+      </div>`,
+    get panel() { return this.panelFullscreen; },
     play() {},
   },
   'sheet-dismiss': {
@@ -7004,267 +7038,281 @@ const NG_DEMOS = {
 };
 
 // ── Grow dismiss gesture demo ─────────────────────────────────────
-(function() {
-  const SPRING_K = 500, SPRING_D = calcDamping(500, 1.0);        // smooth — used for open
-  const DISMISS_K = 300, DISMISS_D = calcDamping(300, 0.7);      // default.medium-bounce — used for dismiss
-  const DISMISS_POS_THRESHOLD = 50;  // px of rubber-banded travel to commit
-  const DISMISS_VEL_THRESHOLD = 1000; // px/s to commit regardless of position
-  const EDGE_WIDTH = 28; // px from left edge to trigger edge-swipe mode
-  const DETAIL_REF_W = 278; // reference content width (matches TP phone inner)
+const NG_SPRING_K = 500, NG_SPRING_D = calcDamping(500, 1.0);
+const NG_DISMISS_K = 300, NG_DISMISS_D = calcDamping(300, 0.7);
+const NG_DISMISS_POS_THRESHOLD = 50;
+const NG_DISMISS_VEL_THRESHOLD = 1000;
+const NG_EDGE_WIDTH = 28;
+const NG_DETAIL_REF_W = 278;
 
-  let ngExpandState = null; // { fromX, fromY, fromW, fromH, fromR, card, imgEl }
-  let ngExpandAnim  = null;
-  let ngGesture     = null; // active gesture state
-  let ngCardIdx     = 0;
+let ngGrowMode    = 'fullscreen'; // 'fullscreen' | 'modal'
+let ngExpandState = null; // { fromX, fromY, fromW, fromH, fromR, card, imgEl, isModal }
+let ngExpandAnim  = null;
+let ngGesture     = null;
+let ngCardIdx     = 0;
+let _ngGestureDismissed = false;
 
-  // ── Spring sim helpers ─────────────────────────────────────────
-  // Full damped spring with arbitrary initial position + velocity
-  // returns position at time t given: x0 from equilibrium, v0 initial velocity
-  function springPosV(t, k, d, x0, v0) {
-    const omegaN = Math.sqrt(k);
-    const zeta   = d / (2 * Math.sqrt(k));
-    if (zeta >= 1 - 0.001) {
-      const a = x0, b = v0 + omegaN * x0;
-      return (a + b * t) * Math.exp(-omegaN * t);
+function ngSpringPosV(t, k, d, x0, v0) {
+  const omegaN = Math.sqrt(k);
+  const zeta   = d / (2 * Math.sqrt(k));
+  if (zeta >= 1 - 0.001) {
+    const a = x0, b = v0 + omegaN * x0;
+    return (a + b * t) * Math.exp(-omegaN * t);
+  } else {
+    const omegaD = omegaN * Math.sqrt(1 - zeta * zeta);
+    const a = x0;
+    const b = (v0 + zeta * omegaN * x0) / omegaD;
+    return Math.exp(-zeta * omegaN * t) * (a * Math.cos(omegaD * t) + b * Math.sin(omegaD * t));
+  }
+}
+function ngSpringSettledV(t, k, d, x0, v0) {
+  const p  = ngSpringPosV(t,         k, d, x0, v0);
+  const p2 = ngSpringPosV(t + 0.016, k, d, x0, v0);
+  return Math.abs(p) < 0.5 && Math.abs(p2 - p) < 0.1;
+}
+
+function ngRubberBand(x, max) {
+  if (x <= 0) return 0;
+  return max * (1 - Math.exp(-x / max));
+}
+
+// ── Expand a card ──────────────────────────────────────────────
+function ngExpandCard(card) {
+  if (ngExpandState || !card) return;
+  const isModal = ngGrowMode === 'modal';
+  const phone     = document.getElementById('ngPhone');
+  const panel     = isModal ? document.getElementById('ngModalPanel') : document.getElementById('ngExpandPanel');
+  const phoneRect = phone.getBoundingClientRect();
+  const cardRect  = card.getBoundingClientRect();
+  const imgEl   = card.querySelector('.sk-carousel-img') || null;
+  const imgRect = imgEl ? imgEl.getBoundingClientRect() : cardRect;
+  const fromX = cardRect.left - phoneRect.left - phone.clientLeft;
+  const fromY = cardRect.top  - phoneRect.top  - phone.clientTop;
+  const fromW = cardRect.width;
+  const fromH = imgRect.height;
+  const fromR = 10;
+
+  let toX, toY, toW, toH, toR;
+  if (isModal) {
+    const modalW = phone.clientWidth * 0.88;
+    const modalH = phone.clientHeight * 0.78;
+    toX = (phone.clientWidth - modalW) / 2;
+    toY = (phone.clientHeight - modalH) / 2;
+    toW = modalW; toH = modalH; toR = 24;
+  } else {
+    toX = 0; toY = 0; toW = phone.clientWidth; toH = phone.clientHeight; toR = 40;
+  }
+
+  document.querySelectorAll('#ngPhone .sk-carousel-img').forEach(el => el.style.visibility = '');
+  const cardLayerId   = isModal ? 'ngModalCardLayer'   : 'ngExpandCardLayer';
+  const detailLayerId = isModal ? 'ngModalDetailLayer' : 'ngExpandDetailLayer';
+  const detailInnerId = isModal ? 'ngModalInner'       : 'ngDetailInner';
+  document.getElementById(cardLayerId).style.opacity   = '1';
+  document.getElementById(detailLayerId).style.opacity = '0';
+  if (imgEl) imgEl.style.visibility = 'hidden';
+  panel.style.left = fromX + 'px'; panel.style.top = fromY + 'px';
+  panel.style.width = fromW + 'px'; panel.style.height = fromH + 'px';
+  panel.style.borderRadius = fromR + 'px';
+  panel.style.pointerEvents = 'none';
+  panel.style.visibility = 'hidden'; panel.style.display = 'block';
+  panel.style.transform = ''; panel.style.transformOrigin = '';
+  if (!isModal) panel.style.zIndex = '12';
+  const detailInner = document.getElementById(detailInnerId);
+  if (detailInner) detailInner.style.width = NG_DETAIL_REF_W + 'px';
+
+  const scrim = document.getElementById('ngExpandScrim');
+  if (!isModal) scrim.style.opacity = '0';
+
+  ngExpandState = { fromX, fromY, fromW, fromH, fromR, toX, toY, toW, toH, toR, card, imgEl, isModal };
+
+  const startT = performance.now();
+  if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
+  const cardLayer   = document.getElementById(cardLayerId);
+  const detailLayer = document.getElementById(detailLayerId);
+  const DELAY = 0.05;
+
+  function tick(now) {
+    const t    = (now - startT) / 1000;
+    const posXW = springPos(t,                      NG_SPRING_K, NG_SPRING_D);
+    const posYH = springPos(Math.max(0, t - DELAY), NG_SPRING_K, NG_SPRING_D);
+    const curW = toW + (fromW - toW) * posXW;
+    const scale = curW / NG_DETAIL_REF_W;
+    panel.style.visibility = '';
+    panel.style.left         = (toX + (fromX - toX) * posXW) + 'px';
+    panel.style.top          = (toY + (fromY - toY) * posYH) + 'px';
+    panel.style.width        = curW + 'px';
+    panel.style.height       = (toH + (fromH - toH) * posYH) + 'px';
+    panel.style.borderRadius = (toR + (fromR - toR) * posXW) + 'px';
+    panel.style.transform    = '';
+    if (!isModal) scrim.style.opacity = (1 - springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING)).toFixed(3);
+    if (detailInner) detailInner.style.transform = `scale(${scale})`;
+    const fade = Math.min(t / 0.2, 1);
+    detailLayer.style.opacity = String(fade);
+    cardLayer.style.opacity   = String(1 - fade);
+    if (t < 5 && (!isSettled(t, NG_SPRING_K, NG_SPRING_D) || !isSettled(Math.max(0, t - DELAY), NG_SPRING_K, NG_SPRING_D))) {
+      ngExpandAnim = requestAnimationFrame(tick);
     } else {
-      const omegaD = omegaN * Math.sqrt(1 - zeta * zeta);
-      const a = x0;
-      const b = (v0 + zeta * omegaN * x0) / omegaD;
-      return Math.exp(-zeta * omegaN * t) * (a * Math.cos(omegaD * t) + b * Math.sin(omegaD * t));
+      panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
+      panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
+      panel.style.borderRadius = toR + 'px'; panel.style.pointerEvents = 'auto';
+      if (detailInner) detailInner.style.transform = `scale(${toW / NG_DETAIL_REF_W})`;
+      detailLayer.style.opacity = '1'; cardLayer.style.opacity = '0';
+      if (!isModal) scrim.style.opacity = '0';
     }
   }
-  function springSettledV(t, k, d, x0, v0) {
-    const p  = springPosV(t,       k, d, x0, v0);
-    const p2 = springPosV(t + 0.016, k, d, x0, v0);
-    return Math.abs(p) < 0.5 && Math.abs(p2 - p) < 0.1;
-  }
+  ngExpandAnim = requestAnimationFrame(tick);
+}
 
-  // Rubber-band resistance: raw px → rubber-banded px
-  function rubberBand(x, max) {
-    if (x <= 0) return 0;
-    return max * (1 - Math.exp(-x / max));
-  }
+// ── Collapse with inherited velocity ──────────────────────────
+function ngCollapseCard(velX, velY) {
+  if (!ngExpandState) return;
+  if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
+  const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, card, imgEl, isModal } = ngExpandState;
+  const phone     = document.getElementById('ngPhone');
+  const panel     = isModal ? document.getElementById('ngModalPanel') : document.getElementById('ngExpandPanel');
+  panel.style.pointerEvents = 'none';
+  ngExpandState = null;
 
-  // ── Expand a card ──────────────────────────────────────────────
-  function ngExpandCard(card) {
-    if (ngExpandState || !card) return;
-    const phone     = document.getElementById('ngPhone');
-    const panel     = document.getElementById('ngExpandPanel');
-    const phoneRect = phone.getBoundingClientRect();
-    const cardRect  = card.getBoundingClientRect();
-    const imgEl   = card.querySelector('.sk-carousel-img') || null;
-    const imgRect = imgEl ? imgEl.getBoundingClientRect() : cardRect;
-    const fromX = cardRect.left - phoneRect.left - phone.clientLeft;
-    const fromY = cardRect.top  - phoneRect.top  - phone.clientTop;
-    const fromW = cardRect.width;
-    const fromH = imgRect.height;
-    const fromR = 10;
-    const toX = 0, toY = 0, toW = phone.clientWidth, toH = phone.clientHeight, toR = 40;
+  const curX = parseFloat(panel.style.left)         || 0;
+  const curY = parseFloat(panel.style.top)          || 0;
+  const curW = parseFloat(panel.style.width)        || phone.clientWidth;
+  const curH = parseFloat(panel.style.height)       || phone.clientHeight;
+  const curR = parseFloat(panel.style.borderRadius) || 40;
 
-    // Restore any previously hidden card image before hiding the new one
-    document.querySelectorAll('#ngPhone .sk-carousel-img').forEach(el => el.style.visibility = '');
-    document.getElementById('ngExpandCardLayer').style.opacity   = '1';
-    document.getElementById('ngExpandDetailLayer').style.opacity = '0';
-    if (imgEl) imgEl.style.visibility = 'hidden';
-    panel.style.left = fromX + 'px'; panel.style.top = fromY + 'px';
-    panel.style.width = fromW + 'px'; panel.style.height = fromH + 'px';
-    panel.style.borderRadius = fromR + 'px';
-    panel.style.pointerEvents = 'none'; panel.style.zIndex = '12';
-    panel.style.visibility = 'hidden'; panel.style.display = 'block';
-    panel.style.transform = ''; panel.style.transformOrigin = '';
-    const detailInner = document.getElementById('ngDetailInner');
-    if (detailInner) detailInner.style.width = DETAIL_REF_W + 'px';
-    ngExpandState = { fromX, fromY, fromW, fromH, fromR, toX, toY, toW, toH, toR, card, imgEl };
+  const cardLayerId   = isModal ? 'ngModalCardLayer'   : 'ngExpandCardLayer';
+  const detailLayerId = isModal ? 'ngModalDetailLayer' : 'ngExpandDetailLayer';
+  const detailInnerId = isModal ? 'ngModalInner'       : 'ngDetailInner';
+  const cardLayer   = document.getElementById(cardLayerId);
+  const detailLayer = document.getElementById(detailLayerId);
+  const detailInner = document.getElementById(detailInnerId);
+  const scrim       = document.getElementById('ngExpandScrim');
 
-    const startT = performance.now();
-    if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
-    const cardLayer   = document.getElementById('ngExpandCardLayer');
-    const detailLayer = document.getElementById('ngExpandDetailLayer');
-    const scrim       = document.getElementById('ngExpandScrim');
-    scrim.style.opacity = '0';
-    const DELAY = 0.05;
+  const simX = new SpringSim(curX); simX.target = toX; simX.v = velX || 0;
+  const simY = new SpringSim(curY); simY.target = toY; simY.v = velY || 0;
+  const simW = new SpringSim(curW); simW.target = toW;
+  const simH = new SpringSim(curH); simH.target = toH;
+  const simR = new SpringSim(curR); simR.target = toR;
+  const scrimStart = parseFloat(scrim.style.opacity) || 0;
+  const simScrim = new SpringSim(scrimStart); simScrim.target = 0;
 
-    function tick(now) {
-      const t    = (now - startT) / 1000;
-      const posXW = springPos(t,                   SPRING_K, SPRING_D);
-      const posYH = springPos(Math.max(0, t - DELAY), SPRING_K, SPRING_D);
-      const curW = toW + (fromW - toW) * posXW;
-      const scale = curW / DETAIL_REF_W;
-      panel.style.visibility = '';
-      panel.style.left         = (toX + (fromX - toX) * posXW) + 'px';
-      panel.style.top          = (toY + (fromY - toY) * posYH) + 'px';
-      panel.style.width        = curW + 'px';
-      panel.style.height       = (toH + (fromH - toH) * posYH) + 'px';
-      panel.style.borderRadius = (toR + (fromR - toR) * posXW) + 'px';
-      panel.style.transform    = '';
-      scrim.style.opacity = (1 - springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING)).toFixed(3);
-      if (detailInner) detailInner.style.transform = `scale(${scale})`;
-      const fade = Math.min(t / 0.2, 1);
-      detailLayer.style.opacity = String(fade);
-      cardLayer.style.opacity   = String(1 - fade);
-      if (t < 5 && (!isSettled(t, SPRING_K, SPRING_D) || !isSettled(Math.max(0, t - DELAY), SPRING_K, SPRING_D))) {
-        ngExpandAnim = requestAnimationFrame(tick);
-      } else {
-        panel.style.left = '0'; panel.style.top = '0';
-        panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
-        panel.style.borderRadius = toR + 'px'; panel.style.pointerEvents = 'auto';
-        if (detailInner) detailInner.style.transform = `scale(${toW / DETAIL_REF_W})`;
-        detailLayer.style.opacity = '1'; cardLayer.style.opacity = '0';
-        scrim.style.opacity = '0';
-      }
+  let lastTime = null;
+  let fadeProgress = parseFloat(detailLayer.style.opacity) || 1;
+
+  function tick(now) {
+    if (!lastTime) lastTime = now;
+    const dt = Math.min((now - lastTime) / 1000, 0.033);
+    lastTime = now;
+
+    simX.step(dt, NG_DISMISS_K, NG_DISMISS_D);
+    simY.step(dt, NG_DISMISS_K, NG_DISMISS_D);
+    simW.step(dt, NG_DISMISS_K, NG_DISMISS_D);
+    simH.step(dt, NG_DISMISS_K, NG_DISMISS_D);
+    simR.step(dt, NG_DISMISS_K, NG_DISMISS_D);
+    if (!isModal) simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
+
+    const scale = simW.x / NG_DETAIL_REF_W;
+    panel.style.left         = simX.x + 'px';
+    panel.style.top          = simY.x + 'px';
+    panel.style.width        = simW.x + 'px';
+    panel.style.height       = simH.x + 'px';
+    panel.style.borderRadius = Math.max(0, simR.x) + 'px';
+    panel.style.transform    = '';
+    if (!isModal) scrim.style.opacity = Math.max(0, simScrim.x).toFixed(3);
+    if (detailInner) detailInner.style.transform = `scale(${Math.max(0.01, scale)})`;
+
+    fadeProgress = Math.max(0, fadeProgress - dt / 0.15);
+    detailLayer.style.opacity = fadeProgress.toFixed(3);
+    cardLayer.style.opacity   = (1 - fadeProgress).toFixed(3);
+
+    if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
+      ngExpandAnim = requestAnimationFrame(tick);
+    } else {
+      panel.style.display = 'none';
+      panel.style.transform = '';
+      if (detailInner) detailInner.style.transform = `scale(${toW / NG_DETAIL_REF_W})`;
+      detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
+      if (imgEl) imgEl.style.visibility = '';
     }
-    ngExpandAnim = requestAnimationFrame(tick);
   }
+  ngExpandAnim = requestAnimationFrame(tick);
+}
 
-  // ── Collapse with inherited velocity ──────────────────────────
-  function ngCollapseCard(velX, velY) {
+// ── Revert to expanded (spring back) ──────────────────────────
+function ngRevertToExpanded(velX, velY) {
+  if (!ngExpandState) return;
+  if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
+  const { toX, toY, toW, toH, toR, isModal } = ngExpandState;
+  const phone     = document.getElementById('ngPhone');
+  const panel     = isModal ? document.getElementById('ngModalPanel') : document.getElementById('ngExpandPanel');
+  panel.style.pointerEvents = 'auto';
+
+  const curX = parseFloat(panel.style.left)         || 0;
+  const curY = parseFloat(panel.style.top)          || 0;
+  const curW = parseFloat(panel.style.width)        || phone.clientWidth;
+  const curH = parseFloat(panel.style.height)       || phone.clientHeight;
+  const curR = parseFloat(panel.style.borderRadius) || 40;
+
+  const detailInnerId = isModal ? 'ngModalInner' : 'ngDetailInner';
+  const detailInner = document.getElementById(detailInnerId);
+  const scrim       = document.getElementById('ngExpandScrim');
+
+  const simX = new SpringSim(curX); simX.target = toX; simX.v = velX || 0;
+  const simY = new SpringSim(curY); simY.target = toY; simY.v = velY || 0;
+  const simW = new SpringSim(curW); simW.target = toW;
+  const simH = new SpringSim(curH); simH.target = toH;
+  const simR = new SpringSim(curR); simR.target = toR;
+  const curScrim = parseFloat(scrim.style.opacity) || 0;
+  const simScrim = new SpringSim(curScrim); simScrim.target = 0;
+
+  let lastTime = null;
+  function tick(now) {
+    if (!lastTime) lastTime = now;
+    const dt = Math.min((now - lastTime) / 1000, 0.033);
+    lastTime = now;
+
+    simX.step(dt, NG_DISMISS_K, NG_DISMISS_D);
+    simY.step(dt, NG_DISMISS_K, NG_DISMISS_D);
+    simW.step(dt, NG_DISMISS_K, NG_DISMISS_D);
+    simH.step(dt, NG_DISMISS_K, NG_DISMISS_D);
+    simR.step(dt, NG_DISMISS_K, NG_DISMISS_D);
+    if (!isModal) simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
+
+    const scale = simW.x / NG_DETAIL_REF_W;
+    panel.style.left         = simX.x + 'px';
+    panel.style.top          = simY.x + 'px';
+    panel.style.width        = simW.x + 'px';
+    panel.style.height       = simH.x + 'px';
+    panel.style.borderRadius = Math.max(0, simR.x) + 'px';
+    panel.style.transform    = '';
+    if (!isModal) scrim.style.opacity = Math.max(0, simScrim.x).toFixed(3);
+    if (detailInner) detailInner.style.transform = `scale(${Math.max(0.01, scale)})`;
+
+    if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
+      ngExpandAnim = requestAnimationFrame(tick);
+    } else {
+      panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
+      panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
+      panel.style.borderRadius = toR + 'px';
+      if (detailInner) detailInner.style.transform = `scale(${toW / NG_DETAIL_REF_W})`;
+      if (!isModal) scrim.style.opacity = '0';
+    }
+  }
+  ngExpandAnim = requestAnimationFrame(tick);
+}
+
+// ── Gesture handling ───────────────────────────────────────────
+function ngAttachGestureListeners(panelEl) {
+  const phone = document.getElementById('ngPhone');
+
+  panelEl.addEventListener('pointerdown', (e) => {
     if (!ngExpandState) return;
-    if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
-    const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, card, imgEl } = ngExpandState;
-    const phone     = document.getElementById('ngPhone');
-    const panel     = document.getElementById('ngExpandPanel');
-    panel.style.pointerEvents = 'none';
-    ngExpandState = null; // allow card taps immediately while collapse animates
-
-    // Current animated position (from gesture or settled full-screen)
-    const curX = parseFloat(panel.style.left)         || 0;
-    const curY = parseFloat(panel.style.top)          || 0;
-    const curW = parseFloat(panel.style.width)        || phone.clientWidth;
-    const curH = parseFloat(panel.style.height)       || phone.clientHeight;
-    const curR = parseFloat(panel.style.borderRadius) || 40;
-
-    const cardLayer   = document.getElementById('ngExpandCardLayer');
-    const detailLayer = document.getElementById('ngExpandDetailLayer');
-    const detailInner = document.getElementById('ngDetailInner');
-    const scrim       = document.getElementById('ngExpandScrim');
-
-    // SpringSim for X and Y with inherited velocity
-    const simX = new SpringSim(curX); simX.target = toX; simX.v = velX || 0;
-    const simY = new SpringSim(curY); simY.target = toY; simY.v = velY || 0;
-    const simW = new SpringSim(curW); simW.target = toW;
-    const simH = new SpringSim(curH); simH.target = toH;
-    const simR = new SpringSim(curR); simR.target = toR;
-    const scrimStart = parseFloat(scrim.style.opacity) || 0;
-    const simScrim = new SpringSim(scrimStart); simScrim.target = 0;
-
-    let lastTime = null;
-    let fadeProgress = parseFloat(detailLayer.style.opacity) || 1;
-
-    function tick(now) {
-      if (!lastTime) lastTime = now;
-      const dt = Math.min((now - lastTime) / 1000, 0.033);
-      lastTime = now;
-
-      simX.step(dt, DISMISS_K, DISMISS_D);
-      simY.step(dt, DISMISS_K, DISMISS_D);
-      simW.step(dt, DISMISS_K, DISMISS_D);
-      simH.step(dt, DISMISS_K, DISMISS_D);
-      simR.step(dt, DISMISS_K, DISMISS_D);
-      simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
-
-      const scale = simW.x / DETAIL_REF_W;
-      panel.style.left         = simX.x + 'px';
-      panel.style.top          = simY.x + 'px';
-      panel.style.width        = simW.x + 'px';
-      panel.style.height       = simH.x + 'px';
-      panel.style.borderRadius = Math.max(0, simR.x) + 'px';
-      panel.style.transform    = '';
-      scrim.style.opacity      = Math.max(0, simScrim.x).toFixed(3);
-      if (detailInner) detailInner.style.transform = `scale(${Math.max(0.01, scale)})`;
-
-      fadeProgress = Math.max(0, fadeProgress - dt / 0.15);
-      detailLayer.style.opacity = fadeProgress.toFixed(3);
-      cardLayer.style.opacity   = (1 - fadeProgress).toFixed(3);
-
-      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
-        ngExpandAnim = requestAnimationFrame(tick);
-      } else {
-        panel.style.display = 'none';
-        panel.style.transform = '';
-        if (detailInner) detailInner.style.transform = `scale(${toW / DETAIL_REF_W})`;
-        detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
-        if (imgEl) imgEl.style.visibility = '';
-      }
-    }
-    ngExpandAnim = requestAnimationFrame(tick);
-  }
-
-  // ── Revert to expanded (spring back) ──────────────────────────
-  function ngRevertToExpanded(velX, velY) {
-    if (!ngExpandState || !ngExpandAnim === undefined) return;
-    if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
-    const phone     = document.getElementById('ngPhone');
-    const panel     = document.getElementById('ngExpandPanel');
-    const { toX, toY, toW, toH, toR } = ngExpandState;
-    panel.style.pointerEvents = 'auto';
-
-    const curX = parseFloat(panel.style.left)         || 0;
-    const curY = parseFloat(panel.style.top)          || 0;
-    const curW = parseFloat(panel.style.width)        || phone.clientWidth;
-    const curH = parseFloat(panel.style.height)       || phone.clientHeight;
-    const curR = parseFloat(panel.style.borderRadius) || 40;
-
-    const detailInner = document.getElementById('ngDetailInner');
-    const scrim       = document.getElementById('ngExpandScrim');
-
-    const simX = new SpringSim(curX); simX.target = toX; simX.v = velX || 0;
-    const simY = new SpringSim(curY); simY.target = toY; simY.v = velY || 0;
-    const simW = new SpringSim(curW); simW.target = toW;
-    const simH = new SpringSim(curH); simH.target = toH;
-    const simR = new SpringSim(curR); simR.target = toR;
-    const curScrim = parseFloat(scrim.style.opacity) || 0;
-    const simScrim = new SpringSim(curScrim); simScrim.target = 0;
-
-    let lastTime = null;
-    function tick(now) {
-      if (!lastTime) lastTime = now;
-      const dt = Math.min((now - lastTime) / 1000, 0.033);
-      lastTime = now;
-
-      simX.step(dt, DISMISS_K, DISMISS_D);
-      simY.step(dt, DISMISS_K, DISMISS_D);
-      simW.step(dt, DISMISS_K, DISMISS_D);
-      simH.step(dt, DISMISS_K, DISMISS_D);
-      simR.step(dt, DISMISS_K, DISMISS_D);
-      simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
-
-      const scale = simW.x / DETAIL_REF_W;
-      panel.style.left         = simX.x + 'px';
-      panel.style.top          = simY.x + 'px';
-      panel.style.width        = simW.x + 'px';
-      panel.style.height       = simH.x + 'px';
-      panel.style.borderRadius = Math.max(0, simR.x) + 'px';
-      panel.style.transform    = '';
-      scrim.style.opacity      = Math.max(0, simScrim.x).toFixed(3);
-      if (detailInner) detailInner.style.transform = `scale(${Math.max(0.01, scale)})`;
-
-      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
-        ngExpandAnim = requestAnimationFrame(tick);
-      } else {
-        panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
-        panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
-        panel.style.borderRadius = toR + 'px';
-        if (detailInner) detailInner.style.transform = `scale(${toW / DETAIL_REF_W})`;
-        scrim.style.opacity = '0';
-      }
-    }
-    ngExpandAnim = requestAnimationFrame(tick);
-  }
-
-  // ── Gesture handling ───────────────────────────────────────────
-  const panel = document.getElementById('ngExpandPanel');
-  const phone  = document.getElementById('ngPhone');
-
-  panel.addEventListener('pointerdown', (e) => {
-    if (!ngExpandState) return;
-    if (e.target.closest('.detail-close-btn')) return; // let click handler take it
+    if (e.target.closest('.detail-close-btn')) return;
     if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
 
     const phoneRect = phone.getBoundingClientRect();
     const startXInPhone = e.clientX - phoneRect.left - phone.clientLeft;
-    // Edge swipe: only from left EDGE_WIDTH px of the panel
-    const isEdgeSwipe = startXInPhone <= EDGE_WIDTH;
-    // Down swipe: anywhere on the panel
+    const isModal = ngExpandState.isModal;
+    const isEdgeSwipe = !isModal && startXInPhone <= NG_EDGE_WIDTH;
 
     e.currentTarget.setPointerCapture(e.pointerId);
     ngGesture = {
@@ -7274,12 +7322,11 @@ const NG_DEMOS = {
     };
   });
 
-  panel.addEventListener('pointermove', (e) => {
+  panelEl.addEventListener('pointermove', (e) => {
     if (!ngGesture || !ngExpandState) return;
     const { startX, startY, isEdgeSwipe } = ngGesture;
-    const { toX, toY, toW, toH, toR } = ngExpandState;
+    const { toX, toY, toW, toH, toR, isModal } = ngExpandState;
 
-    // Track velocity history (last 80ms)
     const now = performance.now();
     ngGesture.history.push({ x: e.clientX, y: e.clientY, t: now });
     ngGesture.history = ngGesture.history.filter(p => now - p.t < 80);
@@ -7287,27 +7334,21 @@ const NG_DEMOS = {
     const rawDX = e.clientX - startX;
     const rawDY = e.clientY - startY;
 
-    // Both axes: 1:1 in dismiss direction, rubber-band in both directions past RUBBER_BAND_START
     const RUBBER_BAND_START = 60;
 
-    // Signed rubber-band: positive = dismiss direction (tracks freely to threshold, then resists)
-    //                     negative = opposite direction (immediately rubber-bands)
     function applyRubberBandSigned(raw, max) {
       if (raw >= 0) {
-        // dismiss direction: free until threshold, then gentle rubber-band
         if (raw <= RUBBER_BAND_START) return raw;
-        return RUBBER_BAND_START + rubberBand(raw - RUBBER_BAND_START, max * 0.7);
+        return RUBBER_BAND_START + ngRubberBand(raw - RUBBER_BAND_START, max * 0.7);
       } else {
-        // opposite direction: immediate rubber-band resistance
-        return -rubberBand(-raw, max * 0.25);
+        return -ngRubberBand(-raw, max * 0.25);
       }
     }
 
-    // Determine intent on first significant movement
     if (!ngGesture.intent) {
       const absX = Math.abs(rawDX), absY = Math.abs(rawDY);
       if (absY > 8) ngGesture.intent = 'dismiss';
-      else if (!isEdgeSwipe && absX > 8) ngGesture.intent = 'cancelled';
+      else if (!isEdgeSwipe && absX > 8) ngGesture.intent = isModal ? 'dismiss' : 'cancelled';
       else if (isEdgeSwipe && absX > 8) ngGesture.intent = 'dismiss';
     }
     if (ngGesture.intent === 'cancelled') {
@@ -7316,39 +7357,51 @@ const NG_DEMOS = {
       return;
     }
 
-    const dragX = isEdgeSwipe || ngGesture.intent === 'dismiss'
-      ? applyRubberBandSigned(rawDX, phone.clientWidth) : 0;
-    const dragY = applyRubberBandSigned(rawDY, phone.clientHeight);
+    // Modal: only Y drag, heavy horizontal rubber-band
+    // Fullscreen: both Y and edge-swipe X
+    let dragX, dragY;
+    if (isModal) {
+      const k = 80, maxH = 32;
+      dragX = (rawDX >= 0 ? 1 : -1) * maxH * (1 - Math.exp(-Math.abs(rawDX) / k));
+      dragY = applyRubberBandSigned(rawDY, phone.clientHeight);
+    } else {
+      dragX = isEdgeSwipe || ngGesture.intent === 'dismiss'
+        ? applyRubberBandSigned(rawDX, phone.clientWidth) : 0;
+      dragY = applyRubberBandSigned(rawDY, phone.clientHeight);
+    }
 
     const progressY = Math.min(Math.max(0, rawDY) / phone.clientHeight, 1);
     const progressX = isEdgeSwipe ? Math.min(Math.max(0, rawDX) / phone.clientWidth, 1) : 0;
     const progress  = Math.max(progressY, progressX);
 
-    const scaleDown = 1 - progress * 0.45;
+    const maxScale = isModal ? 0.08 : 0.45;
+    const scaleDown = 1 - progress * maxScale;
     const scaledW = toW * scaleDown;
     const scaledH = toH * scaleDown;
-    // Offset by half the lost size so the panel scales around its center, not top-left
     const panelX = toX + dragX + (toW - scaledW) / 2;
     const panelY = toY + dragY + (toH - scaledH) / 2;
+    const cornerR = toR + (40 - toR) * progress;
 
-    const cornerR   = toR + (40 - toR) * progress;
+    panelEl.style.left         = panelX + 'px';
+    panelEl.style.top          = panelY + 'px';
+    panelEl.style.width        = scaledW + 'px';
+    panelEl.style.height       = scaledH + 'px';
+    panelEl.style.borderRadius = cornerR + 'px';
+    panelEl.style.transform    = '';
 
-    panel.style.left         = panelX + 'px';
-    panel.style.top          = panelY + 'px';
-    panel.style.width        = scaledW + 'px';
-    panel.style.height       = scaledH + 'px';
-    panel.style.borderRadius = cornerR + 'px';
-    panel.style.transform    = '';
+    const detailInnerId = isModal ? 'ngModalInner' : 'ngDetailInner';
+    const detailInner = document.getElementById(detailInnerId);
+    if (detailInner) detailInner.style.transform = `scale(${scaleDown * toW / NG_DETAIL_REF_W})`;
 
-    const detailInner = document.getElementById('ngDetailInner');
-    if (detailInner) detailInner.style.transform = `scale(${scaleDown * phone.clientWidth / DETAIL_REF_W})`;
+    const detailLayerId = isModal ? 'ngModalDetailLayer' : 'ngExpandDetailLayer';
+    const cardLayerId   = isModal ? 'ngModalCardLayer'   : 'ngExpandCardLayer';
+    document.getElementById(detailLayerId).style.opacity = '1';
+    document.getElementById(cardLayerId).style.opacity   = '0';
 
-    // Keep detail/card layers at their expand-settled state during drag — only fade on release
-    document.getElementById('ngExpandDetailLayer').style.opacity = '1';
-    document.getElementById('ngExpandCardLayer').style.opacity   = '0';
-
-    const scrim = document.getElementById('ngExpandScrim');
-    scrim.style.opacity = (1 - progress * 0.5).toFixed(3);
+    if (!isModal) {
+      const scrim = document.getElementById('ngExpandScrim');
+      scrim.style.opacity = (1 - progress * 0.5).toFixed(3);
+    }
   });
 
   function onGestureEnd(e) {
@@ -7357,7 +7410,6 @@ const NG_DEMOS = {
     ngGesture = null;
     if (intent === 'cancelled') return;
 
-    // Compute velocity from recent pointer history
     let velX = 0, velY = 0;
     if (history.length >= 2) {
       const oldest = history[0];
@@ -7373,48 +7425,111 @@ const NG_DEMOS = {
     const rawDX = (lastPt?.x ?? startX) - startX;
     const rawDY = (lastPt?.y ?? startY) - startY;
 
-    // Commit if either axis crosses threshold
-    const committedDown = Math.max(0, rawDY) > DISMISS_POS_THRESHOLD || velY > DISMISS_VEL_THRESHOLD;
-    const committedEdge = isEdgeSwipe && (Math.max(0, rawDX) > DISMISS_POS_THRESHOLD || velX > DISMISS_VEL_THRESHOLD);
-    const committed = committedDown || committedEdge;
-    if (committed) {
+    const committedDown = Math.max(0, rawDY) > NG_DISMISS_POS_THRESHOLD || velY > NG_DISMISS_VEL_THRESHOLD;
+    const committedEdge = isEdgeSwipe && (Math.max(0, rawDX) > NG_DISMISS_POS_THRESHOLD || velX > NG_DISMISS_VEL_THRESHOLD);
+    if (committedDown || committedEdge) {
+      _ngGestureDismissed = true;
       ngCollapseCard(velX, velY);
     } else {
       ngRevertToExpanded(velX, velY);
     }
   }
 
-  panel.addEventListener('pointerup',     onGestureEnd);
-  panel.addEventListener('pointercancel', onGestureEnd);
+  panelEl.addEventListener('pointerup',     onGestureEnd);
+  panelEl.addEventListener('pointercancel', onGestureEnd);
+}
 
-  // ── Card click to expand ───────────────────────────────────────
-  // Click any carousel card to expand
-  document.getElementById('ngPhone').addEventListener('click', (e) => {
-    if (ngExpandState) return;
-    const card = e.target.closest('.sk-carousel-card');
-    if (!card || !document.getElementById('ngPhoneContent').contains(card)) return;
-    e.stopPropagation();
-    ngExpandCard(card);
-  });
+// Attach gesture listeners to both panels
+ngAttachGestureListeners(document.getElementById('ngExpandPanel'));
+ngAttachGestureListeners(document.getElementById('ngModalPanel'));
 
-  // Close button on NG detail screen collapses back
-  const ngCloseBtn = document.querySelector('#ngDetailInner .push-hero .detail-close-btn');
-  if (ngCloseBtn) ngCloseBtn.addEventListener('click', (e) => {
+// Click on the expand panel dismisses (fullscreen close btn or tap-to-dismiss)
+document.getElementById('ngExpandPanel').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (_ngGestureDismissed) { _ngGestureDismissed = false; return; }
+  if (ngExpandState) ngCollapseCard(0, 0);
+});
+
+document.getElementById('ngModalPanel').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (_ngGestureDismissed) { _ngGestureDismissed = false; return; }
+  if (ngExpandState) ngCollapseCard(0, 0);
+});
+
+// ── Card click to expand ───────────────────────────────────────
+document.getElementById('ngPhone').addEventListener('click', (e) => {
+  if (ngExpandState) return;
+  const card = e.target.closest('.sk-carousel-card');
+  if (!card || !document.getElementById('ngPhoneContent').contains(card)) return;
+  e.stopPropagation();
+  ngExpandCard(card);
+});
+
+// Close button on NG detail screen collapses back
+[document.querySelector('#ngDetailInner .push-hero .detail-close-btn'),
+ document.querySelector('#ngModalInner .push-hero .detail-close-btn')].forEach(btn => {
+  if (btn) btn.addEventListener('click', (e) => {
     e.stopPropagation();
     if (ngExpandState) ngCollapseCard(0, 0);
   });
+});
 
-  // Hide play button for grow-dismiss (gesture only)
-  document.getElementById('ngPlayBtn').style.display = 'none';
+// Hide play button for grow-dismiss (gesture only)
+document.getElementById('ngPlayBtn').style.display = 'none';
 
-  // Start on detail page — expand first card after a short delay, only if grow-dismiss is active
+// Apply grow mode (fullscreen vs modal)
+function applyNgGrowMode(mode) {
+  ngGrowMode = mode;
+
+  // Update segmented control active state
+  document.querySelectorAll('#ngGrowModeToggle .demo-mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.ngMode === mode);
+  });
+
+  // Collapse any open expand state
+  if (ngExpandState) {
+    if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
+    const isModal = ngExpandState.isModal;
+    const { imgEl } = ngExpandState;
+    const panelEl = isModal ? document.getElementById('ngModalPanel') : document.getElementById('ngExpandPanel');
+    panelEl.style.display = 'none';
+    if (imgEl) imgEl.style.visibility = '';
+    ngExpandState = null; ngExpandAnim = null; ngGesture = null;
+    document.getElementById('ngExpandScrim').style.opacity = '0';
+  }
+
+  // Update left-panel text
+  const growDismissPanel = NG_DEMOS['grow-dismiss'];
+  document.getElementById('ngTextPanel').innerHTML = mode === 'modal'
+    ? growDismissPanel.panelModal
+    : growDismissPanel.panelFullscreen;
+
+  // Update hint text
+  document.getElementById('ngHintText').textContent = mode === 'modal'
+    ? 'Try pulling down to dismiss'
+    : 'Try pulling down or from the left edge to dismiss';
+
+  // Re-expand first card
   setTimeout(() => {
     const activeKey = document.querySelector('.ng-tab.active')?.dataset.ng;
     if (activeKey !== 'grow-dismiss') return;
     const firstCard = document.querySelector('#ngPhoneContent .sk-carousel-card');
-    if (firstCard) ngExpandCard(firstCard);
-  }, 300);
-})();
+    if (firstCard && !ngExpandState) ngExpandCard(firstCard);
+  }, 100);
+}
+
+// Wire up segmented control
+document.querySelectorAll('#ngGrowModeToggle .demo-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => applyNgGrowMode(btn.dataset.ngMode));
+});
+
+// Start on detail page — expand first card after a short delay, only if grow-dismiss is active
+setTimeout(() => {
+  const activeKey = document.querySelector('.ng-tab.active')?.dataset.ng;
+  if (activeKey !== 'grow-dismiss') return;
+  const firstCard = document.querySelector('#ngPhoneContent .sk-carousel-card');
+  if (firstCard) ngExpandCard(firstCard);
+}, 300);
 
 // ── Sheet dismiss gesture demo (infinite recycling) ───────────────
 //
@@ -7661,35 +7776,60 @@ function switchNgDemo(key) {
   if (!tab) return;
   document.querySelectorAll('.ng-tab').forEach(t => t.classList.remove('active'));
   tab.classList.add('active');
-  const panel = NG_DEMOS[key]?.panel;
-  if (panel) document.getElementById('ngTextPanel').innerHTML = panel;
-  // Show/hide sheet dismiss stack and update hint text
-  const sheetContent = document.getElementById('ngSheetContent');
-  const expandPanel  = document.getElementById('ngExpandPanel');
-  const expandScrim  = document.getElementById('ngExpandScrim');
-  const hintText     = document.getElementById('ngHintText');
-  const phoneContent = document.getElementById('ngPhoneContent');
-  const bottomNav    = document.getElementById('ngBottomNav');
-  const playBtn      = document.getElementById('ngPlayBtn');
+
+  const sheetContent  = document.getElementById('ngSheetContent');
+  const expandPanel   = document.getElementById('ngExpandPanel');
+  const expandScrim   = document.getElementById('ngExpandScrim');
+  const hintText      = document.getElementById('ngHintText');
+  const phoneContent  = document.getElementById('ngPhoneContent');
+  const bottomNav     = document.getElementById('ngBottomNav');
+  const playBtn       = document.getElementById('ngPlayBtn');
+  const growToggle    = document.getElementById('ngGrowModeToggle');
+
   if (key === 'sheet-dismiss') {
-    sheetContent.style.display    = 'block';
+    // Collapse any open grow panel
+    if (ngExpandState) {
+      if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
+      const { imgEl, isModal } = ngExpandState;
+      const p = isModal ? document.getElementById('ngModalPanel') : expandPanel;
+      p.style.display = 'none';
+      if (imgEl) imgEl.style.visibility = '';
+      ngExpandState = null; ngExpandAnim = null; ngGesture = null;
+    }
+    document.getElementById('ngModalPanel').style.display = 'none';
+
+    const panel = NG_DEMOS['sheet-dismiss']?.panel;
+    if (panel) document.getElementById('ngTextPanel').innerHTML = panel;
+
+    sheetContent.style.display       = 'block';
     sheetContent.style.pointerEvents = 'auto';
-    expandPanel.style.visibility  = 'hidden';
-    expandScrim.style.opacity     = '0';
-    phoneContent.style.visibility = 'hidden';
-    bottomNav.style.visibility    = 'hidden';
-    playBtn.style.display         = 'none';
-    hintText.textContent          = 'Try dragging down to dismiss';
+    expandPanel.style.visibility     = 'hidden';
+    expandScrim.style.opacity        = '0';
+    phoneContent.style.visibility    = 'hidden';
+    bottomNav.style.visibility       = 'hidden';
+    playBtn.style.display            = 'none';
+    growToggle.style.display         = 'none';
+    hintText.textContent             = 'Try dragging down to dismiss';
     ngSheetInit();
   } else {
-    sheetContent.style.display    = 'none';
+    // grow-dismiss
+    sheetContent.style.display       = 'none';
     sheetContent.style.pointerEvents = 'none';
-    expandPanel.style.visibility  = '';
-    phoneContent.style.visibility = '';
-    bottomNav.style.visibility    = '';
-    hintText.textContent          = 'Try pulling down or from the left edge to dismiss';
-    // Re-trigger grow expand if switching back to grow-dismiss and panel isn't showing
-    if (key === 'grow-dismiss' && expandPanel.style.display === 'none') {
+    expandPanel.style.visibility     = '';
+    phoneContent.style.visibility    = '';
+    bottomNav.style.visibility       = '';
+    growToggle.style.display         = '';
+
+    // Restore mode-specific text and hint
+    const demo = NG_DEMOS['grow-dismiss'];
+    document.getElementById('ngTextPanel').innerHTML = ngGrowMode === 'modal'
+      ? demo.panelModal : demo.panelFullscreen;
+    hintText.textContent = ngGrowMode === 'modal'
+      ? 'Try pulling down to dismiss'
+      : 'Try pulling down or from the left edge to dismiss';
+
+    // Re-expand first card
+    if (expandPanel.style.display === 'none' && document.getElementById('ngModalPanel').style.display === 'none') {
       setTimeout(() => {
         const firstCard = document.querySelector('#ngPhoneContent .sk-carousel-card');
         if (firstCard && !ngExpandState) ngExpandCard(firstCard);
