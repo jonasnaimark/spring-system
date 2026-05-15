@@ -6379,6 +6379,11 @@ if (hashTp) {
       const phoneContent = fhDismiss ? document.getElementById('tpSheetPhoneContent') : null;
       const bottomNav    = fhDismiss ? document.getElementById('tpSheetBottomNav') : null;
       const homeOverlay  = fhDismiss ? document.getElementById('tpSheetHomeOverlay') : null;
+      // Capture current phone content state so we animate from wherever the drag left it
+      const fhScStart  = fhDismiss && phoneContent ? parseSC(phoneContent) : 0.94;
+      const fhTyStart  = fhDismiss && phoneContent ? parseTY(phoneContent) : 12;
+      const fhRStart   = fhDismiss && phoneContent ? (parseFloat(phoneContent.style.borderRadius) || 22) : 22;
+      const fhHoStart  = fhDismiss && homeOverlay  ? (parseFloat(homeOverlay.style.opacity)  || 0.35) : 0.35;
       function frame(now) {
         const t    = Math.min((now - startT) / dur, 1);
         const ease = 1 - Math.pow(1 - t, 3);
@@ -6397,12 +6402,12 @@ if (hashTp) {
           s0El.style.transform = `translateY(${s0TYStart + (PUSHED_Y - s0TYStart) * ease}px) scale(${SC1})`;
         }
         if (fhDismiss) {
-          const sc = 0.94 + (1 - 0.94) * ease;
-          const r  = 22 + 18 * ease; // 22px (sheet) → 40px (phone inner)
-          const ty = 12 * (1 - ease);
+          const sc = fhScStart + (1 - fhScStart) * ease;
+          const r  = fhRStart  + (40 - fhRStart)  * ease;
+          const ty = fhTyStart * (1 - ease);
           if (phoneContent) { phoneContent.style.transform = `translateY(${ty}px) scale(${sc})`; phoneContent.style.borderRadius = `${r}px`; }
           if (bottomNav)    { bottomNav.style.transform    = `translateY(${ty}px) scale(${sc})`; bottomNav.style.borderRadius    = `${r}px`; }
-          if (homeOverlay)  { homeOverlay.style.opacity = String(0.35 * (1 - ease)); homeOverlay.style.borderRadius = `${r}px`; }
+          if (homeOverlay)  { homeOverlay.style.opacity = String(fhHoStart * (1 - ease)); homeOverlay.style.borderRadius = `${r}px`; }
           if (darkBg) {
             darkBg.style.opacity      = '1';
             darkBg.style.borderRadius = `${28 * (1 - ease)}px`;
