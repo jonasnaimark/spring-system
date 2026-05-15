@@ -2265,10 +2265,10 @@
 <!-- ── Transition Patterns section ── -->
 <div class="section-wrap" id="sec-transition">
   <h1 class="section-title">Transitions</h1>
-  <p class="section-body">Transitions orient people as they navigate. Zoom creates a sense of continuity. Push navigates to a new place. Slide Up layers content over the screen. Fades swap content in place.</p>
+  <p class="section-body">Transitions orient people as they navigate. Grow creates a sense of continuity. Push navigates to a new place. Slide Up layers content over the screen. Fades swap content in place.</p>
   <div class="demo-tabs-bar section-chips" id="tpTabsBar">
-    <div class="demo-tab tp-tab active" data-tp="zoom">Zoom</div>
-    <div class="demo-tab tp-tab" data-tp="zoom-fade">Zoom & Fade</div>
+    <div class="demo-tab tp-tab active" data-tp="grow">Grow</div>
+    <div class="demo-tab tp-tab" data-tp="grow-fade">Grow & Fade</div>
     <div class="tab-group-sep"></div>
     <div class="demo-tab tp-tab" data-tp="push">Push</div>
     <div class="demo-tab tp-tab" data-tp="push-fade">Push & Fade</div>
@@ -2289,7 +2289,7 @@
       <button class="demo-mode-btn active" data-mode="simple">Simple</button>
       <button class="demo-mode-btn" data-mode="emphasized">Emphasized</button>
     </div>
-    <div class="demo-mode-toggle" id="tpZoomModeToggle" style="display:none;">
+    <div class="demo-mode-toggle" id="tpGrowModeToggle" style="display:none;">
       <button class="demo-mode-btn active" data-mode="fullscreen">Fullscreen</button>
       <button class="demo-mode-btn" data-mode="modal">Modal</button>
     </div>
@@ -2313,7 +2313,7 @@
           <div id="tpDetailInner" style="position:absolute;top:0;left:0;width:var(--tp-phone-w,200px);transform-origin:top left;display:flex;flex-direction:column;"></div>
         </div>
       </div>
-      <!-- Modal flying panel (zoom→modal mode) -->
+      <!-- Modal flying panel (grow→modal mode) -->
       <div class="expand-hero-panel" id="tpModalPanel" style="display:none;box-shadow:0 8px 32px rgba(0,0,0,0.28);">
         <div id="tpModalCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
         <div id="tpModalContentLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
@@ -2518,7 +2518,7 @@
   <h1 class="section-title">Gestures</h1>
   <p class="section-body">Gestures enable fluid, physical navigation alongside tap-based controls.</p>
   <div class="demo-tabs-bar section-chips" id="ngTabsBar">
-    <div class="demo-tab ng-tab active" data-ng="zoom-dismiss">Zoom Dismiss</div>
+    <div class="demo-tab ng-tab active" data-ng="grow-dismiss">Grow Dismiss</div>
     <div class="demo-tab ng-tab" data-ng="sheet-dismiss">Sheet Dismiss</div>
   </div>
   <div class="section-content">
@@ -2529,11 +2529,11 @@
           <div class="ng-subgroup">
             <div>
               <div class="ng-h2">Down</div>
-              <p class="ng-body">Zoom transitions dismiss when swiping down from the top of a scroll view.</p>
+              <p class="ng-body">Grow transitions dismiss when swiping down from the top of a scroll view.</p>
             </div>
             <div>
               <div class="ng-h2">Edge</div>
-              <p class="ng-body">Swiping the left edge also dismisses a fullscreen zoom transition.</p>
+              <p class="ng-body">Swiping the left edge also dismisses a fullscreen grow transition.</p>
             </div>
           </div>
         </div>
@@ -2616,7 +2616,7 @@
   <div class="demo-tabs-bar section-chips">
     <div class="demo-tab active" data-demo="sheet">Sheet</div>
     <div class="demo-tab" data-demo="push">Nav Transition</div>
-    <div class="demo-tab" data-demo="zoom">Details Page</div>
+    <div class="demo-tab" data-demo="grow">Details Page</div>
     <div class="demo-tab" data-demo="bottom-bar">Bottom Bar</div>
     <div class="demo-tab" data-demo="tab">Stepped Flow</div>
     <div class="demo-tab" data-demo="modal">Modal</div>
@@ -2740,7 +2740,7 @@
       </div>
 
       <!-- Card Expand demo -->
-      <div class="demo-view" id="view-zoom" style="display:none; align-items:center; justify-content:center;">
+      <div class="demo-view" id="view-grow" style="display:none; align-items:center; justify-content:center;">
         <div class="phone-frame" id="expandPhone">
           <div style="display:flex; flex-direction:column; height:100%;">
             <div class="expand-scroll" id="expandList">
@@ -3232,7 +3232,7 @@
         </button>
         <div id="accPhonesScaler" style="transform-origin:center center;">
         <div class="acc-phones">
-          <!-- Left: default motion (zoom) -->
+          <!-- Left: default motion (grow) -->
           <div class="acc-phone-wrap">
             <div class="phone-frame" id="accPhone">
               <div class="phone-content" id="accPhoneContent"></div>
@@ -3734,9 +3734,9 @@ function stampTemplate(templateId, targetEl) {
   })();
   stampTemplate('tpl-detail', document.getElementById('accDetailInner'));
   stampTemplate('tpl-detail', document.querySelector('#accRmDest .push-dest-inner'));
-  // Mark first card in accPhoneContent for zoom expand
+  // Mark first card in accPhoneContent for grow expand
   stampTemplate('tpl-home-screen-carousels', document.getElementById('accPhoneContent'));
-  Array.from(document.querySelectorAll('#accPhoneContent .sk-carousel-card')).slice(0, 1).forEach(c => c.classList.add('acc-zoom-card'));
+  Array.from(document.querySelectorAll('#accPhoneContent .sk-carousel-card')).slice(0, 1).forEach(c => c.classList.add('acc-grow-card'));
   stampTemplate('tpl-detail', document.getElementById('ngDetailInner'));
   stampTemplate('tpl-inset-modal', document.getElementById('tpModalInner'));
 
@@ -3746,8 +3746,8 @@ function stampTemplate(templateId, targetEl) {
   // persistent bar slide-in screens
   stampTemplate('tpl-home-screen-carousels', document.getElementById('tpPersistSourceInner'));
   stampTemplate('tpl-search-results-content', document.getElementById('tpPersistDestInner'));
-  // Mark first 6 cards in tpPhoneContent as tp-zoom-card (rows 1+2)
-  Array.from(document.querySelectorAll('#tpPhoneContent .sk-carousel-card')).slice(0, 6).forEach(c => c.classList.add('tp-zoom-card'));
+  // Mark first 6 cards in tpPhoneContent as tp-grow-card (rows 1+2)
+  Array.from(document.querySelectorAll('#tpPhoneContent .sk-carousel-card')).slice(0, 6).forEach(c => c.classList.add('tp-grow-card'));
 
   // tpl-modal-card targets
   stampTemplate('tpl-modal-card', document.getElementById('demoModal'));
@@ -3765,7 +3765,7 @@ function stampTemplate(templateId, targetEl) {
   stampTemplate('tpl-desktop-modal', document.getElementById('tpSufModal1'));
   stampTemplate('tpl-desktop-modal', document.getElementById('tpSufModal2'));
 
-  // tpl-detail targets (zoom/expand)
+  // tpl-detail targets (grow/expand)
   stampTemplate('tpl-detail', document.getElementById('tpDetailInner'));
   stampTemplate('tpl-detail', document.getElementById('expandDetailLayer'));
   stampTemplate('tpl-detail', document.getElementById('bottomBarDetail'));
@@ -4000,7 +4000,7 @@ const SPRING_DEMOS = {
     },
   },
 
-  zoom: {
+  grow: {
     description:   'A fast smooth spring keeps it clear and functional.',
     defaultSpring: { speed: 'fast',    char: 'smooth'        },
     reset() {
@@ -4393,7 +4393,7 @@ PS_GROUPS.forEach((ids, i) => {
   });
 });
 
-// ── Card Expand logic (Spring zoom demo) ─────────────────────────
+// ── Card Expand logic (Spring grow demo) ─────────────────────────
 function expandCard(card) {
   if (expandState || !card) return;
   const { stiffness, damping } = selected;
@@ -4499,7 +4499,7 @@ function collapseCard(onDone) {
   demoAnim = requestAnimationFrame(tick);
 }
 
-// ── TP Zoom expand/collapse (same logic, different IDs, fixed fast-smooth spring) ──
+// ── TP Grow expand/collapse (same logic, different IDs, fixed fast-smooth spring) ──
 let tpExpandState   = null;
 let tpExpandCardIdx = 0;
 let tpExpandAnim    = null;
@@ -4572,7 +4572,7 @@ function tpExpandCard(card) {
   const fromH = imgRect.height;
   const fromR = 10;
 
-  const isModal = tpZoomMode === 'modal';
+  const isModal = tpGrowMode === 'modal';
   const panel     = isModal ? document.getElementById('tpModalPanel')     : document.getElementById('tpExpandPanel');
   const cardLayer = isModal ? document.getElementById('tpModalCardLayer') : document.getElementById('tpExpandCardLayer');
   const detailLayer = isModal ? document.getElementById('tpModalContentLayer') : document.getElementById('tpExpandDetailLayer');
@@ -4709,18 +4709,18 @@ document.getElementById('expandPanel').addEventListener('click', () => { if (exp
 
 // Clicking anywhere in the phone plays — except expand (has its own card/panel handlers)
 document.getElementById('demoStage').addEventListener('click', (e) => {
-  if (currentDemo === 'zoom') return;
+  if (currentDemo === 'grow') return;
   if (e.target.closest('.phone-frame')) playDemo();
 });
 
 // Wire up TP carousel card clicks
-document.querySelectorAll('.tp-zoom-card').forEach(card => {
+document.querySelectorAll('.tp-grow-card').forEach(card => {
   card.addEventListener('click', (e) => {
     e.stopPropagation();
     // If auto-playing, pause first then handle click
     if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
     if (tpExpandState) { tpCollapseCard(); return; }
-    tpExpandCardIdx = [...document.querySelectorAll('.tp-zoom-card')].indexOf(card);
+    tpExpandCardIdx = [...document.querySelectorAll('.tp-grow-card')].indexOf(card);
     tpExpandCard(card);
   });
 });
@@ -5119,10 +5119,10 @@ setTimeout(() => {
 let tpCrossFadeAnimating = false;
 let tpCrossFadeCooldown  = 0;
 const TP_DEMOS = {
-  'zoom': {
+  'grow': {
     description: 'Creates continuity by morphing a source element into the destination screen or floating element.',
     play() {
-      const cards = document.querySelectorAll('.tp-zoom-card');
+      const cards = document.querySelectorAll('.tp-grow-card');
       if (tpExpandState) {
         tpCollapseCard(() => { tpExpandCardIdx = (tpExpandCardIdx + 1) % cards.length; });
       } else {
@@ -5143,7 +5143,7 @@ const TP_DEMOS = {
       document.getElementById('tpModalCardLayer').style.opacity    = '1';
       document.getElementById('tpModalContentLayer').style.opacity = '0';
       if (tpExpandState?.imgEl) tpExpandState.imgEl.style.visibility = '';
-      document.querySelectorAll('.tp-zoom-card .sk-carousel-img').forEach(c => c.style.visibility = '');
+      document.querySelectorAll('.tp-grow-card .sk-carousel-img').forEach(c => c.style.visibility = '');
       tpExpandState   = null;
       tpExpandCardIdx = 0;
     },
@@ -5585,7 +5585,7 @@ const TP_DEMOS = {
     },
   },
 
-  'zoom-fade': {
+  'grow-fade': {
     description: 'Used to present floating elements. Scales from center, or from the element that triggered it.',
     _seqTimer: null,
     _cancelSeq() {
@@ -5782,11 +5782,11 @@ const TP_DEMOS = {
 };
 
 const TP_PHONE_LAYERS = {
-  'zoom':          'tpPhoneContent',
+  'grow':          'tpPhoneContent',
   'push':      'tpPushContent',
   'push-fade': 'tpTabContent',
   'slide-up':      'tpSheetContent',
-  'zoom-fade':      'tpModalContent',
+  'grow-fade':      'tpModalContent',
   'cross-fade':      'tpSeqContent',
 };
 const TP_ALL_LAYERS = ['tpPhoneContent','tpPushContent','tpPersistBar','tpTabContent','tpSheetContent','tpModalContent','tpSeqContent'];
@@ -5831,8 +5831,8 @@ function switchTpDemo(key) {
   const tpBottomNav = document.getElementById('tpPhoneBottomNav');
   if (tpBottomNav) tpBottomNav.style.display = (key === 'push' || key === 'push-fade' || key === 'cross-fade') ? 'none' : '';
 
-  // Show zoom mode toggle only for zoom tab
-  document.getElementById('tpZoomModeToggle').style.display = key === 'zoom' ? '' : 'none';
+  // Show grow mode toggle only for grow tab
+  document.getElementById('tpGrowModeToggle').style.display = key === 'grow' ? '' : 'none';
   document.getElementById('tpSlideInModeToggle').style.display = key === 'push' ? '' : 'none';
   document.getElementById('tpSlideUpModeToggle').style.display = key === 'slide-up' ? '' : 'none';
 }
@@ -5882,7 +5882,7 @@ function switchTpDemo(key) {
 //     Pass 'leaving' only from switchTpDemo: TP_DEMOS[prevKey]?.reset?.('leaving')
 //  9. In the demo's play() function, branch on the mode variable to run the
 //     correct animation for the active variant.
-// 10. Handle the hash at page load, right where zoom-modal is handled (~line 5194):
+// 10. Handle the hash at page load, right where grow-modal is handled (~line 5194):
 //       } else if (rawKey === '{tab}-{mode-slug}') {
 //         switchTpDemo('{tab}');
 //         apply{Demo}Mode('{mode}');
@@ -5890,18 +5890,18 @@ function switchTpDemo(key) {
 //
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Zoom mode toggle (Fullscreen / Modal) — defined before tab click handlers that reference it
-let tpZoomMode = 'fullscreen';
-function applyTpZoomMode(mode) {
-  tpZoomMode = mode;
-  document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(b =>
-    b.classList.toggle('active', b.dataset.mode === tpZoomMode)
+// Grow mode toggle (Fullscreen / Modal) — defined before tab click handlers that reference it
+let tpGrowMode = 'fullscreen';
+function applyTpGrowMode(mode) {
+  tpGrowMode = mode;
+  document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.mode === tpGrowMode)
   );
-  history.replaceState(null, '', `#tp-zoom${tpZoomMode === 'modal' ? '-modal' : ''}`);
+  history.replaceState(null, '', `#tp-grow${tpGrowMode === 'modal' ? '-modal' : ''}`);
 }
-document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(btn => {
+document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    if (btn.dataset.mode === tpZoomMode) return;
+    if (btn.dataset.mode === tpGrowMode) return;
     // Stop auto-play loop (clears pending setTimeout closures)
     const wasPlaying = window._tpAutoPlay?.isPlaying();
     window._tpAutoPlay?.stop();
@@ -5914,10 +5914,10 @@ document.querySelectorAll('#tpZoomModeToggle .demo-mode-btn').forEach(btn => {
     modPanel.style.display = 'none'; modPanel.style.boxShadow = 'none';
     scrim.style.opacity = '0'; scrim.style.pointerEvents = 'none';
     // Restore any hidden card image
-    document.querySelectorAll('.tp-zoom-card .sk-carousel-img').forEach(img => img.style.visibility = '');
+    document.querySelectorAll('.tp-grow-card .sk-carousel-img').forEach(img => img.style.visibility = '');
     tpExpandState = null;
     tpExpandCardIdx = 0;
-    applyTpZoomMode(btn.dataset.mode);
+    applyTpGrowMode(btn.dataset.mode);
     // Restart loop from clean state
     if (wasPlaying) window._tpAutoPlay?.start();
   });
@@ -5996,7 +5996,7 @@ document.querySelectorAll('.tp-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const key = tab.dataset.tp;
     switchTpDemo(key);
-    history.replaceState(null, '', `#tp-${key}${key === 'zoom' && tpZoomMode === 'modal' ? '-modal' : ''}`);
+    history.replaceState(null, '', `#tp-${key}${key === 'grow' && tpGrowMode === 'modal' ? '-modal' : ''}`);
     // Always restart auto-play when switching demos
     window._tpAutoPlay?.stop();
     window._tpAutoPlay?.start();
@@ -6006,9 +6006,9 @@ document.querySelectorAll('.tp-tab').forEach(tab => {
 const hashTp = location.hash.match(/^#tp-(.+)$/);
 if (hashTp) {
   const rawKey = hashTp[1];
-  if (rawKey === 'zoom-modal') {
-    switchTpDemo('zoom');
-    applyTpZoomMode('modal');
+  if (rawKey === 'grow-modal') {
+    switchTpDemo('grow');
+    applyTpGrowMode('modal');
   } else if (rawKey === 'push-persistent-bar') {
     switchTpDemo('push');
     applyTpSlideInMode('persistent-bar');
@@ -6044,9 +6044,9 @@ if (hashTp) {
   // Run one full enter→exit cycle for the current demo, then call onCycle
   function runCycle(key, onCycle) {
     if (!tpPlaying) return;
-    if (key === 'zoom') {
+    if (key === 'grow') {
       // expand current card, hold, collapse, hold, then advance
-      const cards = document.querySelectorAll('.tp-zoom-card');
+      const cards = document.querySelectorAll('.tp-grow-card');
       tpExpandCard(cards[tpExpandCardIdx]);
       scheduleNext(900, () => {
         if (!tpPlaying) return;
@@ -6055,9 +6055,9 @@ if (hashTp) {
           scheduleNext(1000, onCycle);
         });
       });
-    } else if (key === 'zoom-fade') {
+    } else if (key === 'grow-fade') {
       // scale-in self-sequences (~3.3s total): just fire play and wait
-      TP_DEMOS['zoom-fade'].play();
+      TP_DEMOS['grow-fade'].play();
       scheduleNext(4600, onCycle);
     } else if (key === 'slide-up-fade') {
       function nextSufStep() {
@@ -6179,11 +6179,11 @@ if (hashTp) {
     if (tabIdx > 0) SPRING_DEMOS['tab'].play(-1);
   });
 
-  // Phone click: pause if playing, play if paused (zoom and slide-up handle their own clicks)
+  // Phone click: pause if playing, play if paused (grow and slide-up handle their own clicks)
   document.getElementById('tpPhone').addEventListener('click', (e) => {
     if (tpDragDismissing) { tpDragDismissing = false; return; }
     const key = tpActiveKey();
-    if (key === 'zoom') return;
+    if (key === 'grow') return;
     if (key === 'slide-up') return; // container handler owns all slide-up clicks
     if (key === 'cross-fade') {
       if (tpCrossFadeAnimating) return;
@@ -6546,13 +6546,13 @@ if (hashTp) {
 // ── Navigation Gestures registry ──────────────────────────────────
 // Each entry: { description (optional), panel (HTML for left text area), play() }
 const NG_DEMOS = {
-  'zoom-dismiss': {
+  'grow-dismiss': {
     panel: `
       <div class="ng-group">
         <div class="ng-h1">Swipe direction</div>
         <div class="ng-subgroup">
-          <div><div class="ng-h2">Down</div><p class="ng-body">Zoom transitions dismiss when swiping down from the top of a scroll view.</p></div>
-          <div><div class="ng-h2">Edge</div><p class="ng-body">Swiping the left edge also dismisses a fullscreen zoom transition.</p></div>
+          <div><div class="ng-h2">Down</div><p class="ng-body">Grow transitions dismiss when swiping down from the top of a scroll view.</p></div>
+          <div><div class="ng-h2">Edge</div><p class="ng-body">Swiping the left edge also dismisses a fullscreen grow transition.</p></div>
         </div>
       </div>
       <div class="ng-group">
@@ -6598,7 +6598,7 @@ const NG_DEMOS = {
   },
 };
 
-// ── Zoom dismiss gesture demo ─────────────────────────────────────
+// ── Grow dismiss gesture demo ─────────────────────────────────────
 (function() {
   const SPRING_K = 500, SPRING_D = calcDamping(500, 1.0);        // smooth — used for open
   const DISMISS_K = 300, DISMISS_D = calcDamping(300, 0.7);      // default.medium-bounce — used for dismiss
@@ -6999,13 +6999,13 @@ const NG_DEMOS = {
     if (ngExpandState) ngCollapseCard(0, 0);
   });
 
-  // Hide play button for zoom-dismiss (gesture only)
+  // Hide play button for grow-dismiss (gesture only)
   document.getElementById('ngPlayBtn').style.display = 'none';
 
-  // Start on detail page — expand first card after a short delay, only if zoom-dismiss is active
+  // Start on detail page — expand first card after a short delay, only if grow-dismiss is active
   setTimeout(() => {
     const activeKey = document.querySelector('.ng-tab.active')?.dataset.ng;
-    if (activeKey !== 'zoom-dismiss') return;
+    if (activeKey !== 'grow-dismiss') return;
     const firstCard = document.querySelector('#ngPhoneContent .sk-carousel-card');
     if (firstCard) ngExpandCard(firstCard);
   }, 300);
@@ -7263,8 +7263,8 @@ function switchNgDemo(key) {
     phoneContent.style.visibility = '';
     bottomNav.style.visibility    = '';
     hintText.textContent          = 'Try pulling down or from the left edge to dismiss';
-    // Re-trigger zoom expand if switching back to zoom-dismiss and panel isn't showing
-    if (key === 'zoom-dismiss' && expandPanel.style.display === 'none') {
+    // Re-trigger grow expand if switching back to grow-dismiss and panel isn't showing
+    if (key === 'grow-dismiss' && expandPanel.style.display === 'none') {
       setTimeout(() => {
         const firstCard = document.querySelector('#ngPhoneContent .sk-carousel-card');
         if (firstCard && !ngExpandState) ngExpandCard(firstCard);
@@ -7433,7 +7433,7 @@ document.querySelectorAll('.demo-tab').forEach(tab => {
     const detailInner = document.getElementById('accDetailInner');
     if (detailInner) detailInner.style.transform = 'scale(1)';
     // make cards visible again
-    document.querySelectorAll('#accPhoneContent .acc-zoom-card').forEach(c => {
+    document.querySelectorAll('#accPhoneContent .acc-grow-card').forEach(c => {
       const img = c.querySelector('.sk-carousel-img');
       if (img) img.style.visibility = '';
     });
@@ -7587,9 +7587,9 @@ document.querySelectorAll('.demo-tab').forEach(tab => {
     }
     requestAnimationFrame(tickRm);
 
-    // default motion phone — zoom
+    // default motion phone — grow
     if (!isIn) {
-      const card = document.querySelector('#accPhoneContent .acc-zoom-card');
+      const card = document.querySelector('#accPhoneContent .acc-grow-card');
       accExpand(card);
     } else {
       accCollapse();
@@ -7627,9 +7627,9 @@ document.querySelectorAll('.demo-tab').forEach(tab => {
   }, { threshold: 0.4 });
   observer.observe(document.getElementById('accDemoContainer'));
 
-  // Tapping the zoom card expands it; tapping the expanded panel collapses it
+  // Tapping the grow card expands it; tapping the expanded panel collapses it
   document.getElementById('accPhone').addEventListener('click', (e) => {
-    const card = e.target.closest('.acc-zoom-card');
+    const card = e.target.closest('.acc-grow-card');
     if (card && !accExpandState) { e.stopPropagation(); accExpand(card); }
   });
   document.getElementById('accExpandPanel').addEventListener('click', (e) => {
