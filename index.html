@@ -4724,8 +4724,10 @@ document.querySelectorAll('.tp-grow-card').forEach(card => {
     tpExpandCard(card);
   });
 });
+let _tpGestureDismissed = false;
 document.getElementById('tpExpandPanel').addEventListener('click', (e) => {
   e.stopPropagation();
+  if (_tpGestureDismissed) { _tpGestureDismissed = false; return; }
   if (tpExpandState) tpCollapseCard();
 });
 document.getElementById('tpModalPanel').addEventListener('click', (e) => {
@@ -4736,6 +4738,248 @@ document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
   e.stopPropagation();
   if (tpExpandState) tpCollapseCard();
 });
+
+// ── Grow dismiss gesture (fullscreen mode only) ───────────────────
+(function() {
+  const DISMISS_K = 300, DISMISS_D = calcDamping(300, 0.7);
+  const DISMISS_POS_THRESHOLD = 50;
+  const DISMISS_VEL_THRESHOLD = 1000;
+  const EDGE_WIDTH = 28;
+
+  function rubberBand(x, max) {
+    if (x <= 0) return 0;
+    return max * (1 - Math.exp(-x / max));
+  }
+  function applyRubberBandSigned(raw, max) {
+    const THRESHOLD = 60;
+    if (raw >= 0) {
+      return raw <= THRESHOLD ? raw : THRESHOLD + rubberBand(raw - THRESHOLD, max * 0.7);
+    } else {
+      return -rubberBand(-raw, max * 0.25);
+    }
+  }
+
+  function tpRevertToExpanded(velX, velY) {
+    if (!tpExpandState) return;
+    if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
+    const { toX, toY, toW, toH, toR } = tpExpandState;
+    const phone     = document.getElementById('tpPhone');
+    const panel     = document.getElementById('tpExpandPanel');
+    const detailInner = document.getElementById('tpDetailInner');
+    const scrim     = document.getElementById('tpExpandScrim');
+    panel.style.pointerEvents = 'auto';
+
+    const curX = parseFloat(panel.style.left)         || 0;
+    const curY = parseFloat(panel.style.top)          || 0;
+    const curW = parseFloat(panel.style.width)        || phone.clientWidth;
+    const curH = parseFloat(panel.style.height)       || phone.clientHeight;
+    const curR = parseFloat(panel.style.borderRadius) || 40;
+
+    const simX = new SpringSim(curX); simX.target = toX; simX.v = velX || 0;
+    const simY = new SpringSim(curY); simY.target = toY; simY.v = velY || 0;
+    const simW = new SpringSim(curW); simW.target = toW;
+    const simH = new SpringSim(curH); simH.target = toH;
+    const simR = new SpringSim(curR); simR.target = toR;
+    const curScrim = parseFloat(scrim.style.opacity) || 0;
+    const simScrim = new SpringSim(curScrim); simScrim.target = 0;
+
+    let lastTime = null;
+    function tick(now) {
+      if (!lastTime) lastTime = now;
+      const dt = Math.min((now - lastTime) / 1000, 0.033);
+      lastTime = now;
+      simX.step(dt, DISMISS_K, DISMISS_D);
+      simY.step(dt, DISMISS_K, DISMISS_D);
+      simW.step(dt, DISMISS_K, DISMISS_D);
+      simH.step(dt, DISMISS_K, DISMISS_D);
+      simR.step(dt, DISMISS_K, DISMISS_D);
+      simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
+      const scale = simW.x / toW;
+      panel.style.left         = simX.x + 'px';
+      panel.style.top          = simY.x + 'px';
+      panel.style.width        = simW.x + 'px';
+      panel.style.height       = simH.x + 'px';
+      panel.style.borderRadius = Math.max(0, simR.x) + 'px';
+      scrim.style.opacity      = Math.max(0, simScrim.x).toFixed(3);
+      if (detailInner) detailInner.style.transform = `scale(${Math.max(0.01, scale)})`;
+      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
+        tpExpandAnim = requestAnimationFrame(tick);
+      } else {
+        panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
+        panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
+        panel.style.borderRadius = toR + 'px';
+        if (detailInner) detailInner.style.transform = 'scale(1)';
+        scrim.style.opacity = '0';
+        tpExpandAnim = null;
+      }
+    }
+    tpExpandAnim = requestAnimationFrame(tick);
+  }
+
+  function tpCollapseWithVelocity(velX, velY) {
+    if (!tpExpandState) return;
+    if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
+    const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, imgEl } = tpExpandState;
+    const phone     = document.getElementById('tpPhone');
+    const panel     = document.getElementById('tpExpandPanel');
+    const cardLayer   = document.getElementById('tpExpandCardLayer');
+    const detailLayer = document.getElementById('tpExpandDetailLayer');
+    const detailInner = document.getElementById('tpDetailInner');
+    const scrim     = document.getElementById('tpExpandScrim');
+    panel.style.pointerEvents = 'none';
+    tpExpandState = null;
+
+    const curX = parseFloat(panel.style.left)         || 0;
+    const curY = parseFloat(panel.style.top)          || 0;
+    const curW = parseFloat(panel.style.width)        || phone.clientWidth;
+    const curH = parseFloat(panel.style.height)       || phone.clientHeight;
+    const curR = parseFloat(panel.style.borderRadius) || 40;
+
+    const simX = new SpringSim(curX); simX.target = toX; simX.v = velX || 0;
+    const simY = new SpringSim(curY); simY.target = toY; simY.v = velY || 0;
+    const simW = new SpringSim(curW); simW.target = toW;
+    const simH = new SpringSim(curH); simH.target = toH;
+    const simR = new SpringSim(curR); simR.target = toR;
+    const simScrim = new SpringSim(parseFloat(scrim.style.opacity) || 0); simScrim.target = 0;
+
+    let lastTime = null;
+    let fadeProgress = parseFloat(detailLayer.style.opacity) || 1;
+
+    function tick(now) {
+      if (!lastTime) lastTime = now;
+      const dt = Math.min((now - lastTime) / 1000, 0.033);
+      lastTime = now;
+      simX.step(dt, DISMISS_K, DISMISS_D);
+      simY.step(dt, DISMISS_K, DISMISS_D);
+      simW.step(dt, DISMISS_K, DISMISS_D);
+      simH.step(dt, DISMISS_K, DISMISS_D);
+      simR.step(dt, DISMISS_K, DISMISS_D);
+      simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
+      const scale = simW.x / (parseFloat(phone.clientWidth) || toW);
+      panel.style.left         = simX.x + 'px';
+      panel.style.top          = simY.x + 'px';
+      panel.style.width        = simW.x + 'px';
+      panel.style.height       = simH.x + 'px';
+      panel.style.borderRadius = Math.max(0, simR.x) + 'px';
+      scrim.style.opacity      = Math.max(0, simScrim.x).toFixed(3);
+      if (detailInner) detailInner.style.transform = `scale(${Math.max(0.01, scale)})`;
+      fadeProgress = Math.max(0, fadeProgress - dt / 0.15);
+      detailLayer.style.opacity = fadeProgress.toFixed(3);
+      cardLayer.style.opacity   = (1 - fadeProgress).toFixed(3);
+      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
+        tpExpandAnim = requestAnimationFrame(tick);
+      } else {
+        panel.style.display = 'none';
+        if (detailInner) detailInner.style.transform = 'scale(1)';
+        detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
+        scrim.style.opacity = '0';
+        if (imgEl) imgEl.style.visibility = '';
+        tpExpandAnim = null;
+      }
+    }
+    tpExpandAnim = requestAnimationFrame(tick);
+  }
+
+  let tpGesture = null;
+  const panel = document.getElementById('tpExpandPanel');
+  const phone  = document.getElementById('tpPhone');
+
+  panel.addEventListener('pointerdown', (e) => {
+    if (!tpExpandState || tpExpandState.isModal) return;
+    if (e.target.closest('.detail-close-btn')) return;
+    if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
+    const phoneRect = phone.getBoundingClientRect();
+    const startXInPhone = e.clientX - phoneRect.left - phone.clientLeft;
+    const isEdgeSwipe = startXInPhone <= EDGE_WIDTH;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    tpGesture = {
+      startX: e.clientX, startY: e.clientY,
+      isEdgeSwipe,
+      history: [{ x: e.clientX, y: e.clientY, t: performance.now() }],
+    };
+  });
+
+  panel.addEventListener('pointermove', (e) => {
+    if (!tpGesture || !tpExpandState) return;
+    const { startX, startY, isEdgeSwipe } = tpGesture;
+    const { toX, toY, toW, toH, toR } = tpExpandState;
+    const now = performance.now();
+    tpGesture.history.push({ x: e.clientX, y: e.clientY, t: now });
+    tpGesture.history = tpGesture.history.filter(p => now - p.t < 80);
+
+    const rawDX = e.clientX - startX;
+    const rawDY = e.clientY - startY;
+
+    if (!tpGesture.intent) {
+      const absX = Math.abs(rawDX), absY = Math.abs(rawDY);
+      if (absY > 8) tpGesture.intent = 'dismiss';
+      else if (!isEdgeSwipe && absX > 8) tpGesture.intent = 'cancelled';
+      else if (isEdgeSwipe && absX > 8) tpGesture.intent = 'dismiss';
+    }
+    if (tpGesture.intent === 'cancelled') {
+      tpRevertToExpanded(0, 0);
+      tpGesture = null;
+      return;
+    }
+
+    const dragX = isEdgeSwipe || tpGesture.intent === 'dismiss'
+      ? applyRubberBandSigned(rawDX, phone.clientWidth) : 0;
+    const dragY = applyRubberBandSigned(rawDY, phone.clientHeight);
+
+    const progressY = Math.min(Math.max(0, rawDY) / phone.clientHeight, 1);
+    const progressX = isEdgeSwipe ? Math.min(Math.max(0, rawDX) / phone.clientWidth, 1) : 0;
+    const progress  = Math.max(progressY, progressX);
+
+    const scaleDown = 1 - progress * 0.45;
+    const scaledW = toW * scaleDown;
+    const scaledH = toH * scaleDown;
+    const panelX = toX + dragX + (toW - scaledW) / 2;
+    const panelY = toY + dragY + (toH - scaledH) / 2;
+
+    panel.style.left         = panelX + 'px';
+    panel.style.top          = panelY + 'px';
+    panel.style.width        = scaledW + 'px';
+    panel.style.height       = scaledH + 'px';
+    panel.style.borderRadius = (toR + (40 - toR) * progress) + 'px';
+
+    const detailInner = document.getElementById('tpDetailInner');
+    if (detailInner) detailInner.style.transform = `scale(${scaleDown})`;
+
+    document.getElementById('tpExpandDetailLayer').style.opacity = '1';
+    document.getElementById('tpExpandCardLayer').style.opacity   = '0';
+
+    document.getElementById('tpExpandScrim').style.opacity = (1 - progress * 0.5).toFixed(3);
+  });
+
+  function onGestureEnd(e) {
+    if (!tpGesture || !tpExpandState) return;
+    const { startX, startY, isEdgeSwipe, history, intent } = tpGesture;
+    tpGesture = null;
+    if (intent === 'cancelled') return;
+
+    let velX = 0, velY = 0;
+    if (history.length >= 2) {
+      const oldest = history[0], newest = history[history.length - 1];
+      const dt = (newest.t - oldest.t) / 1000;
+      if (dt > 0) { velX = (newest.x - oldest.x) / dt; velY = (newest.y - oldest.y) / dt; }
+    }
+    const lastPt = history[history.length - 1];
+    const rawDX = (lastPt?.x ?? startX) - startX;
+    const rawDY = (lastPt?.y ?? startY) - startY;
+
+    const committedDown = Math.max(0, rawDY) > DISMISS_POS_THRESHOLD || velY > DISMISS_VEL_THRESHOLD;
+    const committedEdge = isEdgeSwipe && (Math.max(0, rawDX) > DISMISS_POS_THRESHOLD || velX > DISMISS_VEL_THRESHOLD);
+    if (committedDown || committedEdge) {
+      _tpGestureDismissed = true;
+      tpCollapseWithVelocity(velX, velY);
+    } else {
+      tpRevertToExpanded(velX, velY);
+    }
+  }
+
+  panel.addEventListener('pointerup',     onGestureEnd);
+  panel.addEventListener('pointercancel', onGestureEnd);
+})();
 
 // ── Copy + toast ─────────────────────────────────────────────────
 let toastTimer;
