@@ -1133,7 +1133,7 @@
     .flip-face {
       position: absolute;
       inset: 0;
-      border-radius: 16px;
+      border-radius: 24px;
       backface-visibility: hidden;
       overflow: hidden;
       display: flex;
@@ -1156,7 +1156,7 @@
       background: var(--sk);
       flex-shrink: 0;
       margin: 8px 8px 0;
-      border-radius: 8px;
+      border-radius: 16px;
     }
 
     .flip-body {
@@ -1187,6 +1187,7 @@
       justify-content: space-between;
       align-items: center;
       margin-top: auto;
+      margin-bottom: 8px;
     }
 
     .flip-line.title  { height: 9px; width: 72%; }
@@ -1748,15 +1749,17 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      padding-top: 4px;
     }
 
     .bottom-bar-line {
       height: 9px;
+      width: 70%;
       background: var(--sk);
       border-radius: 4px;
     }
 
-    .bottom-bar-line.short { width: 55%; }
+    .bottom-bar-line.short { width: 42%; }
 
     .bottom-bar-btn {
       width: 76px;
@@ -2677,7 +2680,7 @@
                     <div class="flip-line title"></div>
                     <div class="flip-line sub"></div>
                     <div class="flip-line" style="width:80%;"></div>
-                    <div class="flip-line" style="width:60%;"></div>
+                    <div class="flip-line" style="width:60%;margin-bottom:8px;"></div>
                     <div class="flip-meta-row">
                       <div class="flip-line short"></div>
                       <div class="flip-line price"></div>
@@ -2690,7 +2693,7 @@
                     <div class="flip-line title"></div>
                     <div class="flip-line sub"></div>
                     <div class="flip-line" style="width:80%;"></div>
-                    <div class="flip-line" style="width:60%;"></div>
+                    <div class="flip-line" style="width:60%;margin-bottom:8px;"></div>
                     <div class="flip-meta-row">
                       <div class="flip-line short"></div>
                       <div class="flip-line price"></div>
@@ -2923,7 +2926,7 @@
       <div class="demo-view" id="view-tooltip" style="display:none; align-items:center; justify-content:center;">
         <div class="phone-frame">
           <div class="phone-content" style="position:relative;">
-            <div class="demo-tooltip" id="demoTooltip" style="top:129px; left:calc(50% + 34px);">
+            <div class="demo-tooltip" id="demoTooltip" style="top:129px; left:calc(50% + 32px);">
               <div class="tooltip-caret"></div>
               <div class="tooltip-bubble">
                 <div class="tooltip-tl"></div>
@@ -3935,15 +3938,17 @@ const SPRING_DEMOS = {
         const t         = (now - start) / 1000;
         const pos       = springPos(t, stiffness, damping);
         const scrimPos  = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+        const LIFT = -39; // extra px above bottom edge
         const pct       = isIn ? (1 - pos) * 100 : pos * 100;
+        const liftPx    = isIn ? pos * LIFT : (1 - pos) * LIFT;
         const shadowPrg = isIn ? scrimPos : (1 - scrimPos);
-        sheet.style.transform  = `translateY(${pct}%)`;
+        sheet.style.transform  = `translateY(calc(${pct}% + ${liftPx}px))`;
         sheet.style.boxShadow  = `0 -2px 20px rgba(0,0,0,${(shadowPrg * 0.12).toFixed(3)})`;
         scrim.style.opacity    = String(isIn ? scrimPos : (1 - scrimPos));
         if (t < 5 && !isSettled(t, stiffness, damping)) {
           demoAnim = requestAnimationFrame(tick);
         } else {
-          sheet.style.transform = isIn ? 'translateY(100%)' : 'translateY(0%)';
+          sheet.style.transform = isIn ? 'translateY(100%)' : `translateY(${LIFT}px)`;
           sheet.style.boxShadow = isIn ? '0 -2px 20px rgba(0,0,0,0)' : '0 -2px 20px rgba(0,0,0,0.12)';
           scrim.style.opacity   = isIn ? '0' : '1';
         }
@@ -6651,6 +6656,8 @@ const NG_DEMOS = {
     const fromR = 10;
     const toX = 0, toY = 0, toW = phone.clientWidth, toH = phone.clientHeight, toR = 40;
 
+    // Restore any previously hidden card image before hiding the new one
+    document.querySelectorAll('#ngPhone .sk-carousel-img').forEach(el => el.style.visibility = '');
     document.getElementById('ngExpandCardLayer').style.opacity   = '1';
     document.getElementById('ngExpandDetailLayer').style.opacity = '0';
     if (imgEl) imgEl.style.visibility = 'hidden';
