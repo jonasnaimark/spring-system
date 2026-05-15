@@ -4503,6 +4503,7 @@ function collapseCard(onDone) {
 let tpExpandState   = null;
 let tpExpandCardIdx = 0;
 let tpExpandAnim    = null;
+let tpPendingImgEl  = null; // imgEl hidden during expansion; cleared on next expand
 const TP_SPRING = { stiffness: 500, damping: calcDamping(500, 1.0) };
 
 // TP shared animation state
@@ -4591,6 +4592,8 @@ function tpExpandCard(card) {
 
   cardLayer.style.opacity   = '1';
   detailLayer.style.opacity = '0';
+  if (tpPendingImgEl && tpPendingImgEl !== imgEl) tpPendingImgEl.style.visibility = '';
+  tpPendingImgEl = imgEl || null;
   if (imgEl) imgEl.style.visibility = 'hidden';
   panel.style.left = fromX + 'px'; panel.style.top = fromY + 'px';
   panel.style.width = fromW + 'px'; panel.style.height = fromH + 'px';
@@ -4689,6 +4692,7 @@ function tpCollapseCard(onDone) {
       detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
       scrim.style.opacity = '0';
       if (imgEl) imgEl.style.visibility = '';
+      tpPendingImgEl = null;
       tpExpandState = null;
       tpExpandAnim = null;
       onDone?.();
@@ -4732,6 +4736,7 @@ document.getElementById('tpExpandPanel').addEventListener('click', (e) => {
 });
 document.getElementById('tpModalPanel').addEventListener('click', (e) => {
   e.stopPropagation();
+  if (_tpGestureDismissed) { _tpGestureDismissed = false; return; }
   if (tpExpandState) tpCollapseCard();
 });
 document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
@@ -4739,7 +4744,7 @@ document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
   if (tpExpandState) tpCollapseCard();
 });
 
-// ── Grow dismiss gesture (fullscreen mode only) ───────────────────
+// ── Grow dismiss gesture (fullscreen + modal) ─────────────────────
 (function() {
   const DISMISS_K = 300, DISMISS_D = calcDamping(300, 0.7);
   const DISMISS_POS_THRESHOLD = 50;
@@ -4762,26 +4767,27 @@ document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
   function tpRevertToExpanded(velX, velY) {
     if (!tpExpandState) return;
     if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
-    const { toX, toY, toW, toH, toR } = tpExpandState;
+    const { toX, toY, toW, toH, toR, isModal, imgEl } = tpExpandState;
     const phone     = document.getElementById('tpPhone');
-    const panel     = document.getElementById('tpExpandPanel');
-    const detailInner = document.getElementById('tpDetailInner');
+    const panel     = isModal ? document.getElementById('tpModalPanel') : document.getElementById('tpExpandPanel');
+    const detailInner = isModal ? document.getElementById('tpModalInner') : document.getElementById('tpDetailInner');
     const scrim     = document.getElementById('tpExpandScrim');
     panel.style.pointerEvents = 'auto';
 
     const curX = parseFloat(panel.style.left)         || 0;
     const curY = parseFloat(panel.style.top)          || 0;
-    const curW = parseFloat(panel.style.width)        || phone.clientWidth;
-    const curH = parseFloat(panel.style.height)       || phone.clientHeight;
-    const curR = parseFloat(panel.style.borderRadius) || 40;
+    const curW = parseFloat(panel.style.width)        || toW;
+    const curH = parseFloat(panel.style.height)       || toH;
+    const curR = parseFloat(panel.style.borderRadius) || toR;
 
-    const simX = new SpringSim(curX); simX.target = toX; simX.v = velX || 0;
+    const simX = new SpringSim(curX); simX.target = toX; simX.v = isModal ? 0 : (velX || 0);
     const simY = new SpringSim(curY); simY.target = toY; simY.v = velY || 0;
     const simW = new SpringSim(curW); simW.target = toW;
     const simH = new SpringSim(curH); simH.target = toH;
     const simR = new SpringSim(curR); simR.target = toR;
+    const scrimTarget = isModal ? 1 : 0;
     const curScrim = parseFloat(scrim.style.opacity) || 0;
-    const simScrim = new SpringSim(curScrim); simScrim.target = 0;
+    const simScrim = new SpringSim(curScrim); simScrim.target = scrimTarget;
 
     let lastTime = null;
     function tick(now) {
@@ -4794,13 +4800,14 @@ document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
       simH.step(dt, DISMISS_K, DISMISS_D);
       simR.step(dt, DISMISS_K, DISMISS_D);
       simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
-      const scale = simW.x / toW;
+      const scale = isModal ? simW.x / toW : simW.x / toW;
       panel.style.left         = simX.x + 'px';
       panel.style.top          = simY.x + 'px';
       panel.style.width        = simW.x + 'px';
       panel.style.height       = simH.x + 'px';
       panel.style.borderRadius = Math.max(0, simR.x) + 'px';
       scrim.style.opacity      = Math.max(0, simScrim.x).toFixed(3);
+      if (isModal) panel.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * Math.min(simScrim.x, 1)).toFixed(3)})`;
       if (detailInner) detailInner.style.transform = `scale(${Math.max(0.01, scale)})`;
       if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
         tpExpandAnim = requestAnimationFrame(tick);
@@ -4809,7 +4816,8 @@ document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
         panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
         panel.style.borderRadius = toR + 'px';
         if (detailInner) detailInner.style.transform = 'scale(1)';
-        scrim.style.opacity = '0';
+        scrim.style.opacity = String(scrimTarget);
+        if (isModal) { panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0.28)'; scrim.style.pointerEvents = 'auto'; }
         tpExpandAnim = null;
       }
     }
@@ -4819,23 +4827,24 @@ document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
   function tpCollapseWithVelocity(velX, velY) {
     if (!tpExpandState) return;
     if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
-    const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, imgEl } = tpExpandState;
-    const phone     = document.getElementById('tpPhone');
-    const panel     = document.getElementById('tpExpandPanel');
-    const cardLayer   = document.getElementById('tpExpandCardLayer');
-    const detailLayer = document.getElementById('tpExpandDetailLayer');
-    const detailInner = document.getElementById('tpDetailInner');
-    const scrim     = document.getElementById('tpExpandScrim');
+    const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, imgEl, isModal } = tpExpandState;
+    const phone       = document.getElementById('tpPhone');
+    const panel       = isModal ? document.getElementById('tpModalPanel')        : document.getElementById('tpExpandPanel');
+    const cardLayer   = isModal ? document.getElementById('tpModalCardLayer')    : document.getElementById('tpExpandCardLayer');
+    const detailLayer = isModal ? document.getElementById('tpModalContentLayer') : document.getElementById('tpExpandDetailLayer');
+    const detailInner = isModal ? document.getElementById('tpModalInner')        : document.getElementById('tpDetailInner');
+    const scrim       = document.getElementById('tpExpandScrim');
     panel.style.pointerEvents = 'none';
+    scrim.style.pointerEvents = 'none';
     tpExpandState = null;
 
     const curX = parseFloat(panel.style.left)         || 0;
     const curY = parseFloat(panel.style.top)          || 0;
-    const curW = parseFloat(panel.style.width)        || phone.clientWidth;
-    const curH = parseFloat(panel.style.height)       || phone.clientHeight;
-    const curR = parseFloat(panel.style.borderRadius) || 40;
+    const curW = parseFloat(panel.style.width)        || toW;
+    const curH = parseFloat(panel.style.height)       || toH;
+    const curR = parseFloat(panel.style.borderRadius) || toR;
 
-    const simX = new SpringSim(curX); simX.target = toX; simX.v = velX || 0;
+    const simX = new SpringSim(curX); simX.target = toX; simX.v = isModal ? 0 : (velX || 0);
     const simY = new SpringSim(curY); simY.target = toY; simY.v = velY || 0;
     const simW = new SpringSim(curW); simW.target = toW;
     const simH = new SpringSim(curH); simH.target = toH;
@@ -4855,13 +4864,14 @@ document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
       simH.step(dt, DISMISS_K, DISMISS_D);
       simR.step(dt, DISMISS_K, DISMISS_D);
       simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
-      const scale = simW.x / (parseFloat(phone.clientWidth) || toW);
+      const scale = simW.x / toW;
       panel.style.left         = simX.x + 'px';
       panel.style.top          = simY.x + 'px';
       panel.style.width        = simW.x + 'px';
       panel.style.height       = simH.x + 'px';
       panel.style.borderRadius = Math.max(0, simR.x) + 'px';
       scrim.style.opacity      = Math.max(0, simScrim.x).toFixed(3);
+      if (isModal) panel.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * Math.min(simScrim.x, 1)).toFixed(3)})`;
       if (detailInner) detailInner.style.transform = `scale(${Math.max(0.01, scale)})`;
       fadeProgress = Math.max(0, fadeProgress - dt / 0.15);
       detailLayer.style.opacity = fadeProgress.toFixed(3);
@@ -4870,10 +4880,12 @@ document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
         tpExpandAnim = requestAnimationFrame(tick);
       } else {
         panel.style.display = 'none';
+        panel.style.boxShadow = 'none';
         if (detailInner) detailInner.style.transform = 'scale(1)';
         detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
         scrim.style.opacity = '0';
         if (imgEl) imgEl.style.visibility = '';
+        tpPendingImgEl = null;
         tpExpandAnim = null;
       }
     }
@@ -4979,6 +4991,96 @@ document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
 
   panel.addEventListener('pointerup',     onGestureEnd);
   panel.addEventListener('pointercancel', onGestureEnd);
+
+  // ── Modal dismiss gesture ──────────────────────────────────────────
+  let tpModalGesture = null;
+  const modalPanel = document.getElementById('tpModalPanel');
+
+  modalPanel.addEventListener('pointerdown', (e) => {
+    if (!tpExpandState || !tpExpandState.isModal) return;
+    if (e.target.closest('.detail-close-btn')) return;
+    if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
+    e.currentTarget.setPointerCapture(e.pointerId);
+    tpModalGesture = {
+      startX: e.clientX, startY: e.clientY,
+      history: [{ x: e.clientX, y: e.clientY, t: performance.now() }],
+    };
+  });
+
+  modalPanel.addEventListener('pointermove', (e) => {
+    if (!tpModalGesture || !tpExpandState) return;
+    const { startX, startY } = tpModalGesture;
+    const { toX, toY, toW, toH, toR } = tpExpandState;
+    const now = performance.now();
+    tpModalGesture.history.push({ x: e.clientX, y: e.clientY, t: now });
+    tpModalGesture.history = tpModalGesture.history.filter(p => now - p.t < 80);
+
+    const rawDX = e.clientX - startX;
+    const rawDY = e.clientY - startY;
+
+    if (!tpModalGesture.intent) {
+      const absX = Math.abs(rawDX), absY = Math.abs(rawDY);
+      if (absY > 8) tpModalGesture.intent = 'dismiss';
+      else if (absX > 8) tpModalGesture.intent = 'dismiss'; // allow horizontal too
+    }
+    if (tpModalGesture.intent === 'cancelled') {
+      tpRevertToExpanded(0, 0);
+      tpModalGesture = null;
+      return;
+    }
+
+    // Gradual rubber-band on X — resists for ~80px before softly capping around 32px
+    const dragX = (rawDX >= 0 ? 1 : -1) * 32 * (1 - Math.exp(-Math.abs(rawDX) / 80));
+    const dragY = applyRubberBandSigned(rawDY, phone.clientHeight);
+    const progress = Math.min(Math.max(0, rawDY) / phone.clientHeight, 1);
+    const scaleDown = 1 - progress * 0.15;
+    const scaledW = toW * scaleDown;
+    const scaledH = toH * scaleDown;
+    const panelX = toX + dragX + (toW - scaledW) / 2;
+    const panelY = toY + dragY + (toH - scaledH) / 2;
+
+    modalPanel.style.left         = panelX + 'px';
+    modalPanel.style.top          = panelY + 'px';
+    modalPanel.style.width        = scaledW + 'px';
+    modalPanel.style.height       = scaledH + 'px';
+    modalPanel.style.borderRadius = (toR + (20 - toR) * progress) + 'px';
+    modalPanel.style.boxShadow    = `0 8px 32px rgba(0,0,0,${(0.28 * (1 - progress * 0.5)).toFixed(3)})`;
+
+    const detailInner = document.getElementById('tpModalInner');
+    if (detailInner) detailInner.style.transform = `scale(${scaleDown})`;
+
+    document.getElementById('tpModalContentLayer').style.opacity = '1';
+    document.getElementById('tpModalCardLayer').style.opacity    = '0';
+
+    document.getElementById('tpExpandScrim').style.opacity = (1 - progress * 0.5).toFixed(3);
+  });
+
+  function onModalGestureEnd(e) {
+    if (!tpModalGesture || !tpExpandState) return;
+    const { startY, history, intent } = tpModalGesture;
+    tpModalGesture = null;
+    if (intent === 'cancelled') return;
+
+    let velY = 0;
+    if (history.length >= 2) {
+      const oldest = history[0], newest = history[history.length - 1];
+      const dt = (newest.t - oldest.t) / 1000;
+      if (dt > 0) velY = (newest.y - oldest.y) / dt;
+    }
+    const lastPt = history[history.length - 1];
+    const rawDY = (lastPt?.y ?? startY) - startY;
+
+    const committedDown = Math.max(0, rawDY) > DISMISS_POS_THRESHOLD || velY > DISMISS_VEL_THRESHOLD;
+    if (committedDown) {
+      _tpGestureDismissed = true;
+      tpCollapseWithVelocity(0, velY);
+    } else {
+      tpRevertToExpanded(0, velY);
+    }
+  }
+
+  modalPanel.addEventListener('pointerup',     onModalGestureEnd);
+  modalPanel.addEventListener('pointercancel', onModalGestureEnd);
 })();
 
 // ── Copy + toast ─────────────────────────────────────────────────
@@ -6159,6 +6261,7 @@ document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
     scrim.style.opacity = '0'; scrim.style.pointerEvents = 'none';
     // Restore any hidden card image
     document.querySelectorAll('.tp-grow-card .sk-carousel-img').forEach(img => img.style.visibility = '');
+    tpPendingImgEl = null;
     tpExpandState = null;
     tpExpandCardIdx = 0;
     applyTpGrowMode(btn.dataset.mode);
