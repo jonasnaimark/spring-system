@@ -6232,12 +6232,12 @@ if (hashTp) {
     const DISMISS_THRESHOLD_PX = 50;
     let dragActive = false, dragStartY = 0, dragSheet = null, dragSheetBelow = null;
     let dragSheetH = 0, dragBelowStartTY = 0, dragBelowStartSC = 1, dragBelowStartOv = 0;
-    const PUSHED_Y = -10, SC1 = 0.94;
+    const PUSHED_Y = -10, SC1 = 0.94, SPARE_OFFSET = 6;
 
     function getTopSheet() {
-      if (tpSlideUpStep === 1) return { top: document.getElementById('tpSheet0'), below: null, belowPushedY: 0, belowSC: 1 };
-      if (tpSlideUpStep === 2) return { top: document.getElementById('tpSheet1'), below: document.getElementById('tpSheet0'), belowPushedY: PUSHED_Y, belowSC: SC1 };
-      if (tpSlideUpStep === 3) return { top: document.getElementById('tpSheet2'), below: document.getElementById('tpSheet1'), belowPushedY: PUSHED_Y, belowSC: SC1 };
+      if (tpSlideUpStep === 1) return { top: document.getElementById('tpSheet0'), below: null, spare: null, belowPushedY: 0, belowSC: 1 };
+      if (tpSlideUpStep === 2) return { top: document.getElementById('tpSheet1'), below: document.getElementById('tpSheet0'), spare: null, belowPushedY: PUSHED_Y, belowSC: SC1 };
+      if (tpSlideUpStep === 3) return { top: document.getElementById('tpSheet2'), below: document.getElementById('tpSheet1'), spare: document.getElementById('tpSheet0'), belowPushedY: PUSHED_Y, belowSC: SC1 };
       return null;
     }
 
@@ -6252,7 +6252,7 @@ if (hashTp) {
     }
 
     // Animate sheet (and optionally below) to their resting pushed positions
-    function springBack(sheet, below, belowPushedY, belowSC, startTY, belowStartTY, belowStartSC, belowStartOv) {
+    function springBack(sheet, below, spare, belowPushedY, belowSC, startTY, belowStartTY, belowStartSC, belowStartOv) {
       if (startTY < 1) return;
       const scrim   = document.getElementById('tpSheetScrim');
       const scrimAt = parseFloat(scrim.style.opacity) || 0;
@@ -6265,6 +6265,9 @@ if (hashTp) {
       const pcTyStart = fhBack && pc ? parseTY(pc) : 12;
       const pcRStart  = fhBack && pc ? (parseFloat(pc.style.borderRadius) || 22) : 22;
       const hoOpStart = fhBack && ho ? (parseFloat(ho.style.opacity) || 0) : 0;
+      const spareTY0  = spare ? parseTY(spare) : 0;
+      spare?.style.setProperty('z-index', '10');
+      tpSheetAnimating = true;
       const startT  = performance.now(), dur = 380;
       function frame(now) {
         const t    = Math.min((now - startT) / dur, 1);
@@ -6281,14 +6284,19 @@ if (hashTp) {
           if (ho) { ho.style.opacity = String(hoOpStart + (0.35 - hoOpStart) * ease); ho.style.borderRadius = `${r}px`; }
         }
         if (below) {
-          // interpolate from captured start position back to pushed resting state
           const ty = belowStartTY + (belowPushedY - belowStartTY) * ease;
           const sc = belowStartSC + (belowSC - belowStartSC) * ease;
           below.style.transform = `translateY(${ty}px) scale(${sc})`;
           const ov = below.querySelector('.sheet-overlay');
           if (ov) ov.style.opacity = String(belowStartOv + (0.3 - belowStartOv) * ease);
         }
-        if (t < 1) requestAnimationFrame(frame);
+        if (spare) {
+          spare.style.transform = `translateY(${spareTY0 + (PUSHED_Y + SPARE_OFFSET - spareTY0) * ease}px) scale(${SC1})`;
+        }
+        if (t < 1) { requestAnimationFrame(frame); return; }
+        if (spare) { spare.style.opacity = '0'; spare.style.zIndex = ''; }
+        tpSheetAnimating = false;
+        tpSheetClickCooldown = performance.now() + 100;
       }
       requestAnimationFrame(frame);
     }
@@ -6350,9 +6358,18 @@ if (hashTp) {
       const belowStartSC = below ? parseSC(below) : 1;
       const belowOv      = below ? below.querySelector('.sheet-overlay') : null;
       const belowOvStart = belowOv ? (parseFloat(belowOv.style.opacity) || 0) : 0;
-      // When going 3→2, s0 (the sheet behind below) needs to fade back in
+      // When going 3→2, s0 (the sheet behind below) needs to slide up from offset and fade in
       const s0FadeIn = tpSlideUpStep === 3;
       const s0El = s0FadeIn ? document.getElementById('tpSheet0') : null;
+      // Capture spare's current position — if from a drag it may already be near PUSHED_Y
+      const s0TYStart = s0El ? parseTY(s0El) : 0;
+      const s0OpStart = s0El ? (parseFloat(s0El.style.opacity) || 0) : 0;
+      if (s0El && s0El.style.zIndex !== '10') {
+        // Not yet surfaced from drag — position it just below resting
+        s0El.style.opacity   = '0';
+        s0El.style.transform = `translateY(${PUSHED_Y + SPARE_OFFSET}px) scale(${SC1})`;
+        s0El.style.zIndex    = '10';
+      }
       const startT = performance.now(), dur = 300;
       tpSheetAnimating = true;
       if (window._tpSheetAnimTimeout) clearTimeout(window._tpSheetAnimTimeout);
@@ -6375,7 +6392,10 @@ if (hashTp) {
           below.style.boxShadow = `0 -2px 20px rgba(0,0,0,${0.15 * ease})`;
           if (belowOv) belowOv.style.opacity = String(belowOvStart * (1 - ease));
         }
-        if (s0El) s0El.style.opacity = String(ease);
+        if (s0El) {
+          s0El.style.opacity   = String(s0OpStart + (1 - s0OpStart) * ease);
+          s0El.style.transform = `translateY(${s0TYStart + (PUSHED_Y - s0TYStart) * ease}px) scale(${SC1})`;
+        }
         if (fhDismiss) {
           const sc = 0.94 + (1 - 0.94) * ease;
           const r  = 22 + 18 * ease; // 22px (sheet) → 40px (phone inner)
@@ -6390,6 +6410,7 @@ if (hashTp) {
         }
         if (t < 1) { requestAnimationFrame(frame); return; }
         tpSlideUpStep--;
+        if (s0El) s0El.style.zIndex = ''; // clear inline zIndex before snapToStep
         snapToStep(tpSlideUpStep);
         tpSheetAnimating = false;
         tpSheetClickCooldown = performance.now() + 150;
@@ -6419,6 +6440,12 @@ if (hashTp) {
         dragBelowStartSC = parseSC(info.below);
         const ov = info.below.querySelector('.sheet-overlay');
         dragBelowStartOv = ov ? parseFloat(ov.style.opacity) || 0 : 0;
+      }
+      // Show spare (3rd bg sheet) at its start offset so it's ready to slide during drag
+      if (info.spare) {
+        info.spare.style.opacity   = '1';
+        info.spare.style.transform = `translateY(${PUSHED_Y + SPARE_OFFSET}px) scale(${SC1})`;
+        info.spare.style.zIndex    = '10';
       }
     }, { passive: true });
 
@@ -6450,6 +6477,10 @@ if (hashTp) {
         dragSheetBelow.style.transform = `translateY(${ty}px) scale(${sc})`;
         const ov = dragSheetBelow.querySelector('.sheet-overlay');
         if (ov) ov.style.opacity = String((1 - prog) * 0.3);
+        // Spare slides up in sync with drag
+        if (info.spare) {
+          info.spare.style.transform = `translateY(${PUSHED_Y + SPARE_OFFSET * (1 - prog)}px) scale(${SC1})`;
+        }
       }
     }, { passive: true });
 
@@ -6470,8 +6501,11 @@ if (hashTp) {
 
       if (dy > DISMISS_THRESHOLD_PX) {
         animateDismiss(sheet, below, dy, noBelow);
+      } else if (dy > 4) {
+        springBack(sheet, below, info?.spare ?? null, info?.belowPushedY ?? 0, info?.belowSC ?? 1, dy, bTY, bSC, bOv);
       } else {
-        springBack(sheet, below, info?.belowPushedY ?? 0, info?.belowSC ?? 1, dy, bTY, bSC, bOv);
+        // Clean tap — hide spare immediately, let click through
+        if (info?.spare) { info.spare.style.opacity = '0'; info.spare.style.zIndex = ''; }
       }
     });
 
