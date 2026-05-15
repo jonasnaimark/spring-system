@@ -7203,6 +7203,7 @@ function ngCollapseCard(velX, velY) {
   const phone     = document.getElementById('ngPhone');
   const panel     = isModal ? document.getElementById('ngModalPanel') : document.getElementById('ngExpandPanel');
   panel.style.pointerEvents = 'none';
+  document.getElementById('ngExpandScrim').style.pointerEvents = 'none';
   ngExpandState = null;
 
   const curX = parseFloat(panel.style.left)         || 0;
