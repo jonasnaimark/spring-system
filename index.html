@@ -5409,7 +5409,7 @@ const TP_DEMOS = {
           s1.style.transform = `translateY(${pushedY * c}px) scale(${1 - (1 - SC1) * c})`;
           if (ov1) ov1.style.opacity = String(c * 0.3);
           s0.style.opacity = String(1 - c);
-        }, null, done(() => { s0.style.opacity = '0'; tpSlideUpStep++; }));
+        }, null, done(() => { s0.style.opacity = '0'; s0.style.transform = 'translateY(100%)'; tpSlideUpStep++; }));
 
       } else if (step === 3) {
         tpSpringAnimate((t) => {
@@ -6361,9 +6361,6 @@ if (hashTp) {
       // When going 3→2, s0 (the sheet behind below) needs to slide up from offset and fade in
       const s0FadeIn = tpSlideUpStep === 3;
       const s0El = s0FadeIn ? document.getElementById('tpSheet0') : null;
-      // Capture spare's current position — if from a drag it may already be near PUSHED_Y
-      const s0TYStart = s0El ? parseTY(s0El) : 0;
-      const s0OpStart = s0El ? (parseFloat(s0El.style.opacity) || 0) : 0;
       if (s0El && s0El.style.zIndex !== '10') {
         // Not yet surfaced from drag — position it just below resting
         s0El.style.opacity   = '0';
@@ -6372,6 +6369,9 @@ if (hashTp) {
         const s0OvInit = s0El.querySelector('.sheet-overlay');
         if (s0OvInit) s0OvInit.style.opacity = '0';
       }
+      // Capture position AFTER init so we always start from PUSHED_Y+OFFSET, not off-screen
+      const s0TYStart = s0El ? parseTY(s0El) : 0;
+      const s0OpStart = s0El ? (parseFloat(s0El.style.opacity) || 0) : 0;
       const startT = performance.now(), dur = 300;
       tpSheetAnimating = true;
       if (window._tpSheetAnimTimeout) clearTimeout(window._tpSheetAnimTimeout);
