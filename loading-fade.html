@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading Fade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c-bg:        #f5f5f7;
+      --c-surface-0: #ffffff;
+      --c-surface-1: #f5f5f7;
+      --c-surface-2: #e8e8ed;
+      --c-surface-3: #e0e0e5;
+      --c-text-primary:    #1d1d1f;
+      --c-text-secondary:  #3d3d3f;
+      --c-text-tertiary:   #6e6e73;
+      --c-border-subtle:   rgba(0,0,0,0.08);
+      --c-demo-bg:   #e8e8ed;
+      --sk:          #e0e0e5;
+      font-family: 'Airbnb Cereal App', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--c-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    /* ── Demo container ── */
+    .demo-container {
+      background: var(--c-demo-bg);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+      position: relative;
+      width: 420px;
+      height: 640px;
+    }
+
+    /* ── Play button ── */
+    .play-circle {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--c-surface-0);
+      border: 1px solid var(--c-border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+      z-index: 10;
+      color: var(--c-text-primary);
+    }
+    .play-circle:hover { background: var(--c-surface-2); }
+
+    /* ── Phone frame ── */
+    .phone-frame {
+      width: 260px;
+      height: 520px;
+      border-radius: 36px;
+      background: var(--c-surface-1);
+      border: 7px solid #1a1a1a;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── Phone content ── */
+    .phone-content {
+      position: absolute;
+      inset: 0;
+      padding: 36px 18px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      background: var(--c-surface-1);
+    }
+
+    /* ── Skeleton UI ── */
+    .sk-search { height: 34px; border-radius: 17px; background: var(--sk); flex-shrink: 0; }
+
+    .sk-cats { display: flex; gap: 14px; flex-shrink: 0; margin-top: 6px; margin-bottom: 6px; }
+    .sk-cat { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; }
+    .sk-cat-dot { width: 34px; height: 34px; border-radius: 50%; background: var(--sk); }
+    .sk-cat-label { height: 7px; width: 65%; background: var(--sk); border-radius: 4px; }
+
+    .sk-divider { height: 1px; background: var(--sk); margin: 2px -18px 2px; flex-shrink: 0; }
+
+    .sk-card-img { width: 100%; height: 170px; background: var(--sk); border-radius: 12px; flex-shrink: 0; margin-top: 10px; }
+    .sk-card-img.partial { height: 170px; background: var(--sk); margin-top: 10px; }
+    .sk-card-meta { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .sk-title { height: 9px; width: 55%; background: var(--sk); border-radius: 5px; }
+    .sk-price { height: 9px; width: 18%; background: var(--sk); border-radius: 5px; }
+    .sk-sub   { height: 8px; width: 38%; background: var(--sk); border-radius: 4px; flex-shrink: 0; }
+    .sk-section-label { height: 8px; width: 30%; background: var(--sk); border-radius: 4px; flex-shrink: 0; }
+
+    .sk-bottom-nav {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 68px;
+      background: var(--c-surface-0);
+      border-top: 1px solid var(--sk);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-around;
+      padding: 12px 8px 0;
+      z-index: 10;
+    }
+    .sk-nav-icon { width: 20px; height: 20px; background: var(--sk); border-radius: 4px; }
+
+    /* ── Shimmer animation ── */
+    @keyframes shimmer {
+      0%      { opacity: 1;   animation-timing-function: cubic-bezier(0.4,0,0.2,1); }
+      22.22%  { opacity: 0.4; animation-timing-function: cubic-bezier(0.4,0,0.2,1); }
+      74.07%  { opacity: 1;   animation-timing-function: linear; }
+      100%    { opacity: 1; }
+    }
+    .shimmer { animation: shimmer 1350ms infinite; }
+
+    /* ── Loaded bottom nav ── */
+    .ld-bottom-nav {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 68px;
+      background: var(--c-surface-0);
+      border-top: 1px solid var(--c-border-subtle);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-around;
+      padding: 12px 8px 0;
+      z-index: 20;
+    }
+    .ld-bottom-nav .material-symbols-outlined {
+      font-size: 20px;
+      color: var(--c-text-tertiary);
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .ld-bottom-nav .material-symbols-outlined.active {
+      color: var(--c-text-primary);
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* ── Loaded search ── */
+    .sk-search-loaded {
+      height: 34px;
+      border-radius: 17px;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.13);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      gap: 6px;
+    }
+    .sk-search-loaded .material-symbols-outlined {
+      font-size: 16px;
+      color: var(--c-text-primary);
+      flex-shrink: 0;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .sk-search-loaded-text {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--c-text-primary);
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    /* ── Loaded categories ── */
+    .ld-cats { display: flex; gap: 14px; flex-shrink: 0; margin-top: 6px; margin-bottom: 6px; }
+    .ld-cat {
+      display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1;
+      font-size: 9px; font-weight: 500; color: var(--c-text-tertiary); letter-spacing: 0.01em;
+    }
+    .ld-cat-dot { width: 34px; height: 34px; border-radius: 50%; background: var(--c-surface-3); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .ld-cat-dot .material-symbols-outlined { font-size: 16px; color: var(--c-text-tertiary); font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .ld-cat.active .ld-cat-dot { background: var(--sk); }
+    .ld-cat.active .ld-cat-dot .material-symbols-outlined { color: var(--c-text-primary); }
+    .ld-cat.active { color: var(--c-text-primary); font-weight: 600; }
+
+    /* ── Loaded card ── */
+    .ld-card { flex-shrink: 0; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.10); background: var(--c-surface-0); display: flex; flex-direction: column; margin-top: 6px; }
+    .ld-card-img { width: calc(100% - 10px); height: 140px; border-radius: 10px; flex-shrink: 0; margin: 5px 5px 0; }
+    .ld-card-img-1 { background: #a8c8e8; }
+    .ld-card-img-2 { background: #b8d4a8; }
+    .ff-body { padding: 7px 10px 10px; display: flex; flex-direction: column; gap: 0; }
+    .ff-title { font-size: 11px; font-weight: 600; color: var(--c-text-primary); letter-spacing: -0.01em; line-height: 1; margin: 0 0 6px; }
+    .ff-sub   { font-size: 10px; line-height: 1.3; color: var(--c-text-tertiary); margin: 0 0 4px; }
+    .ff-rating { font-size: 10px; line-height: 1.3; color: var(--c-text-tertiary); display: flex; align-items: center; gap: 3px; margin: 0 0 4px; }
+    .ff-price  { font-size: 10px; line-height: 1.3; color: var(--c-text-tertiary); margin: 0; }
+  </style>
+</head>
+<body>
+
+<div class="demo-container">
+  <button class="play-circle" id="playBtn">
+    <svg id="iconPlay" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M320-200v-560l440 280-440 280Z"/></svg>
+    <svg id="iconReplay" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="display:none"><path d="M339.5-108.5q-65.5-28.5-114-77t-77-114Q120-365 120-440h80q0 117 81.5 198.5T480-160q117 0 198.5-81.5T760-440q0-117-81.5-198.5T480-720h-6l62 62-56 58-160-160 160-160 56 58-62 62h6q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-440q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-80q-75 0-140.5-28.5Z"/></svg>
+  </button>
+
+  <div class="phone-frame">
+    <div class="phone-content" id="phoneContent"></div>
+    <div class="sk-bottom-nav" id="skNav">
+      <div class="sk-nav-icon"></div>
+      <div class="sk-nav-icon"></div>
+      <div class="sk-nav-icon"></div>
+      <div class="sk-nav-icon"></div>
+    </div>
+    <div class="ld-bottom-nav" id="ldNav" style="display:none;">
+      <span class="material-symbols-outlined active">search</span>
+      <span class="material-symbols-outlined">favorite_border</span>
+      <span class="material-symbols-outlined">chat_bubble_outline</span>
+      <span class="material-symbols-outlined">account_circle</span>
+    </div>
+  </div>
+</div>
+
+<template id="tpl-skeleton">
+  <div class="sk-search"></div>
+  <div class="sk-cats">
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+  </div>
+  <div class="sk-divider"></div>
+  <div class="sk-card-img"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+  <div class="sk-section-label"></div>
+  <div class="sk-card-img partial"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+</template>
+
+<template id="tpl-loaded">
+  <div class="sk-search-loaded">
+    <span class="material-symbols-outlined">search</span>
+    <span class="sk-search-loaded-text">Start your search</span>
+  </div>
+  <div class="ld-cats">
+    <div class="ld-cat active"><div class="ld-cat-dot"><span class="material-symbols-outlined">globe</span></div>All</div>
+    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">home_and_garden</span></div>Homes</div>
+    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">mountain_flag</span></div>Experiences</div>
+    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">room_service</span></div>Services</div>
+  </div>
+  <div class="sk-divider"></div>
+  <div class="ld-card">
+    <div class="ld-card-img ld-card-img-1"></div>
+    <div class="ff-body">
+      <div class="ff-title">Cozy loft in the Mission</div>
+      <div class="ff-sub">San Francisco · 2 guests</div>
+      <div class="ff-rating">★ 4.92 · 128 reviews</div>
+      <div class="ff-price">$189 / night</div>
+    </div>
+  </div>
+  <div class="ld-card">
+    <div class="ld-card-img ld-card-img-2"></div>
+    <div class="ff-body">
+      <div class="ff-title">Cabin by the lake</div>
+      <div class="ff-sub">Lake Tahoe · 4 guests</div>
+      <div class="ff-rating">★ 4.87 · 94 reviews</div>
+      <div class="ff-price">$245 / night</div>
+    </div>
+  </div>
+</template>
+
+<script>
+  const phoneContent = document.getElementById('phoneContent');
+  const skNav        = document.getElementById('skNav');
+  const ldNav        = document.getElementById('ldNav');
+  const playBtn      = document.getElementById('playBtn');
+  const iconPlay     = document.getElementById('iconPlay');
+  const iconReplay   = document.getElementById('iconReplay');
+
+  function stamp(id) {
+    return document.getElementById(id).content.cloneNode(true);
+  }
+
+  function applyShimmer(el) {
+    const DURATION = 1350;
+    function setDelay(selector, groupDelay) {
+      el.querySelectorAll(selector).forEach(sk => {
+        sk.classList.add('shimmer');
+        sk.style.animationDelay = (-DURATION + groupDelay) + 'ms';
+      });
+    }
+    setDelay('.sk-search',                   0);
+    setDelay('.sk-cat-dot, .sk-cat-label', 100);
+    setDelay('.sk-divider',                100);
+    setDelay('.sk-card-img',               200);
+    setDelay('.sk-title, .sk-price',       300);
+    setDelay('.sk-sub, .sk-section-label', 400);
+  }
+
+  function reset() {
+    // Clear any loaded overlay
+    Array.from(phoneContent.parentElement.querySelectorAll('.loaded-layer')).forEach(el => el.remove());
+    phoneContent.innerHTML = '';
+    phoneContent.appendChild(stamp('tpl-skeleton'));
+    applyShimmer(phoneContent);
+    skNav.style.display = '';
+    ldNav.style.display = 'none';
+    iconPlay.style.display   = '';
+    iconReplay.style.display = 'none';
+  }
+
+  function play() {
+    const shimmerEls = Array.from(phoneContent.querySelectorAll('.shimmer'));
+
+    // Build loaded overlay
+    const loaded = document.createElement('div');
+    loaded.className = 'phone-content loaded-layer';
+    loaded.style.cssText = 'position:absolute;top:0;left:0;';
+    loaded.appendChild(stamp('tpl-loaded'));
+
+    // Set rows to opacity 0 for stagger-in
+    const rows = Array.from(loaded.children);
+    rows.forEach(row => {
+      row.style.opacity = '0';
+      row.style.transition = 'opacity 150ms linear 100ms';
+    });
+    phoneContent.parentElement.appendChild(loaded);
+
+    // Fade in content rows
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      rows.forEach(row => { row.style.opacity = '1'; });
+    }));
+
+    // Freeze shimmer at current opacity then fade out after 100ms
+    shimmerEls.forEach(sk => {
+      sk.style.opacity = getComputedStyle(sk).opacity;
+      sk.classList.remove('shimmer');
+    });
+    setTimeout(() => {
+      shimmerEls.forEach(sk => {
+        sk.style.transition = 'opacity 100ms linear';
+        sk.style.opacity = '0';
+      });
+      skNav.style.transition = 'opacity 100ms linear';
+      skNav.style.opacity = '0';
+      ldNav.style.display = '';
+      ldNav.style.opacity = '0';
+      ldNav.style.transition = 'opacity 150ms linear';
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        ldNav.style.opacity = '1';
+      }));
+    }, 100);
+
+    // Show replay when done
+    const totalDur = 100 + 150 + 100;
+    setTimeout(() => {
+      iconPlay.style.display   = 'none';
+      iconReplay.style.display = '';
+    }, totalDur);
+  }
+
+  let playing = false;
+  let shimmerTimer = null;
+
+  function start() {
+    playing = true;
+    iconPlay.style.display   = 'none';
+    iconReplay.style.display = 'none';
+    reset();
+    shimmerTimer = setTimeout(() => {
+      if (!playing) return;
+      play();
+    }, 2500);
+  }
+
+  playBtn.addEventListener('click', () => {
+    if (iconReplay.style.display !== 'none') {
+      // replay
+      playing = false;
+      clearTimeout(shimmerTimer);
+      start();
+    } else if (!playing) {
+      start();
+    }
+  });
+
+  // Auto-start
+  reset();
+  setTimeout(start, 400);
+</script>
+</body>
+</html>

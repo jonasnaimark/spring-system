@@ -153,7 +153,7 @@
       max-width: 840px;
     }
     .section-chips + .section-body {
-      margin-top: 14px;
+      margin-top: 18px;
     }
     .ng-h1 {
       font-size: var(--text-body);
@@ -737,64 +737,7 @@
       margin-top: 10px;
     }
 
-    /* loaded search pill — white with shadow and real text */
-    .sk-search-loaded {
-      height: 34px;
-      border-radius: 17px;
-      background: #fff;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.13);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 12px;
-      gap: 6px;
-    }
-    .sk-search-loaded .material-symbols-outlined {
-      font-size: 16px;
-      color: var(--c-text-primary);
-      flex-shrink: 0;
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-    .sk-search-loaded-text {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--c-text-primary);
-      letter-spacing: -0.01em;
-      white-space: nowrap;
-    }
-
-    /* loaded card */
-    .ld-card {
-      flex-shrink: 0;
-      border-radius: 20px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
-      background: var(--c-surface-0);
-      display: flex;
-      flex-direction: column;
-      margin-top: 10px;
-    }
-    .ld-card-img {
-      width: calc(100% - 16px);
-      height: 150px;
-      border-radius: 12px;
-      flex-shrink: 0;
-      margin: 8px 8px 0;
-    }
-    .ld-card-img-1 { background: #a8c8e8; }
-    .ld-card-img-2 { background: #b8d4a8; }
-    .ld-cats { display: flex; gap: 14px; flex-shrink: 0; margin-top: 6px; margin-bottom: 6px; }
-    .ld-cat {
-      display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1;
-      font-size: 9px; font-weight: 500; color: var(--c-text-tertiary); letter-spacing: 0.01em;
-    }
-    .ld-cat-dot { width: 34px; height: 34px; border-radius: 50%; background: var(--c-surface-3); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-    .ld-cat-dot .material-symbols-outlined { font-size: 16px; color: var(--c-text-tertiary); font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-    .ld-cat.active .ld-cat-dot { background: var(--sk); }
-    .ld-cat.active .ld-cat-dot .material-symbols-outlined { color: var(--c-text-primary); }
-    .ld-cat.active { color: var(--c-text-primary); font-weight: 600; }
-
-    .sk-chips {
+.sk-chips {
       display: flex;
       gap: 8px;
       flex-shrink: 0;
@@ -875,43 +818,7 @@
       border-radius: 4px;
     }
 
-    /* ── Shimmer animation (Fade In demo) ── */
-    /* Total: 1350ms. fade-out 300ms, fade-in 700ms, pause 350ms */
-    @keyframes shimmer {
-      0%      { opacity: 1;   animation-timing-function: cubic-bezier(0.4,0,0.2,1); }
-      22.22%  { opacity: 0.4; animation-timing-function: cubic-bezier(0.4,0,0.2,1); }
-      74.07%  { opacity: 1;   animation-timing-function: linear; }
-      100%    { opacity: 1; }
-    }
-    .shimmer {
-      animation: shimmer 1350ms infinite;
-    }
-    .ld-bottom-nav {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 68px;
-      background: var(--c-surface-0);
-      border-top: 1px solid var(--c-border-subtle);
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-around;
-      padding: 12px 8px 0;
-      z-index: 20;
-    }
-    .ld-bottom-nav .material-symbols-outlined {
-      font-size: 20px;
-      color: var(--c-text-tertiary);
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-    .ld-bottom-nav .material-symbols-outlined.active {
-      color: var(--c-text-primary);
-      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-    .ld-bottom-nav .ld-nav-active { fill: var(--c-text-primary); }
-
-    /* ── Bottom bar template ── */
+/* ── Bottom bar template ── */
     .sk-bottom-bar {
       position: absolute;
       bottom: 0;
@@ -1071,9 +978,9 @@
     .sheet-section-gap { height: 14px; }
 
     /* Extra rows hidden in fitted sheets, shown when sheet fills full height */
-    .sheet-row-extra { display: none; }
+    .sheet-row-extra { display: none !important; }
     #ngSheetContent .sheet-row-extra,
-    #tpSheetContent.full-height .sheet-row-extra { display: flex; }
+    #tpSheetContent.full-height .sheet-row-extra { display: flex !important; }
 
     /* Scale sheet content to match the phone's --phone-scale */
     .sheet {
@@ -2197,7 +2104,7 @@
     .ff-img--loaded { background: #b5d5f5; }
 
     .ff-body {
-      padding: 10px 14px 14px;
+      padding: 7px 10px 10px;
       display: flex;
       flex-direction: column;
       gap: 0;
@@ -2220,7 +2127,7 @@
 
     /* loaded content */
     .ff-title {
-      font-size: var(--text-small);
+      font-size: 11px;
       font-weight: 600;
       color: var(--c-text-primary);
       letter-spacing: -0.01em;
@@ -2228,13 +2135,13 @@
       margin: 0 0 6px;
     }
     .ff-sub {
-      font-size: var(--text-small);
+      font-size: 10px;
       line-height: 1.3;
       color: var(--c-text-tertiary);
       margin: 0 0 4px;
     }
     .ff-rating {
-      font-size: var(--text-small);
+      font-size: 10px;
       line-height: 1.3;
       color: var(--c-text-tertiary);
       display: flex;
@@ -2243,7 +2150,7 @@
       margin: 0 0 4px;
     }
     .ff-price {
-      font-size: var(--text-small);
+      font-size: 10px;
       line-height: 1.3;
       color: var(--c-text-tertiary);
       margin: 0;
@@ -2367,14 +2274,13 @@
     <div class="demo-tab tp-tab" data-tp="slide-up-fade">Slide Up & Fade</div>
     <div class="tab-group-sep"></div>
     <div class="demo-tab tp-tab" data-tp="cross-fade">Cross Fade</div>
-    <div class="demo-tab tp-tab" data-tp="fade-in">Fade In</div>
   </div>
   <p class="section-body" id="tpBodyCopy"></p>
   <div class="section-content">
   <div style="background:var(--c-demo-bg); border-radius:24px; display:flex; align-items:center; justify-content:center; padding:32px; position:relative; min-height:680px;" id="tpDemoContainer">
     <button class="play-circle" id="tpPlayBtn">
-      <svg id="tpIconPlay" width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
-      <svg id="tpIconPause" width="13" height="13" viewBox="0 0 12 12" fill="currentColor" style="display:none"><rect x="2" y="2" width="3" height="8" rx="1"/><rect x="7" y="2" width="3" height="8" rx="1"/></svg>
+      <svg id="tpIconPlay" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M320-200v-560l440 280-440 280Z"/></svg>
+      <svg id="tpIconPause" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="display:none"><path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z"/></svg>
     </button>
     <div class="demo-mode-toggle" id="tpLoadModeToggle" style="display:none;">
       <button class="demo-mode-btn active" data-mode="simple">Simple</button>
@@ -2578,12 +2484,7 @@
         <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
       </div>
 
-      <!-- fade-in: shimmer skeleton that reveals loaded content -->
-      <div id="tpFadeInContent" style="display:none;position:absolute;inset:0;">
-        <div class="phone-content" id="tpFadeInPhone"></div>
-      </div>
-
-      <div class="sk-bottom-nav" id="tpPhoneBottomNav">
+<div class="sk-bottom-nav" id="tpPhoneBottomNav">
         <div class="sk-nav-icon"></div>
         <div class="sk-nav-icon"></div>
         <div class="sk-nav-icon"></div>
@@ -2597,7 +2498,9 @@
         <div style="position:absolute;inset:0;overflow:hidden;display:flex;">
           <div class="dt-ui" id="tpDesktopBg" style="flex:1;"></div>
           <div id="tpSufScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:0;pointer-events:none;"></div>
-          <div id="tpSufModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 30px));background:var(--c-surface-0);border-radius:16px;padding:20px 20px 24px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></div>
+          <div id="tpSufModal0" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 30px));background:var(--c-surface-0);border-radius:16px;padding:20px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></div>
+          <div id="tpSufModal1" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 30px));background:var(--c-surface-0);border-radius:16px;padding:20px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></div>
+          <div id="tpSufModal2" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 30px));background:var(--c-surface-0);border-radius:16px;padding:20px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></div>
         </div>
       </div>
     </div>
@@ -2665,7 +2568,7 @@
       <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:16px;">
       <div style="background:var(--c-demo-bg); border-radius:24px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 32px 24px; gap:16px; position:relative; overflow:hidden;" id="ngDemoContainer">
         <button class="play-circle" id="ngPlayBtn">
-          <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M320-200v-560l440 280-440 280Z"/></svg>
         </button>
         <div id="ngDemoScaler" style="transform-origin:center center; display:flex; flex-direction:column; align-items:center; gap:16px;">
         <div class="phone-frame" id="ngPhone">
@@ -3039,7 +2942,7 @@
     </div>
 
     <button class="play-circle" id="springPlayBtn">
-      <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M320-200v-560l440 280-440 280Z"/></svg>
     </button>
 
   </div>
@@ -3240,14 +3143,14 @@
         <!-- scrim -->
         <div id="meScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:0;pointer-events:none;"></div>
         <!-- floating modal -->
-        <div id="meModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 50px));background:var(--c-surface-0);border-radius:16px;padding:20px 20px 24px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></div>
+        <div id="meModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 50px));background:var(--c-surface-0);border-radius:16px;padding:20px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></div>
       </div>
 
       <!-- Modal exit UI: same grid + modal starts visible -->
       <div id="mxUI" style="display:none; flex:1; position:relative; overflow:hidden;">
         <div class="dt-ui" id="mxUiBg" style="flex:1;"></div>
         <div id="mxScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:1;pointer-events:none;"></div>
-        <div id="mxModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(-50%);background:var(--c-surface-0);border-radius:16px;padding:20px 20px 24px;opacity:1;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></div>
+        <div id="mxModal" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(-50%);background:var(--c-surface-0);border-radius:16px;padding:20px;opacity:1;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></div>
       </div>
 
       <!-- Fast fade UI: single card -->
@@ -3277,7 +3180,7 @@
       </div><!-- end dt-scaler -->
     </div>
     <button class="play-circle" id="bezPlayBtn">
-      <svg width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M320-200v-560l440 280-440 280Z"/></svg>
     </button>
   </div>
 
@@ -3321,8 +3224,8 @@
       </div>
       <div style="flex:1; min-width:0; background:var(--c-demo-bg); border-radius:24px; display:flex; align-items:center; justify-content:center; padding:64px 48px 48px; position:relative; overflow:hidden;" id="accDemoContainer">
         <button class="play-circle" id="accPlayBtn">
-          <svg id="accIconPlay" width="13" height="13" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2.5l7 3.5-7 3.5V2.5z"/></svg>
-          <svg id="accIconPause" width="13" height="13" viewBox="0 0 12 12" fill="currentColor" style="display:none"><rect x="2" y="2" width="3" height="8" rx="1"/><rect x="7" y="2" width="3" height="8" rx="1"/></svg>
+          <svg id="accIconPlay" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M320-200v-560l440 280-440 280Z"/></svg>
+          <svg id="accIconPause" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="display:none"><path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z"/></svg>
         </button>
         <div id="accPhonesScaler" style="transform-origin:center center;">
         <div class="acc-phones">
@@ -3396,14 +3299,14 @@
       <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
     </div>
   </div>
-  <div class="sheet-img-row sheet-row-extra">
+  <div class="sheet-img-row">
     <div class="sheet-thumb"></div>
     <div class="sheet-thumb-lines">
       <div class="sheet-line" style="margin-bottom:0;width:90%;"></div>
       <div class="sheet-line med thin" style="margin-bottom:0;"></div>
     </div>
   </div>
-  <div class="sheet-img-row sheet-row-extra">
+  <div class="sheet-img-row">
     <div class="sheet-thumb"></div>
     <div class="sheet-thumb-lines">
       <div class="sheet-line" style="margin-bottom:0;width:79%;"></div>
@@ -3451,6 +3354,9 @@
 </template>
 
 <template id="tpl-desktop-modal">
+  <div data-suf-close style="position:absolute;top:14px;right:14px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="pointer-events:none;"><line x1="1" y1="1" x2="9" y2="9" stroke="var(--c-text-tertiary)" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="1" x2="1" y2="9" stroke="var(--c-text-tertiary)" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </div>
   <div style="height:10px;width:60%;background:var(--sk);border-radius:5px;margin-bottom:16px;"></div>
   <div style="height:120px;width:100%;background:var(--sk);border-radius:8px;margin-bottom:14px;"></div>
   <div style="height:7px;width:90%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
@@ -3483,38 +3389,6 @@
   <div class="sk-card-img partial"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
-</template>
-
-<template id="tpl-home-screen-loaded">
-  <div class="sk-search-loaded">
-    <span class="material-symbols-outlined">search</span>
-    <span class="sk-search-loaded-text">Start your search</span>
-  </div>
-  <div class="ld-cats">
-    <div class="ld-cat active"><div class="ld-cat-dot"><span class="material-symbols-outlined">globe</span></div>All</div>
-    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">home_and_garden</span></div>Homes</div>
-    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">mountain_flag</span></div>Experiences</div>
-    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">room_service</span></div>Services</div>
-  </div>
-  <div class="sk-divider"></div>
-  <div class="ld-card">
-    <div class="ld-card-img ld-card-img-1"></div>
-    <div class="ff-body">
-      <div class="ff-title">Cozy loft in the Mission</div>
-      <div class="ff-sub">San Francisco · 2 guests</div>
-      <div class="ff-rating">★ 4.92 · 128 reviews</div>
-      <div class="ff-price">$189 / night</div>
-    </div>
-  </div>
-  <div class="ld-card">
-    <div class="ld-card-img ld-card-img-2"></div>
-    <div class="ff-body">
-      <div class="ff-title">Cabin by the lake</div>
-      <div class="ff-sub">Lake Tahoe · 4 guests</div>
-      <div class="ff-rating">★ 4.87 · 94 reviews</div>
-      <div class="ff-price">$245 / night</div>
-    </div>
-  </div>
 </template>
 
 <template id="tpl-home-screen-carousels">
@@ -3827,24 +3701,6 @@ function stampTemplate(templateId, targetEl) {
   targetEl.append(tpl.content.cloneNode(true));
 }
 
-function applyShimmer(el) {
-  const DURATION = 1350;
-  // Assign each element a group delay (0–400ms). Negative offset = starts
-  // mid-cycle so the loop is seamless from the first iteration onward.
-  function setDelay(selector, groupDelay) {
-    el.querySelectorAll(selector).forEach(sk => {
-      sk.classList.add('shimmer');
-      sk.style.animationDelay = (-DURATION + groupDelay) + 'ms';
-    });
-  }
-  setDelay('.sk-search',                   0);
-  setDelay('.sk-cat-dot, .sk-cat-label', 100);
-  setDelay('.sk-divider',                100);
-  setDelay('.sk-card-img',               200);
-  setDelay('.sk-title, .sk-price',       300);
-  setDelay('.sk-sub, .sk-section-label', 400);
-}
-
 // Stamp all templates at load
 (function() {
   // tpl-home-screen targets (tooltip has custom phone-content so it is excluded)
@@ -3861,15 +3717,7 @@ function applyShimmer(el) {
   });
   stampTemplate('tpl-home-screen-carousels', document.querySelector('#accRmSrc .phone-content'));
 
-  // fade-in demo: stamp skeleton and apply shimmer with top-to-bottom stagger
-  (function() {
-    const el = document.getElementById('tpFadeInPhone');
-    if (!el) return;
-    stampTemplate('tpl-home-screen', el);
-    applyShimmer(el);
-  })();
-
-  // tpl-detail targets (stamp into .push-dest-inner so push-screen translateX stays correct)
+// tpl-detail targets (stamp into .push-dest-inner so push-screen translateX stays correct)
   stampTemplate('tpl-detail', document.querySelector('#pushSource .push-dest-inner'));
   stampTemplate('tpl-detail', document.querySelector('#tpPushSource .push-dest-inner'));
   // pushDest + tpPushDest: checkout screen wrapped in co-screen so it fills the phone height
@@ -3910,7 +3758,9 @@ function applyShimmer(el) {
   // tpl-desktop-modal targets
   stampTemplate('tpl-desktop-modal', document.getElementById('meModal'));
   stampTemplate('tpl-desktop-modal', document.getElementById('mxModal'));
-  stampTemplate('tpl-desktop-modal', document.getElementById('tpSufModal'));
+  stampTemplate('tpl-desktop-modal', document.getElementById('tpSufModal0'));
+  stampTemplate('tpl-desktop-modal', document.getElementById('tpSufModal1'));
+  stampTemplate('tpl-desktop-modal', document.getElementById('tpSufModal2'));
 
   // tpl-detail targets (zoom/expand)
   stampTemplate('tpl-detail', document.getElementById('tpDetailInner'));
@@ -3923,7 +3773,7 @@ function applyShimmer(el) {
   stampTemplate('tpl-sheet', document.getElementById('tpSheet1'));
   stampTemplate('tpl-sheet', document.getElementById('tpSheet2'));
   // Stamp home screen into slide-up phone content background
-  stampTemplate('tpl-home-screen-loaded', document.getElementById('tpSheetPhoneContent'));
+  stampTemplate('tpl-home-screen', document.getElementById('tpSheetPhoneContent'));
   // Overlay scrims for pushed sheets
   const tpSheetOverlay0 = document.createElement('div'); tpSheetOverlay0.className = 'sheet-overlay'; document.getElementById('tpSheet0').appendChild(tpSheetOverlay0);
   const tpSheetOverlay1 = document.createElement('div'); tpSheetOverlay1.className = 'sheet-overlay'; document.getElementById('tpSheet1').appendChild(tpSheetOverlay1);
@@ -4655,6 +4505,9 @@ let tpAnim = null;
 let tpDemoState = 'out';
 let tpTabIdx = 0, tpTabDir = 1;
 let tpSlideUpStep = 0;
+let tpSufStep = 0;
+let tpSufAnimating = false;
+let tpSufCooldown  = 0;
 let tpSlideInMode = 'fullscreen';
 
 function tpSpringAnimate(tick, spring, onDone) {
@@ -5480,7 +5333,7 @@ const TP_DEMOS = {
         if (ov) ov.style.opacity = '0';
       });
     },
-    play() {
+    play(onDoneCallback) {
       if (tpSheetAnimating) return;
       const { stiffness, damping } = TP_SPRING;
       const step  = tpSlideUpStep;
@@ -5507,7 +5360,7 @@ const TP_DEMOS = {
       tpSheetAnimating = true;
       if (window._tpSheetAnimTimeout) clearTimeout(window._tpSheetAnimTimeout);
       window._tpSheetAnimTimeout = setTimeout(() => { tpSheetAnimating = false; }, 800);
-      const done = (cb) => () => { tpSheetAnimating = false; tpSheetClickCooldown = performance.now() + 150; clearTimeout(window._tpSheetAnimTimeout); if (cb) cb(); };
+      const done = (cb) => () => { tpSheetAnimating = false; tpSheetClickCooldown = performance.now() + 150; clearTimeout(window._tpSheetAnimTimeout); if (cb) cb(); if (onDoneCallback) onDoneCallback(); };
 
       if (step === 0) {
         tpSpringAnimate((t) => {
@@ -5603,44 +5456,132 @@ const TP_DEMOS = {
   'slide-up-fade': {
     description: 'A subtler slide up, often used on desktop web.',
     reset() {
-      tpDemoState = 'out';
-      const modal = document.getElementById('tpSufModal');
+      tpSufStep = 0;
+      tpSufAnimating = false;
+      if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
       const scrim = document.getElementById('tpSufScrim');
-      modal.style.transition = 'none';
-      scrim.style.transition = 'none';
-      modal.style.opacity = '0';
-      modal.style.transform = 'translateY(calc(-50% + 30px))';
-      scrim.style.opacity = '0';
+      scrim.style.transition = 'none'; scrim.style.opacity = '0'; scrim.style.pointerEvents = 'none';
+      [0,1,2].forEach(i => {
+        const m = document.getElementById(`tpSufModal${i}`);
+        m.style.transition = 'none';
+        m.style.opacity = '0';
+        m.style.transform = 'translateY(calc(-50% + 30px)) scale(1)';
+      });
     },
-    play() {
-      const modal = document.getElementById('tpSufModal');
+    play(onDoneCallback) {
+      const { stiffness, damping } = TP_SPRING;
+      const step  = tpSufStep;
       const scrim = document.getElementById('tpSufScrim');
-      const isIn  = tpDemoState === 'in';
-      tpDemoState = isIn ? 'out' : 'in';
-      if (!isIn) {
-        modal.style.transition = 'none';
+      const m0    = document.getElementById('tpSufModal0');
+      const m1    = document.getElementById('tpSufModal1');
+      const m2    = document.getElementById('tpSufModal2');
+      const SC1 = 0.94, SC2 = 0.88;
+      // Vertical offset when pushed back (peeks above the incoming modal top edge)
+      const PEEK_Y = -18; // px above center, negative = up
+
+      // Helper: set CSS-transition-based position for pushed-back modals
+      function setPushed(el, sc, py) {
+        el.style.transition = 'none';
+        el.style.transform  = `translateY(calc(-50% + ${py}px)) scale(${sc})`;
+      }
+
+      tpSufAnimating = true;
+      const done = () => { tpSufAnimating = false; tpSufCooldown = performance.now() + 150; if (onDoneCallback) onDoneCallback(); };
+
+      if (step === 0) {
+        // Enter modal 0: slide up + fade in, scrim fades in
+        scrim.style.pointerEvents = 'auto';
         scrim.style.transition = 'none';
-        modal.style.opacity = '0';
-        modal.style.transform = 'translateY(calc(-50% + 30px))';
-        scrim.style.opacity = '0';
-        modal.offsetHeight;
-        modal.style.transition = 'opacity 100ms linear, transform 300ms cubic-bezier(0.00,0.00,0.00,1.00)';
-        scrim.style.transition = 'opacity 300ms cubic-bezier(0.40,0.00,0.20,1.00)';
-        modal.style.opacity = '1';
-        modal.style.transform = 'translateY(-50%)';
-        scrim.style.opacity = '1';
-      } else {
-        modal.style.transition = 'opacity 150ms cubic-bezier(0.40,0.00,1.00,1.00), transform 150ms cubic-bezier(0.40,0.00,1.00,1.00)';
-        scrim.style.transition = 'opacity 150ms linear';
-        modal.style.opacity = '0';
-        modal.style.transform = 'translateY(calc(-50% + 20px))';
-        scrim.style.opacity = '0';
+        m0.style.transition = 'none';
+        m0.style.opacity = '0';
+        m0.style.transform = 'translateY(calc(-50% + 30px)) scale(1)';
+        m0.offsetHeight;
+        tpSpringAnimate((t) => {
+          const p  = springPos(t, stiffness, damping);
+          const sp = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+          m0.style.opacity   = String(Math.min(t * 6, 1));
+          m0.style.transform = `translateY(calc(-50% + ${p * 30}px)) scale(1)`;
+          scrim.style.opacity = String((1 - sp) * 0.6);
+        }, null, () => { tpSufStep++; done(); });
+
+      } else if (step === 1) {
+        // Enter modal 1: m0 scales/shifts back, m1 slides up
+        m1.style.transition = 'none';
+        m1.style.opacity = '0';
+        m1.style.transform = 'translateY(calc(-50% + 30px)) scale(1)';
+        m1.offsetHeight;
+        tpSpringAnimate((t) => {
+          const p = springPos(t, stiffness, damping);
+          const c = 1 - p;
+          m1.style.opacity   = String(Math.min(t * 6, 1));
+          m1.style.transform = `translateY(calc(-50% + ${p * 30}px)) scale(1)`;
+          m0.style.transform = `translateY(calc(-50% + ${PEEK_Y * c}px)) scale(${1 - (1 - SC1) * c})`;
+          m0.style.opacity   = String(1 - c * 0.15);
+        }, null, () => { tpSufStep++; done(); });
+
+      } else if (step === 2) {
+        // Enter modal 2: m1 scales back, m0 fades further, m2 slides up
+        m2.style.transition = 'none';
+        m2.style.opacity = '0';
+        m2.style.transform = 'translateY(calc(-50% + 30px)) scale(1)';
+        m2.offsetHeight;
+        tpSpringAnimate((t) => {
+          const p = springPos(t, stiffness, damping);
+          const c = 1 - p;
+          m2.style.opacity   = String(Math.min(t * 6, 1));
+          m2.style.transform = `translateY(calc(-50% + ${p * 30}px)) scale(1)`;
+          m1.style.transform = `translateY(calc(-50% + ${PEEK_Y * c}px)) scale(${1 - (1 - SC1) * c})`;
+          m1.style.opacity   = String(1 - c * 0.15);
+          m0.style.transform = `translateY(calc(-50% + ${PEEK_Y}px)) scale(${SC1 + (SC2 - SC1) * c})`;
+          m0.style.opacity   = String(0.85 - c * 0.15);
+        }, null, () => { tpSufStep++; done(); });
+
+      } else if (step === 3) {
+        // Exit modal 2 with exit curve; m1 springs back, m0 scales up slightly
+        const EXIT_EASING = 'cubic-bezier(0.40,0.00,1.00,1.00)';
+        const EXIT_DUR = 150;
+        m2.style.transition = `transform ${EXIT_DUR}ms ${EXIT_EASING}, opacity 100ms linear 50ms`;
+        m2.style.transform  = 'translateY(calc(-50% + 50px)) scale(1)';
+        m2.style.opacity    = '0';
+        tpSpringAnimate((t) => {
+          const p = springPos(t, stiffness, damping);
+          const c = 1 - p;
+          m1.style.transform = `translateY(calc(-50% + ${PEEK_Y * p}px)) scale(${1 - (1 - SC1) * p})`;
+          m1.style.opacity   = String(0.85 + c * 0.15);
+          m0.style.transform = `translateY(calc(-50% + ${PEEK_Y}px)) scale(${SC2 + (SC1 - SC2) * c})`;
+          m0.style.opacity   = String(0.70 + c * 0.15);
+        }, null, () => { tpSufStep++; done(); });
+
+      } else if (step === 4) {
+        // Exit modal 1 with exit curve; m0 springs back to center
+        const EXIT_EASING = 'cubic-bezier(0.40,0.00,1.00,1.00)';
+        const EXIT_DUR = 150;
+        m1.style.transition = `transform ${EXIT_DUR}ms ${EXIT_EASING}, opacity 100ms linear 50ms`;
+        m1.style.transform  = 'translateY(calc(-50% + 50px)) scale(1)';
+        m1.style.opacity    = '0';
+        tpSpringAnimate((t) => {
+          const p = springPos(t, stiffness, damping);
+          const c = 1 - p;
+          m0.style.transform = `translateY(calc(-50% + ${PEEK_Y * p}px)) scale(${1 - (1 - SC1) * p})`;
+          m0.style.opacity   = String(0.85 + c * 0.15);
+        }, null, () => { tpSufStep++; done(); });
+
+      } else if (step === 5) {
+        // Exit modal 0 with exit curve; scrim fades out
+        const EXIT_EASING = 'cubic-bezier(0.40,0.00,1.00,1.00)';
+        const EXIT_DUR = 150;
+        m0.style.transition  = `transform ${EXIT_DUR}ms ${EXIT_EASING}, opacity 100ms linear 50ms`;
+        m0.style.transform   = 'translateY(calc(-50% + 50px)) scale(1)';
+        m0.style.opacity     = '0';
+        scrim.style.transition = `opacity 100ms linear 50ms`;
+        scrim.style.opacity  = '0';
+        setTimeout(() => { tpSufStep = 0; scrim.style.pointerEvents = 'none'; done(); }, EXIT_DUR + 50);
       }
     },
   },
 
   'zoom-fade': {
-    description: 'Used to introduce floating elements like tooltips, modals and toasts. Scales from center by default, or from the element that triggered it.',
+    description: 'Used to present floating elements. Scales from center, or from the element that triggered it.',
     _seqTimer: null,
     _cancelSeq() {
       if (this._seqTimer) { clearTimeout(this._seqTimer); this._seqTimer = null; }
@@ -5729,7 +5670,7 @@ const TP_DEMOS = {
   },
 
   'cross-fade': {
-    description: 'Used when the layout changes but the context stays the same.',
+    description: 'Used when content changes but the context stays the same.',
     _showing: 'list',
     reset() {
       this._showing = 'list';
@@ -5833,18 +5774,6 @@ const TP_DEMOS = {
     },
   },
 
-  'fade-in': {
-    description: 'Skeleton placeholders shimmer while content loads, then fade in to reveal the real UI.',
-    reset() {
-      // Re-stamp so shimmer restarts cleanly on tab switch
-      const el = document.getElementById('tpFadeInPhone');
-      if (!el) return;
-      el.innerHTML = '';
-      stampTemplate('tpl-home-screen', el);
-      applyShimmer(el);
-    },
-    play() {},
-  },
 };
 
 const TP_PHONE_LAYERS = {
@@ -5854,9 +5783,8 @@ const TP_PHONE_LAYERS = {
   'slide-up':      'tpSheetContent',
   'zoom-fade':      'tpModalContent',
   'cross-fade':      'tpSeqContent',
-  'fade-in':       'tpFadeInContent',
 };
-const TP_ALL_LAYERS = ['tpPhoneContent','tpPushContent','tpPersistBar','tpTabContent','tpSheetContent','tpModalContent','tpSeqContent','tpFadeInContent'];
+const TP_ALL_LAYERS = ['tpPhoneContent','tpPushContent','tpPersistBar','tpTabContent','tpSheetContent','tpModalContent','tpSeqContent'];
 
 function switchTpDemo(key) {
   const tab = document.querySelector(`.tp-tab[data-tp="${key}"]`);
@@ -6127,20 +6055,24 @@ if (hashTp) {
       TP_DEMOS['zoom-fade'].play();
       scheduleNext(4600, onCycle);
     } else if (key === 'slide-up-fade') {
-      // desktop modal: enter hold exit hold
-      TP_DEMOS[key].play(); // enter
-      scheduleNext(1700, () => {
+      function nextSufStep() {
         if (!tpPlaying) return;
-        TP_DEMOS[key].play(); // exit
-        scheduleNext(1700, onCycle);
-      });
+        TP_DEMOS['slide-up-fade'].play(() => {
+          if (!tpPlaying) return;
+          const isLast = tpSufStep === 0;
+          scheduleNext(isLast ? 500 : 800, isLast ? onCycle : nextSufStep);
+        });
+      }
+      nextSufStep();
     } else if (key === 'slide-up') {
       // step-based: fire each of 6 steps with a pause between, then loop
       function nextStep() {
         if (!tpPlaying) return;
-        TP_DEMOS['slide-up'].play();
-        const isLast = tpSlideUpStep === 0; // reset() was called after step 5
-        scheduleNext(isLast ? 800 : 1400, isLast ? onCycle : nextStep);
+        TP_DEMOS['slide-up'].play(() => {
+          if (!tpPlaying) return;
+          const isLast = tpSlideUpStep === 0; // reset() was called after step 5
+          scheduleNext(isLast ? 500 : 800, isLast ? onCycle : nextStep);
+        });
       }
       nextStep();
     } else if (key === 'cross-fade') {
@@ -6150,9 +6082,6 @@ if (hashTp) {
         TP_DEMOS['cross-fade'].play();
         scheduleNext(1800, onCycle);
       });
-    } else if (key === 'fade-in') {
-      // Shimmer loops via CSS — never interrupt it, just schedule next cycle
-      scheduleNext(5000, onCycle);
     } else {
       // standard enter/exit toggle demos
       TP_DEMOS[key]?.play(); // enter
@@ -6173,8 +6102,8 @@ if (hashTp) {
   function startTp() {
     tpPlaying = true;
     document.getElementById('tpPhone').classList.add('cursor-default');
-    document.getElementById('tpIconPlay').style.display  = 'none';
-    document.getElementById('tpIconPause').style.display = '';
+    document.getElementById('tpIconPlay').style.display   = 'none';
+    document.getElementById('tpIconPause').style.display  = '';
     window._refreshTouchDot?.();
     const key = tpActiveKey();
     TP_DEMOS[key]?.reset?.();
@@ -6263,10 +6192,31 @@ if (hashTp) {
     if (tpPlaying) { stopTp(); return; }
     TP_DEMOS[key]?.play();
   });
-  document.getElementById('tpDesktopWrap').addEventListener('click', () => {
-    if (tpPlaying) return;
-    const key = tpActiveKey();
-    TP_DEMOS[key]?.play();
+  // Desktop wrap click: pause autoplay, or route to suf interactions
+  document.getElementById('tpDesktopWrap').addEventListener('click', (e) => {
+    if (tpPlaying) { stopTp(); return; }
+    if (tpActiveKey() !== 'slide-up-fade') return;
+    if (tpSufAnimating || performance.now() < tpSufCooldown) return;
+    const scrim  = document.getElementById('tpSufScrim');
+    const m0     = document.getElementById('tpSufModal0');
+    const m1     = document.getElementById('tpSufModal1');
+    const m2     = document.getElementById('tpSufModal2');
+    const bg     = document.getElementById('tpDesktopBg');
+    const target   = e.target;
+    const isScrim  = !!target.closest('#tpSufScrim');
+    const isX      = !!target.closest('[data-suf-close]');
+    const isBg     = !!target.closest('#tpDesktopBg');
+    if (tpSufStep === 0) {
+      // No modal open — present first
+      TP_DEMOS['slide-up-fade'].play();
+    } else if (isScrim || isX) {
+      // Dismiss top modal: jump to correct exit step (6 - modalsOpen)
+      tpSufStep = 6 - tpSufStep;
+      TP_DEMOS['slide-up-fade'].play();
+    } else if (tpSufStep < 3 && (isBg || !!target.closest('#tpSufModal0, #tpSufModal1, #tpSufModal2'))) {
+      // Click bg or modal to stack another modal
+      TP_DEMOS['slide-up-fade'].play();
+    }
   });
 
   // Drag-to-dismiss for slide-up sheets
