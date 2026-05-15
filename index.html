@@ -5351,7 +5351,6 @@ const TP_DEMOS = {
       const bottomNav     = document.getElementById('tpSheetBottomNav');
       const homeOverlay   = document.getElementById('tpSheetHomeOverlay');
       const fullHeight    = tpSlideUpMode === 'full-height';
-      if (fullHeight) scrim.style.opacity = '0'; // scrim unused in full-height; ensure no leaked state
 
       // pushedY: just move up so the top peeks 12px above the incoming sheet's top edge.
       const pushedY = -10; // px, negative = upward
@@ -6353,7 +6352,6 @@ if (hashTp) {
     function animateDismiss(sheet, below, startY, noBelow) {
       const endY    = dragSheetH + 200;
       const scrim   = document.getElementById('tpSheetScrim');
-      if (tpSlideUpMode === 'full-height') scrim.style.opacity = '0';
       const scrimAt = parseFloat(scrim.style.opacity ?? '0');
       // Capture below sheet's current state
       const belowStartTY = below ? parseTY(below) : 0;
