@@ -7102,6 +7102,7 @@ function ngGetModalDest(phone) {
 // ── Expand a card ──────────────────────────────────────────────
 function ngExpandCard(card) {
   if (ngExpandState || !card) return;
+  _ngGestureDismissed = false;
   const isModal = ngGrowMode === 'modal';
   const phone     = document.getElementById('ngPhone');
   const panel     = isModal ? document.getElementById('ngModalPanel') : document.getElementById('ngExpandPanel');
