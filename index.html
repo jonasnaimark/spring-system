@@ -1243,7 +1243,7 @@
     }
 
     .modal-btn.primary {
-      background: var(--c-text-primary);
+      background: var(--sk);
     }
 
     /* ── Context menu ── */
@@ -1735,21 +1735,27 @@
     }
 
     .tooltip-caret {
-      width: 0;
-      height: 0;
-      border-left: 7px solid transparent;
-      border-right: 7px solid transparent;
-      border-bottom: 7px solid #1c1c1e;
+      width: 14px;
+      height: 14px;
+      background: #1c1c1e;
+      transform: rotate(45deg);
+      border-radius: 4px 0 0 0;
+      margin-bottom: -8px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 0;
     }
 
     .tooltip-bubble {
       background: #1c1c1e;
       border-radius: 10px;
-      padding: 10px 14px;
+      padding: 13px 16px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      width: 140px;
+      gap: 9px;
+      width: 155px;
+      position: relative;
+      z-index: 1;
     }
 
     .tooltip-tl {
@@ -2469,7 +2475,7 @@
   <p class="section-body">Transitions orient people as they navigate. Grow seamlessly reveals more detail. Push moves to a new screen. Slide Up layers content without losing context. Fade swaps content in place.</p>
   <div class="demo-tabs-bar section-chips" id="tpTabsBar">
     <div class="demo-tab tp-tab active" data-tp="grow">Grow</div>
-    <div class="demo-tab tp-tab" data-tp="grow-fade">Grow & Fade</div>
+    <div class="demo-tab tp-tab" data-tp="popover">Grow & Fade</div>
     <div class="tab-group-sep"></div>
     <div class="demo-tab tp-tab" data-tp="push">Push</div>
     <div class="demo-tab tp-tab" data-tp="push-fade">Push & Fade</div>
@@ -2647,7 +2653,7 @@
       <!-- scale-in: modal + tooltip -->
       <div id="tpModalContent" style="display:none;position:absolute;inset:0;">
         <div class="phone-content show-overflow-btns" style="position:relative;">
-          <div class="demo-tooltip" id="tpTooltip" style="top:129px; left:calc(50% + 32px);">
+          <div class="demo-tooltip" id="tpTooltip" style="top:133px; left:calc(50% + 32px);">
             <div class="tooltip-caret"></div>
             <div class="tooltip-bubble">
               <div class="tooltip-tl"></div>
@@ -2658,17 +2664,14 @@
         <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
         <div class="modal-backdrop" id="tpModalBackdrop" style="opacity:0;pointer-events:none;"></div>
         <div class="modal-card" id="tpModal" style="opacity:0; transform: scale(0.75); position:absolute; top:50%; left:50%; margin-top:-70px; margin-left:-110px; z-index:12; pointer-events:none;"></div>
-        <div class="ctx-menu" id="tpCtxMenu" style="opacity:0;transform:scale(0.75);transform-origin:top right;position:absolute;top:193px;right:26px;z-index:12;pointer-events:none;">
-          <div class="ctx-row"></div>
-          <div class="ctx-row" style="width:72%;"></div>
-          <div class="ctx-sep"></div>
-          <div class="ctx-row"></div>
-          <div class="ctx-row" style="width:60%;"></div>
-          <div class="ctx-sep"></div>
+        <div class="ctx-menu" id="tpCtxMenu" style="opacity:0;transform:scale(0.75);transform-origin:top right;position:absolute;top:195px;right:26px;z-index:12;pointer-events:none;">
           <div class="ctx-row" style="width:80%;"></div>
-          <div class="ctx-row" style="width:50%;"></div>
-          <div class="ctx-sep"></div>
-          <div class="ctx-row" style="width:68%;"></div>
+          <div class="ctx-row" style="width:62%;"></div>
+          <div class="ctx-row" style="width:75%;"></div>
+          <div class="ctx-row" style="width:55%;"></div>
+          <div class="ctx-row" style="width:70%;"></div>
+          <div class="ctx-row" style="width:45%;"></div>
+          <div class="ctx-row" style="width:60%;"></div>
         </div>
       </div>
 
@@ -2831,7 +2834,7 @@
         </button>
         <div class="demo-mode-toggle" id="ngGrowModeToggle">
           <button class="demo-mode-btn active" data-ng-mode="fullscreen">Fullscreen</button>
-          <button class="demo-mode-btn" data-ng-mode="modal">Modal</button>
+          <button class="demo-mode-btn" data-ng-mode="modal">Popover</button>
         </div>
         <div id="ngDemoScaler" style="transform-origin:center center; display:flex; flex-direction:column; align-items:center; gap:16px;">
         <div class="phone-frame" id="ngPhone">
@@ -3197,7 +3200,7 @@
       <div class="demo-view" id="view-tooltip" style="display:none; align-items:center; justify-content:center;">
         <div class="phone-frame">
           <div class="phone-content" style="position:relative;">
-            <div class="demo-tooltip" id="demoTooltip" style="top:129px; left:calc(50% + 32px);">
+            <div class="demo-tooltip" id="demoTooltip" style="top:133px; left:calc(50% + 32px);">
               <div class="tooltip-caret"></div>
               <div class="tooltip-bubble">
                 <div class="tooltip-tl"></div>
@@ -6441,8 +6444,8 @@ const TP_DEMOS = {
     },
   },
 
-  'grow-fade': {
-    description: 'Floating elements scale in from their source element.',
+  'popover': {
+    description: 'Floating elements fade and grow from center, or from their source element.',
     _seqTimer: null,
     _cancelSeq() {
       if (this._seqTimer) { clearTimeout(this._seqTimer); this._seqTimer = null; }
@@ -6816,7 +6819,7 @@ const TP_PHONE_LAYERS = {
   'push':      'tpPushContent',
   'push-fade': 'tpTabContent',
   'slide-up':      'tpSheetContent',
-  'grow-fade':      'tpModalContent',
+  'popover':      'tpModalContent',
   'cross-fade':      'tpSeqContent',
   'loading-fade':  'tpLoadContent',
 };
@@ -7185,9 +7188,9 @@ if (hashTp) {
           scheduleNext(1000, onCycle);
         });
       });
-    } else if (key === 'grow-fade') {
+    } else if (key === 'popover') {
       // scale-in self-sequences (~3.3s total): just fire play and wait
-      TP_DEMOS['grow-fade'].play();
+      TP_DEMOS['popover'].play();
       scheduleNext(7200, onCycle);
     } else if (key === 'slide-up-fade') {
       function nextSufStep() {
@@ -8346,7 +8349,11 @@ function applyNgGrowMode(mode) {
     panelEl.style.display = 'none';
     if (imgEl) imgEl.style.visibility = '';
     ngExpandState = null; ngExpandAnim = null; ngGesture = null;
-    document.getElementById('ngExpandScrim').style.opacity = '0';
+    const scrimEl = document.getElementById('ngExpandScrim');
+    scrimEl.style.opacity = '0';
+    scrimEl.style.pointerEvents = 'none';
+    document.getElementById('ngExpandPanel').style.display = 'none';
+    document.getElementById('ngModalPanel').style.display = 'none';
   }
 
   // Update left-panel text
