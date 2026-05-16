@@ -1853,6 +1853,14 @@
       flex: 1;
     }
 
+    .tp-search-row {
+      display: flex;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--c-border-subtle);
+    }
+    .tp-search-row:last-child { border-bottom: none; }
+
     .expand-back-btn {
       position: absolute;
       top: 14px;
@@ -2485,7 +2493,8 @@
     </div>
     <div class="demo-mode-toggle" id="tpGrowModeToggle" style="display:none;">
       <button class="demo-mode-btn active" data-mode="fullscreen">Fullscreen</button>
-      <button class="demo-mode-btn" data-mode="modal">Modal</button>
+      <button class="demo-mode-btn" data-mode="modal">Popover</button>
+      <button class="demo-mode-btn" data-mode="search">Search</button>
     </div>
     <div class="demo-mode-toggle" id="tpSlideInModeToggle" style="display:none;">
       <button class="demo-mode-btn active" data-mode="fullscreen">Fullscreen</button>
@@ -2514,6 +2523,32 @@
           <div id="tpModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px 16px 12px;"></div>
         </div>
       </div>
+      <!-- Grow→Search blur scrim -->
+      <div id="tpSearchScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.12);opacity:0;pointer-events:none;z-index:13;"></div>
+      <!-- Grow→Search panel -->
+      <div id="tpSearchPanel" style="display:none;position:absolute;z-index:14;background:var(--c-surface-0);border-radius:17px;overflow:hidden;pointer-events:none;">
+        <!-- collapsed state: plain pill (fades out) -->
+        <div id="tpSearchPillLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
+        <!-- expanded state: search overlay content (fades in) -->
+        <div id="tpSearchContentLayer" style="position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;padding:12px 14px 14px;gap:18px;">
+          <!-- active search bar row -->
+          <div style="height:34px;border-radius:17px;background:var(--c-surface-0);border:1.5px solid var(--c-border-medium);display:flex;align-items:center;padding:0 14px;gap:8px;flex-shrink:0;">
+            <div style="width:10px;height:10px;border-radius:50%;background:var(--sk);flex-shrink:0;"></div>
+            <div style="height:8px;width:48%;background:var(--sk);border-radius:4px;"></div>
+          </div>
+          <!-- result rows -->
+          <div style="display:flex;flex-direction:column;">
+            <div class="ll-img-row"><div class="ll-thumb" style="width:40px;height:40px;border-radius:8px;"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;width:70%;"></div><div class="ls-line short thin" style="margin-bottom:0;"></div></div></div>
+            <div class="ll-img-row"><div class="ll-thumb" style="width:40px;height:40px;border-radius:8px;"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;width:82%;"></div><div class="ls-line med thin" style="margin-bottom:0;"></div></div></div>
+            <div class="ll-img-row"><div class="ll-thumb" style="width:40px;height:40px;border-radius:8px;"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;width:65%;"></div><div class="ls-line short thin" style="margin-bottom:0;"></div></div></div>
+            <div class="ll-img-row"><div class="ll-thumb" style="width:40px;height:40px;border-radius:8px;"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;width:78%;"></div><div class="ls-line med thin" style="margin-bottom:0;"></div></div></div>
+            <div class="ll-img-row"><div class="ll-thumb" style="width:40px;height:40px;border-radius:8px;"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;width:72%;"></div><div class="ls-line short thin" style="margin-bottom:0;"></div></div></div>
+            <div class="ll-img-row"><div class="ll-thumb" style="width:40px;height:40px;border-radius:8px;"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;width:85%;"></div><div class="ls-line med thin" style="margin-bottom:0;"></div></div></div>
+            <div class="ll-img-row"><div class="ll-thumb" style="width:40px;height:40px;border-radius:8px;"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;width:68%;"></div><div class="ls-line short thin" style="margin-bottom:0;"></div></div></div>
+          </div>
+        </div>
+      </div>
+
       <!-- slide-in: push screens -->
       <div id="tpPushContent" style="display:none;position:absolute;inset:0;">
         <div class="push-screen" id="tpPushSource"><div class="push-dest-inner"></div></div>
@@ -4990,6 +5025,169 @@ function tpCollapseCard(onDone) {
   tpExpandAnim = requestAnimationFrame(tick);
 }
 
+// ── Grow→Search expand/collapse ──────────────────────────────────
+let tpSearchState = null;
+
+const TP_SEARCH_SPRING = { stiffness: 300, damping: calcDamping(300, 1.0) };
+function tpExpandSearch() {
+  if (tpSearchState || tpExpandAnim) return;
+  const { stiffness, damping } = TP_SEARCH_SPRING;
+  const phone   = document.getElementById('tpPhone');
+  const panel   = document.getElementById('tpSearchPanel');
+  const scrim   = document.getElementById('tpSearchScrim');
+  const pillLayer    = document.getElementById('tpSearchPillLayer');
+  const contentLayer = document.getElementById('tpSearchContentLayer');
+
+  // Source: the sk-search pill in phone content
+  const searchEl = document.querySelector('#tpPhoneContent .sk-search');
+  const phoneRect = phone.getBoundingClientRect();
+  const bx = phone.clientLeft, by = phone.clientTop;
+  let fromX, fromY, fromW, fromH;
+  if (searchEl) {
+    const r = searchEl.getBoundingClientRect();
+    fromX = r.left - phoneRect.left - bx;
+    fromY = r.top  - phoneRect.top  - by;
+    fromW = r.width;
+    fromH = r.height;
+  } else {
+    fromX = 14; fromY = 40; fromW = phone.clientWidth - 28; fromH = 34;
+  }
+
+  // Destination: full-width panel near top with natural height
+  const gap = 10;
+  const toX = gap;
+  const toW = phone.clientWidth - gap * 2;
+  const toR = 24;
+  const fromR = 17;
+  // Measure panel natural height
+  panel.style.display = 'block';
+  panel.style.visibility = 'hidden';
+  panel.style.left = toX + 'px'; panel.style.width = toW + 'px'; panel.style.height = 'auto';
+  const toH = panel.scrollHeight || 220;
+  panel.style.height = '';
+  panel.style.display = 'none'; panel.style.visibility = '';
+  const toY = fromY - 4;
+
+  pillLayer.style.opacity    = '1';
+  contentLayer.style.opacity = '0';
+  panel.style.left         = fromX + 'px';
+  panel.style.top          = fromY + 'px';
+  panel.style.width        = fromW + 'px';
+  panel.style.height       = fromH + 'px';
+  panel.style.borderRadius = fromR + 'px';
+  panel.style.pointerEvents = 'none';
+  panel.style.display = 'block';
+  scrim.style.opacity = '0';
+  if (searchEl) searchEl.style.visibility = 'hidden';
+
+  // Pre-hide rows for stagger fade-in
+  const searchRows = Array.from(contentLayer.querySelectorAll('.ll-img-row'));
+  searchRows.forEach(row => { row.style.opacity = '0'; row.style.transition = 'none'; });
+
+  tpSearchState = { fromX, fromY, fromW, fromH, fromR, toX, toY, toW, toH, toR, searchEl };
+  const startT = performance.now();
+  if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
+  const DELAY = 0.04;
+
+  // Start row stagger early, while panel is still springing in
+  setTimeout(() => {
+    searchRows.forEach((row, i) => {
+      row.style.transition = `opacity 150ms linear ${i * 30}ms`;
+      row.style.opacity = '1';
+    });
+  }, 150);
+
+  function tick(now) {
+    const t     = (now - startT) / 1000;
+    const posXW = springPos(t, stiffness, damping);
+    const posYH = springPos(Math.max(0, t - DELAY), stiffness, damping);
+    const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+    panel.style.left         = (toX + (fromX - toX) * posXW) + 'px';
+    panel.style.top          = (toY + (fromY - toY) * posYH) + 'px';
+    panel.style.width        = (toW + (fromW - toW) * posXW) + 'px';
+    panel.style.height       = (toH + (fromH - toH) * posYH) + 'px';
+    panel.style.borderRadius = (toR + (fromR - toR) * posXW) + 'px';
+    const progress = 1 - (1 - Math.min(t / 0.25, 1));
+    scrim.style.opacity      = (1 - scrimPos).toFixed(3);
+    document.getElementById('tpPhoneContent').style.filter = `blur(${(8 * (1 - scrimPos)).toFixed(2)}px)`; document.getElementById('tpPhoneBottomNav').style.filter = `blur(${(8 * (1 - scrimPos)).toFixed(2)}px)`;
+    const fade = Math.min(t / 0.18, 1);
+    pillLayer.style.opacity    = String(1 - fade);
+    contentLayer.style.opacity = String(fade);
+    panel.style.boxShadow = `0 4px 24px rgba(0,0,0,${(0.14 * fade).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * fade).toFixed(3)})`;
+    if (t < 5 && (!isSettled(t, stiffness, damping) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
+      tpExpandAnim = requestAnimationFrame(tick);
+    } else {
+      panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
+      panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
+      panel.style.borderRadius = toR + 'px';
+      panel.style.pointerEvents = 'auto';
+      panel.style.boxShadow = '0 4px 24px rgba(0,0,0,0.14),0 1px 4px rgba(0,0,0,0.08)';
+      scrim.style.opacity = '1'; scrim.style.pointerEvents = 'auto';
+      document.getElementById('tpPhoneContent').style.filter = 'blur(8px)';
+      document.getElementById('tpPhoneBottomNav').style.filter = 'blur(8px)';
+      contentLayer.style.opacity = '1'; pillLayer.style.opacity = '0';
+      tpExpandAnim = null;
+    }
+  }
+  tpExpandAnim = requestAnimationFrame(tick);
+}
+
+function tpCollapseSearch(onDone) {
+  if (!tpSearchState) return;
+  const { stiffness, damping } = TP_SEARCH_SPRING;
+  const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, searchEl } = tpSearchState;
+  const panel        = document.getElementById('tpSearchPanel');
+  const scrim        = document.getElementById('tpSearchScrim');
+  const pillLayer    = document.getElementById('tpSearchPillLayer');
+  const contentLayer = document.getElementById('tpSearchContentLayer');
+  const fromX = parseFloat(panel.style.left)   || toX;
+  const fromY = parseFloat(panel.style.top)    || toY;
+  const fromW = parseFloat(panel.style.width)  || toW;
+  const fromH = parseFloat(panel.style.height) || toH;
+  const fromR = parseFloat(panel.style.borderRadius) || 18;
+  panel.style.pointerEvents = 'none';
+  scrim.style.pointerEvents = 'none';
+  const startT = performance.now();
+  if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
+  const DELAY = 0.04;
+
+  function tick(now) {
+    const t     = (now - startT) / 1000;
+    const posYH = springPos(t, stiffness, damping);
+    const posXW = springPos(Math.max(0, t - DELAY), stiffness, damping);
+    const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+    const pYH = 1 - posYH, pXW = 1 - posXW;
+    panel.style.left         = (fromX + (toX - fromX) * pXW) + 'px';
+    panel.style.top          = (fromY + (toY - fromY) * pYH) + 'px';
+    panel.style.width        = (fromW + (toW - fromW) * pXW) + 'px';
+    panel.style.height       = (fromH + (toH - fromH) * pYH) + 'px';
+    panel.style.borderRadius = (fromR + (toR - fromR) * pXW) + 'px';
+    scrim.style.opacity      = scrimPos.toFixed(3);
+    const fade = Math.min(t / 0.18, 1);
+    pillLayer.style.opacity    = String(fade);
+    contentLayer.style.opacity = String(1 - fade);
+    panel.style.boxShadow = `0 4px 24px rgba(0,0,0,${(0.14 * (1 - fade)).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * (1 - fade)).toFixed(3)})`;
+    document.getElementById('tpPhoneContent').style.filter = `blur(${(8 * scrimPos).toFixed(2)}px)`; document.getElementById('tpPhoneBottomNav').style.filter = `blur(${(8 * scrimPos).toFixed(2)}px)`;
+    if (t < 5 && (!isSettled(t, stiffness, damping) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
+      tpExpandAnim = requestAnimationFrame(tick);
+    } else {
+      panel.style.display = 'none';
+      panel.style.boxShadow = 'none';
+      scrim.style.opacity = '0';
+      document.getElementById('tpPhoneContent').style.filter = '';
+      document.getElementById('tpPhoneBottomNav').style.filter = '';
+      if (searchEl) searchEl.style.visibility = '';
+      // Reset rows for next open
+      const rows = Array.from(document.getElementById('tpSearchContentLayer').querySelectorAll('.ll-img-row'));
+      rows.forEach(row => { row.style.opacity = '0'; row.style.transition = 'none'; });
+      tpSearchState  = null;
+      tpExpandAnim   = null;
+      onDone?.();
+    }
+  }
+  tpExpandAnim = requestAnimationFrame(tick);
+}
+
 document.querySelectorAll('.expand-card').forEach(card => {
   card.addEventListener('click', () => {
     if (expandState) { collapseCard(); return; }
@@ -5010,8 +5208,11 @@ document.getElementById('demoStage').addEventListener('click', (e) => {
 document.querySelectorAll('.tp-grow-card').forEach(card => {
   card.addEventListener('click', (e) => {
     e.stopPropagation();
-    // If auto-playing, pause first then handle click
     if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
+    if (tpGrowMode === 'search') {
+      if (tpSearchState) { tpCollapseSearch(); } else { tpExpandSearch(); }
+      return;
+    }
     if (tpExpandState) { tpCollapseCard(); return; }
     tpExpandCardIdx = [...document.querySelectorAll('.tp-grow-card')].indexOf(card);
     tpExpandCard(card);
@@ -5031,6 +5232,14 @@ document.getElementById('tpModalPanel').addEventListener('click', (e) => {
 document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
   e.stopPropagation();
   if (tpExpandState) tpCollapseCard();
+});
+document.getElementById('tpSearchScrim').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (tpSearchState) tpCollapseSearch();
+});
+document.getElementById('tpSearchPanel').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (tpSearchState && !tpExpandAnim) tpCollapseSearch();
 });
 
 // ── Grow dismiss gesture (fullscreen + modal) ─────────────────────
@@ -5757,6 +5966,10 @@ const TP_DEMOS = {
   'grow': {
     description: 'Seamlessly grows an element to reveal more detail.',
     play() {
+      if (tpGrowMode === 'search') {
+        if (tpSearchState) { tpCollapseSearch(); } else { tpExpandSearch(); }
+        return;
+      }
       const cards = document.querySelectorAll('.tp-grow-card');
       if (tpExpandState) {
         tpCollapseCard(() => { tpExpandCardIdx = (tpExpandCardIdx + 1) % cards.length; });
@@ -5781,6 +5994,14 @@ const TP_DEMOS = {
       document.querySelectorAll('.tp-grow-card .sk-carousel-img').forEach(c => c.style.visibility = '');
       tpExpandState   = null;
       tpExpandCardIdx = 0;
+      // search panel reset
+      const sPanel = document.getElementById('tpSearchPanel');
+      if (sPanel) sPanel.style.display = 'none';
+      const sScrim = document.getElementById('tpSearchScrim');
+      if (sScrim) { sScrim.style.opacity = '0'; sScrim.style.pointerEvents = 'none'; }
+      const searchEl = document.querySelector('#tpPhoneContent .sk-search');
+      if (searchEl) searchEl.style.visibility = '';
+      tpSearchState = null;
     },
   },
   'push': {
@@ -6718,6 +6939,7 @@ let tpGrowMode = 'fullscreen';
 const TP_GROW_DESCRIPTIONS = {
   fullscreen: 'Seamlessly grows an element to reveal more detail.',
   modal:      'The same grow motion into a floating element rather than a full screen.',
+  search:     'A search bar grows into an elevated overlay with blurred content behind it.',
 };
 function applyTpGrowMode(mode) {
   tpGrowMode = mode;
@@ -6726,7 +6948,8 @@ function applyTpGrowMode(mode) {
   );
   const bodyCopy = document.getElementById('tpBodyCopy');
   if (bodyCopy) bodyCopy.textContent = TP_GROW_DESCRIPTIONS[mode] || '';
-  history.replaceState(null, '', `#transitions-grow${tpGrowMode === 'modal' ? '-modal' : ''}`);
+  const slug = mode === 'modal' ? '-modal' : mode === 'search' ? '-search' : '';
+  history.replaceState(null, '', `#transitions-grow${slug}`);
 }
 document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -6742,6 +6965,15 @@ document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
     fsPanel.style.display  = 'none';
     modPanel.style.display = 'none'; modPanel.style.boxShadow = 'none';
     scrim.style.opacity = '0'; scrim.style.pointerEvents = 'none';
+    const sPanel = document.getElementById('tpSearchPanel');
+    const sScrim = document.getElementById('tpSearchScrim');
+    if (sPanel) sPanel.style.display = 'none';
+    if (sScrim) { sScrim.style.opacity = '0'; sScrim.style.pointerEvents = 'none'; }
+    const searchEl = document.querySelector('#tpPhoneContent .sk-search');
+    if (searchEl) searchEl.style.visibility = '';
+    document.getElementById('tpPhoneContent').style.filter = '';
+    document.getElementById('tpPhoneBottomNav').style.filter = '';
+    tpSearchState = null;
     // Restore any hidden card image
     document.querySelectorAll('.tp-grow-card .sk-carousel-img').forEach(img => img.style.visibility = '');
     tpPendingImgEl = null;
@@ -6880,7 +7112,8 @@ document.querySelectorAll('.tp-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const key = tab.dataset.tp;
     switchTpDemo(key);
-    history.replaceState(null, '', `#transitions-${key}${key === 'grow' && tpGrowMode === 'modal' ? '-modal' : ''}`);
+    const growSlug = key === 'grow' ? (tpGrowMode === 'modal' ? '-modal' : tpGrowMode === 'search' ? '-search' : '') : '';
+    history.replaceState(null, '', `#transitions-${key}${growSlug}`);
     window._tpAutoPlay?.stop();
     if (key !== 'loading-fade') window._tpAutoPlay?.start();
   });
@@ -6889,7 +7122,10 @@ document.querySelectorAll('.tp-tab').forEach(tab => {
 const hashTp = location.hash.match(/^#transitions-(.+)$/);
 if (hashTp) {
   const rawKey = hashTp[1];
-  if (rawKey === 'grow-modal') {
+  if (rawKey === 'grow-search') {
+    switchTpDemo('grow');
+    applyTpGrowMode('search');
+  } else if (rawKey === 'grow-modal') {
     switchTpDemo('grow');
     applyTpGrowMode('modal');
   } else if (rawKey === 'push-persistent-bar') {
@@ -6931,10 +7167,18 @@ if (hashTp) {
   function runCycle(key, onCycle) {
     if (!tpPlaying) return;
     if (key === 'grow') {
+      if (tpGrowMode === 'search') {
+        tpExpandSearch();
+        scheduleNext(1400, () => {
+          if (!tpPlaying) return;
+          tpCollapseSearch(() => { scheduleNext(1000, onCycle); });
+        });
+        return;
+      }
       // expand current card, hold, collapse, hold, then advance
       const cards = document.querySelectorAll('.tp-grow-card');
       tpExpandCard(cards[tpExpandCardIdx]);
-      scheduleNext(900, () => {
+      scheduleNext(1400, () => {
         if (!tpPlaying) return;
         tpCollapseCard(() => {
           tpExpandCardIdx = (tpExpandCardIdx + 1) % cards.length;
@@ -7086,7 +7330,14 @@ if (hashTp) {
   document.getElementById('tpPhone').addEventListener('click', (e) => {
     if (tpDragDismissing) { tpDragDismissing = false; return; }
     const key = tpActiveKey();
-    if (key === 'grow') return;
+    if (key === 'grow') {
+      if (tpGrowMode === 'search') {
+        if (tpExpandAnim) return;
+        if (tpSearchState) { tpCollapseSearch(); } else { tpExpandSearch(); }
+        return;
+      }
+      return;
+    }
     if (key === 'slide-up') return; // container handler owns all slide-up clicks
     if (key === 'cross-fade') {
       if (tpCrossFadeAnimating) return;
