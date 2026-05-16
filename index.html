@@ -1581,7 +1581,7 @@
 
     .push-hero {
       width: 100%;
-      aspect-ratio: 278 / 200;
+      aspect-ratio: 278 / 185;
       background: var(--sk);
       flex-shrink: 0;
     }
@@ -1595,15 +1595,15 @@
     }
 
     .push-detail-row {
-      height: 8px;
+      height: 7px;
       background: var(--sk);
       border-radius: 4px;
     }
 
     .push-detail-row.title {
-      height: 11px;
-      width: 72%;
-      border-radius: 6px;
+      height: 10px;
+      width: 60%;
+      border-radius: 5px;
       margin-bottom: 2px;
     }
 
@@ -1611,12 +1611,12 @@
     .push-detail-row.med { width: 82%; }
     .push-detail-row.short { width: 55%; }
     .push-detail-row.full { width: 100%; }
-    .push-detail-row.section-title { height: 11px; width: 60%; border-radius: 6px; margin-bottom: 6px; }
+    .push-detail-row.section-title { height: 10px; width: 60%; border-radius: 5px; margin-bottom: 6px; }
 
     .push-detail-divider {
       height: 1px;
       background: var(--sk);
-      margin: 4px 0;
+      margin: 8px 0;
     }
 
     /* ── Persistent bar slide-in ── */
@@ -1857,6 +1857,10 @@
       flex-direction: column;
       gap: 8px;
       flex: 1;
+      background: var(--c-surface-0);
+      border-radius: 24px 24px 0 0;
+      margin-top: -14px;
+      position: relative;
     }
 
     .tp-search-row {
@@ -3275,7 +3279,7 @@
     </div>
 
     <!-- Divider -->
-    <div style="border-top: 1px solid var(--c-border-subtle); margin-top:6px; margin-bottom:16px;"></div>
+    <div style="border-top: 1px solid var(--c-border-subtle); margin-top:6px; margin-bottom:2px;"></div>
 
     <!-- Curve cards -->
     <div style="font-size: var(--text-token); font-weight:600; color:var(--c-text-secondary); letter-spacing:0.02em; margin-bottom:14px; margin-top:4px;">Curves</div>
@@ -3611,22 +3615,51 @@
   <div class="expand-detail-content">
     <div class="push-detail-row title" style="margin:8px auto 3px;"></div>
     <div class="push-detail-row sub" style="margin:0 auto 10px;"></div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:2px;">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 0;">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--sk);"></div>
+        <div style="height:7px;width:42%;background:var(--sk);border-radius:4px;margin-top:10px;"></div>
+      </div>
+      <div style="width:1px;height:28px;background:var(--c-border-subtle);flex-shrink:0;"></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 0;">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--sk);"></div>
+        <div style="height:7px;width:42%;background:var(--sk);border-radius:4px;margin-top:10px;"></div>
+      </div>
+      <div style="width:1px;height:28px;background:var(--c-border-subtle);flex-shrink:0;"></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 0;">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--sk);"></div>
+        <div style="height:7px;width:42%;background:var(--sk);border-radius:4px;margin-top:10px;"></div>
+      </div>
+    </div>
     <div class="push-detail-divider"></div>
-    <div class="push-detail-row section-title" style="width:68%;"></div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin:4px 0;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:var(--sk);flex-shrink:0;"></div>
+        <div style="display:flex;flex-direction:column;gap:7px;flex:1;">
+          <div style="height:7px;width:62%;background:var(--sk);border-radius:4px;"></div>
+          <div style="height:7px;width:80%;background:var(--sk);border-radius:4px;"></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:var(--sk);flex-shrink:0;"></div>
+        <div style="display:flex;flex-direction:column;gap:7px;flex:1;">
+          <div style="height:7px;width:55%;background:var(--sk);border-radius:4px;"></div>
+          <div style="height:7px;width:75%;background:var(--sk);border-radius:4px;"></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:var(--sk);flex-shrink:0;"></div>
+        <div style="display:flex;flex-direction:column;gap:7px;flex:1;">
+          <div style="height:7px;width:68%;background:var(--sk);border-radius:4px;"></div>
+          <div style="height:7px;width:82%;background:var(--sk);border-radius:4px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="push-detail-divider"></div>
+    <div class="push-detail-row section-title" style="width:72%;"></div>
     <div class="push-detail-row" style="width:74%;"></div>
     <div class="push-detail-row" style="width:88%;"></div>
     <div class="push-detail-row med"></div>
-    <div class="push-detail-divider"></div>
-    <div class="push-detail-row section-title" style="width:72%;"></div>
-    <div class="push-detail-row" style="width:68%;"></div>
-    <div class="push-detail-row" style="width:55%;"></div>
-    <div class="push-detail-row" style="width:92%;"></div>
-    <div class="push-detail-row med"></div>
-    <div class="push-detail-divider"></div>
-    <div class="push-detail-row section-title" style="width:64%;"></div>
-    <div class="push-detail-row" style="width:78%;"></div>
-    <div class="push-detail-row" style="width:85%;"></div>
-    <div class="push-detail-row short"></div>
   </div>
 </template>
 
@@ -3634,7 +3667,7 @@
   <div data-suf-close style="position:absolute;top:14px;right:14px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
     <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="pointer-events:none;"><line x1="1" y1="1" x2="9" y2="9" stroke="var(--c-text-tertiary)" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="1" x2="1" y2="9" stroke="var(--c-text-tertiary)" stroke-width="1.5" stroke-linecap="round"/></svg>
   </div>
-  <div style="height:10px;width:60%;background:var(--sk);border-radius:5px;margin-bottom:16px;"></div>
+  <div style="height:10px;width:60%;background:var(--sk);border-radius:5px;margin-bottom:2px;"></div>
   <div style="height:120px;width:100%;background:var(--sk);border-radius:8px;margin-bottom:14px;"></div>
   <div style="height:7px;width:90%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
   <div style="height:7px;width:70%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
