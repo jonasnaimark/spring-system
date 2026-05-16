@@ -253,6 +253,57 @@
       align-items: flex-start;
     }
 
+    .chips-scroll-wrap {
+      position: relative;
+    }
+    .chips-scroll-wrap::before,
+    .chips-scroll-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 96px;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 150ms linear;
+    }
+    .chips-scroll-wrap::before {
+      left: 0;
+      background: linear-gradient(to right, var(--c-bg) 40%, transparent);
+    }
+    .chips-scroll-wrap::after {
+      right: 0;
+      background: linear-gradient(to left, var(--c-bg) 40%, transparent);
+    }
+    .chips-scroll-wrap.can-scroll-left::before  { opacity: 1; }
+    .chips-scroll-wrap.can-scroll-right::after  { opacity: 1; }
+
+    .chips-scroll-btn {
+      position: absolute;
+      top: calc(50% + 8px);
+      transform: translateY(-50%);
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--c-surface-0);
+      border: 1px solid var(--c-border-subtle);
+      box-shadow: 0 1px 6px rgba(0,0,0,0.13);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 3;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 150ms linear;
+      color: var(--c-text-primary);
+      padding: 0;
+      line-height: 0;
+    }
+    .chips-scroll-btn.left  { left: -6px; }
+    .chips-scroll-btn.left  svg { transform: translateX(-1px); }
+    .chips-scroll-btn.right { right: -6px; }
+    .chips-scroll-btn.right svg { transform: translateX(1px); }
+    .chips-scroll-wrap.can-scroll-left  .chips-scroll-btn.left  { opacity: 1; pointer-events: auto; }
+    .chips-scroll-wrap.can-scroll-right .chips-scroll-btn.right { opacity: 1; pointer-events: auto; }
+
     .demo-tabs-bar {
       display: flex;
       flex-wrap: nowrap;
@@ -6170,7 +6221,7 @@ const TP_DEMOS = {
   },
 
   'grow-fade': {
-    description: 'Floating elements scale in from the center of their trigger point.',
+    description: 'Floating elements scale in from their source element.',
     _seqTimer: null,
     _cancelSeq() {
       if (this._seqTimer) { clearTimeout(this._seqTimer); this._seqTimer = null; }
@@ -8796,6 +8847,53 @@ document.querySelectorAll('.demo-tab').forEach(tab => {
   }
 
   // Push demos: source=detail, dest=checkout — no close button needed, phone tap toggles
+})();
+
+// ── Tab bar scroll wrappers ───────────────────────────────────────
+(function() {
+  const SCROLL_AMT = 200;
+
+  function chevronSVG(dir) {
+    const d = dir === 'left' ? 'M15 18l-6-6 6-6' : 'M9 18l6-6-6-6';
+    return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
+  }
+
+  document.querySelectorAll('.demo-tabs-bar').forEach(bar => {
+    // Wrap in .chips-scroll-wrap
+    const wrap = document.createElement('div');
+    wrap.className = 'chips-scroll-wrap';
+    // Carry over section-chips class if present
+    if (bar.classList.contains('section-chips')) {
+      bar.classList.remove('section-chips');
+      wrap.classList.add('section-chips');
+    }
+    bar.parentNode.insertBefore(wrap, bar);
+    wrap.appendChild(bar);
+
+    // Add chevron buttons
+    const leftBtn  = document.createElement('button');
+    const rightBtn = document.createElement('button');
+    leftBtn.className  = 'chips-scroll-btn left';
+    rightBtn.className = 'chips-scroll-btn right';
+    leftBtn.innerHTML  = chevronSVG('left');
+    rightBtn.innerHTML = chevronSVG('right');
+    wrap.appendChild(leftBtn);
+    wrap.appendChild(rightBtn);
+
+    function update() {
+      const atLeft  = bar.scrollLeft <= 2;
+      const atRight = bar.scrollLeft >= bar.scrollWidth - bar.clientWidth - 2;
+      wrap.classList.toggle('can-scroll-left',  !atLeft);
+      wrap.classList.toggle('can-scroll-right', !atRight);
+    }
+
+    bar.addEventListener('scroll', update, { passive: true });
+    new ResizeObserver(update).observe(bar);
+    update();
+
+    leftBtn.addEventListener('click',  () => bar.scrollBy({ left: -SCROLL_AMT, behavior: 'smooth' }));
+    rightBtn.addEventListener('click', () => bar.scrollBy({ left:  SCROLL_AMT, behavior: 'smooth' }));
+  });
 })();
 </script>
 <div class="toast" id="toast"></div>
