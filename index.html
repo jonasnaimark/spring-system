@@ -4998,6 +4998,7 @@ function tpExpandCard(card) {
       scrim.style.opacity = isModal ? '1' : '0';
       scrim.style.pointerEvents = isModal ? 'auto' : 'none';
       tpExpandAnim = null;
+      window._refreshTouchDot?.();
     }
   }
   tpExpandAnim = requestAnimationFrame(tick);
@@ -5055,6 +5056,7 @@ function tpCollapseCard(onDone) {
       tpPendingImgEl = null;
       tpExpandState = null;
       tpExpandAnim = null;
+      window._refreshTouchDot?.();
       onDone?.();
     }
   }
@@ -5064,7 +5066,7 @@ function tpCollapseCard(onDone) {
 // ── Grow→Search expand/collapse ──────────────────────────────────
 let tpSearchState = null;
 
-const TP_SEARCH_SPRING = { stiffness: 300, damping: calcDamping(300, 1.0) };
+const TP_SEARCH_SPRING = { stiffness: 500, damping: calcDamping(500, 1.0) };
 function tpExpandSearch() {
   if (tpSearchState || tpExpandAnim) return;
   const { stiffness, damping } = TP_SEARCH_SPRING;
@@ -5258,15 +5260,18 @@ let _tpGestureDismissed = false;
 document.getElementById('tpExpandPanel').addEventListener('click', (e) => {
   e.stopPropagation();
   if (_tpGestureDismissed) { _tpGestureDismissed = false; return; }
+  if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
   if (tpExpandState) tpCollapseCard();
 });
 document.getElementById('tpModalPanel').addEventListener('click', (e) => {
   e.stopPropagation();
   if (_tpGestureDismissed) { _tpGestureDismissed = false; return; }
+  if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
   if (tpExpandState) tpCollapseCard();
 });
 document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
   e.stopPropagation();
+  if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
   if (tpExpandState) tpCollapseCard();
 });
 document.getElementById('tpSearchScrim').addEventListener('click', (e) => {
@@ -6984,7 +6989,7 @@ function applyTpGrowMode(mode) {
   );
   const bodyCopy = document.getElementById('tpBodyCopy');
   if (bodyCopy) bodyCopy.textContent = TP_GROW_DESCRIPTIONS[mode] || '';
-  const slug = mode === 'modal' ? '-modal' : mode === 'search' ? '-search' : '';
+  const slug = mode === 'modal' ? '-popover' : mode === 'search' ? '-search' : '';
   history.replaceState(null, '', `#transitions-grow${slug}`);
 }
 document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
@@ -7161,7 +7166,7 @@ if (hashTp) {
   if (rawKey === 'grow-search') {
     switchTpDemo('grow');
     applyTpGrowMode('search');
-  } else if (rawKey === 'grow-modal') {
+  } else if (rawKey === 'grow-popover' || rawKey === 'grow-modal') {
     switchTpDemo('grow');
     applyTpGrowMode('modal');
   } else if (rawKey === 'push-persistent-bar') {
@@ -8836,15 +8841,17 @@ document.querySelectorAll('.demo-tab').forEach(tab => {
   document.body.appendChild(dot);
 
   let insidePhone = false;
-  let lastTarget  = null;
+  let lastX = -1, lastY = -1;
 
   function refreshDot() {
-    if (!lastTarget) return;
-    const inTpPhone = !!lastTarget.closest('#tpPhone');
+    if (lastX < 0) return;
+    const el = document.elementFromPoint(lastX, lastY);
+    if (!el) return;
+    const inTpPhone = !!el.closest('#tpPhone');
     const tpPaused  = inTpPhone && !window._tpAutoPlay?.isPlaying();
     const activeKey = document.querySelector('.tp-tab.active')?.dataset.tp;
     const isLoadingFade = inTpPhone && activeKey === 'loading-fade';
-    const inside = !!lastTarget.closest('.phone-frame') && !lastTarget.closest('.desktop-bezel') && !lastTarget.closest('#accDemoContainer') && (!inTpPhone || tpPaused) && !isLoadingFade;
+    const inside = !!el.closest('.phone-frame') && !el.closest('.desktop-bezel') && !el.closest('#accDemoContainer') && (!inTpPhone || tpPaused) && !isLoadingFade;
     insidePhone = inside;
     dot.classList.toggle('visible', inside);
   }
@@ -8853,7 +8860,8 @@ document.querySelectorAll('.demo-tab').forEach(tab => {
   document.addEventListener('mousemove', (e) => {
     dot.style.left = e.clientX + 'px';
     dot.style.top  = e.clientY + 'px';
-    lastTarget = e.target;
+    lastX = e.clientX;
+    lastY = e.clientY;
     refreshDot();
   });
 
@@ -8867,6 +8875,7 @@ document.querySelectorAll('.demo-tab').forEach(tab => {
 
   document.addEventListener('mouseleave', () => {
     insidePhone = false;
+    lastX = -1; lastY = -1;
     dot.classList.remove('visible', 'pressed');
   });
 })();
