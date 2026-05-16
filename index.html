@@ -640,7 +640,7 @@
       --c-text-primary:    #ffffff;
       --c-text-secondary:  #ebebf5;
       --c-text-tertiary:   #ebebf599;
-      --c-text-quaternary: #ebebf54d;
+      --c-text-quaternary: #ebebf580;
 
       --c-border-faint:    rgba(255,255,255,0.05);
       --c-border-subtle:   rgba(255,255,255,0.10);
@@ -652,9 +652,9 @@
 
       --c-accent-border: rgba(255,56,92,0.5);
 
-      --sk:      #2c2c2e;
-      --sk-dark: #3a3a3c;
-      --sk-axis: #48484a;
+      --sk:      #48484a;
+      --sk-dark: #5a5a5e;
+      --sk-axis: #636366;
     }
 
     /* ── Skeleton UI ── */
@@ -707,9 +707,10 @@
       width: 100%;
       height: 170px;
       background: var(--sk);
-      border-radius: 12px;
+      border-radius: 18px;
       flex-shrink: 0;
       margin-top: 10px;
+      margin-bottom: 8px;
     }
 
     .sk-card-meta {
@@ -734,7 +735,9 @@
     .sk-card-img.partial {
       height: 170px;
       background: var(--sk);
+      border-radius: 18px;
       margin-top: 10px;
+      margin-bottom: 8px;
     }
 
 .sk-chips {
@@ -817,6 +820,83 @@
       background: var(--sk);
       border-radius: 4px;
     }
+
+/* ── Shimmer pulse animation ── */
+    @keyframes tpShimmer {
+      0%      { opacity: 1;   animation-timing-function: cubic-bezier(0.4,0,0.2,1); }
+      22.22%  { opacity: 0.4; animation-timing-function: cubic-bezier(0.4,0,0.2,1); }
+      74.07%  { opacity: 1;   animation-timing-function: linear; }
+      100%    { opacity: 1; }
+    }
+    .tp-shimmer { animation: tpShimmer 1350ms infinite; }
+
+    /* ── Loading-fade: loaded bottom nav ── */
+    .ld-bottom-nav {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 68px;
+      background: var(--c-surface-0);
+      border-top: 1px solid var(--c-border-subtle);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-around;
+      padding: 12px 8px 0;
+      z-index: 12;
+    }
+    .ld-bottom-nav .material-symbols-outlined {
+      font-size: 20px;
+      color: var(--c-text-tertiary);
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .ld-bottom-nav .material-symbols-outlined.active {
+      color: var(--c-text-primary);
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* ── Loading-fade: loaded search bar ── */
+    .sk-search-loaded {
+      height: 34px;
+      border-radius: 17px;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.13);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      gap: 6px;
+    }
+    .sk-search-loaded .material-symbols-outlined {
+      font-size: 16px;
+      color: var(--c-text-primary);
+      flex-shrink: 0;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .sk-search-loaded-text {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--c-text-primary);
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    /* ── Loading-fade: loaded categories ── */
+    .ld-cats { display: flex; gap: 14px; flex-shrink: 0; margin-top: 6px; margin-bottom: 6px; }
+    .ld-cat {
+      display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1;
+      font-size: 9px; font-weight: 500; color: var(--c-text-tertiary); letter-spacing: 0.01em;
+    }
+    .ld-cat-dot { width: 34px; height: 34px; border-radius: 50%; background: var(--c-surface-3); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .ld-cat-dot .material-symbols-outlined { font-size: 16px; color: var(--c-text-tertiary); font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    .ld-cat.active .ld-cat-dot { background: var(--c-surface-2); }
+    .ld-cat.active .ld-cat-dot .material-symbols-outlined { color: var(--c-text-primary); }
+    .ld-cat.active { color: var(--c-text-primary); font-weight: 600; }
+
+    /* ── Loading-fade: loaded card ── */
+    .ld-card { flex-shrink: 0; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.10); background: var(--c-surface-0); display: flex; flex-direction: column; margin-top: 6px; }
+    .ld-card-img { width: calc(100% - 10px); height: 140px; border-radius: 10px; flex-shrink: 0; margin: 5px 5px 0; }
+    .ld-card-img-1 { background: #a8c8e8; }
+    .ld-card-img-2 { background: #b8d4a8; }
 
 /* ── Bottom bar template ── */
     .sk-bottom-bar {
@@ -1114,6 +1194,45 @@
     .modal-btn.primary {
       background: var(--c-text-primary);
     }
+
+    /* ── Context menu ── */
+    .ctx-menu {
+      width: 120px;
+      background: var(--c-surface-2);
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.22), 0 1px 4px rgba(0,0,0,0.12);
+      padding: 8px 0;
+      display: flex;
+      flex-direction: column;
+      will-change: transform, opacity;
+    }
+    [data-theme="dark"] .ctx-menu { outline: 1px solid var(--c-border-subtle); }
+    .ctx-row {
+      height: 8px;
+      background: var(--sk-dark);
+      border-radius: 4px;
+      margin: 7px 14px;
+      width: 80%;
+    }
+    .ctx-sep {
+      height: 1px;
+      background: var(--c-border-subtle);
+      margin: 3px 0;
+    }
+
+    /* ── Overflow / 3-dot icon (in card images) ── */
+    .sk-overflow-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--sk-dark);
+      opacity: 0.6;
+    }
+    .show-overflow-btns .sk-overflow-btn { display: block; }
 
     /* ── Card flip demo ── */
     .flip-scene {
@@ -1599,9 +1718,30 @@
       flex: 1;
     }
 
+    .expand-page-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 24px 4px 8px;
+      flex-shrink: 0;
+    }
+    .expand-page-title {
+      height: 14px;
+      width: 58%;
+      background: var(--sk);
+      border-radius: 7px;
+    }
+    .expand-page-sub {
+      height: 9px;
+      width: 38%;
+      background: var(--sk);
+      border-radius: 5px;
+    }
+
     .expand-card, .expand-card-inert {
       background: var(--c-surface-0);
-      border-radius: 28px;
+      border-radius: 20px;
       overflow: hidden;
       box-shadow: 0 2px 8px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06);
       flex-shrink: 0;
@@ -1610,9 +1750,11 @@
     .expand-card-inert { pointer-events: none; }
 
     .expand-card-img {
-      width: 100%;
+      width: calc(100% - 12px);
       height: 150px;
       background: var(--sk);
+      margin: 6px 6px 0;
+      border-radius: 14px;
     }
 
     .expand-card-body {
@@ -2277,6 +2419,7 @@
     <div class="demo-tab tp-tab" data-tp="slide-up-fade">Slide Up & Fade</div>
     <div class="tab-group-sep"></div>
     <div class="demo-tab tp-tab" data-tp="cross-fade">Cross Fade</div>
+    <div class="demo-tab tp-tab" data-tp="loading-fade">Loading Fade</div>
   </div>
   <p class="section-body" id="tpBodyCopy"></p>
   <div class="section-content">
@@ -2286,8 +2429,8 @@
       <svg id="tpIconPause" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="display:none"><path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z"/></svg>
     </button>
     <div class="demo-mode-toggle" id="tpLoadModeToggle" style="display:none;">
-      <button class="demo-mode-btn active" data-mode="simple">Simple</button>
-      <button class="demo-mode-btn" data-mode="emphasized">Emphasized</button>
+      <button class="demo-mode-btn active" data-mode="shimmer">Shimmer</button>
+      <button class="demo-mode-btn" data-mode="reveal">Reveal</button>
     </div>
     <div class="demo-mode-toggle" id="tpGrowModeToggle" style="display:none;">
       <button class="demo-mode-btn active" data-mode="fullscreen">Fullscreen</button>
@@ -2417,7 +2560,7 @@
 
       <!-- scale-in: modal + tooltip -->
       <div id="tpModalContent" style="display:none;position:absolute;inset:0;">
-        <div class="phone-content" style="position:relative;">
+        <div class="phone-content show-overflow-btns" style="position:relative;">
           <div class="demo-tooltip" id="tpTooltip" style="top:129px; left:calc(50% + 32px);">
             <div class="tooltip-caret"></div>
             <div class="tooltip-bubble">
@@ -2429,6 +2572,18 @@
         <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
         <div class="modal-backdrop" id="tpModalBackdrop" style="opacity:0;pointer-events:none;"></div>
         <div class="modal-card" id="tpModal" style="opacity:0; transform: scale(0.75); position:absolute; top:50%; left:50%; margin-top:-70px; margin-left:-110px; z-index:12; pointer-events:none;"></div>
+        <div class="ctx-menu" id="tpCtxMenu" style="opacity:0;transform:scale(0.75);transform-origin:top right;position:absolute;top:193px;right:26px;z-index:12;pointer-events:none;">
+          <div class="ctx-row"></div>
+          <div class="ctx-row" style="width:72%;"></div>
+          <div class="ctx-sep"></div>
+          <div class="ctx-row"></div>
+          <div class="ctx-row" style="width:60%;"></div>
+          <div class="ctx-sep"></div>
+          <div class="ctx-row" style="width:80%;"></div>
+          <div class="ctx-row" style="width:50%;"></div>
+          <div class="ctx-sep"></div>
+          <div class="ctx-row" style="width:68%;"></div>
+        </div>
       </div>
 
       <!-- sequence: persistent header + swappable content -->
@@ -2485,6 +2640,21 @@
           </div>
         </div>
         <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
+      </div>
+
+      <!-- loading-fade layer -->
+      <div id="tpLoadContent" style="display:none;position:absolute;inset:0;">
+        <div class="phone-content" id="tpLoadSkeletonContent" style="padding-bottom:68px;"></div>
+        <div class="sk-bottom-nav" id="tpLoadSkNav" style="z-index:11;">
+          <div class="sk-nav-icon"></div><div class="sk-nav-icon"></div>
+          <div class="sk-nav-icon"></div><div class="sk-nav-icon"></div>
+        </div>
+        <div class="ld-bottom-nav" id="tpLoadLdNav" style="display:none;z-index:12;">
+          <span class="material-symbols-outlined active">search</span>
+          <span class="material-symbols-outlined">favorite</span>
+          <span class="material-symbols-outlined">luggage</span>
+          <span class="material-symbols-outlined">account_circle</span>
+        </div>
       </div>
 
 <div class="sk-bottom-nav" id="tpPhoneBottomNav">
@@ -2626,7 +2796,7 @@
   <p class="section-body">Most animations use springs because they feel smooth and respond to gestures. Each spring is tuned along two axes: Speed and Bounciness. These are some common examples:</p>
   <div class="demo-tabs-bar section-chips">
     <div class="demo-tab active" data-demo="sheet">Sheet</div>
-    <div class="demo-tab" data-demo="push">Nav Transition</div>
+    <div class="demo-tab" data-demo="nav-transition">Nav Transition</div>
     <div class="demo-tab" data-demo="grow">Details Page</div>
     <div class="demo-tab" data-demo="bottom-bar">Bottom Bar</div>
     <div class="demo-tab" data-demo="onboarding">Onboarding Flow</div>
@@ -2739,7 +2909,7 @@
         </div>
       </div>
       <!-- Push / Nav demo -->
-      <div class="demo-view" id="view-push" style="display:none; align-items:center; justify-content:center;">
+      <div class="demo-view" id="view-nav-transition" style="display:none; align-items:center; justify-content:center;">
         <div class="phone-frame">
           <!-- Source screen (detail) -->
           <div class="push-screen" id="pushSource"><div class="push-dest-inner"></div></div>
@@ -2755,6 +2925,10 @@
         <div class="phone-frame" id="expandPhone">
           <div style="display:flex; flex-direction:column; height:100%;">
             <div class="expand-scroll" id="expandList">
+              <div class="expand-page-header">
+                <div class="expand-page-title"></div>
+                <div class="expand-page-sub"></div>
+              </div>
               <div class="expand-card" data-expand="0">
                 <div class="expand-card-img"></div>
                 <div class="expand-card-body">
@@ -3392,15 +3566,15 @@
     <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
   </div>
   <div class="sk-divider"></div>
-  <div class="sk-card-img"></div>
+  <div class="sk-card-img" style="position:relative;"><div class="sk-overflow-btn"></div></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
   <div class="sk-section-label"></div>
-  <div class="sk-card-img partial"></div>
+  <div class="sk-card-img partial" style="position:relative;"><div class="sk-overflow-btn"></div></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
   <div class="sk-sub"></div>
-  <div class="sk-card-img partial"></div>
+  <div class="sk-card-img partial" style="position:relative;"><div class="sk-overflow-btn"></div></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
 </template>
@@ -3691,6 +3865,56 @@
   </div>
 </template>
 
+<template id="tpl-load-skeleton">
+  <div class="sk-search"></div>
+  <div class="sk-cats">
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
+  </div>
+  <div class="sk-divider"></div>
+  <div class="sk-card-img"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+  <div class="sk-section-label"></div>
+  <div class="sk-card-img partial"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+</template>
+
+<template id="tpl-load-reveal">
+  <div class="sk-search-loaded">
+    <span class="material-symbols-outlined">search</span>
+    <span class="sk-search-loaded-text">Start your search</span>
+  </div>
+  <div class="ld-cats">
+    <div class="ld-cat active"><div class="ld-cat-dot"><span class="material-symbols-outlined">globe</span></div>All</div>
+    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">home_and_garden</span></div>Homes</div>
+    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">mountain_flag</span></div>Experiences</div>
+    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">room_service</span></div>Services</div>
+  </div>
+  <div class="sk-divider"></div>
+  <div class="ld-card">
+    <div class="ld-card-img ld-card-img-1"></div>
+    <div class="ff-body">
+      <div class="ff-title">Cozy loft in the Mission</div>
+      <div class="ff-sub">San Francisco · 2 guests</div>
+      <div class="ff-rating">★ 4.92 · 128 reviews</div>
+      <div class="ff-price">$189 / night</div>
+    </div>
+  </div>
+  <div class="ld-card">
+    <div class="ld-card-img ld-card-img-2"></div>
+    <div class="ff-body">
+      <div class="ff-title">Cabin by the lake</div>
+      <div class="ff-sub">Lake Tahoe · 4 guests</div>
+      <div class="ff-rating">★ 4.87 · 94 reviews</div>
+      <div class="ff-price">$245 / night</div>
+    </div>
+  </div>
+</template>
+
 <script>
 // ── Theme toggle ──────────────────────────────────────────────────
 (function() {
@@ -3969,7 +4193,7 @@ const SPRING_DEMOS = {
     },
   },
 
-  push: {
+  'nav-transition': {
     description:   'A smooth spring balances speed and comfort.',
     defaultSpring: { speed: 'default', char: 'smooth'        },
     reset() {
@@ -4343,7 +4567,7 @@ document.querySelectorAll('.demo-tab[data-demo]').forEach(tab => {
 
 // Restore spring demo from URL hash on load
 const hashDemo = location.hash.slice(1);
-if (hashDemo && !hashDemo.startsWith('tp-') && !hashDemo.startsWith('ng-') && document.querySelector(`.demo-tab[data-demo="${hashDemo}"]`)) {
+if (hashDemo && !hashDemo.startsWith('transitions-') && !hashDemo.startsWith('gestures-') && document.querySelector(`.demo-tab[data-demo="${hashDemo}"]`)) {
   switchDemo(hashDemo);
 }
 
@@ -4418,7 +4642,7 @@ function expandCard(card) {
   const fromY = cardRect.top  - phoneRect.top  - by;
   const fromW = cardRect.width;
   const fromH = cardRect.height;
-  const fromR = 28;
+  const fromR = 20;
   const toX = 0, toY = 0, toW = phone.clientWidth, toH = phone.clientHeight, toR = 40;
   document.getElementById('expandCardLayer').style.opacity   = '1';
   document.getElementById('expandDetailLayer').style.opacity = '0';
@@ -4527,6 +4751,7 @@ let tpSufStep = 0;
 let tpSufAnimating = false;
 let tpSufCooldown  = 0;
 let tpSlideInMode = 'fullscreen';
+let tpLoadMode = 'shimmer';
 
 function tpSpringAnimate(tick, spring, onDone) {
   if (tpAnim) cancelAnimationFrame(tpAnim);
@@ -4613,6 +4838,7 @@ function tpExpandCard(card) {
   panel.style.pointerEvents = 'none'; panel.style.zIndex = '12';
   panel.style.visibility = 'hidden'; panel.style.display = 'block';
   scrim.style.opacity = '0';
+  if (isModal) scrim.style.pointerEvents = 'auto';
 
   tpExpandState = { fromX, fromY, fromW, fromH, fromR, card, imgEl, isModal, toX, toY, toW, toH, toR };
   const startT = performance.now();
@@ -5309,9 +5535,9 @@ function activateFastFade() {
   document.getElementById('mxUI').style.display = 'none';
   selectBez('linear');
   document.querySelectorAll('.dur-card').forEach(c => c.classList.remove('selected'));
-  document.querySelector('.dur-card[data-dur="100"]')?.classList.add('selected');
-  activeBezDuration = 100;
-  markBezDefaults('linear', 100);
+  document.querySelector('.dur-card[data-dur="150"]')?.classList.add('selected');
+  activeBezDuration = 150;
+  markBezDefaults('linear', 150);
   fastFadeToggle = false;
   const loaded = document.getElementById('ffLoaded');
   if (loaded) { loaded.style.transition = 'none'; loaded.style.opacity = '0'; }
@@ -5478,7 +5704,7 @@ let tpCrossFadeAnimating = false;
 let tpCrossFadeCooldown  = 0;
 const TP_DEMOS = {
   'grow': {
-    description: 'Creates continuity as a source element grows into the destination screen or floating element.',
+    description: 'Seamlessly grows an element to reveal more detail.',
     play() {
       const cards = document.querySelectorAll('.tp-grow-card');
       if (tpExpandState) {
@@ -5507,7 +5733,7 @@ const TP_DEMOS = {
     },
   },
   'push': {
-    description: 'Our default nav transition. Nav bars can be kept persistent if shared across both screens.',
+    description: 'The default navigation transition. New screen slides in as the current one slides out.',
     reset() {
       tpDemoState = 'out';
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
@@ -5599,7 +5825,7 @@ const TP_DEMOS = {
   },
 
   'push-fade': {
-    description: 'A subtler transition compared to a Push, often used in onboarding flows.',
+    description: 'A softer push for multi-step flows, where each screen feels like the next step in a sequence.',
     reset() {
       tpTabIdx = 0; tpTabDir = 1;
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
@@ -5671,7 +5897,7 @@ const TP_DEMOS = {
   },
 
   'slide-up': {
-    description: 'Used for components that enter and exit from the bottom of the screen, like sheets and bars.',
+    description: 'Layers content over the current screen to keep context.',
     reset(reason) {
       if (reason === 'leaving') applyTpSlideUpMode('fitted');
       tpSlideUpStep = 0;
@@ -5817,7 +6043,7 @@ const TP_DEMOS = {
   },
 
   'slide-up-fade': {
-    description: 'A subtler slide up, often used on desktop web.',
+    description: 'A lighter version of Slide Up, typically used on desktop or web.',
     reset() {
       tpSufStep = 0;
       tpSufAnimating = false;
@@ -5944,7 +6170,7 @@ const TP_DEMOS = {
   },
 
   'grow-fade': {
-    description: 'Presents floating elements. Grows from center or from the element that triggered it.',
+    description: 'Floating elements scale in from the center of their trigger point.',
     _seqTimer: null,
     _cancelSeq() {
       if (this._seqTimer) { clearTimeout(this._seqTimer); this._seqTimer = null; }
@@ -5953,22 +6179,25 @@ const TP_DEMOS = {
     reset() {
       this._cancelSeq();
       tpDemoState = 'out';
-      const bd = document.getElementById('tpModalBackdrop');
-      const m  = document.getElementById('tpModal');
-      const tt = document.getElementById('tpTooltip');
-      bd.style.opacity = '0'; bd.style.pointerEvents = 'none';
-      m.style.opacity  = '0'; m.style.transform = 'scale(0.75)'; m.style.pointerEvents = 'none';
-      tt.style.opacity = '0'; tt.style.transform = 'translateX(-50%) scale(0.75)';
-    },
-    play() {
-      this._cancelSeq();
-      // also snap elements to hidden so sequence always starts clean
       const bd  = document.getElementById('tpModalBackdrop');
       const m   = document.getElementById('tpModal');
       const tt  = document.getElementById('tpTooltip');
+      const ctx = document.getElementById('tpCtxMenu');
+      bd.style.opacity = '0'; bd.style.pointerEvents = 'none';
+      m.style.opacity  = '0'; m.style.transform = 'scale(0.75)'; m.style.pointerEvents = 'none';
+      tt.style.opacity = '0'; tt.style.transform = 'translateX(-50%) scale(0.75)';
+      if (ctx) { ctx.style.opacity = '0'; ctx.style.transform = 'scale(0.75)'; }
+    },
+    play() {
+      this._cancelSeq();
+      const bd  = document.getElementById('tpModalBackdrop');
+      const m   = document.getElementById('tpModal');
+      const tt  = document.getElementById('tpTooltip');
+      const ctx = document.getElementById('tpCtxMenu');
       bd.style.opacity = '0';
       m.style.opacity  = '0'; m.style.transform = 'scale(0.75)';
       tt.style.opacity = '0'; tt.style.transform = 'translateX(-50%) scale(0.75)';
+      if (ctx) { ctx.style.opacity = '0'; ctx.style.transform = 'scale(0.75)'; }
 
       const spring = { stiffness: 600, damping: calcDamping(600, 0.7) };
       const self = this;
@@ -6015,14 +6244,42 @@ const TP_DEMOS = {
         tpAnim = requestAnimationFrame(tick);
       };
 
-      // modal enter → pause → modal exit → pause → tooltip enter → pause → tooltip exit
+      const animateCtx = (entering, onDone) => {
+        const { stiffness, damping } = spring;
+        const startT = performance.now();
+        function tick(now) {
+          const t   = (now - startT) / 1000;
+          const pos = springPos(t, stiffness, damping);
+          const sc  = entering ? (0.75 + (1 - pos) * 0.25) : (0.75 + pos * 0.25);
+          const op  = entering ? Math.min(t / 0.08, 1) : Math.max(1 - t / 0.08, 0);
+          if (ctx) { ctx.style.transform = `scale(${sc})`; ctx.style.opacity = String(op); }
+          if (t < 5 && !isSettled(t, stiffness, damping)) {
+            tpAnim = requestAnimationFrame(tick);
+          } else {
+            if (ctx) { ctx.style.transform = `scale(${entering ? 1 : 0.75})`; ctx.style.opacity = entering ? '1' : '0'; }
+            if (onDone) onDone();
+          }
+        }
+        if (tpAnim) cancelAnimationFrame(tpAnim);
+        tpAnim = requestAnimationFrame(tick);
+      };
+
+      // modal enter → pause → modal exit → pause → tooltip enter → pause → tooltip exit → pause → ctx enter → pause → ctx exit
       animateModal(true, () => {
         after(600, () => {
           animateModal(false, () => {
             after(400, () => {
               animateTooltip(true, () => {
                 after(700, () => {
-                  animateTooltip(false, null);
+                  animateTooltip(false, () => {
+                    after(400, () => {
+                      animateCtx(true, () => {
+                        after(700, () => {
+                          animateCtx(false, null);
+                        });
+                      });
+                    });
+                  });
                 });
               });
             });
@@ -6032,8 +6289,151 @@ const TP_DEMOS = {
     },
   },
 
+  'loading-fade': {
+    description: 'A gentle fade pulse shows the system is working while content loads.',
+    _timer: null,
+    _resetAndCycle() {
+      clearTimeout(this._timer);
+      this._timer = null;
+      const container = document.getElementById('tpLoadContent');
+      const skContent = document.getElementById('tpLoadSkeletonContent');
+      const skNav     = document.getElementById('tpLoadSkNav');
+      const ldNav     = document.getElementById('tpLoadLdNav');
+      if (!skContent) return;
+
+      const FADE_OUT = 150;
+      const FADE_IN  = 350;
+
+      // Fade entire container to white
+      container.style.transition = `opacity ${FADE_OUT}ms linear`;
+      container.style.opacity = '0';
+
+      this._timer = setTimeout(() => {
+        // While invisible: swap content back to skeleton
+        Array.from(skContent.parentElement.querySelectorAll('.tp-load-reveal-layer')).forEach(el => el.remove());
+        skContent.innerHTML = '';
+        skContent.style.opacity = '';
+        skContent.style.transition = '';
+        stampTemplate('tpl-load-skeleton', skContent);
+        tpApplyLoadShimmer(skContent);
+        if (skNav) { skNav.style.opacity = ''; skNav.style.transition = ''; skNav.style.display = ''; }
+        if (ldNav) { ldNav.style.display = 'none'; ldNav.style.opacity = '0'; ldNav.style.transition = ''; }
+
+        // Fade back in
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          container.style.transition = `opacity ${FADE_IN}ms linear`;
+          container.style.opacity = '1';
+        }));
+
+        this._timer = setTimeout(() => {
+          container.style.transition = '';
+          if (tpLoadMode === 'reveal') {
+            this._timer = setTimeout(() => this.play(), 2500);
+          }
+        }, FADE_IN + 50);
+      }, FADE_OUT);
+    },
+    reset(reason) {
+      clearTimeout(this._timer);
+      this._timer = null;
+      const container = document.getElementById('tpLoadContent');
+      const skContent = document.getElementById('tpLoadSkeletonContent');
+      const skNav     = document.getElementById('tpLoadSkNav');
+      const ldNav     = document.getElementById('tpLoadLdNav');
+      if (!skContent) return;
+      // Always restore container visibility in case reset fires mid-fade
+      if (container) { container.style.transition = ''; container.style.opacity = ''; }
+      Array.from(skContent.parentElement.querySelectorAll('.tp-load-reveal-layer')).forEach(el => el.remove());
+      skContent.innerHTML = '';
+      skContent.style.opacity = '';
+      skContent.style.transition = '';
+      stampTemplate('tpl-load-skeleton', skContent);
+      tpApplyLoadShimmer(skContent);
+      if (skNav) { skNav.style.opacity = ''; skNav.style.transition = ''; skNav.style.display = ''; }
+      if (ldNav) { ldNav.style.opacity = '0'; ldNav.style.transition = ''; ldNav.style.display = 'none'; }
+      if (reason === 'leaving') applyTpLoadMode('shimmer');
+    },
+    play() {
+      // Reveal mode: freeze shimmer → fade in loaded overlay → loop
+      const container = document.getElementById('tpLoadContent');
+      const skContent = document.getElementById('tpLoadSkeletonContent');
+      const skNav     = document.getElementById('tpLoadSkNav');
+      const ldNav     = document.getElementById('tpLoadLdNav');
+      if (!skContent) return;
+      // Ensure container is fully visible before playing (may have been mid-fade)
+      if (container) { container.style.transition = ''; container.style.opacity = ''; }
+
+      const shimmerEls = Array.from(skContent.querySelectorAll('.tp-shimmer'));
+
+      const loaded = document.createElement('div');
+      loaded.className = 'phone-content tp-load-reveal-layer';
+      loaded.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:68px;padding:36px 18px 0;';
+      stampTemplate('tpl-load-reveal', loaded);
+
+      // rows: [0] search, [1] cats, [2] divider, [3] card1, [4] card2
+      const rows = Array.from(loaded.children);
+      rows.forEach(row => { row.style.opacity = '0'; });
+      skContent.parentElement.appendChild(loaded);
+
+      // Pre-set cats children to opacity:0 before appending so stagger works on the children
+      if (rows[1]) {
+        Array.from(rows[1].children).forEach(cat => { cat.style.opacity = '0'; });
+        rows[1].style.opacity = '1'; // container visible; children drive the stagger
+      }
+
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        // Search bar
+        rows[0].style.transition = 'opacity 150ms linear';
+        rows[0].style.opacity = '1';
+
+        // Cat items: stagger left-to-right 20ms apart
+        if (rows[1]) {
+          Array.from(rows[1].children).forEach((cat, i) => {
+            cat.style.transition = `opacity 150ms linear ${i * 20}ms`;
+            cat.style.opacity = '1';
+          });
+        }
+
+        // Divider
+        if (rows[2]) { rows[2].style.transition = 'opacity 150ms linear 20ms'; rows[2].style.opacity = '1'; }
+
+        // Card 1: after top group settles
+        if (rows[3]) { rows[3].style.transition = 'opacity 180ms linear 80ms'; rows[3].style.opacity = '1'; }
+
+        // Card 2: after card 1
+        if (rows[4]) { rows[4].style.transition = 'opacity 180ms linear 220ms'; rows[4].style.opacity = '1'; }
+      }));
+
+      shimmerEls.forEach(sk => {
+        sk.style.opacity = getComputedStyle(sk).opacity;
+        sk.classList.remove('tp-shimmer');
+      });
+      setTimeout(() => {
+        shimmerEls.forEach(sk => {
+          sk.style.transition = 'opacity 100ms linear';
+          sk.style.opacity = '0';
+        });
+        if (skNav) {
+          skNav.style.transition = 'opacity 100ms linear';
+          skNav.style.opacity = '0';
+        }
+        if (ldNav) {
+          ldNav.style.display = '';
+          ldNav.style.opacity = '0';
+          ldNav.style.transition = 'opacity 150ms linear';
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            ldNav.style.opacity = '1';
+          }));
+        }
+      }, 100);
+
+      // Hold loaded state, then reset and loop
+      this._timer = setTimeout(() => this._resetAndCycle(), 2500);
+    },
+  },
+
   'cross-fade': {
-    description: 'Used when content changes but the context stays the same.',
+    description: 'Swaps content in place when the context stays the same.',
     _showing: 'list',
     reset() {
       this._showing = 'list';
@@ -6146,8 +6546,9 @@ const TP_PHONE_LAYERS = {
   'slide-up':      'tpSheetContent',
   'grow-fade':      'tpModalContent',
   'cross-fade':      'tpSeqContent',
+  'loading-fade':  'tpLoadContent',
 };
-const TP_ALL_LAYERS = ['tpPhoneContent','tpPushContent','tpPersistBar','tpTabContent','tpSheetContent','tpModalContent','tpSeqContent'];
+const TP_ALL_LAYERS = ['tpPhoneContent','tpPushContent','tpPersistBar','tpTabContent','tpSheetContent','tpModalContent','tpSeqContent','tpLoadContent'];
 
 function switchTpDemo(key) {
   const tab = document.querySelector(`.tp-tab[data-tp="${key}"]`);
@@ -6159,6 +6560,11 @@ function switchTpDemo(key) {
   tab.classList.add('active');
   const desc = TP_DEMOS[key]?.description;
   if (desc) document.getElementById('tpBodyCopy').textContent = desc;
+  // Apply mode-specific description if a non-default mode is active
+  if (key === 'grow')       document.getElementById('tpBodyCopy').textContent = TP_GROW_DESCRIPTIONS[tpGrowMode] || desc;
+  if (key === 'push')       document.getElementById('tpBodyCopy').textContent = TP_SLIDE_IN_DESCRIPTIONS[tpSlideInMode] || desc;
+  if (key === 'slide-up')   document.getElementById('tpBodyCopy').textContent = TP_SLIDE_UP_DESCRIPTIONS[tpSlideUpMode] || desc;
+  if (key === 'loading-fade') document.getElementById('tpBodyCopy').textContent = TP_LOAD_DESCRIPTIONS[tpLoadMode] || desc;
 
   // Reset shared state
   tpDemoState = 'out';
@@ -6187,12 +6593,20 @@ function switchTpDemo(key) {
 
   // Hide global bottom nav for demos that have their own nav inside their layer
   const tpBottomNav = document.getElementById('tpPhoneBottomNav');
-  if (tpBottomNav) tpBottomNav.style.display = (key === 'push' || key === 'push-fade' || key === 'cross-fade') ? 'none' : '';
+  if (tpBottomNav) tpBottomNav.style.display = (key === 'push' || key === 'push-fade' || key === 'cross-fade' || key === 'loading-fade') ? 'none' : '';
 
   // Show grow mode toggle only for grow tab
   document.getElementById('tpGrowModeToggle').style.display = key === 'grow' ? '' : 'none';
   document.getElementById('tpSlideInModeToggle').style.display = key === 'push' ? '' : 'none';
   document.getElementById('tpSlideUpModeToggle').style.display = key === 'slide-up' ? '' : 'none';
+  document.getElementById('tpLoadModeToggle').style.display = key === 'loading-fade' ? '' : 'none';
+  document.getElementById('tpPlayBtn').style.display = key === 'loading-fade' ? 'none' : '';
+  if (key === 'loading-fade') {
+    TP_DEMOS['loading-fade'].reset();
+    if (tpLoadMode === 'reveal') {
+      TP_DEMOS['loading-fade']._timer = setTimeout(() => TP_DEMOS['loading-fade'].play(), 2500);
+    }
+  }
 }
 
 // ── Demo Alt Pattern ─────────────────────────────────────────────────────────
@@ -6250,12 +6664,18 @@ function switchTpDemo(key) {
 
 // Grow mode toggle (Fullscreen / Modal) — defined before tab click handlers that reference it
 let tpGrowMode = 'fullscreen';
+const TP_GROW_DESCRIPTIONS = {
+  fullscreen: 'Seamlessly grows an element to reveal more detail.',
+  modal:      'The same grow motion into a floating element rather than a full screen.',
+};
 function applyTpGrowMode(mode) {
   tpGrowMode = mode;
   document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.mode === tpGrowMode)
   );
-  history.replaceState(null, '', `#tp-grow${tpGrowMode === 'modal' ? '-modal' : ''}`);
+  const bodyCopy = document.getElementById('tpBodyCopy');
+  if (bodyCopy) bodyCopy.textContent = TP_GROW_DESCRIPTIONS[mode] || '';
+  history.replaceState(null, '', `#transitions-grow${tpGrowMode === 'modal' ? '-modal' : ''}`);
 }
 document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -6283,12 +6703,18 @@ document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
 });
 
 // Slide-in mode toggle (Fullscreen / Persistent Bar)
+const TP_SLIDE_IN_DESCRIPTIONS = {
+  fullscreen:      'The default navigation transition. New screen slides in as the current one slides out.',
+  'persistent-bar': 'Shared elements like bars or search can stay fixed across the transition.',
+};
 function applyTpSlideInMode(mode) {
   tpSlideInMode = mode;
   document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.mode === tpSlideInMode)
   );
-  history.replaceState(null, '', `#tp-push${mode === 'persistent-bar' ? '-persistent-bar' : ''}`);
+  const bodyCopy = document.getElementById('tpBodyCopy');
+  if (bodyCopy) bodyCopy.textContent = TP_SLIDE_IN_DESCRIPTIONS[mode] || '';
+  history.replaceState(null, '', `#transitions-push${mode === 'persistent-bar' ? '-persistent-bar' : ''}`);
   // Swap visible layer
   document.getElementById('tpPushContent').style.display  = mode === 'fullscreen'      ? '' : 'none';
   document.getElementById('tpPersistBar').style.display   = mode === 'persistent-bar'  ? 'block' : 'none';
@@ -6306,12 +6732,18 @@ document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(btn => 
 });
 
 // Slide-up mode toggle (Fitted / Full Height)
+const TP_SLIDE_UP_DESCRIPTIONS = {
+  fitted:       'Layers content over the current screen to keep context.',
+  'full-height': 'A taller variant that reveals more content.',
+};
 let tpSlideUpMode = 'fitted';
 function applyTpSlideUpMode(mode) {
   tpSlideUpMode = mode;
   document.querySelectorAll('#tpSlideUpModeToggle .demo-mode-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.mode === mode)
   );
+  const bodyCopy = document.getElementById('tpBodyCopy');
+  if (bodyCopy) bodyCopy.textContent = TP_SLIDE_UP_DESCRIPTIONS[mode] || '';
   const content = document.getElementById('tpSheetContent');
   const darkBg  = document.getElementById('tpSheetDarkBg');
   if (mode === 'full-height') {
@@ -6337,7 +6769,7 @@ function applyTpSlideUpMode(mode) {
       s.appendChild(ov);
     });
   }
-  history.replaceState(null, '', `#tp-slide-up${mode === 'full-height' ? '-full-height' : ''}`);
+  history.replaceState(null, '', `#transitions-slide-up${mode === 'full-height' ? '-full-height' : ''}`);
 }
 document.querySelectorAll('#tpSlideUpModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -6351,18 +6783,59 @@ document.querySelectorAll('#tpSlideUpModeToggle .demo-mode-btn').forEach(btn => 
   });
 });
 
+// Loading Fade mode toggle (Shimmer / Reveal)
+function tpApplyLoadShimmer(container) {
+  const DURATION = 1350;
+  function setDelay(selector, groupDelay) {
+    container.querySelectorAll(selector).forEach(sk => {
+      sk.classList.add('tp-shimmer');
+      sk.style.animationDelay = (-DURATION + groupDelay) + 'ms';
+    });
+  }
+  setDelay('.sk-search',                   0);
+  setDelay('.sk-cat-dot, .sk-cat-label', 100);
+  setDelay('.sk-divider',                100);
+  setDelay('.sk-card-img',               200);
+  setDelay('.sk-title, .sk-price',       300);
+  setDelay('.sk-sub, .sk-section-label', 400);
+}
+
+const TP_LOAD_DESCRIPTIONS = {
+  shimmer: 'A gentle fade pulse shows the system is working while content loads.',
+  reveal:  'Once content is ready, it fades in as the placeholders fade out.',
+};
+function applyTpLoadMode(mode) {
+  tpLoadMode = mode;
+  document.querySelectorAll('#tpLoadModeToggle .demo-mode-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.mode === tpLoadMode)
+  );
+  const bodyCopy = document.getElementById('tpBodyCopy');
+  if (bodyCopy) bodyCopy.textContent = TP_LOAD_DESCRIPTIONS[mode] || '';
+  history.replaceState(null, '', `#transitions-loading-fade${mode === 'reveal' ? '-reveal' : ''}`);
+}
+document.querySelectorAll('#tpLoadModeToggle .demo-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.mode === tpLoadMode) return;
+    window._tpAutoPlay?.stop();
+    applyTpLoadMode(btn.dataset.mode);
+    TP_DEMOS['loading-fade'].reset();
+    if (btn.dataset.mode === 'reveal') {
+      TP_DEMOS['loading-fade']._timer = setTimeout(() => TP_DEMOS['loading-fade'].play(), 2500);
+    }
+  });
+});
+
 document.querySelectorAll('.tp-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const key = tab.dataset.tp;
     switchTpDemo(key);
-    history.replaceState(null, '', `#tp-${key}${key === 'grow' && tpGrowMode === 'modal' ? '-modal' : ''}`);
-    // Always restart auto-play when switching demos
+    history.replaceState(null, '', `#transitions-${key}${key === 'grow' && tpGrowMode === 'modal' ? '-modal' : ''}`);
     window._tpAutoPlay?.stop();
-    window._tpAutoPlay?.start();
+    if (key !== 'loading-fade') window._tpAutoPlay?.start();
   });
 });
 
-const hashTp = location.hash.match(/^#tp-(.+)$/);
+const hashTp = location.hash.match(/^#transitions-(.+)$/);
 if (hashTp) {
   const rawKey = hashTp[1];
   if (rawKey === 'grow-modal') {
@@ -6374,6 +6847,9 @@ if (hashTp) {
   } else if (rawKey === 'slide-up-full-height') {
     switchTpDemo('slide-up');
     applyTpSlideUpMode('full-height');
+  } else if (rawKey === 'loading-fade-reveal') {
+    switchTpDemo('loading-fade');
+    applyTpLoadMode('reveal');
   } else {
     switchTpDemo(rawKey);
   }
@@ -6417,7 +6893,7 @@ if (hashTp) {
     } else if (key === 'grow-fade') {
       // scale-in self-sequences (~3.3s total): just fire play and wait
       TP_DEMOS['grow-fade'].play();
-      scheduleNext(4600, onCycle);
+      scheduleNext(7200, onCycle);
     } else if (key === 'slide-up-fade') {
       function nextSufStep() {
         if (!tpPlaying) return;
@@ -6439,6 +6915,23 @@ if (hashTp) {
         });
       }
       nextStep();
+    } else if (key === 'loading-fade') {
+      if (tpLoadMode === 'shimmer') {
+        // shimmer is a looping CSS animation — just hold for a cycle
+        scheduleNext(3000, onCycle);
+      } else {
+        // reveal: shimmer for 2.5s, then fade in content, hold, reset, loop
+        TP_DEMOS['loading-fade'].reset();
+        scheduleNext(2500, () => {
+          if (!tpPlaying) return;
+          TP_DEMOS['loading-fade'].play();
+          scheduleNext(2000, () => {
+            if (!tpPlaying) return;
+            TP_DEMOS['loading-fade'].reset();
+            scheduleNext(500, onCycle);
+          });
+        });
+      }
     } else if (key === 'cross-fade') {
       TP_DEMOS['cross-fade'].play();
       scheduleNext(1800, () => {
@@ -6570,12 +7063,13 @@ if (hashTp) {
     const isScrim  = !!target.closest('#tpSufScrim');
     const isX      = !!target.closest('[data-suf-close]');
     const isBg     = !!target.closest('#tpDesktopBg');
-    if (tpSufStep === 0) {
-      // No modal open — present first
+    if (tpSufStep === 0 && !isScrim) {
+      // No modal open — present first (but not if clicking the scrim area)
       TP_DEMOS['slide-up-fade'].play();
     } else if (isScrim || isX) {
-      // Dismiss top modal: jump to correct exit step (6 - modalsOpen)
-      tpSufStep = 6 - tpSufStep;
+      // Dismiss top modal. Steps 1-3 are enter states: map to exit step via 6-n.
+      // Steps 4-5 are already exit states: just run play() at current step.
+      if (tpSufStep <= 3) tpSufStep = 6 - tpSufStep;
       TP_DEMOS['slide-up-fade'].play();
     } else if (tpSufStep < 3 && (isBg || !!target.closest('#tpSufModal0, #tpSufModal1, #tpSufModal2'))) {
       // Click bg or modal to stack another modal
@@ -7899,11 +8393,11 @@ document.querySelectorAll('.ng-tab').forEach(tab => {
     const key = tab.dataset.ng;
     if (tab.classList.contains('active')) { NG_DEMOS[key]?.play(); return; }
     switchNgDemo(key);
-    history.replaceState(null, '', `#ng-${key}`);
+    history.replaceState(null, '', `#gestures-${key}`);
   });
 });
 
-const hashNg = location.hash.match(/^#ng-(.+)$/);
+const hashNg = location.hash.match(/^#gestures-(.+)$/);
 if (hashNg) switchNgDemo(hashNg[1]);
 
 document.getElementById('ngPlayBtn').addEventListener('click', () => {
@@ -8006,7 +8500,9 @@ document.querySelectorAll('.demo-tab').forEach(tab => {
     if (!lastTarget) return;
     const inTpPhone = !!lastTarget.closest('#tpPhone');
     const tpPaused  = inTpPhone && !window._tpAutoPlay?.isPlaying();
-    const inside = !!lastTarget.closest('.phone-frame') && !lastTarget.closest('.desktop-bezel') && !lastTarget.closest('#accDemoContainer') && (!inTpPhone || tpPaused);
+    const activeKey = document.querySelector('.tp-tab.active')?.dataset.tp;
+    const isLoadingFade = inTpPhone && activeKey === 'loading-fade';
+    const inside = !!lastTarget.closest('.phone-frame') && !lastTarget.closest('.desktop-bezel') && !lastTarget.closest('#accDemoContainer') && (!inTpPhone || tpPaused) && !isLoadingFade;
     insidePhone = inside;
     dot.classList.toggle('visible', inside);
   }
