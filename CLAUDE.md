@@ -227,3 +227,57 @@ ngExpandState = null;
 ```
 
 The scrim's `pointer-events` is restored to `auto` only when the next modal fully opens (in the expand done block).
+
+---
+
+## Segmented toggle to swap between two demo variants (e.g. Layouts / Icons)
+
+This pattern lets a single demo tab show two completely different visuals via a segmented button. Took 30+ turns to get right — the failure modes are subtle.
+
+### The three killers
+
+**1. `history.replaceState` throws on `file://` URLs — and silently halts your function.**
+
+If your `applyMode()` function calls `history.replaceState(null, '', '#some-hash')` and the file is opened locally, it throws a security error. Everything after that line — including the DOM visibility swap — never runs. The toggle *appears* broken even though `tpCfMode` is set correctly.
+
+Fix: wrap every `history.replaceState` call in a `try/catch`:
+
+```js
+try { history.replaceState(null, '', `#tp-cross-fade-${mode}`); } catch(e) {}
+```
+
+**2. `reset()` overwrites `tpCfMode` on every autoplay cycle.**
+
+Autoplay calls `reset()` before each play. If `reset()` contains any line like `tpCfMode = 'cards'` (even guarded by `if (reason !== 'leaving')`), it fires every cycle and reverts whatever the user just selected.
+
+Fix: `reset()` must only reset mode when `reason === 'leaving'`. In all other cases, leave `tpCfMode` untouched.
+
+**3. Calling `applyMode()` from `reset()` — even with the correct mode — causes flicker or re-reverts.**
+
+Even passing `applyMode(tpCfMode)` inside `reset()` was unreliable because `tpCfMode` could be stale at call time depending on execution order.
+
+Fix: Remove `applyMode()` from `reset()` entirely. Instead, `reset()` reads `tpCfMode` and sets layer visibility directly:
+
+```js
+reset(reason) {
+  if (reason === 'leaving') tpCfMode = 'cards';
+  const phone = document.getElementById('tpPhone');
+  const iconsDemo = document.getElementById('tpIconsDemo');
+  const _icons = tpCfMode === 'icons';
+  if (phone) phone.style.display = _icons ? 'none' : '';
+  if (iconsDemo) iconsDemo.style.display = _icons ? 'flex' : 'none';
+  // ... rest of visual reset ...
+}
+```
+
+### State variable placement
+
+Declare the mode variable early — alongside `tpAnim`, `tpDemoState`, etc. A `let` declared after the demo object (`TP_DEMOS`) causes a temporal dead zone: `reset()` silently writes to a global instead of the `let`, and the toggle appears broken.
+
+### Showing a layer that has `display:none` in CSS
+
+Use `el.style.display = 'flex'` (or `'block'`), never `el.style.display = ''`. Setting `''` removes the inline style and falls back to the CSS rule, which keeps it hidden.
+
+### Only reset mode on tab leave
+
+Pass a sentinel argument to `reset()` when leaving the tab: `reset('leaving')`. The autoplay scheduler calls `reset()` without arguments — those calls must not touch the mode variable.

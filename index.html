@@ -2518,6 +2518,13 @@
     <button class="play-circle" id="tpCodeBtn" style="left:58px;display:none;" title="View animation code">
       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M320-240 80-480l240-240 57 57-184 184 183 183-56 56Zm320 0-57-57 184-184-183-183 56-56 240 240-240 240Z"/></svg>
     </button>
+    <!-- Icons mode big button (outside phone frame) -->
+    <div id="tpIconsDemo" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;">
+      <div style="width:288px;height:288px;border-radius:50%;background:#fff;box-shadow:inset 0 2px 3px rgba(255,255,255,1),inset 0 -3px 4px rgba(0,0,0,0.18),0 2px 4px rgba(0,0,0,0.03),0 6px 12px rgba(0,0,0,0.03),0 16px 32px rgba(0,0,0,0.04),0 32px 64px rgba(0,0,0,0.05),0 64px 128px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;" id="tpCfIconBtnBig">
+        <span id="tpCfIconBigA" class="material-symbols-outlined" style="position:absolute;width:120px;height:120px;font-size:120px;color:#1c1c1e;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48;line-height:1;display:flex;align-items:center;justify-content:center;">home</span>
+        <span id="tpCfIconBigB" class="material-symbols-outlined" style="position:absolute;width:120px;height:120px;font-size:120px;color:#1c1c1e;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48;line-height:1;display:flex;align-items:center;justify-content:center;opacity:0;">search</span>
+      </div>
+    </div>
     <!-- Code dialog -->
     <div id="tpCodeDialog" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,calc(-50% + 50px));width:480px;height:560px;background:var(--c-surface-1);border:1px solid var(--c-border-subtle);border-radius:16px;padding:18px;z-index:200;opacity:0;box-shadow:0 8px 32px rgba(0,0,0,0.22);flex-direction:column;box-sizing:border-box;">
       <!-- Dialog header -->
@@ -2546,6 +2553,10 @@
         <p style="margin:8px 0 0;font-size:11px;color:var(--c-text-tertiary);flex-shrink:0;">Adapt to your view structure.</p>
         <button id="tpCodeCopyBtn" style="margin-top:10px;width:100%;height:34px;background:var(--c-surface-2);border:1px solid var(--c-border-subtle);border-radius:8px;font-size:13px;color:var(--c-text-secondary);cursor:pointer;flex-shrink:0;">Copy</button>
       </div>
+    </div>
+    <div class="demo-mode-toggle" id="tpCfModeToggle" style="display:none;">
+      <button class="demo-mode-btn active" data-mode="cards">Layouts</button>
+      <button class="demo-mode-btn" data-mode="icons">Icons</button>
     </div>
     <div class="demo-mode-toggle" id="tpLoadModeToggle" style="display:none;">
       <button class="demo-mode-btn active" data-mode="shimmer">Shimmer</button>
@@ -2784,6 +2795,13 @@
           </div>
         </div>
         <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
+        <!-- icons mode layer -->
+        <div id="tpSeqIconsLayer" style="display:none;position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;">
+          <div id="tpCfIconBtn" style="width:72px;height:72px;border-radius:36px;background:var(--c-surface-3);display:flex;align-items:center;justify-content:center;position:relative;">
+            <span id="tpCfIconA" class="material-symbols-outlined" style="position:absolute;font-size:32px;color:var(--c-text-primary);font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;">home</span>
+            <span id="tpCfIconB" class="material-symbols-outlined" style="position:absolute;font-size:32px;color:var(--c-text-primary);font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;opacity:0;">search</span>
+          </div>
+        </div>
       </div>
 
       <!-- loading-fade layer -->
@@ -4733,7 +4751,7 @@ document.querySelectorAll('.demo-tab[data-demo]').forEach(tab => {
   tab.addEventListener('click', () => {
     if (tab.classList.contains('active')) { playDemo(); return; }
     switchDemo(tab.dataset.demo);
-    history.replaceState(null, '', `#${tab.dataset.demo}`);
+    try { history.replaceState(null, '', `#${tab.dataset.demo}`); } catch(e) {}
   });
 });
 
@@ -4924,6 +4942,7 @@ let tpSufAnimating = false;
 let tpSufCooldown  = 0;
 let tpSlideInMode = 'fullscreen';
 let tpLoadMode = 'shimmer';
+let tpCfMode = 'cards';
 
 function tpSpringAnimate(tick, spring, onDone) {
   if (tpAnim) cancelAnimationFrame(tpAnim);
@@ -5791,7 +5810,7 @@ document.querySelectorAll('#bezTabsBar .demo-tab').forEach(tab => {
     if (tab.classList.contains('active')) { runBezDemo(); return; }
     document.querySelectorAll('#bezTabsBar .demo-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
-    history.replaceState(null, '', `#${key}`);
+    try { history.replaceState(null, '', `#${key}`); } catch(e) {}
     const BEZ_DESCRIPTIONS = {
       'slow-fade':    'Standard curve used to gently fade in content.',
       'fast-fade':    'Linear curve used for quick fades when content loads.',
@@ -6801,8 +6820,14 @@ const TP_DEMOS = {
   'cross-fade': {
     description: 'Swaps content in place when the context stays the same.',
     _showing: 'list',
-    reset() {
+    _iconIdx: 0,
+    _iconSlot: 'a', // 'a' or 'b' — which span is currently visible
+    _icons: ['home', 'search', 'favorite', 'person', 'notifications'],
+    reset(reason) {
+      if (reason === 'leaving') tpCfMode = 'cards';
       this._showing = 'list';
+      this._iconIdx = 0;
+      this._iconSlot = 'a';
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
       tpCrossFadeAnimating = false;
       clearTimeout(window._tpCrossFadeTimeout);
@@ -6814,8 +6839,21 @@ const TP_DEMOS = {
       const iconList = document.getElementById('tpSeqIconList');
       if (iconGrid) { iconGrid.style.transition = ''; iconGrid.style.opacity = '1'; iconGrid.style.transform = 'scale(1)'; iconGrid.style.filter = ''; }
       if (iconList) { iconList.style.transition = ''; iconList.style.opacity = '0'; iconList.style.transform = 'scale(0.5)'; iconList.style.filter = 'blur(1px)'; }
+      const iA = document.getElementById('tpCfIconBigA');
+      const iB = document.getElementById('tpCfIconBigB');
+      if (iA) { iA.textContent = this._icons[0]; iA.style.transition = ''; iA.style.opacity = '1'; iA.style.transform = 'scale(1)'; iA.style.filter = ''; }
+      if (iB) { iB.textContent = this._icons[1]; iB.style.transition = ''; iB.style.opacity = '0'; iB.style.transform = 'scale(0.6)'; iB.style.filter = 'blur(2px)'; }
+      const phone = document.getElementById('tpPhone');
+      const iconsDemo = document.getElementById('tpIconsDemo');
+      const _icons = tpCfMode === 'icons';
+      if (phone) phone.style.display = _icons ? 'none' : '';
+      if (iconsDemo) iconsDemo.style.display = _icons ? 'flex' : 'none';
     },
     play() {
+      if (tpCfMode === 'icons') { this._playIcons(); return; }
+      this._playCards();
+    },
+    _playCards() {
       const outId = this._showing === 'list' ? 'tpSeqList' : 'tpSeqGrid';
       const inId  = this._showing === 'list' ? 'tpSeqGrid' : 'tpSeqList';
       this._showing = this._showing === 'list' ? 'grid' : 'list';
@@ -6823,34 +6861,30 @@ const TP_DEMOS = {
       const inEl  = document.getElementById(inId);
       if (!outEl || !inEl) return;
 
-      const EXIT_DUR = 150; // ms
+      const EXIT_DUR = 150;
       const EXIT_CURVE = 'cubic-bezier(0.40,0.00,1.00,1.00)';
-      const ENTER_DELAY = 100; // ms — spring starts while exit is finishing
+      const ENTER_DELAY = 100;
       const ENTER_SPRING = { stiffness: 300, damping: calcDamping(300, 1.0) };
       const BLUR_PX = 8;
 
-      // Cross-fade the button icon: outgoing icon fades out, incoming fades in
       const nowShowingGrid = this._showing === 'grid';
       const iconOut = document.getElementById(nowShowingGrid ? 'tpSeqIconList' : 'tpSeqIconGrid');
       const iconIn  = document.getElementById(nowShowingGrid ? 'tpSeqIconGrid' : 'tpSeqIconList');
       if (iconOut && iconIn) {
         const ICON_BLUR = 1;
-        // set incoming state
         iconIn.style.transition = '';
         iconIn.style.opacity   = '0';
         iconIn.style.transform = 'scale(0.5)';
         iconIn.style.filter    = `blur(${ICON_BLUR}px)`;
-        // exit outgoing
         iconOut.style.transition = `opacity ${EXIT_DUR}ms ${EXIT_CURVE}, transform ${EXIT_DUR}ms ${EXIT_CURVE}, filter ${EXIT_DUR}ms ${EXIT_CURVE}`;
         requestAnimationFrame(() => {
           iconOut.style.opacity   = '0';
           iconOut.style.transform = 'scale(0.5)';
           iconOut.style.filter    = `blur(${ICON_BLUR}px)`;
         });
-        // enter incoming after delay
         setTimeout(() => {
           iconOut.style.transition = '';
-          iconIn.style.transition  = `opacity ${EXIT_DUR}ms ${EXIT_CURVE}, transform 400ms cubic-bezier(0.00,0.00,0.00,1.00), filter 300ms ${EXIT_CURVE}`;
+          iconIn.style.transition  = `opacity ${EXIT_DUR}ms ${EXIT_CURVE}, transform 400ms cubic-bezier(0.00,0.00,0.00,1.00), filter 400ms cubic-bezier(0.00,0.00,0.00,1.00)`;
           requestAnimationFrame(() => {
             iconIn.style.opacity   = '1';
             iconIn.style.transform = 'scale(1)';
@@ -6859,13 +6893,11 @@ const TP_DEMOS = {
         }, ENTER_DELAY);
       }
 
-      // Set incoming state
       inEl.style.opacity = '0';
       inEl.style.transform = 'scale(0.92)';
       inEl.style.filter = `blur(${BLUR_PX}px)`;
       inEl.style.pointerEvents = 'none';
 
-      // Exit: CSS transition on outgoing
       outEl.style.transition = `opacity ${EXIT_DUR}ms ${EXIT_CURVE}, transform ${EXIT_DUR}ms ${EXIT_CURVE}, filter ${EXIT_DUR}ms ${EXIT_CURVE}`;
       requestAnimationFrame(() => {
         outEl.style.opacity   = '0';
@@ -6873,7 +6905,6 @@ const TP_DEMOS = {
         outEl.style.filter    = `blur(${BLUR_PX}px)`;
       });
 
-      // Enter spring starts after ENTER_DELAY
       setTimeout(() => {
         outEl.style.transition = '';
         outEl.style.pointerEvents = 'none';
@@ -6899,6 +6930,63 @@ const TP_DEMOS = {
           tpCrossFadeAnimating = false;
           tpCrossFadeCooldown = performance.now() + 150;
         });
+      }, ENTER_DELAY);
+    },
+    _playIcons() {
+      const icons = this._icons;
+      const nextIdx = (this._iconIdx + 1) % icons.length;
+      const outSlot = this._iconSlot;
+      const inSlot  = outSlot === 'a' ? 'b' : 'a';
+
+      const outEl  = document.getElementById(`tpCfIconBig${outSlot.toUpperCase()}`);
+      const inEl   = document.getElementById(`tpCfIconBig${inSlot.toUpperCase()}`);
+      const btn    = document.getElementById('tpCfIconBtnBig');
+      if (!outEl || !inEl) return;
+
+      const EXIT_DUR = 150;
+      const EXIT_CURVE = 'cubic-bezier(0.40,0.00,1.00,1.00)';
+      const ENTER_CURVE = 'cubic-bezier(0.00,0.00,0.00,1.00)';
+      const ENTER_DELAY = 80;
+      const ICON_BLUR = 8;
+
+      // Scale the button down on exit, spring back on enter
+      if (btn) {
+        btn.style.transition = `transform ${EXIT_DUR}ms ${EXIT_CURVE}`;
+        requestAnimationFrame(() => { btn.style.transform = 'scale(0.90)'; });
+        setTimeout(() => {
+          btn.style.transition = `transform 400ms ${ENTER_CURVE}`;
+          requestAnimationFrame(() => { btn.style.transform = 'scale(1)'; });
+          setTimeout(() => { btn.style.transition = ''; }, 400);
+        }, ENTER_DELAY);
+      }
+
+      inEl.textContent = icons[nextIdx];
+      inEl.style.transition = '';
+      inEl.style.opacity = '0';
+      inEl.style.transform = 'scale(0.6)';
+      inEl.style.filter = `blur(${ICON_BLUR}px)`;
+
+      outEl.style.transition = `opacity ${EXIT_DUR}ms ${EXIT_CURVE}, transform ${EXIT_DUR}ms ${EXIT_CURVE}, filter ${EXIT_DUR}ms ${EXIT_CURVE}`;
+      requestAnimationFrame(() => {
+        outEl.style.opacity   = '0';
+        outEl.style.transform = 'scale(0.6)';
+        outEl.style.filter    = `blur(${ICON_BLUR}px)`;
+      });
+
+      setTimeout(() => {
+        outEl.style.transition = '';
+        inEl.style.transition = `opacity ${EXIT_DUR}ms ${EXIT_CURVE}, transform 400ms ${ENTER_CURVE}, filter 400ms ${ENTER_CURVE}`;
+        requestAnimationFrame(() => {
+          inEl.style.opacity   = '1';
+          inEl.style.transform = 'scale(1)';
+          inEl.style.filter    = '';
+        });
+        this._iconIdx = nextIdx;
+        this._iconSlot = inSlot;
+        setTimeout(() => {
+          tpCrossFadeAnimating = false;
+          tpCrossFadeCooldown = performance.now() + 150;
+        }, 400);
       }, ENTER_DELAY);
     },
   },
@@ -6931,6 +7019,7 @@ function switchTpDemo(key) {
   if (key === 'push')       document.getElementById('tpBodyCopy').textContent = TP_SLIDE_IN_DESCRIPTIONS[tpSlideInMode] || desc;
   if (key === 'slide-up')   document.getElementById('tpBodyCopy').textContent = TP_SLIDE_UP_DESCRIPTIONS[tpSlideUpMode] || desc;
   if (key === 'loading-fade') document.getElementById('tpBodyCopy').textContent = TP_LOAD_DESCRIPTIONS[tpLoadMode] || desc;
+  if (key === 'cross-fade')  document.getElementById('tpBodyCopy').textContent = TP_CF_DESCRIPTIONS[tpCfMode] || desc;
 
   // Reset shared state
   tpDemoState = 'out';
@@ -6966,6 +7055,7 @@ function switchTpDemo(key) {
   document.getElementById('tpSlideInModeToggle').style.display = key === 'push' ? '' : 'none';
   document.getElementById('tpSlideUpModeToggle').style.display = key === 'slide-up' ? '' : 'none';
   document.getElementById('tpLoadModeToggle').style.display = key === 'loading-fade' ? '' : 'none';
+  document.getElementById('tpCfModeToggle').style.display = key === 'cross-fade' ? '' : 'none';
   document.getElementById('tpPlayBtn').style.display = key === 'loading-fade' ? 'none' : '';
   document.getElementById('tpCodeBtn').style.display = key === 'grow' ? '' : 'none';
   const _cd = document.getElementById('tpCodeDialog'); if (_cd) { _cd.style.display = 'none'; _cd.style.opacity = '0'; }
@@ -7002,7 +7092,7 @@ function switchTpDemo(key) {
 //  5. Write an apply{Demo}Mode(mode) function that:
 //       a. Sets the mode variable
 //       b. Syncs button .active classes via querySelectorAll + classList.toggle
-//       c. Updates the URL: history.replaceState(null, '', `#tp-{tab}${mode === 'default' ? '' : '-{mode-slug}'}`)
+//       c. Updates the URL: try { history.replaceState(null, '', `#tp-{tab}${mode === 'default' ? '' : '-{mode-slug}'}`)
 //          Use the tab key + mode slug as the hash, e.g. #tp-slide-in-persistent-bar
 //       d. Shows/hides the correct layers (use 'block', not '' for CSS-hidden elements)
 //  6. Add the toggle id to switchTpDemo's show/hide line so it appears only for
@@ -7045,7 +7135,7 @@ function applyTpGrowMode(mode) {
   const bodyCopy = document.getElementById('tpBodyCopy');
   if (bodyCopy) bodyCopy.textContent = TP_GROW_DESCRIPTIONS[mode] || '';
   const slug = mode === 'modal' ? '-popover' : mode === 'search' ? '-search' : '';
-  history.replaceState(null, '', `#transitions-grow${slug}`);
+  try { history.replaceState(null, '', `#transitions-grow${slug}`); } catch(e) {}
 }
 document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -7093,7 +7183,7 @@ function applyTpSlideInMode(mode) {
   );
   const bodyCopy = document.getElementById('tpBodyCopy');
   if (bodyCopy) bodyCopy.textContent = TP_SLIDE_IN_DESCRIPTIONS[mode] || '';
-  history.replaceState(null, '', `#transitions-push${mode === 'persistent-bar' ? '-persistent-bar' : ''}`);
+  try { history.replaceState(null, '', `#transitions-push${mode === 'persistent-bar' ? '-persistent-bar' : ''}`); } catch(e) {}
   // Swap visible layer
   document.getElementById('tpPushContent').style.display  = mode === 'fullscreen'      ? '' : 'none';
   document.getElementById('tpPersistBar').style.display   = mode === 'persistent-bar'  ? 'block' : 'none';
@@ -7148,7 +7238,7 @@ function applyTpSlideUpMode(mode) {
       s.appendChild(ov);
     });
   }
-  history.replaceState(null, '', `#transitions-slide-up${mode === 'full-height' ? '-full-height' : ''}`);
+  try { history.replaceState(null, '', `#transitions-slide-up${mode === 'full-height' ? '-full-height' : ''}`); } catch(e) {}
 }
 document.querySelectorAll('#tpSlideUpModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -7179,6 +7269,62 @@ function tpApplyLoadShimmer(container) {
   setDelay('.sk-sub, .sk-section-label', 400);
 }
 
+// Cross-fade mode toggle (Cards / Icons)
+const TP_CF_DESCRIPTIONS = {
+  cards: 'Swaps a full layout in place when the context stays the same.',
+  icons: 'The same transition applied to icons, cross-fading between states in a button.',
+};
+function applyCfMode(mode) {
+  tpCfMode = mode;
+  document.querySelectorAll('#tpCfModeToggle .demo-mode-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.mode === mode)
+  );
+  const bodyCopy = document.getElementById('tpBodyCopy');
+  if (bodyCopy) bodyCopy.textContent = TP_CF_DESCRIPTIONS[mode] || '';
+  try { history.replaceState(null, '', `#transitions-cross-fade${mode === 'icons' ? '-icons' : ''}`); } catch(e) {}
+
+  const iconsLayer = document.getElementById('tpSeqIconsLayer');
+  const seqHeader  = document.getElementById('tpSeqHeader');
+  const seqList    = document.getElementById('tpSeqList');
+  const seqGrid    = document.getElementById('tpSeqGrid');
+  const seqBot     = document.querySelector('#tpSeqContent .sk-bottom-nav');
+
+  const phone = document.getElementById('tpPhone');
+  const iconsDemo = document.getElementById('tpIconsDemo');
+  if (mode === 'icons') {
+    if (phone) phone.style.display = 'none';
+    if (iconsDemo) iconsDemo.style.display = 'flex';
+  } else {
+    if (phone) phone.style.display = '';
+    if (iconsDemo) iconsDemo.style.display = 'none';
+  }
+}
+document.querySelectorAll('#tpCfModeToggle .demo-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.mode === tpCfMode) return;
+    const wasPlaying = window._tpAutoPlay?.isPlaying();
+    window._tpAutoPlay?.stop();
+    if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
+    tpCrossFadeAnimating = false;
+    TP_DEMOS['cross-fade']._showing = 'list';
+    TP_DEMOS['cross-fade']._iconIdx = 0;
+    TP_DEMOS['cross-fade']._iconSlot = 'a';
+    // Reset icon slots
+    const iA = document.getElementById('tpCfIconBigA');
+    const iB = document.getElementById('tpCfIconBigB');
+    const icons = TP_DEMOS['cross-fade']._icons;
+    if (iA) { iA.textContent = icons[0]; iA.style.transition = ''; iA.style.opacity = '1'; iA.style.transform = 'scale(1)'; iA.style.filter = ''; }
+    if (iB) { iB.textContent = icons[1]; iB.style.transition = ''; iB.style.opacity = '0'; iB.style.transform = 'scale(0.6)'; iB.style.filter = 'blur(4px)'; }
+    // Reset cards
+    const list = document.getElementById('tpSeqList');
+    const grid = document.getElementById('tpSeqGrid');
+    if (list) { list.style.transition = ''; list.style.opacity = '1'; list.style.transform = 'scale(1)'; list.style.filter = ''; list.style.pointerEvents = ''; }
+    if (grid) { grid.style.transition = ''; grid.style.opacity = '0'; grid.style.transform = 'scale(0.92)'; grid.style.filter = ''; grid.style.pointerEvents = 'none'; }
+    applyCfMode(btn.dataset.mode);
+    if (wasPlaying) window._tpAutoPlay?.start();
+  });
+});
+
 const TP_LOAD_DESCRIPTIONS = {
   shimmer: 'A gentle fade pulse shows the system is working while content loads.',
   reveal:  'Once content is ready, it fades in as the placeholders fade out.',
@@ -7190,7 +7336,7 @@ function applyTpLoadMode(mode) {
   );
   const bodyCopy = document.getElementById('tpBodyCopy');
   if (bodyCopy) bodyCopy.textContent = TP_LOAD_DESCRIPTIONS[mode] || '';
-  history.replaceState(null, '', `#transitions-loading-fade${mode === 'reveal' ? '-reveal' : ''}`);
+  try { history.replaceState(null, '', `#transitions-loading-fade${mode === 'reveal' ? '-reveal' : ''}`); } catch(e) {}
 }
 document.querySelectorAll('#tpLoadModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -7209,7 +7355,7 @@ document.querySelectorAll('.tp-tab').forEach(tab => {
     const key = tab.dataset.tp;
     switchTpDemo(key);
     const growSlug = key === 'grow' ? (tpGrowMode === 'modal' ? '-modal' : tpGrowMode === 'search' ? '-search' : '') : '';
-    history.replaceState(null, '', `#transitions-${key}${growSlug}`);
+    try { history.replaceState(null, '', `#transitions-${key}${growSlug}`); } catch(e) {}
     window._tpAutoPlay?.stop();
     if (key !== 'loading-fade') window._tpAutoPlay?.start();
   });
@@ -7233,6 +7379,9 @@ if (hashTp) {
   } else if (rawKey === 'loading-fade-reveal') {
     switchTpDemo('loading-fade');
     applyTpLoadMode('reveal');
+  } else if (rawKey === 'cross-fade-icons') {
+    switchTpDemo('cross-fade');
+    applyCfMode('icons');
   } else {
     switchTpDemo(rawKey);
   }
@@ -7616,7 +7765,7 @@ animate(scrim, { opacity:[0,0.32] },
     if (key === 'cross-fade') {
       if (tpCrossFadeAnimating) return;
       if (performance.now() < tpCrossFadeCooldown) return;
-      if (tpPlaying) { stopTp(); return; }
+      if (tpPlaying) stopTp();
       tpCrossFadeAnimating = true;
       window._tpCrossFadeTimeout = setTimeout(() => { tpCrossFadeAnimating = false; }, 800);
       TP_DEMOS['cross-fade'].play();
@@ -7625,6 +7774,16 @@ animate(scrim, { opacity:[0,0.32] },
     if (tpPlaying) { stopTp(); return; }
     TP_DEMOS[key]?.play();
   });
+
+  document.getElementById('tpCfIconBtnBig').addEventListener('click', () => {
+    if (tpCrossFadeAnimating) return;
+    if (performance.now() < tpCrossFadeCooldown) return;
+    if (tpPlaying) stopTp();
+    tpCrossFadeAnimating = true;
+    window._tpCrossFadeTimeout = setTimeout(() => { tpCrossFadeAnimating = false; }, 800);
+    TP_DEMOS['cross-fade'].play();
+  });
+
   // Desktop wrap click: pause autoplay, or route to suf interactions
   document.getElementById('tpDesktopWrap').addEventListener('click', (e) => {
     if (tpPlaying) { stopTp(); return; }
@@ -8602,7 +8761,7 @@ document.getElementById('ngPlayBtn').style.display = 'none';
 // Apply grow mode (fullscreen vs modal)
 function applyNgGrowMode(mode) {
   ngGrowMode = mode;
-  history.replaceState(null, '', `#gestures-grow-dismiss${mode === 'modal' ? '-popover' : ''}`);
+  try { history.replaceState(null, '', `#gestures-grow-dismiss${mode === 'modal' ? '-popover' : ''}`); } catch(e) {}
 
   // Lock text panel height before swapping content so shorter modal text doesn't shrink it
   const textPanel = document.getElementById('ngTextPanel');
@@ -8975,7 +9134,7 @@ document.querySelectorAll('.ng-tab').forEach(tab => {
     const key = tab.dataset.ng;
     if (tab.classList.contains('active')) { NG_DEMOS[key]?.play(); return; }
     switchNgDemo(key);
-    history.replaceState(null, '', `#gestures-${key}`);
+    try { history.replaceState(null, '', `#gestures-${key}`); } catch(e) {}
   });
 });
 
