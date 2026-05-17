@@ -5434,7 +5434,7 @@ document.getElementById('tpSearchPanel').addEventListener('click', (e) => {
   function tpCollapseWithVelocity(velX, velY) {
     if (!tpExpandState) return;
     if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
-    const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, imgEl, isModal } = tpExpandState;
+    const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, toW: expandedW, imgEl, isModal } = tpExpandState;
     const phone       = document.getElementById('tpPhone');
     const panel       = isModal ? document.getElementById('tpModalPanel')        : document.getElementById('tpExpandPanel');
     const cardLayer   = isModal ? document.getElementById('tpModalCardLayer')    : document.getElementById('tpExpandCardLayer');
@@ -5471,7 +5471,7 @@ document.getElementById('tpSearchPanel').addEventListener('click', (e) => {
       simH.step(dt, DISMISS_K, DISMISS_D);
       simR.step(dt, DISMISS_K, DISMISS_D);
       simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
-      const scale = simW.x / toW;
+      const scale = simW.x / expandedW;
       panel.style.left         = simX.x + 'px';
       panel.style.top          = simY.x + 'px';
       panel.style.width        = simW.x + 'px';
