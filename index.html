@@ -364,6 +364,25 @@
     .play-circle:hover { background: var(--c-surface-3); }
     .play-circle:active { filter: brightness(0.96); }
 
+    .tp-code-chip {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid var(--c-border-subtle);
+      background: transparent;
+      color: var(--c-text-tertiary);
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+    }
+    .tp-code-chip.active {
+      background: var(--c-text-primary);
+      color: var(--c-surface-0);
+      border-color: transparent;
+    }
+    .tp-code-chip:hover:not(.active) { background: var(--c-surface-3); color: var(--c-text-primary); }
+
+
     .demo-mode-toggle {
       position: absolute;
       top: 14px;
@@ -372,14 +391,13 @@
       display: flex;
       align-items: center;
       background: var(--c-surface-0);
-      border: 1px solid var(--c-border-subtle);
       border-radius: 18px;
       padding: 3px;
       gap: 2px;
       z-index: 10;
     }
     .demo-mode-btn {
-      height: 28px;
+      height: 30px;
       padding: 0 12px;
       border-radius: 14px;
       border: none;
@@ -2497,6 +2515,38 @@
       <svg id="tpIconPlay" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M320-200v-560l440 280-440 280Z"/></svg>
       <svg id="tpIconPause" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="display:none"><path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z"/></svg>
     </button>
+    <button class="play-circle" id="tpCodeBtn" style="left:58px;display:none;" title="View animation code">
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M320-240 80-480l240-240 57 57-184 184 183 183-56 56Zm320 0-57-57 184-184-183-183 56-56 240 240-240 240Z"/></svg>
+    </button>
+    <!-- Code dialog -->
+    <div id="tpCodeDialog" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,calc(-50% + 50px));width:480px;height:560px;background:var(--c-surface-1);border:1px solid var(--c-border-subtle);border-radius:16px;padding:18px;z-index:200;opacity:0;box-shadow:0 8px 32px rgba(0,0,0,0.22);flex-direction:column;box-sizing:border-box;">
+      <!-- Dialog header -->
+      <div style="flex-shrink:0;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <span style="font-size:15px;font-weight:600;color:var(--c-text-primary);">Grow transition</span>
+          <button id="tpCodeCloseBtn" style="width:28px;height:28px;border-radius:50%;border:none;background:var(--c-surface-2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--c-text-tertiary);">
+            <svg xmlns="http://www.w3.org/2000/svg" height="14px" viewBox="0 -960 960 960" width="14px" fill="currentColor"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+          </button>
+        </div>
+        <div style="display:flex;gap:4px;" id="tpDialogChips">
+          <button class="tp-code-chip active" data-view="spec">Spec JSON</button>
+          <button class="tp-code-chip" data-view="swift">Swift</button>
+          <button class="tp-code-chip" data-view="compose">Compose</button>
+          <button class="tp-code-chip" data-view="js">JS</button>
+        </div>
+      </div>
+      <!-- Spec panel -->
+      <div id="tpSpecPanel" style="flex:1;display:flex;flex-direction:column;min-height:0;">
+        <pre id="tpSpecBlock" style="margin:0;padding:12px;background:var(--c-surface-2);border-radius:10px;font-size:10.5px;line-height:1.6;color:var(--c-text-secondary);overflow:auto;white-space:pre;flex:1;min-height:0;"></pre>
+        <button id="tpSpecCopyBtn" style="margin-top:10px;width:100%;height:34px;background:var(--c-surface-2);border:1px solid var(--c-border-subtle);border-radius:8px;font-size:13px;color:var(--c-text-secondary);cursor:pointer;flex-shrink:0;">Copy JSON</button>
+      </div>
+      <!-- Code panel -->
+      <div id="tpCodePanel" style="display:none;flex:1;flex-direction:column;min-height:0;">
+        <pre id="tpCodeBlock" style="margin:0;padding:12px;background:var(--c-surface-2);border-radius:10px;font-size:11px;line-height:1.6;color:var(--c-text-secondary);overflow:auto;white-space:pre;flex:1;min-height:0;"></pre>
+        <p style="margin:8px 0 0;font-size:11px;color:var(--c-text-tertiary);flex-shrink:0;">Adapt to your view structure.</p>
+        <button id="tpCodeCopyBtn" style="margin-top:10px;width:100%;height:34px;background:var(--c-surface-2);border:1px solid var(--c-border-subtle);border-radius:8px;font-size:13px;color:var(--c-text-secondary);cursor:pointer;flex-shrink:0;">Copy</button>
+      </div>
+    </div>
     <div class="demo-mode-toggle" id="tpLoadModeToggle" style="display:none;">
       <button class="demo-mode-btn active" data-mode="shimmer">Shimmer</button>
       <button class="demo-mode-btn" data-mode="reveal">Reveal</button>
@@ -2542,9 +2592,10 @@
         <!-- expanded state: search overlay content (fades in) -->
         <div id="tpSearchContentLayer" style="position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;padding:12px 14px 14px;gap:18px;">
           <!-- active search bar row -->
-          <div style="height:34px;border-radius:17px;background:var(--c-surface-0);border:1.5px solid var(--c-border-medium);display:flex;align-items:center;padding:0 14px;gap:8px;flex-shrink:0;">
-            <div style="width:10px;height:10px;border-radius:50%;background:var(--sk);flex-shrink:0;"></div>
-            <div style="height:8px;width:48%;background:var(--sk);border-radius:4px;"></div>
+          <div style="display:flex;flex-direction:column;gap:10px;flex-shrink:0;">
+            <div id="tpSearchCloseBtn" style="height:34px;border-radius:17px;background:var(--c-surface-0);border:1.5px solid var(--c-border-medium);display:flex;align-items:center;padding:0 14px;cursor:pointer;">
+              <div style="height:8px;width:52%;background:var(--sk);border-radius:4px;"></div>
+            </div>
           </div>
           <!-- result rows -->
           <div style="display:flex;flex-direction:column;">
@@ -2805,7 +2856,7 @@
           <div class="ng-subgroup">
             <div>
               <div class="ng-h2">Position</div>
-              <p class="ng-body">A swipe beyond 50 points commits navigation on release. Releasing early reverts. Haptics confirms the threshold.</p>
+              <p class="ng-body">A swipe beyond 50 points commits navigation on release. Releasing early reverts.</p>
             </div>
             <div>
               <div class="ng-h2">Velocity</div>
@@ -5128,11 +5179,11 @@ function tpExpandSearch() {
 
   // Start row stagger early, while panel is still springing in
   setTimeout(() => {
-    searchRows.forEach((row, i) => {
-      row.style.transition = `opacity 150ms linear ${i * 30}ms`;
+    searchRows.forEach(row => {
+      row.style.transition = 'opacity 150ms linear';
       row.style.opacity = '1';
     });
-  }, 150);
+  }, 100);
 
   function tick(now) {
     const t     = (now - startT) / 1000;
@@ -5256,17 +5307,15 @@ document.querySelectorAll('.tp-grow-card').forEach(card => {
   });
 });
 let _tpGestureDismissed = false;
-document.getElementById('tpExpandPanel').addEventListener('click', (e) => {
-  e.stopPropagation();
-  if (_tpGestureDismissed) { _tpGestureDismissed = false; return; }
-  if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
-  if (tpExpandState) tpCollapseCard();
-});
-document.getElementById('tpModalPanel').addEventListener('click', (e) => {
-  e.stopPropagation();
-  if (_tpGestureDismissed) { _tpGestureDismissed = false; return; }
-  if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
-  if (tpExpandState) tpCollapseCard();
+[document.getElementById('tpExpandPanel'), document.getElementById('tpModalPanel')].forEach(panel => {
+  panel.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (_tpGestureDismissed) { _tpGestureDismissed = false; return; }
+    if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
+    if (e.target.closest('.detail-close-btn') || e.target.closest('.inset-modal-close')) {
+      if (tpExpandState) tpCollapseCard();
+    }
+  });
 });
 document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
   e.stopPropagation();
@@ -5279,7 +5328,8 @@ document.getElementById('tpSearchScrim').addEventListener('click', (e) => {
 });
 document.getElementById('tpSearchPanel').addEventListener('click', (e) => {
   e.stopPropagation();
-  if (tpSearchState && !tpExpandAnim) tpCollapseSearch();
+  if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
+  if (e.target.closest('#tpSearchCloseBtn') && tpSearchState && !tpExpandAnim) tpCollapseSearch();
 });
 
 // ── Grow dismiss gesture (fullscreen + modal) ─────────────────────
@@ -5436,7 +5486,7 @@ document.getElementById('tpSearchPanel').addEventListener('click', (e) => {
 
   panel.addEventListener('pointerdown', (e) => {
     if (!tpExpandState || tpExpandState.isModal) return;
-    if (e.target.closest('.detail-close-btn')) return;
+    if (e.target.closest('.detail-close-btn') || e.target.closest('.inset-modal-close')) return;
     if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
     const phoneRect = phone.getBoundingClientRect();
     const startXInPhone = e.clientX - phoneRect.left - phone.clientLeft;
@@ -5505,6 +5555,8 @@ document.getElementById('tpSearchPanel').addEventListener('click', (e) => {
     if (!tpGesture || !tpExpandState) return;
     const { startX, startY, isEdgeSwipe, history, intent } = tpGesture;
     tpGesture = null;
+    if (!intent) return; // clean tap — let click through
+    _tpGestureDismissed = true; // eat the subsequent click for all real drags
     if (intent === 'cancelled') return;
 
     let velX = 0, velY = 0;
@@ -5517,8 +5569,8 @@ document.getElementById('tpSearchPanel').addEventListener('click', (e) => {
     const rawDX = (lastPt?.x ?? startX) - startX;
     const rawDY = (lastPt?.y ?? startY) - startY;
 
-    const committedDown = Math.max(0, rawDY) > DISMISS_POS_THRESHOLD || velY > DISMISS_VEL_THRESHOLD;
-    const committedEdge = isEdgeSwipe && (Math.max(0, rawDX) > DISMISS_POS_THRESHOLD || velX > DISMISS_VEL_THRESHOLD);
+    const committedDown = Math.max(0, rawDY) > DISMISS_POS_THRESHOLD || (rawDY > 10 && velY > DISMISS_VEL_THRESHOLD);
+    const committedEdge = isEdgeSwipe && (Math.max(0, rawDX) > DISMISS_POS_THRESHOLD || (rawDX > 10 && velX > DISMISS_VEL_THRESHOLD));
     if (committedDown || committedEdge) {
       _tpGestureDismissed = true;
       tpCollapseWithVelocity(velX, velY);
@@ -5536,7 +5588,7 @@ document.getElementById('tpSearchPanel').addEventListener('click', (e) => {
 
   modalPanel.addEventListener('pointerdown', (e) => {
     if (!tpExpandState || !tpExpandState.isModal) return;
-    if (e.target.closest('.detail-close-btn')) return;
+    if (e.target.closest('.detail-close-btn') || e.target.closest('.inset-modal-close')) return;
     if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
     e.currentTarget.setPointerCapture(e.pointerId);
     tpModalGesture = {
@@ -5597,6 +5649,8 @@ document.getElementById('tpSearchPanel').addEventListener('click', (e) => {
     if (!tpModalGesture || !tpExpandState) return;
     const { startY, history, intent } = tpModalGesture;
     tpModalGesture = null;
+    if (!intent) return;
+    _tpGestureDismissed = true;
     if (intent === 'cancelled') return;
 
     let velY = 0;
@@ -5608,7 +5662,7 @@ document.getElementById('tpSearchPanel').addEventListener('click', (e) => {
     const lastPt = history[history.length - 1];
     const rawDY = (lastPt?.y ?? startY) - startY;
 
-    const committedDown = Math.max(0, rawDY) > DISMISS_POS_THRESHOLD || velY > DISMISS_VEL_THRESHOLD;
+    const committedDown = Math.max(0, rawDY) > DISMISS_POS_THRESHOLD || (rawDY > 10 && velY > DISMISS_VEL_THRESHOLD);
     if (committedDown) {
       _tpGestureDismissed = true;
       tpCollapseWithVelocity(0, velY);
@@ -6913,6 +6967,8 @@ function switchTpDemo(key) {
   document.getElementById('tpSlideUpModeToggle').style.display = key === 'slide-up' ? '' : 'none';
   document.getElementById('tpLoadModeToggle').style.display = key === 'loading-fade' ? '' : 'none';
   document.getElementById('tpPlayBtn').style.display = key === 'loading-fade' ? 'none' : '';
+  document.getElementById('tpCodeBtn').style.display = key === 'grow' ? '' : 'none';
+  const _cd = document.getElementById('tpCodeDialog'); if (_cd) { _cd.style.display = 'none'; _cd.style.opacity = '0'; }
   if (key === 'loading-fade') {
     TP_DEMOS['loading-fade'].reset();
     if (tpLoadMode === 'reveal') {
@@ -7318,6 +7374,184 @@ if (hashTp) {
   document.getElementById('tpPlayBtn').addEventListener('click', () => {
     tpPlaying ? stopTp() : startTp();
   });
+
+  // ── Code dialog ───────────────────────────────────────────────────
+  (function() {
+    const btn         = document.getElementById('tpCodeBtn');
+    const dialog      = document.getElementById('tpCodeDialog');
+    const specPanel   = document.getElementById('tpSpecPanel');
+    const codePanel   = document.getElementById('tpCodePanel');
+    const specBlock   = document.getElementById('tpSpecBlock');
+    const specCopyBtn = document.getElementById('tpSpecCopyBtn');
+    const block       = document.getElementById('tpCodeBlock');
+    const copyBtn     = document.getElementById('tpCodeCopyBtn');
+    const viewChips   = document.querySelectorAll('#tpDialogChips .tp-code-chip');
+    let codeAnim = null;
+    let open     = false;
+    let activeView = 'spec';
+
+    const FAST_SMOOTH = { stiffness: 500, damping: 44, dampingRatio: 1.0, mass: 1 };
+    const STANDARD    = { stiffness: 300, damping: 35, dampingRatio: 1.0, mass: 1 };
+
+    const specJSON = {
+      name: "grow-transition",
+      description: "Panel expands from card position/size to full screen. Y/height leads X/width by 40ms.",
+      layers: [
+        {
+          layerName: "Panel",
+          animations: [
+            { property: "Y Position", easing: { type: "spring", spring: { preset: "fast-smooth", custom: FAST_SMOOTH } }, timing: { delay: 0, duration: 480 }, values: { from: "card.y", to: "screen.y" } },
+            { property: "Height",     easing: { type: "spring", spring: { preset: "fast-smooth", custom: FAST_SMOOTH } }, timing: { delay: 0, duration: 480 }, values: { from: "card.height", to: "screen.height" } },
+            { property: "X Position", easing: { type: "spring", spring: { preset: "fast-smooth", custom: FAST_SMOOTH } }, timing: { delay: 40, duration: 480 }, values: { from: "card.x", to: "screen.x" } },
+            { property: "Width",      easing: { type: "spring", spring: { preset: "fast-smooth", custom: FAST_SMOOTH } }, timing: { delay: 40, duration: 480 }, values: { from: "card.width", to: "screen.width" } },
+            { property: "Corner Radius", easing: { type: "spring", spring: { preset: "fast-smooth", custom: FAST_SMOOTH } }, timing: { delay: 40, duration: 480 }, values: { from: "card.radius", to: 0 } }
+          ]
+        },
+        {
+          layerName: "Card content (outgoing)",
+          animations: [
+            { property: "Opacity", easing: { type: "linear" }, timing: { delay: 0, duration: 200 }, values: { from: 1, to: 0 } }
+          ]
+        },
+        {
+          layerName: "Detail content (incoming)",
+          animations: [
+            { property: "Opacity", easing: { type: "linear" }, timing: { delay: 0, duration: 200 }, values: { from: 0, to: 1 } }
+          ]
+        },
+        {
+          layerName: "Scrim",
+          animations: [
+            { property: "Opacity", easing: { type: "spring", spring: { preset: "standard", custom: STANDARD } }, timing: { delay: 0, duration: 400 }, values: { from: 0, to: 0.32 } }
+          ]
+        },
+        {
+          layerName: "Shadow (modal mode only)",
+          animations: [
+            { property: "Opacity", easing: { type: "linear" }, timing: { delay: 0, duration: 200 }, values: { from: 0, to: 1 } }
+          ]
+        }
+      ],
+      metadata: { exportedBy: "Motion System", transition: "grow" }
+    };
+
+    const snippets = {
+      swift: `// SwiftUI
+// Panel geometry — spring(stiffness: 500, dampingFraction: 1.0)
+// Y/height leads X/width by 40ms
+
+withAnimation(.spring(stiffness: 500, dampingFraction: 1.0)) {
+    isExpanded = true
+}
+// Content crossfade — 200ms linear, starts immediately
+withAnimation(.linear(duration: 0.2)) {
+    showDetail = true
+    showCard   = false
+}
+// Scrim — slightly softer spring
+withAnimation(.spring(stiffness: 300, dampingFraction: 1.0)) {
+    scrimOpacity = 0.32
+}`,
+
+      compose: `// Jetpack Compose
+// Panel geometry — spring(stiffness=500f, dampingRatio=1.0f)
+// Y/height leads X/width by 40ms
+
+val panelSpec = spring<Float>(stiffness=500f, dampingRatio=1.0f)
+val scrimSpec = spring<Float>(stiffness=300f, dampingRatio=1.0f)
+
+// Content crossfade — 200ms linear, starts immediately
+val xfadeSpec = tween<Float>(durationMillis=200, easing=LinearEasing)
+
+// Stagger Y/height 40ms ahead of X/width:
+val ySpec = panelSpec
+val xSpec = tween<Float>(delayMillis=40) // then hand off to spring`,
+
+      js: `// Framer Motion
+// Panel geometry — spring, stiffness 500, critically damped
+// Y/height leads X/width by 40ms
+
+animate(panel, { y: [fromY, toY], height: [fromH, toH] },
+  { type:"spring", stiffness:500, damping:44.7 })
+animate(panel, { x: [fromX, toX], width: [fromW, toW] },
+  { type:"spring", stiffness:500, damping:44.7, delay:0.04 })
+
+// Content crossfade — 200ms linear
+animate(detail, { opacity:[0,1] }, { duration:0.2, ease:"linear" })
+animate(card,   { opacity:[1,0] }, { duration:0.2, ease:"linear" })
+
+// Scrim
+animate(scrim, { opacity:[0,0.32] },
+  { type:"spring", stiffness:300, damping:34.6 })`
+    };
+
+    function setView(v) {
+      activeView = v;
+      viewChips.forEach(c => c.classList.toggle('active', c.dataset.view === v));
+      if (v === 'spec') {
+        specPanel.style.display = 'flex';
+        codePanel.style.display = 'none';
+        specBlock.textContent = JSON.stringify(specJSON, null, 2);
+      } else {
+        specPanel.style.display = 'none';
+        codePanel.style.display = 'flex';
+        block.textContent = snippets[v];
+        copyBtn.textContent = 'Copy';
+      }
+    }
+
+    function animateDialog(toOpen) {
+      if (codeAnim) clearTimeout(codeAnim);
+      open = toOpen;
+      if (toOpen) {
+        dialog.style.transition = 'none';
+        dialog.style.opacity = '0';
+        dialog.style.transform = 'translate(-50%, calc(-50% + 50px))';
+        dialog.style.display = 'flex';
+        dialog.offsetHeight;
+        dialog.style.transition = 'transform 300ms cubic-bezier(0,0,0,1), opacity 100ms linear';
+        dialog.style.transform = 'translate(-50%, -50%)';
+        dialog.style.opacity = '1';
+      } else {
+        dialog.style.transition = 'transform 150ms cubic-bezier(0.4,0,1,1), opacity 100ms linear 50ms';
+        dialog.style.transform = 'translate(-50%, calc(-50% + 50px))';
+        dialog.style.opacity = '0';
+        codeAnim = setTimeout(() => { dialog.style.display = 'none'; codeAnim = null; }, 200);
+      }
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      open ? animateDialog(false) : animateDialog(true);
+    });
+
+    document.getElementById('tpCodeCloseBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      animateDialog(false);
+    });
+
+    viewChips.forEach(c => c.addEventListener('click', () => setView(c.dataset.view)));
+
+    specCopyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(JSON.stringify(specJSON, null, 2)).then(() => {
+        specCopyBtn.textContent = 'Copied!';
+        setTimeout(() => { specCopyBtn.textContent = 'Copy JSON'; }, 1800);
+      });
+    });
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(snippets[platform]).then(() => {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1800);
+      });
+    });
+
+    document.getElementById('tpDemoContainer').addEventListener('click', (e) => {
+      if (open && !dialog.contains(e.target) && e.target !== btn) animateDialog(false);
+    });
+
+    setView('spec');
+  })();
 
   // Press flash: scale down then spring back. baseScale is the resting scale (1 for CTA, varies for backBtn)
   function flashPress(el, baseScale = 1) {
@@ -7811,7 +8045,7 @@ const NG_DEMOS = {
       <div class="ng-group">
         <div class="ng-h1">Thresholds</div>
         <div class="ng-subgroup">
-          <div><div class="ng-h2">Position</div><p class="ng-body">A swipe beyond 50 points commits navigation on release. Releasing early reverts. Haptics confirms the threshold.</p></div>
+          <div><div class="ng-h2">Position</div><p class="ng-body">A swipe beyond 50 points commits navigation on release. Releasing early reverts.</p></div>
           <div><div class="ng-h2">Velocity</div><p class="ng-body">A swipe faster than 1000 pts/sec commits navigation on release.</p></div>
         </div>
       </div>
@@ -8185,7 +8419,7 @@ function ngAttachGestureListeners(panelEl) {
 
   panelEl.addEventListener('pointerdown', (e) => {
     if (!ngExpandState) return;
-    if (e.target.closest('.detail-close-btn')) return;
+    if (e.target.closest('.detail-close-btn') || e.target.closest('.inset-modal-close')) return;
     if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
 
     const phoneRect = phone.getBoundingClientRect();
@@ -8290,6 +8524,8 @@ function ngAttachGestureListeners(panelEl) {
     if (!ngGesture || !ngExpandState) return;
     const { startX, startY, isEdgeSwipe, history, intent } = ngGesture;
     ngGesture = null;
+    if (!intent) return;
+    _ngGestureDismissed = true;
     if (intent === 'cancelled') return;
 
     let velX = 0, velY = 0;
@@ -8307,8 +8543,8 @@ function ngAttachGestureListeners(panelEl) {
     const rawDX = (lastPt?.x ?? startX) - startX;
     const rawDY = (lastPt?.y ?? startY) - startY;
 
-    const committedDown = Math.max(0, rawDY) > NG_DISMISS_POS_THRESHOLD || velY > NG_DISMISS_VEL_THRESHOLD;
-    const committedEdge = isEdgeSwipe && (Math.max(0, rawDX) > NG_DISMISS_POS_THRESHOLD || velX > NG_DISMISS_VEL_THRESHOLD);
+    const committedDown = Math.max(0, rawDY) > NG_DISMISS_POS_THRESHOLD || (rawDY > 10 && velY > NG_DISMISS_VEL_THRESHOLD);
+    const committedEdge = isEdgeSwipe && (Math.max(0, rawDX) > NG_DISMISS_POS_THRESHOLD || (rawDX > 10 && velX > NG_DISMISS_VEL_THRESHOLD));
     if (committedDown || committedEdge) {
       _ngGestureDismissed = true;
       ngCollapseCard(velX, velY);
@@ -8325,17 +8561,15 @@ function ngAttachGestureListeners(panelEl) {
 ngAttachGestureListeners(document.getElementById('ngExpandPanel'));
 ngAttachGestureListeners(document.getElementById('ngModalPanel'));
 
-// Click on the expand panel dismisses (fullscreen close btn or tap-to-dismiss)
+// Eat gesture-dismissals so they don't bubble to other handlers
 document.getElementById('ngExpandPanel').addEventListener('click', (e) => {
   e.stopPropagation();
   if (_ngGestureDismissed) { _ngGestureDismissed = false; return; }
-  if (ngExpandState) ngCollapseCard(0, 0);
 });
 
 document.getElementById('ngModalPanel').addEventListener('click', (e) => {
   e.stopPropagation();
   if (_ngGestureDismissed) { _ngGestureDismissed = false; return; }
-  if (ngExpandState) ngCollapseCard(0, 0);
 });
 
 // Scrim click dismisses modal
@@ -8353,11 +8587,12 @@ document.getElementById('ngPhone').addEventListener('click', (e) => {
 });
 
 // Close button on NG detail screen collapses back
-[document.querySelector('#ngDetailInner .push-hero .detail-close-btn'),
- document.querySelector('#ngModalInner .push-hero .detail-close-btn')].forEach(btn => {
-  if (btn) btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (ngExpandState) ngCollapseCard(0, 0);
+[document.getElementById('ngExpandPanel'), document.getElementById('ngModalPanel')].forEach(panel => {
+  panel.addEventListener('click', (e) => {
+    if (e.target.closest('.detail-close-btn') || e.target.closest('.inset-modal-close')) {
+      e.stopPropagation();
+      if (ngExpandState) ngCollapseCard(0, 0);
+    }
   });
 });
 
@@ -8367,6 +8602,7 @@ document.getElementById('ngPlayBtn').style.display = 'none';
 // Apply grow mode (fullscreen vs modal)
 function applyNgGrowMode(mode) {
   ngGrowMode = mode;
+  history.replaceState(null, '', `#gestures-grow-dismiss${mode === 'modal' ? '-popover' : ''}`);
 
   // Lock text panel height before swapping content so shorter modal text doesn't shrink it
   const textPanel = document.getElementById('ngTextPanel');
@@ -8744,7 +8980,15 @@ document.querySelectorAll('.ng-tab').forEach(tab => {
 });
 
 const hashNg = location.hash.match(/^#gestures-(.+)$/);
-if (hashNg) switchNgDemo(hashNg[1]);
+if (hashNg) {
+  const ngRaw = hashNg[1];
+  if (ngRaw === 'grow-dismiss-popover') {
+    switchNgDemo('grow-dismiss');
+    applyNgGrowMode('modal');
+  } else {
+    switchNgDemo(ngRaw);
+  }
+}
 
 document.getElementById('ngPlayBtn').addEventListener('click', () => {
   const key = document.querySelector('.ng-tab.active')?.dataset.ng;
