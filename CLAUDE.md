@@ -230,6 +230,135 @@ The scrim's `pointer-events` is restored to `auto` only when the next modal full
 
 ---
 
+## Collapse flash when interrupted mid-expand
+
+**Symptom:** The first time you close a zoom transition, it briefly flashes a full-screen frame before playing the collapse animation.
+
+**Cause:** `collapseCard` / `tpCollapseCard` hardcodes the collapse start position to the settled end state (`left:0, top:0, fullWidth, fullHeight`). If the expand animation hasn't fully settled yet, the panel is still mid-flight — so the first collapse frame jumps to full-screen, then immediately starts animating back.
+
+**Fix:** Read the panel's *current* inline style values as the collapse start point instead of assuming settled:
+
+```js
+// Instead of:
+const fromX = 0, fromY = 0, fromW = phone.clientWidth, fromH = phone.clientHeight, fromR = 40;
+
+// Do:
+const fromX = parseFloat(panel.style.left) || 0;
+const fromY = parseFloat(panel.style.top)  || 0;
+const fromW = parseFloat(panel.style.width)  || phone.clientWidth;
+const fromH = parseFloat(panel.style.height) || phone.clientHeight;
+const fromR = parseFloat(panel.style.borderRadius) || 40;
+```
+
+Apply the same fix to both `collapseCard` (spring zoom demo) and `tpCollapseCard` (transition patterns zoom demo).
+
+---
+
+## Zoom expand: content scale mismatch when phone is inside a CSS scale() container
+
+**Symptom:** The detail screen inside the expand panel appears larger than the same detail screen in a sibling phone. Content density looks different between the two phones.
+
+**Cause (two parts):**
+
+1. `parseFloat(getComputedStyle(phone).getPropertyValue('--phone-scale'))` returns `NaN` when the custom property value is a `calc()` expression. The fallback of `|| 1` silently made the detail content render at 1:1 scale.
+
+2. `getBoundingClientRect()` returns values in scaled viewport pixels. When the phone is inside a container with a CSS `scale()` transform, the card rect deltas must be divided by that scale factor to get phone-frame-local CSS coordinates.
+
+**Fix:**
+
+```js
+// Derive scale from clientWidth vs. reference, never parse --phone-scale:
+const DETAIL_REF_W = 278;
+const phoneContentScale = phone.clientWidth / DETAIL_REF_W;
+
+// Divide getBoundingClientRect deltas by the outer scaler's scale:
+const m = scalerEl.style.transform.match(/scale\(([^)]+)\)/);
+const scalerScale = m ? parseFloat(m[1]) : 1;
+const fromX = (cardRect.left - phoneRect.left) / scalerScale - phone.clientLeft;
+const fromY = (cardRect.top  - phoneRect.top)  / scalerScale - phone.clientTop;
+const fromW = cardRect.width  / scalerScale;
+const fromH = imgRect.height  / scalerScale;
+```
+
+**Rule:** Never parse `--phone-scale` with `parseFloat` — CSS `calc()` values are not resolved by `getPropertyValue`. Always derive the scale from `phone.clientWidth / DETAIL_REF_W`.
+
+---
+
+## Zoom jitter: double-fire from phone click handler
+
+**Symptom:** On open, the panel flashes one frame, resets, then plays again.
+
+**Root cause:** A parent `#tpPhone` click listener called `play()` on every click inside the phone. The `closest()` guard failed when the click target was a child of the card — `closest` still matched, but timing races caused expand to fire, set `tpExpandState`, and then the bubbled event triggered `play()` again which immediately called collapse.
+
+**Fix (both required):**
+
+1. Skip `play()` in the phone handler entirely when the active demo is zoom:
+```js
+document.getElementById('tpPhone').addEventListener('click', (e) => {
+  const key = document.querySelector('.tp-tab.active')?.dataset.tp;
+  if (key === 'zoom') return;
+  TP_DEMOS[key]?.play();
+});
+```
+
+2. Add `stopPropagation` to card and panel handlers so clicks never reach the phone handler:
+```js
+card.addEventListener('click', (e) => { e.stopPropagation(); /* ... */ });
+document.getElementById('tpExpandPanel').addEventListener('click', (e) => { e.stopPropagation(); /* ... */ });
+```
+
+---
+
+## Description text mismatch on page load vs. tab click
+
+**Symptom:** Body copy shows stale/wrong text on initial page load, correct after clicking tabs.
+
+**Cause:** HTML has hardcoded text; JS only updates it on tab click. On clean load with no hash, the initializer doesn't run.
+
+**Fix:**
+
+1. Empty the hardcoded text in HTML: `<p class="section-body" id="tpBodyCopy"></p>`
+
+2. Always call the switch function on load, falling back to the default active tab:
+```js
+const hashTp = location.hash.match(/^#tp-(.+)$/);
+if (hashTp) {
+  switchTpDemo(hashTp[1]);
+} else {
+  const defaultTpKey = document.querySelector('.tp-tab.active')?.dataset.tp;
+  if (defaultTpKey) switchTpDemo(defaultTpKey);
+}
+```
+
+---
+
+## Phone scale system: consistent UI density across phone sizes
+
+**Problem:** Different demo sections use phones of different sizes. Without scaling, the same template content looks denser on smaller phones.
+
+**Solution:** A CSS custom property `--phone-scale` per container, and `.push-dest-inner` / `.phone-content` classes that apply a compensating transform so all content renders at 278px reference density.
+
+```css
+#tpDemoContainer .phone-frame  { --phone-scale: 1; }
+.phone-frame                   { --phone-scale: calc(298/278); }
+#ngDemoContainer .phone-frame  { --phone-scale: calc(318/278); }
+#accDemoContainer .phone-frame { --phone-scale: calc(248/278); }
+
+.phone-content, .push-dest-inner {
+  transform-origin: top left;
+  transform: scale(var(--phone-scale, 1));
+  width: calc(100% / var(--phone-scale, 1));
+  height: calc(100% / var(--phone-scale, 1));
+}
+```
+
+**Rules:**
+- Home-screen content → stamp into `.phone-content`
+- Full-screen destination content → stamp into `.push-dest-inner` inside `.push-screen`
+- Never stamp full-screen templates directly into `.push-screen` without the `.push-dest-inner` wrapper
+
+---
+
 ## Segmented toggle to swap between two demo variants (e.g. Layouts / Icons)
 
 This pattern lets a single demo tab show two completely different visuals via a segmented button. Took 30+ turns to get right — the failure modes are subtle.
