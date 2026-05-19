@@ -648,6 +648,9 @@
 
     [data-theme="dark"] .phone-frame { border-color: #48484a; }
     #tpDemoContainer .phone-frame { height: 580px; }
+    @media (max-width: 1080px) {
+      #tpDemoContainer { padding-top: 60px !important; min-height: 688px !important; }
+    }
     #ngDemoContainer .phone-frame  { height: 660px; }
     #accDemoContainer .phone-frame { height: 520px; border-radius: 38px; }
 
@@ -2515,7 +2518,7 @@
       <svg id="tpIconPlay" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M320-200v-560l440 280-440 280Z"/></svg>
       <svg id="tpIconPause" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="display:none"><path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z"/></svg>
     </button>
-    <button class="play-circle" id="tpCodeBtn" style="left:58px;display:none;" title="View animation code">
+    <button class="play-circle" id="tpCodeBtn" style="left:auto;right:14px;display:none;" title="View animation code">
       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M320-240 80-480l240-240 57 57-184 184 183 183-56 56Zm320 0-57-57 184-184-183-183 56-56 240 240-240 240Z"/></svg>
     </button>
     <!-- Icons mode big button (outside phone frame) -->
@@ -2562,7 +2565,7 @@
       <button class="demo-mode-btn active" data-mode="shimmer">Shimmer</button>
       <button class="demo-mode-btn" data-mode="reveal">Reveal</button>
     </div>
-    <div class="demo-mode-toggle" id="tpGrowModeToggle" style="display:none;">
+    <div class="demo-mode-toggle" id="tpGrowModeToggle" style="display:none;right:58px;">
       <button class="demo-mode-btn active" data-mode="fullscreen">Fullscreen</button>
       <button class="demo-mode-btn" data-mode="modal">Popover</button>
       <button class="demo-mode-btn" data-mode="search">Search</button>
@@ -2604,8 +2607,13 @@
         <div id="tpSearchContentLayer" style="position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;padding:12px 14px 14px;gap:18px;">
           <!-- active search bar row -->
           <div style="display:flex;flex-direction:column;gap:10px;flex-shrink:0;">
-            <div id="tpSearchCloseBtn" style="height:34px;border-radius:17px;background:var(--c-surface-0);border:1.5px solid var(--c-border-medium);display:flex;align-items:center;padding:0 14px;cursor:pointer;">
-              <div style="height:8px;width:52%;background:var(--sk);border-radius:4px;"></div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="height:34px;border-radius:17px;background:var(--c-surface-0);border:1.5px solid var(--c-border-medium);display:flex;align-items:center;padding:0 14px;flex:1;margin-right:4px;">
+                <div style="height:8px;width:52%;background:var(--sk);border-radius:4px;"></div>
+              </div>
+              <div id="tpSearchCloseBtn" style="display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="14px" viewBox="0 -960 960 960" width="14px" fill="var(--c-text-primary)"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+              </div>
             </div>
           </div>
           <!-- result rows -->
@@ -9600,6 +9608,7 @@ document.querySelectorAll('.demo-tab').forEach(tab => {
     rightBtn.addEventListener('click', () => bar.scrollBy({ left:  SCROLL_AMT, behavior: 'smooth' }));
   });
 })();
+
 </script>
 <div class="toast" id="toast"></div>
 
