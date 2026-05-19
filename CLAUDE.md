@@ -413,6 +413,26 @@ Pass a sentinel argument to `reset()` when leaving the tab: `reset('leaving')`. 
 
 ---
 
+## Responsive demo container heights
+
+### Transitions section (`#tpDemoContainer`)
+
+At `max-width: 1080px`, the tab bar stacks above the container (tabs move out of the inline flow). A media query adds extra `padding-top` to make room and bumps `min-height` to compensate:
+
+```css
+@media (max-width: 1080px) {
+  #tpDemoContainer { padding-top: 80px !important; min-height: 708px !important; }
+}
+```
+
+The base (wide) values are `padding: 32px` and `min-height: 680px` set inline on the element. If the top spacing at narrow widths feels too tight, increase `padding-top` and `min-height` by the same amount.
+
+### Gestures section (`#ngDemoContainer`)
+
+The NG demo uses a JS `ResizeObserver` (`updateNgScale`) that CSS-scales `#ngDemoScaler` down as the container narrows. The container itself is `flex:1` with no fixed height — the row wrapper has `min-height: 776px`. Because the phone shrinks via `scale()` (layout-neutral), it takes less visual space inside a fixed-height container, which naturally creates more padding around it at narrow widths. No extra media query needed; the "grows taller" effect is the fixed container height with a visually shrinking phone inside it.
+
+---
+
 ## Demo cross-fade transition (`demoFade` / `demoFadeSwap`)
 
 Every tab click that switches demo content uses a cross-fade: fast ease-out exit, then a spring enter. This is the motion system's own cross-fade pattern applied to itself.

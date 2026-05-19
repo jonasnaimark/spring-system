@@ -649,7 +649,7 @@
     [data-theme="dark"] .phone-frame { border-color: #48484a; }
     #tpDemoContainer .phone-frame { height: 580px; }
     @media (max-width: 1080px) {
-      #tpDemoContainer { padding-top: 60px !important; min-height: 688px !important; }
+      #tpDemoContainer { padding-top: 80px !important; min-height: 708px !important; }
     }
     #ngDemoContainer .phone-frame  { height: 660px; }
     #accDemoContainer .phone-frame { height: 520px; border-radius: 38px; }
@@ -2867,7 +2867,7 @@
     <div class="demo-tab ng-tab" data-ng="sheet-dismiss">Sheet Dismiss</div>
   </div>
   <div class="section-content">
-    <div style="display:flex; gap:24px; align-items:stretch; min-height:760px;">
+    <div style="display:flex; gap:24px; align-items:stretch; min-height:776px;">
       <div style="flex:0 0 400px; width:400px; border:1px solid var(--c-border-subtle); border-radius:24px; padding:28px; display:flex; flex-direction:column; gap:36px;" id="ngTextPanel">
         <div class="ng-group">
           <div class="ng-h1">Swipe direction</div>
@@ -3468,7 +3468,7 @@
   <div class="bez-demo-panel">
     <div class="desktop-bezel" id="desktopBezel">
       <div class="dt-scaler" id="dtScaler">
-      <div id="dtContent" style="position:absolute;inset:0;display:flex;">
+      <div id="dtContent" style="position:absolute;inset:0;display:flex;border-radius:15px;overflow:hidden;">
       <!-- Slow fade UI: grid -->
       <div class="dt-ui" id="sfUI" style="flex:1;">
         <div class="dt-topbar">
@@ -3598,6 +3598,7 @@
           <!-- Left: default motion (grow) -->
           <div class="acc-phone-wrap">
             <div class="phone-frame" id="accPhone">
+              <div style="position:absolute;inset:0;overflow:hidden;border-radius:32px;">
               <div class="phone-content" id="accPhoneContent"></div>
               <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
               <div id="accExpandScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.32);opacity:0;pointer-events:none;z-index:11;"></div>
@@ -3607,17 +3608,18 @@
                   <div id="accDetailInner" style="position:absolute;top:0;left:0;width:278px;transform-origin:top left;display:flex;flex-direction:column;"></div>
                 </div>
               </div>
+              </div>
             </div>
             <div class="acc-phone-label">Default motion</div>
           </div>
           <!-- Right: reduced motion (crossfade) -->
           <div class="acc-phone-wrap">
             <div class="phone-frame" id="accPhoneRm">
-              <div class="push-screen" id="accRmSrc" style="position:absolute;inset:0;">
+              <div class="push-screen" id="accRmSrc" style="position:absolute;inset:0;border-radius:32px;overflow:hidden;">
                 <div class="phone-content"></div>
                 <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
               </div>
-              <div class="push-screen" id="accRmDest" style="position:absolute;inset:0;opacity:0;"><div class="push-dest-inner"></div></div>
+              <div class="push-screen" id="accRmDest" style="position:absolute;inset:0;opacity:0;border-radius:32px;overflow:hidden;"><div class="push-dest-inner"></div></div>
             </div>
             <div class="acc-phone-label">Reduced motion</div>
           </div>
