@@ -2521,13 +2521,6 @@
     <button class="play-circle" id="tpCodeBtn" style="left:auto;right:14px;display:none;" title="View animation code">
       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M320-240 80-480l240-240 57 57-184 184 183 183-56 56Zm320 0-57-57 184-184-183-183 56-56 240 240-240 240Z"/></svg>
     </button>
-    <!-- Icons mode big button (outside phone frame) -->
-    <div id="tpIconsDemo" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;">
-      <div style="width:288px;height:288px;border-radius:50%;background:#fff;box-shadow:inset 0 2px 3px rgba(255,255,255,1),inset 0 -3px 4px rgba(0,0,0,0.18),0 2px 4px rgba(0,0,0,0.03),0 6px 12px rgba(0,0,0,0.03),0 16px 32px rgba(0,0,0,0.04),0 32px 64px rgba(0,0,0,0.05),0 64px 128px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;" id="tpCfIconBtnBig">
-        <span id="tpCfIconBigA" class="material-symbols-outlined" style="position:absolute;width:120px;height:120px;font-size:120px;color:#1c1c1e;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48;line-height:1;display:flex;align-items:center;justify-content:center;">home</span>
-        <span id="tpCfIconBigB" class="material-symbols-outlined" style="position:absolute;width:120px;height:120px;font-size:120px;color:#1c1c1e;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48;line-height:1;display:flex;align-items:center;justify-content:center;opacity:0;">search</span>
-      </div>
-    </div>
     <!-- Code dialog -->
     <div id="tpCodeDialog" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,calc(-50% + 50px));width:480px;height:560px;background:var(--c-surface-1);border:1px solid var(--c-border-subtle);border-radius:16px;padding:18px;z-index:200;opacity:0;box-shadow:0 8px 32px rgba(0,0,0,0.22);flex-direction:column;box-sizing:border-box;">
       <!-- Dialog header -->
@@ -2578,7 +2571,17 @@
       <button class="demo-mode-btn active" data-mode="fitted">Fitted</button>
       <button class="demo-mode-btn" data-mode="full-height">Full Height</button>
     </div>
+    <!-- Device area: phone + desktop + icons — only this fades on demo switch -->
+    <div id="tpDeviceWrap" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+    <!-- Icons mode big button (outside phone frame) -->
+    <div id="tpIconsDemo" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;">
+      <div style="width:288px;height:288px;border-radius:50%;background:#fff;box-shadow:inset 0 2px 3px rgba(255,255,255,1),inset 0 -3px 4px rgba(0,0,0,0.18),0 2px 4px rgba(0,0,0,0.03),0 6px 12px rgba(0,0,0,0.03),0 16px 32px rgba(0,0,0,0.04),0 32px 64px rgba(0,0,0,0.05),0 64px 128px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;" id="tpCfIconBtnBig">
+        <span id="tpCfIconBigA" class="material-symbols-outlined" style="position:absolute;width:120px;height:120px;font-size:120px;color:#1c1c1e;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48;line-height:1;display:flex;align-items:center;justify-content:center;">home</span>
+        <span id="tpCfIconBigB" class="material-symbols-outlined" style="position:absolute;width:120px;height:120px;font-size:120px;color:#1c1c1e;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48;line-height:1;display:flex;align-items:center;justify-content:center;opacity:0;">search</span>
+      </div>
+    </div>
     <div class="phone-frame" id="tpPhone">
+    <div id="tpPhoneScreen" style="position:absolute;inset:0;overflow:hidden;">
       <div class="phone-content" id="tpPhoneContent"></div>
       <!-- Scrim -->
       <div id="tpExpandScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.32);opacity:0;pointer-events:none;z-index:11;"></div>
@@ -2833,7 +2836,8 @@
         <div class="sk-nav-icon"></div>
         <div class="sk-nav-icon"></div>
       </div>
-    </div>
+    </div><!-- end tpPhoneScreen -->
+    </div><!-- end tpPhone -->
 
     <!-- slide-up-fade: desktop bezel (shown instead of phone) -->
     <div id="tpDesktopWrap" style="display:none;position:absolute;inset:0;padding:20px 28px;flex-direction:column;align-items:center;justify-content:center;">
@@ -2847,6 +2851,7 @@
         </div>
       </div>
     </div>
+    </div><!-- end tpDeviceWrap -->
   </div>
   </div><!-- end section-content -->
 </div><!-- end section-wrap -->
@@ -2919,6 +2924,7 @@
         </div>
         <div id="ngDemoScaler" style="transform-origin:center center; display:flex; flex-direction:column; align-items:center; gap:16px;">
         <div class="phone-frame" id="ngPhone">
+        <div id="ngPhoneScreen" style="position:absolute;inset:0;overflow:hidden;border-radius:40px;">
           <div class="phone-content" id="ngPhoneContent"></div>
           <div class="sk-bottom-nav" id="ngBottomNav">
             <div class="sk-nav-icon"></div>
@@ -2943,14 +2949,15 @@
             </div>
           </div>
           <!-- Sheet dismiss stack -->
-          <div id="ngSheetContent" style="display:none;position:absolute;inset:0;pointer-events:none;">
-            <div style="position:absolute;inset:0;background:#000;"></div>
+          <div id="ngSheetContent" style="display:none;position:absolute;inset:0;pointer-events:none;overflow:hidden;background:#000;">
+
             <div class="push-scrim" id="ngSheetScrim" style="opacity:0;z-index:8;pointer-events:auto;"></div>
             <div class="sheet" id="ngSheet0" style="transform:translateY(100%);z-index:11;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);pointer-events:auto;touch-action:none;"></div>
             <div class="sheet" id="ngSheet1" style="transform:translateY(100%);z-index:12;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);pointer-events:auto;touch-action:none;"></div>
             <div class="sheet" id="ngSheet2" style="transform:translateY(100%);z-index:13;transform-origin:top center;opacity:0;box-shadow:0 -2px 20px rgba(0,0,0,0);pointer-events:auto;touch-action:none;"></div>
           </div>
-        </div>
+        </div><!-- end ngPhoneScreen -->
+        </div><!-- end ngPhone -->
         <p id="ngHintText" style="font-size:13px; color:var(--c-text-tertiary); text-align:center; margin:0; flex-shrink:0;">Try pulling down or from the left edge to dismiss</p>
         </div><!-- end ngDemoScaler -->
       </div>
@@ -3461,7 +3468,7 @@
   <div class="bez-demo-panel">
     <div class="desktop-bezel" id="desktopBezel">
       <div class="dt-scaler" id="dtScaler">
-
+      <div id="dtContent" style="position:absolute;inset:0;display:flex;">
       <!-- Slow fade UI: grid -->
       <div class="dt-ui" id="sfUI" style="flex:1;">
         <div class="dt-topbar">
@@ -3535,6 +3542,7 @@
         </div>
       </div>
 
+      </div><!-- end dtContent -->
       </div><!-- end dt-scaler -->
     </div>
     <button class="play-circle" id="bezPlayBtn">
@@ -4274,6 +4282,14 @@ class SpringSim {
 let selected    = { name: 'default-smooth', stiffness: 300, damping: calcDamping(300, 1.0), ratio: 1.0, color: '#8e8e93' };
 let currentDemo = 'sheet';
 let demoAnim    = null;
+// Wrap each spring demo phone frame's children so we can fade just the screen content
+document.querySelectorAll('#demoStage .demo-view .phone-frame').forEach(phone => {
+  const wrap = document.createElement('div');
+  wrap.className = 'spring-screen';
+  wrap.style.cssText = 'position:absolute;inset:0;overflow:hidden;';
+  while (phone.firstChild) wrap.appendChild(phone.firstChild);
+  phone.appendChild(wrap);
+});
 let demoState   = 'out';
 let expandState   = null;
 let expandCardIdx = 0;
@@ -4758,7 +4774,9 @@ function playDemo() {
 document.querySelectorAll('.demo-tab[data-demo]').forEach(tab => {
   tab.addEventListener('click', () => {
     if (tab.classList.contains('active')) { playDemo(); return; }
-    switchDemo(tab.dataset.demo);
+    const outScreen = document.querySelector(`#view-${currentDemo} .spring-screen`);
+    const inScreen  = document.querySelector(`#view-${tab.dataset.demo} .spring-screen`);
+    demoFadeSwap(outScreen, inScreen, () => switchDemo(tab.dataset.demo));
     try { history.replaceState(null, '', `#${tab.dataset.demo}`); } catch(e) {}
   });
 });
@@ -5816,34 +5834,36 @@ document.querySelectorAll('#bezTabsBar .demo-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const key = tab.dataset.bez;
     if (tab.classList.contains('active')) { runBezDemo(); return; }
-    document.querySelectorAll('#bezTabsBar .demo-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    try { history.replaceState(null, '', `#${key}`); } catch(e) {}
-    const BEZ_DESCRIPTIONS = {
-      'slow-fade':    'Standard curve used to gently fade in content.',
-      'fast-fade':    'Linear curve used for quick fades when content loads.',
-      'modal-enter':  'Enter curve used to present a modal.',
-      'modal-exit':   'Exit curve used to quickly dismiss a modal.',
-    };
-    const bodyEl = document.getElementById('bezBodyCopy');
-    if (bodyEl && BEZ_DESCRIPTIONS[key]) bodyEl.textContent = BEZ_DESCRIPTIONS[key];
-    if (key === 'fast-fade') {
-      activateFastFade();
-    } else if (key === 'modal-enter') {
-      activateModalEnter();
-    } else if (key === 'modal-exit') {
-      activateModalExit();
-    } else if (key === 'slow-fade') {
-      document.getElementById('sfUI').style.display = '';
-      document.getElementById('ffUI').style.display = 'none';
-      document.getElementById('meUI').style.display = 'none';
-      document.getElementById('mxUI').style.display = 'none';
-      selectBez('standard');
-      document.querySelectorAll('.dur-card').forEach(c => c.classList.remove('selected'));
-      document.querySelector('.dur-card[data-dur="500"]')?.classList.add('selected');
-      activeBezDuration = 500;
-      markBezDefaults('standard', 500);
-    }
+    demoFade(document.getElementById('dtContent'), () => {
+      document.querySelectorAll('#bezTabsBar .demo-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      try { history.replaceState(null, '', `#${key}`); } catch(e) {}
+      const BEZ_DESCRIPTIONS = {
+        'slow-fade':    'Standard curve used to gently fade in content.',
+        'fast-fade':    'Linear curve used for quick fades when content loads.',
+        'modal-enter':  'Enter curve used to present a modal.',
+        'modal-exit':   'Exit curve used to quickly dismiss a modal.',
+      };
+      const bodyEl = document.getElementById('bezBodyCopy');
+      if (bodyEl && BEZ_DESCRIPTIONS[key]) bodyEl.textContent = BEZ_DESCRIPTIONS[key];
+      if (key === 'fast-fade') {
+        activateFastFade();
+      } else if (key === 'modal-enter') {
+        activateModalEnter();
+      } else if (key === 'modal-exit') {
+        activateModalExit();
+      } else if (key === 'slow-fade') {
+        document.getElementById('sfUI').style.display = '';
+        document.getElementById('ffUI').style.display = 'none';
+        document.getElementById('meUI').style.display = 'none';
+        document.getElementById('mxUI').style.display = 'none';
+        selectBez('standard');
+        document.querySelectorAll('.dur-card').forEach(c => c.classList.remove('selected'));
+        document.querySelector('.dur-card[data-dur="500"]')?.classList.add('selected');
+        activeBezDuration = 500;
+        markBezDefaults('standard', 500);
+      }
+    }, () => { runBezDemo(); });
   });
 });
 
@@ -6922,7 +6942,7 @@ const TP_DEMOS = {
         tpSpringAnimate((t) => {
           const pos = springPos(t, stiffness, damping);
           const completion = 1 - pos;
-          const scale = 0.92 + completion * 0.08;
+          const scale = 0.94 + completion * 0.06;
           const opacity = Math.min(completion / 0.3, 1);
           const blur = Math.max(BLUR_PX * (1 - completion), 0);
           inEl.style.opacity   = String(opacity);
@@ -7148,34 +7168,35 @@ function applyTpGrowMode(mode) {
 document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (btn.dataset.mode === tpGrowMode) return;
-    // Stop auto-play loop (clears pending setTimeout closures)
     const wasPlaying = window._tpAutoPlay?.isPlaying();
     window._tpAutoPlay?.stop();
-    // Cancel any in-flight rAF and hard-reset both panels
-    if (tpExpandAnim) { cancelAnimationFrame(tpExpandAnim); tpExpandAnim = null; }
-    const fsPanel  = document.getElementById('tpExpandPanel');
-    const modPanel = document.getElementById('tpModalPanel');
-    const scrim    = document.getElementById('tpExpandScrim');
-    fsPanel.style.display  = 'none';
-    modPanel.style.display = 'none'; modPanel.style.boxShadow = 'none';
-    scrim.style.opacity = '0'; scrim.style.pointerEvents = 'none';
-    const sPanel = document.getElementById('tpSearchPanel');
-    const sScrim = document.getElementById('tpSearchScrim');
-    if (sPanel) sPanel.style.display = 'none';
-    if (sScrim) { sScrim.style.opacity = '0'; sScrim.style.pointerEvents = 'none'; }
-    const searchEl = document.querySelector('#tpPhoneContent .sk-search');
-    if (searchEl) searchEl.style.visibility = '';
-    document.getElementById('tpPhoneContent').style.filter = '';
-    document.getElementById('tpPhoneBottomNav').style.filter = '';
-    tpSearchState = null;
-    // Restore any hidden card image
-    document.querySelectorAll('.tp-grow-card .sk-carousel-img').forEach(img => img.style.visibility = '');
-    tpPendingImgEl = null;
-    tpExpandState = null;
-    tpExpandCardIdx = 0;
-    applyTpGrowMode(btn.dataset.mode);
-    // Restart loop from clean state
-    if (wasPlaying) window._tpAutoPlay?.start();
+    demoFade(
+      document.getElementById('tpPhoneScreen'),
+      () => {
+        if (tpExpandAnim) { cancelAnimationFrame(tpExpandAnim); tpExpandAnim = null; }
+        const fsPanel  = document.getElementById('tpExpandPanel');
+        const modPanel = document.getElementById('tpModalPanel');
+        const scrim    = document.getElementById('tpExpandScrim');
+        fsPanel.style.display  = 'none';
+        modPanel.style.display = 'none'; modPanel.style.boxShadow = 'none';
+        scrim.style.opacity = '0'; scrim.style.pointerEvents = 'none';
+        const sPanel = document.getElementById('tpSearchPanel');
+        const sScrim = document.getElementById('tpSearchScrim');
+        if (sPanel) sPanel.style.display = 'none';
+        if (sScrim) { sScrim.style.opacity = '0'; sScrim.style.pointerEvents = 'none'; }
+        const searchEl = document.querySelector('#tpPhoneContent .sk-search');
+        if (searchEl) searchEl.style.visibility = '';
+        document.getElementById('tpPhoneContent').style.filter = '';
+        document.getElementById('tpPhoneBottomNav').style.filter = '';
+        tpSearchState = null;
+        document.querySelectorAll('.tp-grow-card .sk-carousel-img').forEach(img => img.style.visibility = '');
+        tpPendingImgEl = null;
+        tpExpandState = null;
+        tpExpandCardIdx = 0;
+        applyTpGrowMode(btn.dataset.mode);
+      },
+      () => { if (wasPlaying) window._tpAutoPlay?.start(); }
+    );
   });
 });
 
@@ -7201,10 +7222,11 @@ document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(btn => 
     if (btn.dataset.mode === tpSlideInMode) return;
     const wasPlaying = window._tpAutoPlay?.isPlaying();
     window._tpAutoPlay?.stop();
-    if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
-    TP_DEMOS['push'].reset();
-    applyTpSlideInMode(btn.dataset.mode);
-    if (wasPlaying) window._tpAutoPlay?.start();
+    demoFade(
+      document.getElementById('tpPhoneScreen'),
+      () => { if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; } TP_DEMOS['push'].reset(); applyTpSlideInMode(btn.dataset.mode); },
+      () => { if (wasPlaying) window._tpAutoPlay?.start(); }
+    );
   });
 });
 
@@ -7253,10 +7275,11 @@ document.querySelectorAll('#tpSlideUpModeToggle .demo-mode-btn').forEach(btn => 
     if (btn.dataset.mode === tpSlideUpMode) return;
     const wasPlaying = window._tpAutoPlay?.isPlaying();
     window._tpAutoPlay?.stop();
-    if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
-    TP_DEMOS['slide-up'].reset();
-    applyTpSlideUpMode(btn.dataset.mode);
-    if (wasPlaying) window._tpAutoPlay?.start();
+    demoFade(
+      document.getElementById('tpPhoneScreen'),
+      () => { if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; } TP_DEMOS['slide-up'].reset(); applyTpSlideUpMode(btn.dataset.mode); },
+      () => { if (wasPlaying) window._tpAutoPlay?.start(); }
+    );
   });
 });
 
@@ -7312,24 +7335,27 @@ document.querySelectorAll('#tpCfModeToggle .demo-mode-btn').forEach(btn => {
     if (btn.dataset.mode === tpCfMode) return;
     const wasPlaying = window._tpAutoPlay?.isPlaying();
     window._tpAutoPlay?.stop();
-    if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
-    tpCrossFadeAnimating = false;
-    TP_DEMOS['cross-fade']._showing = 'list';
-    TP_DEMOS['cross-fade']._iconIdx = 0;
-    TP_DEMOS['cross-fade']._iconSlot = 'a';
-    // Reset icon slots
-    const iA = document.getElementById('tpCfIconBigA');
-    const iB = document.getElementById('tpCfIconBigB');
-    const icons = TP_DEMOS['cross-fade']._icons;
-    if (iA) { iA.textContent = icons[0]; iA.style.transition = ''; iA.style.opacity = '1'; iA.style.transform = 'scale(1)'; iA.style.filter = ''; }
-    if (iB) { iB.textContent = icons[1]; iB.style.transition = ''; iB.style.opacity = '0'; iB.style.transform = 'scale(0.6)'; iB.style.filter = 'blur(4px)'; }
-    // Reset cards
-    const list = document.getElementById('tpSeqList');
-    const grid = document.getElementById('tpSeqGrid');
-    if (list) { list.style.transition = ''; list.style.opacity = '1'; list.style.transform = 'scale(1)'; list.style.filter = ''; list.style.pointerEvents = ''; }
-    if (grid) { grid.style.transition = ''; grid.style.opacity = '0'; grid.style.transform = 'scale(0.92)'; grid.style.filter = ''; grid.style.pointerEvents = 'none'; }
-    applyCfMode(btn.dataset.mode);
-    if (wasPlaying) window._tpAutoPlay?.start();
+    demoFade(
+      document.getElementById('tpDeviceWrap'),
+      () => {
+        if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
+        tpCrossFadeAnimating = false;
+        TP_DEMOS['cross-fade']._showing = 'list';
+        TP_DEMOS['cross-fade']._iconIdx = 0;
+        TP_DEMOS['cross-fade']._iconSlot = 'a';
+        const iA = document.getElementById('tpCfIconBigA');
+        const iB = document.getElementById('tpCfIconBigB');
+        const icons = TP_DEMOS['cross-fade']._icons;
+        if (iA) { iA.textContent = icons[0]; iA.style.transition = ''; iA.style.opacity = '1'; iA.style.transform = 'scale(1)'; iA.style.filter = ''; }
+        if (iB) { iB.textContent = icons[1]; iB.style.transition = ''; iB.style.opacity = '0'; iB.style.transform = 'scale(0.6)'; iB.style.filter = 'blur(4px)'; }
+        const list = document.getElementById('tpSeqList');
+        const grid = document.getElementById('tpSeqGrid');
+        if (list) { list.style.transition = ''; list.style.opacity = '1'; list.style.transform = 'scale(1)'; list.style.filter = ''; list.style.pointerEvents = ''; }
+        if (grid) { grid.style.transition = ''; grid.style.opacity = '0'; grid.style.transform = 'scale(0.92)'; grid.style.filter = ''; grid.style.pointerEvents = 'none'; }
+        applyCfMode(btn.dataset.mode);
+      },
+      () => { if (wasPlaying) window._tpAutoPlay?.start(); }
+    );
   });
 });
 
@@ -7350,22 +7376,28 @@ document.querySelectorAll('#tpLoadModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (btn.dataset.mode === tpLoadMode) return;
     window._tpAutoPlay?.stop();
-    applyTpLoadMode(btn.dataset.mode);
-    TP_DEMOS['loading-fade'].reset();
-    if (btn.dataset.mode === 'reveal') {
-      TP_DEMOS['loading-fade']._timer = setTimeout(() => TP_DEMOS['loading-fade'].play(), 2500);
-    }
+    demoFade(
+      document.getElementById('tpPhoneScreen'),
+      () => { applyTpLoadMode(btn.dataset.mode); TP_DEMOS['loading-fade'].reset(); },
+      () => { if (btn.dataset.mode === 'reveal') TP_DEMOS['loading-fade']._timer = setTimeout(() => TP_DEMOS['loading-fade'].play(), 2500); }
+    );
   });
 });
 
 document.querySelectorAll('.tp-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const key = tab.dataset.tp;
-    switchTpDemo(key);
+    if (tab.classList.contains('active')) return;
+    window._tpAutoPlay?.stop();
+    const prevKey = document.querySelector('.tp-tab.active')?.dataset.tp;
+    const deviceChanges = key === 'slide-up-fade' || prevKey === 'slide-up-fade';
+    demoFade(
+      document.getElementById(deviceChanges ? 'tpDeviceWrap' : 'tpPhoneScreen'),
+      () => { switchTpDemo(key); },
+      () => { if (key !== 'loading-fade') window._tpAutoPlay?.start(); }
+    );
     const growSlug = key === 'grow' ? (tpGrowMode === 'modal' ? '-modal' : tpGrowMode === 'search' ? '-search' : '') : '';
     try { history.replaceState(null, '', `#transitions-${key}${growSlug}`); } catch(e) {}
-    window._tpAutoPlay?.stop();
-    if (key !== 'loading-fade') window._tpAutoPlay?.start();
   });
 });
 
@@ -8818,7 +8850,10 @@ function applyNgGrowMode(mode) {
 
 // Wire up segmented control
 document.querySelectorAll('#ngGrowModeToggle .demo-mode-btn').forEach(btn => {
-  btn.addEventListener('click', () => applyNgGrowMode(btn.dataset.ngMode));
+  btn.addEventListener('click', () => {
+    if (btn.dataset.ngMode === ngGrowMode) return;
+    demoFade(document.getElementById('ngPhoneScreen'), () => applyNgGrowMode(btn.dataset.ngMode), null);
+  });
 });
 
 // Start on detail page — expand first card after a short delay, only if grow-dismiss is active
@@ -9084,6 +9119,9 @@ function switchNgDemo(key) {
   const playBtn       = document.getElementById('ngPlayBtn');
   const growToggle    = document.getElementById('ngGrowModeToggle');
 
+  const textPanel = document.getElementById('ngTextPanel');
+  textPanel.style.minHeight = textPanel.offsetHeight + 'px';
+
   if (key === 'sheet-dismiss') {
     // Collapse any open grow panel
     if (ngExpandState) {
@@ -9141,7 +9179,28 @@ document.querySelectorAll('.ng-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const key = tab.dataset.ng;
     if (tab.classList.contains('active')) { NG_DEMOS[key]?.play(); return; }
-    switchNgDemo(key);
+    const prevKey = document.querySelector('.ng-tab.active')?.dataset.ng;
+    const ngPhone = document.getElementById('ngPhone');
+    // Leaving sheet-dismiss: clear black bg before exit so it's absent during fade-out
+    if (prevKey === 'sheet-dismiss') {
+      ngPhone.style.transition = '';
+      ngPhone.style.background = '';
+    }
+    demoFade(
+      document.getElementById('ngPhoneScreen'),
+      () => {
+        switchNgDemo(key);
+        if (key === 'sheet-dismiss') {
+          ngPhone.style.transition = '';
+          ngPhone.style.background = 'transparent';
+          requestAnimationFrame(() => {
+            ngPhone.style.transition = 'background 200ms linear 200ms';
+            ngPhone.style.background = '#000';
+          });
+        }
+      },
+      null
+    );
     try { history.replaceState(null, '', `#gestures-${key}`); } catch(e) {}
   });
 });
@@ -9608,6 +9667,104 @@ document.querySelectorAll('.demo-tab').forEach(tab => {
     rightBtn.addEventListener('click', () => bar.scrollBy({ left:  SCROLL_AMT, behavior: 'smooth' }));
   });
 })();
+
+// ── Demo transition fade ──────────────────────────────────────────
+// Matches the cross-fade spec: fast ease-out exit, spring enter.
+let _demoFadeRaf = null;
+function demoFade(el, swap, onReady, { noScale, onProgress } = {}) {
+  const EXIT_DUR    = 150;
+  const EXIT_CURVE  = 'cubic-bezier(0.40,0.00,1.00,1.00)';
+  const ENTER_DELAY = 100;
+  const BLUR_PX     = 6;
+  const SP_K = 300, SP_D = calcDamping(300, 1.0);
+
+  const tProp = noScale ? '' : `, transform ${EXIT_DUR}ms ${EXIT_CURVE}`;
+  el.style.transition = `opacity ${EXIT_DUR}ms ${EXIT_CURVE}${tProp}, filter ${EXIT_DUR}ms ${EXIT_CURVE}`;
+  requestAnimationFrame(() => {
+    el.style.opacity = '0';
+    if (!noScale) el.style.transform = 'scale(0.96)';
+    el.style.filter  = `blur(${BLUR_PX}px)`;
+  });
+
+  setTimeout(() => {
+    el.style.transition = '';
+    swap();
+    // Two rAF frames let swap render before spring starts
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (_demoFadeRaf) cancelAnimationFrame(_demoFadeRaf);
+      const startT = performance.now();
+      function frame(now) {
+        const t          = (now - startT) / 1000;
+        const pos        = springPos(t, SP_K, SP_D);
+        const completion = 1 - pos;
+        el.style.opacity = String(Math.min(completion / 0.3, 1));
+        if (!noScale) el.style.transform = `scale(${0.96 + completion * 0.04})`;
+        const blur = Math.max(BLUR_PX * (1 - completion), 0);
+        el.style.filter  = blur > 0.1 ? `blur(${blur.toFixed(2)}px)` : '';
+        onProgress?.(completion);
+        if (t < 5 && !isSettled(t, SP_K, SP_D)) {
+          _demoFadeRaf = requestAnimationFrame(frame);
+        } else {
+          el.style.opacity   = '1';
+          el.style.transform = '';
+          el.style.filter    = '';
+          onReady?.();
+        }
+      }
+      _demoFadeRaf = requestAnimationFrame(frame);
+    }));
+  }, ENTER_DELAY);
+}
+
+// Fade out outEl, run swap, then spring-fade in inEl (bezel stays static).
+function demoFadeSwap(outEl, inEl, swap) {
+  if (!outEl || !inEl) { swap?.(); return; }
+  const EXIT_DUR    = 150;
+  const EXIT_CURVE  = 'cubic-bezier(0.40,0.00,1.00,1.00)';
+  const ENTER_DELAY = 100;
+  const BLUR_PX     = 6;
+  const SP_K = 300, SP_D = calcDamping(300, 1.0);
+
+  outEl.style.transition = `opacity ${EXIT_DUR}ms ${EXIT_CURVE}, transform ${EXIT_DUR}ms ${EXIT_CURVE}, filter ${EXIT_DUR}ms ${EXIT_CURVE}`;
+  requestAnimationFrame(() => {
+    outEl.style.opacity   = '0';
+    outEl.style.transform = 'scale(0.96)';
+    outEl.style.filter    = `blur(${BLUR_PX}px)`;
+  });
+
+  setTimeout(() => {
+    outEl.style.transition = '';
+    outEl.style.opacity    = '';
+    outEl.style.transform  = '';
+    outEl.style.filter     = '';
+    // Pre-position incoming screen then swap
+    inEl.style.opacity   = '0';
+    inEl.style.transform = 'scale(0.96)';
+    inEl.style.filter    = `blur(${BLUR_PX}px)`;
+    swap();
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (_demoFadeRaf) cancelAnimationFrame(_demoFadeRaf);
+      const startT = performance.now();
+      function frame(now) {
+        const t          = (now - startT) / 1000;
+        const pos        = springPos(t, SP_K, SP_D);
+        const completion = 1 - pos;
+        inEl.style.opacity   = String(Math.min(completion / 0.3, 1));
+        inEl.style.transform = `scale(${0.96 + completion * 0.04})`;
+        const blur = Math.max(BLUR_PX * (1 - completion), 0);
+        inEl.style.filter    = blur > 0.1 ? `blur(${blur.toFixed(2)}px)` : '';
+        if (t < 5 && !isSettled(t, SP_K, SP_D)) {
+          _demoFadeRaf = requestAnimationFrame(frame);
+        } else {
+          inEl.style.opacity   = '';
+          inEl.style.transform = '';
+          inEl.style.filter    = '';
+        }
+      }
+      _demoFadeRaf = requestAnimationFrame(frame);
+    }));
+  }, ENTER_DELAY);
+}
 
 </script>
 <div class="toast" id="toast"></div>

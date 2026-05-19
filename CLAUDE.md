@@ -410,3 +410,69 @@ Use `el.style.display = 'flex'` (or `'block'`), never `el.style.display = ''`. S
 ### Only reset mode on tab leave
 
 Pass a sentinel argument to `reset()` when leaving the tab: `reset('leaving')`. The autoplay scheduler calls `reset()` without arguments — those calls must not touch the mode variable.
+
+---
+
+## Demo cross-fade transition (`demoFade` / `demoFadeSwap`)
+
+Every tab click that switches demo content uses a cross-fade: fast ease-out exit, then a spring enter. This is the motion system's own cross-fade pattern applied to itself.
+
+### How it works
+
+**Exit:** CSS transition, `150ms cubic-bezier(0.40,0.00,1.00,1.00)`. Opacity → 0, scale → 0.96, blur → 6px.
+
+**Enter:** Starts 100ms into the exit (overlap). `swap()` is called at the 100ms mark — the element is still fading out but partially invisible. Then a JS RAF spring (stiffness 300, critically damped) drives opacity, scale, and blur back to resting. Opacity ramps over the first 30% of spring travel; scale goes 0.96→1; blur 6→0.
+
+**Dedicated RAF handle:** `_demoFadeRaf` — separate from `tpAnim` so they don't cancel each other.
+
+**`demoFade(el, swap, onReady, { noScale, onProgress })`** — single-element variant. Fades out `el`, calls `swap()` at the 100ms mark, then springs `el` back in. `onProgress(completion)` fires each frame with the 0→1 spring completion value if provided.
+
+**`demoFadeSwap(outEl, inEl, swap)`** — two-element variant for spring demos where the outgoing and incoming elements are different DOM nodes (e.g. switching between spring demo panels while keeping the bezel static). Fades out `outEl`, resets it, primes `inEl` at opacity 0 / scale 0.96, calls `swap()`, then springs `inEl` in.
+
+### What each section targets
+
+| Section | Element faded | Why |
+|---------|--------------|-----|
+| Transition Patterns (TP) | `#tpPhoneScreen` (content wrapper inside bezel) | Keeps bezel static |
+| TP → slide-up-fade (device change) | `#tpDeviceWrap` (phone+desktop+icons container) | Device type changes, whole device fades |
+| Gestures / NG | `#ngPhoneScreen` (content wrapper inside bezel) | Keeps bezel static |
+| Bezier | `#dtContent` (inside `#dtScaler`) | `dtScaler` has its own `transform:scale()` from ResizeObserver — targeting the inner wrapper avoids overwriting it |
+| Spring | `.spring-screen` wrappers (JS-created) via `demoFadeSwap` | Bezel stays put; two different panels swap |
+
+### Adding a new section
+
+1. Create a content wrapper (`position:absolute;inset:0;overflow:hidden`) inside the device bezel.
+2. Target that wrapper in your tab click handler — never the outer container or the bezel itself.
+3. Use `demoFade(wrapper, () => switchMyDemo(key), onReady)` for a single phone/device.
+4. Use `demoFadeSwap(outScreen, inScreen, swap)` if the outgoing and incoming content are different DOM elements.
+5. If your device type changes on some tab switches (like TP's slide-up-fade), detect that case and target a wider wrapper instead.
+
+### NG sheet-dismiss: black background aliasing fix
+
+**Symptom:** When switching to the sheet-dismiss tab, thin white lines flash at the edges of the phone as the spring scale-up finishes.
+
+**Root cause:** `#ngPhoneScreen` scales to 0.96 during the spring enter, pulling away from the edges of `#ngPhone`. `.phone-frame` has `background: var(--c-surface-0)` (white/light), which shows through the gap at the corners and edges as the scale resolves.
+
+**Fix — three parts:**
+
+1. **`border-radius` on `#ngPhoneScreen`:** The phone frame is `border-radius: 46px` with a `6px` border, so inner content radius is `40px`. Add `border-radius:40px` to `#ngPhoneScreen` so its corners match during scale — eliminates corner shape mismatch.
+
+2. **Black background on `#ngPhone`:** Set `#ngPhone.style.background = '#000'` to fill the gap. This must be scoped to sheet-dismiss only:
+   - **Entering sheet-dismiss:** set it inside the `swap()` callback (element is at opacity 0 — invisible). Use a `200ms linear` CSS transition with a `200ms` delay so it fades in late rather than snapping, keeping it invisible during the early part of the spring:
+     ```js
+     ngPhone.style.background = 'transparent';
+     ngPhone.style.transition = '';
+     requestAnimationFrame(() => {
+       ngPhone.style.transition = 'background 200ms linear 200ms';
+       ngPhone.style.background = '#000';
+     });
+     ```
+   - **Leaving sheet-dismiss:** clear background and transition immediately *before* `demoFade` starts, so the exit fade plays clean with no black:
+     ```js
+     if (prevKey === 'sheet-dismiss') {
+       ngPhone.style.transition = '';
+       ngPhone.style.background = '';
+     }
+     ```
+
+3. **Why delay the fade-in:** setting the black instantly in `swap()` causes a visible black flash at the start of the spring enter, even though `#ngPhoneScreen` is fading in. The 200ms delay + 200ms fade means the black only becomes visible late in the animation — right when the white gaps would otherwise appear — and it reads as part of the content resolving rather than a separate background pop.
