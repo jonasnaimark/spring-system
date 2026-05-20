@@ -870,9 +870,13 @@
     }
 
     /* ── Grow→Popover panel ── */
-    .popover-panel-inner {
+    #tpPopoverInner {
       position: absolute;
-      inset: 0;
+      top: 0;
+      left: 0;
+      transform-origin: top left;
+    }
+    .popover-panel-inner {
       display: flex;
       flex-direction: column;
       padding: 18px 18px 16px;
@@ -2750,8 +2754,9 @@
       <div id="tpPopoverScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.12);opacity:0;pointer-events:none;z-index:15;"></div>
       <!-- Grow→Popover panel -->
       <div id="tpPopoverPanel" style="display:none;position:absolute;z-index:16;background:transparent;border:1.5px solid var(--c-border-medium);border-radius:17px;overflow:hidden;pointer-events:none;">
-        <!-- expanded state: popover content (fades in) -->
+        <!-- expanded state: popover content (fades in, scales uniformly) -->
         <div id="tpPopoverContentLayer" style="position:absolute;inset:0;opacity:0;background:var(--c-surface-0);">
+          <div id="tpPopoverInner">
           <div class="popover-panel-inner">
             <div class="popover-panel-close">
               <svg id="tpPopoverCloseBtn" width="9" height="9" viewBox="0 0 10 10" fill="none"><line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -2772,6 +2777,7 @@
               <div class="popover-panel-cta"></div>
             </div>
           </div>
+          </div><!-- /tpPopoverInner -->
         </div>
       </div>
 
@@ -5512,6 +5518,7 @@ function tpExpandPopover() {
   const panel        = document.getElementById('tpPopoverPanel');
   const scrim        = document.getElementById('tpPopoverScrim');
   const contentLayer = document.getElementById('tpPopoverContentLayer');
+  const inner        = document.getElementById('tpPopoverInner');
 
   // Source: the chip that was tapped (cycling left→right)
   const chips = Array.from(document.querySelectorAll('#tpPhoneContentPopover .tp-popover-chip'));
@@ -5530,20 +5537,26 @@ function tpExpandPopover() {
   }
   const fromR = fromH / 2;
 
-  // Destination: centered popover
+  // Destination: centered popover — measure natural height at full width
   const gap = 10;
   const toX = gap;
   const toW = phone.clientWidth - gap * 2;
   const toR = 28;
+  inner.style.width = toW + 'px';
   panel.style.display = 'block';
   panel.style.visibility = 'hidden';
   panel.style.border = 'none';
-  panel.style.left = toX + 'px'; panel.style.width = toW + 'px'; panel.style.height = 'auto';
+  panel.style.width = toW + 'px'; panel.style.height = 'auto';
   const toH = panel.scrollHeight || 200;
+  inner.style.height = toH + 'px';
   panel.style.height = ''; panel.style.display = 'none'; panel.style.visibility = '';
   const toY = Math.round((phone.clientHeight - toH) / 2);
 
+  // Content layer: full size, invisible, inner scales from chip size up
   contentLayer.style.opacity = '0';
+  inner.style.transform = `scale(${fromW / toW})`;
+  inner.style.transformOrigin = 'top left';
+
   panel.style.background   = 'transparent';
   panel.style.border       = '1.5px solid var(--c-border-medium)';
   panel.style.left         = fromX + 'px';
@@ -5566,17 +5579,22 @@ function tpExpandPopover() {
     const posXW  = springPos(t, stiffness, damping);
     const posYH  = springPos(Math.max(0, t - DELAY), stiffness, damping);
     const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+    const curW = toW + (fromW - toW) * posXW;
+    const curH = toH + (fromH - toH) * posYH;
     panel.style.left         = (toX + (fromX - toX) * posXW) + 'px';
     panel.style.top          = (toY + (fromY - toY) * posYH) + 'px';
-    panel.style.width        = (toW + (fromW - toW) * posXW) + 'px';
-    panel.style.height       = (toH + (fromH - toH) * posYH) + 'px';
+    panel.style.width        = curW + 'px';
+    panel.style.height       = curH + 'px';
     panel.style.borderRadius = (toR + (fromR - toR) * posXW) + 'px';
+    // Scale inner so content doesn't reflow
+    inner.style.transform = `scale(${curW / toW})`;
     scrim.style.opacity      = (1 - scrimPos).toFixed(3);
     document.getElementById('tpPhoneContentPopover').style.filter = `blur(${(8 * (1 - scrimPos)).toFixed(2)}px)`;
     document.getElementById('tpPhoneBottomNav').style.filter      = `blur(${(8 * (1 - scrimPos)).toFixed(2)}px)`;
-    const fade = Math.min(t / 0.18, 1);
-    contentLayer.style.opacity = String(fade);
-    // border fades out as content fades in, background crossfades chip→white
+    // Content fades in only in the last 30% of spring travel (posXW near 0 = settled)
+    const settledness = 1 - Math.max(0, posXW);
+    const fade = Math.max(0, (settledness - 0.70) / 0.30);
+    contentLayer.style.opacity = fade.toFixed(3);
     const borderAlpha = Math.max(0, 1 - fade * 4).toFixed(3);
     panel.style.borderColor = `rgba(0,0,0,${borderAlpha})`;
     panel.style.boxShadow = `0 4px 24px rgba(0,0,0,${(0.14 * fade).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * fade).toFixed(3)})`;
@@ -5589,6 +5607,7 @@ function tpExpandPopover() {
       panel.style.border = 'none';
       panel.style.pointerEvents = 'auto';
       panel.style.boxShadow = '0 4px 24px rgba(0,0,0,0.14),0 1px 4px rgba(0,0,0,0.08)';
+      inner.style.transform = 'scale(1)';
       scrim.style.opacity = '1'; scrim.style.pointerEvents = 'auto';
       document.getElementById('tpPhoneContentPopover').style.filter = 'blur(8px)';
       document.getElementById('tpPhoneBottomNav').style.filter      = 'blur(8px)';
@@ -5606,14 +5625,19 @@ function tpCollapsePopover(onDone) {
   const panel        = document.getElementById('tpPopoverPanel');
   const scrim        = document.getElementById('tpPopoverScrim');
   const contentLayer = document.getElementById('tpPopoverContentLayer');
+  const inner        = document.getElementById('tpPopoverInner');
+  const fullW = parseFloat(inner.style.width) || toW; // full popover width inner was set to
   const fromX = parseFloat(panel.style.left)         || toX;
   const fromY = parseFloat(panel.style.top)          || toY;
-  const fromW = parseFloat(panel.style.width)        || toW;
+  const fromW = parseFloat(panel.style.width)        || fullW;
   const fromH = parseFloat(panel.style.height)       || toH;
   const fromR = parseFloat(panel.style.borderRadius) || 18;
   panel.style.pointerEvents = 'none';
   scrim.style.pointerEvents = 'none';
   panel.style.border = '1.5px solid transparent';
+  // Fade content out immediately
+  contentLayer.style.opacity = '0';
+  inner.style.transform = `scale(${fromW / fullW})`;
   const startT = performance.now();
   if (tpPopoverAnim) cancelAnimationFrame(tpPopoverAnim);
   const DELAY = 0.04;
@@ -5623,19 +5647,21 @@ function tpCollapsePopover(onDone) {
     const posYH  = springPos(t, stiffness, damping);
     const posXW  = springPos(Math.max(0, t - DELAY), stiffness, damping);
     const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
-    const pYH = 1 - posYH, pXW = 1 - posXW;
+    const pXW = 1 - posXW, pYH = 1 - posYH;
+    const curW = fromW + (toW - fromW) * pXW;
+    const curH = fromH + (toH - fromH) * pYH;
     panel.style.left         = (fromX + (toX - fromX) * pXW) + 'px';
     panel.style.top          = (fromY + (toY - fromY) * pYH) + 'px';
-    panel.style.width        = (fromW + (toW - fromW) * pXW) + 'px';
-    panel.style.height       = (fromH + (toH - fromH) * pYH) + 'px';
+    panel.style.width        = curW + 'px';
+    panel.style.height       = curH + 'px';
     panel.style.borderRadius = (fromR + (toR - fromR) * pXW) + 'px';
+    inner.style.transform    = `scale(${curW / fullW})`;
     scrim.style.opacity      = scrimPos.toFixed(3);
-    const fade = Math.min(t / 0.18, 1);
-    contentLayer.style.opacity = String(1 - fade);
-    // border fades in as content fades out
-    const borderAlpha = Math.min(0.14, fade * 0.56).toFixed(3);
+    // Border fades in as panel shrinks
+    const shrink = 1 - pXW; // 0→1 as it collapses
+    const borderAlpha = Math.min(0.14, shrink * 0.42).toFixed(3);
     panel.style.borderColor = `rgba(0,0,0,${borderAlpha})`;
-    panel.style.boxShadow = `0 4px 24px rgba(0,0,0,${(0.14 * (1 - fade)).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * (1 - fade)).toFixed(3)})`;
+    panel.style.boxShadow = `0 4px 24px rgba(0,0,0,${(0.14 * (1 - shrink)).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * (1 - shrink)).toFixed(3)})`;
     document.getElementById('tpPhoneContentPopover').style.filter = `blur(${(8 * scrimPos).toFixed(2)}px)`;
     document.getElementById('tpPhoneBottomNav').style.filter      = `blur(${(8 * scrimPos).toFixed(2)}px)`;
     if (t < 5 && (!isSettled(t, stiffness, damping) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
@@ -5646,6 +5672,7 @@ function tpCollapsePopover(onDone) {
       panel.style.border = '1.5px solid var(--c-border-medium)';
       panel.style.background = 'transparent';
       contentLayer.style.opacity = '0';
+      inner.style.transform = 'scale(1)';
       scrim.style.opacity = '0';
       document.getElementById('tpPhoneContentPopover').style.filter = '';
       document.getElementById('tpPhoneBottomNav').style.filter = '';
@@ -6327,14 +6354,17 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
     if (tpPopoverAnim) cancelAnimationFrame(tpPopoverAnim);
     const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, chipEl } = tpPopoverState;
     const contentLayer = document.getElementById('tpPopoverContentLayer');
+    const inner        = document.getElementById('tpPopoverInner');
+    const fullW = parseFloat(inner.style.width) || toW;
     popoverPanel.style.pointerEvents = 'none';
     popoverScrim.style.pointerEvents = 'none';
     popoverPanel.style.border = '1.5px solid transparent';
+    contentLayer.style.opacity = '0';
     tpPopoverState = null;
 
     const curX = parseFloat(popoverPanel.style.left)         || toX;
     const curY = parseFloat(popoverPanel.style.top)          || toY;
-    const curW = parseFloat(popoverPanel.style.width)        || toW;
+    const curW = parseFloat(popoverPanel.style.width)        || fullW;
     const curH = parseFloat(popoverPanel.style.height)       || toH;
     const curR = parseFloat(popoverPanel.style.borderRadius) || toR;
     const simX = new SpringSim(curX); simX.target = toX;
@@ -6343,9 +6373,9 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
     const simH = new SpringSim(curH); simH.target = toH;
     const simR = new SpringSim(curR); simR.target = toR;
     const simScrim = new SpringSim(parseFloat(popoverScrim.style.opacity) || 0); simScrim.target = 0;
+    inner.style.transform = `scale(${curW / fullW})`;
 
     let lastTime = null;
-    let fadeProgress = parseFloat(contentLayer.style.opacity) || 1;
 
     function tick(now) {
       if (!lastTime) lastTime = now;
@@ -6361,15 +6391,14 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       popoverPanel.style.width        = simW.x + 'px';
       popoverPanel.style.height       = Math.max(toH, simH.x) + 'px';
       popoverPanel.style.borderRadius = Math.max(0, simR.x) + 'px';
+      inner.style.transform = `scale(${simW.x / fullW})`;
       popoverPanel.style.boxShadow    = `0 4px 24px rgba(0,0,0,${(0.14 * Math.max(0, simScrim.x)).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * Math.max(0, simScrim.x)).toFixed(3)})`;
       popoverScrim.style.opacity = Math.max(0, simScrim.x).toFixed(3);
       const blurVal = (8 * Math.max(0, simScrim.x)).toFixed(2);
       document.getElementById('tpPhoneContentPopover').style.filter = `blur(${blurVal}px)`;
       document.getElementById('tpPhoneBottomNav').style.filter      = `blur(${blurVal}px)`;
-      fadeProgress = Math.max(0, fadeProgress - dt / 0.15);
-      contentLayer.style.opacity = fadeProgress.toFixed(3);
-      const borderAlpha = Math.min(0.14, (1 - fadeProgress) * 0.56).toFixed(3);
-      popoverPanel.style.borderColor = `rgba(0,0,0,${borderAlpha})`;
+      const shrink = Math.max(0, 1 - simW.x / fullW);
+      popoverPanel.style.borderColor = `rgba(0,0,0,${Math.min(0.14, shrink * 0.42).toFixed(3)})`;
       if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
         tpPopoverAnim = requestAnimationFrame(tick);
       } else {
@@ -6378,6 +6407,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
         popoverPanel.style.border = '1.5px solid var(--c-border-medium)';
         popoverPanel.style.background = 'transparent';
         contentLayer.style.opacity = '0';
+        inner.style.transform = 'scale(1)';
         popoverScrim.style.opacity = '0';
         document.getElementById('tpPhoneContentPopover').style.filter = '';
         document.getElementById('tpPhoneBottomNav').style.filter = '';
