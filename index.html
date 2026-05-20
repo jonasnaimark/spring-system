@@ -1416,27 +1416,40 @@
 
     /* ── Context menu ── */
     .ctx-menu {
-      width: 120px;
-      background: var(--c-surface-2);
+      width: 140px;
+      background: var(--c-surface-0);
       border-radius: 12px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.22), 0 1px 4px rgba(0,0,0,0.12);
-      padding: 8px 0;
+      padding: 4px 0;
       display: flex;
       flex-direction: column;
       will-change: transform, opacity;
     }
     [data-theme="dark"] .ctx-menu { outline: 1px solid var(--c-border-subtle); }
     .ctx-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      height: 34px;
+    }
+    .ctx-row-label {
       height: 8px;
       background: var(--sk-dark);
       border-radius: 4px;
-      margin: 7px 14px;
-      width: 80%;
+      flex-shrink: 0;
+    }
+    .ctx-row-icon {
+      width: 16px;
+      height: 14px;
+      border-radius: 4px;
+      background: var(--sk-dark);
+      flex-shrink: 0;
     }
     .ctx-sep {
       height: 1px;
       background: var(--c-border-subtle);
-      margin: 3px 0;
+      margin: 2px 0;
     }
 
     /* ── Overflow / 3-dot icon (in card images) ── */
@@ -2647,7 +2660,7 @@
   <p class="section-body">Transitions orient people as they navigate. Grow seamlessly reveals more detail. Push moves to a new screen. Slide Up layers content without losing context. Fade swaps content in place.</p>
   <div class="demo-tabs-bar section-chips" id="tpTabsBar">
     <div class="demo-tab tp-tab active" data-tp="grow">Grow</div>
-    <div class="demo-tab tp-tab" data-tp="popover">Grow & Fade</div>
+    <div class="demo-tab tp-tab" data-tp="grow-fade">Grow & Fade</div>
     <div class="tab-group-sep"></div>
     <div class="demo-tab tp-tab" data-tp="push">Push</div>
     <div class="demo-tab tp-tab" data-tp="push-fade">Push & Fade</div>
@@ -2927,14 +2940,12 @@
         <div class="sk-bottom-nav"><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div></div>
         <div class="modal-backdrop" id="tpModalBackdrop" style="opacity:0;pointer-events:none;"></div>
         <div class="modal-card" id="tpModal" style="opacity:0; transform: scale(0.75); position:absolute; top:50%; left:50%; margin-top:-70px; margin-left:-110px; z-index:12; pointer-events:none;"></div>
-        <div class="ctx-menu" id="tpCtxMenu" style="opacity:0;transform:scale(0.75);transform-origin:top right;position:absolute;top:195px;right:26px;z-index:12;pointer-events:none;">
-          <div class="ctx-row" style="width:80%;"></div>
-          <div class="ctx-row" style="width:62%;"></div>
-          <div class="ctx-row" style="width:75%;"></div>
-          <div class="ctx-row" style="width:55%;"></div>
-          <div class="ctx-row" style="width:70%;"></div>
-          <div class="ctx-row" style="width:45%;"></div>
-          <div class="ctx-row" style="width:60%;"></div>
+        <div class="ctx-menu" id="tpCtxMenu" style="opacity:0;transform:scale(0.75);transform-origin:top right;position:absolute;top:199px;right:26px;z-index:12;pointer-events:none;">
+          <div class="ctx-row"><div class="ctx-row-label" style="width:72px"></div><div class="ctx-row-icon"></div></div>
+          <div class="ctx-row"><div class="ctx-row-label" style="width:58px"></div><div class="ctx-row-icon"></div></div>
+          <div class="ctx-row"><div class="ctx-row-label" style="width:80px"></div><div class="ctx-row-icon"></div></div>
+          <div class="ctx-row"><div class="ctx-row-label" style="width:55px"></div><div class="ctx-row-icon"></div></div>
+          <div class="ctx-row"><div class="ctx-row-label" style="width:66px"></div><div class="ctx-row-icon"></div></div>
         </div>
       </div>
 
@@ -7050,7 +7061,7 @@ const TP_DEMOS = {
       pill.style.marginLeft  = '0px';
       pill.style.marginRight = '0px';
       // mode/layer reset only when leaving the tab (not when toggling between modes)
-      if (arguments[0] === 'leaving') applyTpSlideInMode('fullscreen');
+      if (arguments[0] === 'leaving') applyTpSlideInMode('fullscreen', { updateUrl: false });
     },
     play() {
       const spring = { stiffness: 300, damping: calcDamping(300, 1.0) };
@@ -7195,7 +7206,7 @@ const TP_DEMOS = {
   'slide-up': {
     description: 'Layers content over the current screen to keep context.',
     reset(reason) {
-      if (reason === 'leaving') applyTpSlideUpMode('fitted');
+      if (reason === 'leaving') applyTpSlideUpMode('fitted', { updateUrl: false });
       tpSlideUpStep = 0;
       tpSheetAnimating = false;
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
@@ -7465,15 +7476,17 @@ const TP_DEMOS = {
     },
   },
 
-  'popover': {
+  'grow-fade': {
     description: 'Floating elements fade and grow from center, or from their source element.',
     _seqTimer: null,
+    _step: null, // tracks where we are so resume can pick up
     _cancelSeq() {
       if (this._seqTimer) { clearTimeout(this._seqTimer); this._seqTimer = null; }
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
     },
     reset() {
       this._cancelSeq();
+      this._step = null;
       tpDemoState = 'out';
       const bd  = document.getElementById('tpModalBackdrop');
       const m   = document.getElementById('tpModal');
@@ -7484,16 +7497,12 @@ const TP_DEMOS = {
       tt.style.opacity = '0'; tt.style.transform = 'translateX(-50%) scale(0.75)';
       if (ctx) { ctx.style.opacity = '0'; ctx.style.transform = 'scale(0.75)'; }
     },
-    play() {
+    play(onDone, resume = false) {
       this._cancelSeq();
       const bd  = document.getElementById('tpModalBackdrop');
       const m   = document.getElementById('tpModal');
       const tt  = document.getElementById('tpTooltip');
       const ctx = document.getElementById('tpCtxMenu');
-      bd.style.opacity = '0';
-      m.style.opacity  = '0'; m.style.transform = 'scale(0.75)';
-      tt.style.opacity = '0'; tt.style.transform = 'translateX(-50%) scale(0.75)';
-      if (ctx) { ctx.style.opacity = '0'; ctx.style.transform = 'scale(0.75)'; }
 
       const spring = { stiffness: 600, damping: calcDamping(600, 0.7) };
       const self = this;
@@ -7515,7 +7524,7 @@ const TP_DEMOS = {
         after(700, onDone);
       };
 
-      const animateTooltip = (entering, onDone) => {
+      const animateTooltip = (entering, cb) => {
         const startT = performance.now();
         const { stiffness, damping } = spring;
         function tick(now) {
@@ -7533,14 +7542,14 @@ const TP_DEMOS = {
           } else {
             tt.style.transform = `translateX(-50%) scale(${entering ? 1 : 0.75})`;
             tt.style.opacity   = entering ? '1' : '0';
-            if (onDone) onDone();
+            if (cb) cb();
           }
         }
         if (tpAnim) cancelAnimationFrame(tpAnim);
         tpAnim = requestAnimationFrame(tick);
       };
 
-      const animateCtx = (entering, onDone) => {
+      const animateCtx = (entering, cb) => {
         const { stiffness, damping } = spring;
         const startT = performance.now();
         function tick(now) {
@@ -7553,35 +7562,46 @@ const TP_DEMOS = {
             tpAnim = requestAnimationFrame(tick);
           } else {
             if (ctx) { ctx.style.transform = `scale(${entering ? 1 : 0.75})`; ctx.style.opacity = entering ? '1' : '0'; }
-            if (onDone) onDone();
+            if (cb) cb();
           }
         }
         if (tpAnim) cancelAnimationFrame(tpAnim);
         tpAnim = requestAnimationFrame(tick);
       };
 
-      // modal enter → pause → modal exit → pause → tooltip enter → pause → tooltip exit → pause → ctx enter → pause → ctx exit
-      animateModal(true, () => {
-        after(600, () => {
-          animateModal(false, () => {
-            after(400, () => {
-              animateTooltip(true, () => {
-                after(700, () => {
-                  animateTooltip(false, () => {
-                    after(400, () => {
-                      animateCtx(true, () => {
-                        after(700, () => {
-                          animateCtx(false, null);
-                        });
-                      });
-                    });
-                  });
-                });
-              });
-            });
-          });
-        });
-      });
+      // _step tracks where we are so resume re-enters at the right point.
+      const runStep = (step) => {
+        self._step = step;
+        if (step === 'modal-enter') {
+          m.style.opacity = '0'; m.style.transform = 'scale(0.75)'; bd.style.opacity = '0';
+          animateModal(true, () => { self._step = 'modal-hold'; after(600, () => runStep('modal-exit')); });
+        } else if (step === 'modal-hold') {
+          after(600, () => runStep('modal-exit'));
+        } else if (step === 'modal-exit') {
+          animateModal(false, () => { self._step = 'tooltip-gap'; after(400, () => runStep('tooltip-enter')); });
+        } else if (step === 'tooltip-gap') {
+          after(400, () => runStep('tooltip-enter'));
+        } else if (step === 'tooltip-enter') {
+          tt.style.opacity = '0'; tt.style.transform = 'translateX(-50%) scale(0.75)';
+          animateTooltip(true, () => { self._step = 'tooltip-hold'; after(700, () => runStep('tooltip-exit')); });
+        } else if (step === 'tooltip-hold') {
+          after(700, () => runStep('tooltip-exit'));
+        } else if (step === 'tooltip-exit') {
+          animateTooltip(false, () => { self._step = 'ctx-gap'; after(400, () => runStep('ctx-enter')); });
+        } else if (step === 'ctx-gap') {
+          after(400, () => runStep('ctx-enter'));
+        } else if (step === 'ctx-enter') {
+          if (ctx) { ctx.style.opacity = '0'; ctx.style.transform = 'scale(0.75)'; }
+          animateCtx(true, () => { self._step = 'ctx-hold'; after(700, () => runStep('ctx-exit')); });
+        } else if (step === 'ctx-hold') {
+          after(700, () => runStep('ctx-exit'));
+        } else if (step === 'ctx-exit') {
+          animateCtx(false, () => { self._step = null; if (onDone) onDone(); });
+        }
+      };
+
+      const startStep = (resume && self._step) ? self._step : 'modal-enter';
+      runStep(startStep);
     },
   },
 
@@ -7647,7 +7667,7 @@ const TP_DEMOS = {
       tpApplyLoadShimmer(skContent);
       if (skNav) { skNav.style.opacity = ''; skNav.style.transition = ''; skNav.style.display = ''; }
       if (ldNav) { ldNav.style.opacity = '0'; ldNav.style.transition = ''; ldNav.style.display = 'none'; }
-      if (reason === 'leaving') applyTpLoadMode('shimmer');
+      if (reason === 'leaving') applyTpLoadMode('shimmer', { updateUrl: false });
     },
     play() {
       // Reveal mode: freeze shimmer → fade in loaded overlay → loop
@@ -7909,7 +7929,7 @@ const TP_PHONE_LAYERS = {
   'push':      'tpPushContent',
   'push-fade': 'tpTabContent',
   'slide-up':      'tpSheetContent',
-  'popover':      'tpModalContent',
+  'grow-fade':    'tpModalContent',
   'cross-fade':      'tpSeqContent',
   'loading-fade':  'tpLoadContent',
 };
@@ -8069,15 +8089,17 @@ const TP_GROW_DESCRIPTIONS = {
   'popover-chip': 'Filter chips grow into a popover overlay with blurred content behind it.',
   search:         'A search bar grows into an elevated overlay with blurred content behind it.',
 };
-function applyTpGrowMode(mode) {
+function applyTpGrowMode(mode, { updateUrl = true } = {}) {
   tpGrowMode = mode;
   document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.mode === tpGrowMode)
   );
   const bodyCopy = document.getElementById('tpBodyCopy');
   if (bodyCopy) bodyCopy.textContent = TP_GROW_DESCRIPTIONS[mode] || '';
-  const slug = mode === 'modal' ? '-sheet' : mode === 'search' ? '-search' : mode === 'popover-chip' ? '-popover-chip' : '';
-  try { history.replaceState(null, '', `#transitions-grow${slug}`); } catch(e) {}
+  if (updateUrl) {
+    const slug = mode === 'modal' ? '-sheet' : mode === 'search' ? '-search' : mode === 'popover-chip' ? '-popover-chip' : '';
+    try { history.replaceState(null, '', `#transitions-grow${slug}`); } catch(e) {}
+  }
   // Swap phone content layer: popover-chip uses tpPhoneContentPopover, everything else uses tpPhoneContent
   const mainContent    = document.getElementById('tpPhoneContent');
   const popoverContent = document.getElementById('tpPhoneContentPopover');
@@ -8145,14 +8167,14 @@ const TP_SLIDE_IN_DESCRIPTIONS = {
   fullscreen:      'The default navigation transition. New screen slides in as the current one slides out.',
   'persistent-bar': 'Shared elements like bars or search can stay fixed across the transition.',
 };
-function applyTpSlideInMode(mode) {
+function applyTpSlideInMode(mode, { updateUrl = true } = {}) {
   tpSlideInMode = mode;
   document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.mode === tpSlideInMode)
   );
   const bodyCopy = document.getElementById('tpBodyCopy');
   if (bodyCopy) bodyCopy.textContent = TP_SLIDE_IN_DESCRIPTIONS[mode] || '';
-  try { history.replaceState(null, '', `#transitions-push${mode === 'persistent-bar' ? '-persistent-bar' : ''}`); } catch(e) {}
+  if (updateUrl) { try { history.replaceState(null, '', `#transitions-push${mode === 'persistent-bar' ? '-persistent-bar' : ''}`); } catch(e) {} }
   // Swap visible layer
   document.getElementById('tpPushContent').style.display  = mode === 'fullscreen'      ? '' : 'none';
   document.getElementById('tpPersistBar').style.display   = mode === 'persistent-bar'  ? 'block' : 'none';
@@ -8176,7 +8198,7 @@ const TP_SLIDE_UP_DESCRIPTIONS = {
   'full-height': 'A taller variant that reveals more content.',
 };
 let tpSlideUpMode = 'fitted';
-function applyTpSlideUpMode(mode) {
+function applyTpSlideUpMode(mode, { updateUrl = true } = {}) {
   tpSlideUpMode = mode;
   document.querySelectorAll('#tpSlideUpModeToggle .demo-mode-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.mode === mode)
@@ -8208,7 +8230,7 @@ function applyTpSlideUpMode(mode) {
       s.appendChild(ov);
     });
   }
-  try { history.replaceState(null, '', `#transitions-slide-up${mode === 'full-height' ? '-full-height' : ''}`); } catch(e) {}
+  if (updateUrl) { try { history.replaceState(null, '', `#transitions-slide-up${mode === 'full-height' ? '-full-height' : ''}`); } catch(e) {} }
 }
 document.querySelectorAll('#tpSlideUpModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -8245,14 +8267,14 @@ const TP_CF_DESCRIPTIONS = {
   cards: 'Swaps a full layout in place when the context stays the same.',
   icons: 'The same transition applied to icons, cross-fading between states in a button.',
 };
-function applyCfMode(mode) {
+function applyCfMode(mode, { updateUrl = true } = {}) {
   tpCfMode = mode;
   document.querySelectorAll('#tpCfModeToggle .demo-mode-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.mode === mode)
   );
   const bodyCopy = document.getElementById('tpBodyCopy');
   if (bodyCopy) bodyCopy.textContent = TP_CF_DESCRIPTIONS[mode] || '';
-  try { history.replaceState(null, '', `#transitions-cross-fade${mode === 'icons' ? '-icons' : ''}`); } catch(e) {}
+  if (updateUrl) { try { history.replaceState(null, '', `#transitions-cross-fade${mode === 'icons' ? '-icons' : ''}`); } catch(e) {} }
 
   const iconsLayer = document.getElementById('tpSeqIconsLayer');
   const seqHeader  = document.getElementById('tpSeqHeader');
@@ -8303,14 +8325,14 @@ const TP_LOAD_DESCRIPTIONS = {
   shimmer: 'A gentle fade pulse shows the system is working while content loads.',
   reveal:  'Once content is ready, it fades in as the placeholders fade out.',
 };
-function applyTpLoadMode(mode) {
+function applyTpLoadMode(mode, { updateUrl = true } = {}) {
   tpLoadMode = mode;
   document.querySelectorAll('#tpLoadModeToggle .demo-mode-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.mode === tpLoadMode)
   );
   const bodyCopy = document.getElementById('tpBodyCopy');
   if (bodyCopy) bodyCopy.textContent = TP_LOAD_DESCRIPTIONS[mode] || '';
-  try { history.replaceState(null, '', `#transitions-loading-fade${mode === 'reveal' ? '-reveal' : ''}`); } catch(e) {}
+  if (updateUrl) { try { history.replaceState(null, '', `#transitions-loading-fade${mode === 'reveal' ? '-reveal' : ''}`); } catch(e) {} }
 }
 document.querySelectorAll('#tpLoadModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -8367,25 +8389,27 @@ if (hashTp) {
   const rawKey = hashTp[1];
   if (rawKey === 'grow-search') {
     switchTpDemo('grow');
-    applyTpGrowMode('search');
+    applyTpGrowMode('search', { updateUrl: false });
   } else if (rawKey === 'grow-sheet' || rawKey === 'grow-modal' || rawKey === 'grow-popover') {
     switchTpDemo('grow');
-    applyTpGrowMode('modal');
+    applyTpGrowMode('modal', { updateUrl: false });
   } else if (rawKey === 'grow-popover-chip') {
     switchTpDemo('grow');
-    applyTpGrowMode('popover-chip');
+    applyTpGrowMode('popover-chip', { updateUrl: false });
   } else if (rawKey === 'push-persistent-bar') {
     switchTpDemo('push');
-    applyTpSlideInMode('persistent-bar');
+    applyTpSlideInMode('persistent-bar', { updateUrl: false });
   } else if (rawKey === 'slide-up-full-height') {
     switchTpDemo('slide-up');
-    applyTpSlideUpMode('full-height');
+    applyTpSlideUpMode('full-height', { updateUrl: false });
   } else if (rawKey === 'loading-fade-reveal') {
     switchTpDemo('loading-fade');
-    applyTpLoadMode('reveal');
+    applyTpLoadMode('reveal', { updateUrl: false });
   } else if (rawKey === 'cross-fade-icons') {
     switchTpDemo('cross-fade');
-    applyCfMode('icons');
+    applyCfMode('icons', { updateUrl: false });
+  } else if (rawKey === 'popover') {
+    switchTpDemo('grow-fade'); // legacy URL redirect
   } else {
     switchTpDemo(rawKey);
   }
@@ -8442,10 +8466,8 @@ if (hashTp) {
           scheduleNext(1000, onCycle);
         });
       });
-    } else if (key === 'popover') {
-      // scale-in self-sequences (~3.3s total): just fire play and wait
-      TP_DEMOS['popover'].play();
-      scheduleNext(7200, onCycle);
+    } else if (key === 'grow-fade') {
+      TP_DEMOS['grow-fade'].play(() => { scheduleNext(400, onCycle); });
     } else if (key === 'slide-up-fade') {
       function nextSufStep() {
         if (!tpPlaying) return;
@@ -8508,19 +8530,37 @@ if (hashTp) {
     runCycle(key, loop);
   }
 
-  function startTp({ silent = false } = {}) {
+  function startTp({ silent = false, resume = false } = {}) {
     tpPlaying = true;
     document.getElementById('tpPhone').classList.add('cursor-default');
-    if (!silent) iconCrossFade(document.getElementById('tpIconPlay'), document.getElementById('tpIconPause'));
+    if (!silent) {
+      iconCrossFade(document.getElementById('tpIconPlay'), document.getElementById('tpIconPause'));
+    } else {
+      const play  = document.getElementById('tpIconPlay');
+      const pause = document.getElementById('tpIconPause');
+      play.style.transition  = ''; play.style.opacity  = '0'; play.style.transform  = ''; play.style.filter = '';
+      pause.style.transition = ''; pause.style.opacity = '1'; pause.style.transform = ''; pause.style.filter = '';
+    }
     window._refreshTouchDot?.();
     const key = tpActiveKey();
-    TP_DEMOS[key]?.reset?.();
-    scheduleNext(300, loop);
+    if (resume && key === 'grow-fade' && TP_DEMOS['grow-fade']._step) {
+      // resume mid-sequence: re-enter runCycle with resume flag, loop continues via onDone
+      function resumeCycle() {
+        TP_DEMOS['grow-fade'].play(() => { scheduleNext(400, loop); }, true);
+      }
+      resumeCycle();
+    } else {
+      TP_DEMOS[key]?.reset?.();
+      scheduleNext(300, loop);
+    }
   }
 
   function stopTp({ silent = false } = {}) {
     tpPlaying = false;
     cancelLoop();
+    // Cancel grow-fade's internal sequence so it freezes mid-animation
+    const key = tpActiveKey();
+    if (key === 'grow-fade') TP_DEMOS['grow-fade']._cancelSeq();
     if (!silent) iconCrossFade(document.getElementById('tpIconPause'), document.getElementById('tpIconPlay'));
     document.getElementById('tpPhone').classList.remove('cursor-default');
     window._refreshTouchDot?.();
@@ -8531,7 +8571,7 @@ if (hashTp) {
 
   // Play button toggles
   document.getElementById('tpPlayBtn').addEventListener('click', () => {
-    tpPlaying ? stopTp() : startTp();
+    tpPlaying ? stopTp() : startTp({ resume: true });
   });
 
   // ── Code dialog ───────────────────────────────────────────────────
@@ -8783,6 +8823,7 @@ animate(scrim, { opacity:[0,0.32] },
       return;
     }
     if (tpPlaying) { stopTp(); return; }
+    if (key === 'grow-fade') return;
     TP_DEMOS[key]?.play();
   });
 
@@ -10292,8 +10333,8 @@ document.querySelectorAll('.demo-tab').forEach(tab => {
     const inTpPhone = !!el.closest('#tpPhone');
     const tpPaused  = inTpPhone && !window._tpAutoPlay?.isPlaying();
     const activeKey = document.querySelector('.tp-tab.active')?.dataset.tp;
-    const isLoadingFade = inTpPhone && activeKey === 'loading-fade';
-    const inside = !!el.closest('.phone-frame') && !el.closest('.desktop-bezel') && !el.closest('#accDemoContainer') && (!inTpPhone || tpPaused) && !isLoadingFade;
+    const isNonInteractive = inTpPhone && (activeKey === 'loading-fade' || activeKey === 'grow-fade');
+    const inside = !!el.closest('.phone-frame') && !el.closest('.desktop-bezel') && !el.closest('#accDemoContainer') && (!inTpPhone || tpPaused) && !isNonInteractive;
     insidePhone = inside;
     dot.classList.toggle('visible', inside);
   }
