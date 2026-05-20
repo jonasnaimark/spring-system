@@ -1811,7 +1811,7 @@
     }
 
     .tp-persist-screen-inner {
-      padding: 90px 18px 18px; /* 80px top bar + 10px gap */
+      padding: 80px 18px 18px; /* flush to top bar bottom */
       display: flex;
       flex-direction: column;
       gap: 5px;
@@ -7017,6 +7017,15 @@ const TP_DEMOS = {
       tpSearchState = null;
       document.getElementById('tpPhoneContent').style.filter = '';
       document.getElementById('tpPhoneBottomNav').style.filter = '';
+      // popover panel reset
+      if (tpPopoverAnim) { cancelAnimationFrame(tpPopoverAnim); tpPopoverAnim = null; }
+      if (tpPopoverState?.chipEl) tpPopoverState.chipEl.style.visibility = '';
+      document.querySelectorAll('.tp-popover-chip').forEach(c => c.style.visibility = '');
+      tpPopoverState = null;
+      const popPanel = document.getElementById('tpPopoverPanel');
+      if (popPanel) popPanel.style.display = 'none';
+      const popScrim = document.getElementById('tpPopoverScrim');
+      if (popScrim) { popScrim.style.opacity = '0'; popScrim.style.pointerEvents = 'none'; }
     },
   },
   'push': {
@@ -8328,6 +8337,16 @@ document.querySelectorAll('.tp-tab').forEach(tab => {
       if (sScrim) { sScrim.style.opacity = '0'; sScrim.style.pointerEvents = 'none'; }
       if (tpSearchState.searchEl) tpSearchState.searchEl.style.visibility = '';
       tpSearchState = null;
+    }
+    if (tpPopoverAnim) { cancelAnimationFrame(tpPopoverAnim); tpPopoverAnim = null; }
+    if (tpPopoverState) {
+      if (tpPopoverState.chipEl) tpPopoverState.chipEl.style.visibility = '';
+      tpPopoverState = null;
+      const popPanel = document.getElementById('tpPopoverPanel');
+      const popScrim = document.getElementById('tpPopoverScrim');
+      if (popPanel) popPanel.style.display = 'none';
+      if (popScrim) { popScrim.style.opacity = '0'; popScrim.style.pointerEvents = 'none'; }
+      document.querySelectorAll('.tp-popover-chip').forEach(c => c.style.visibility = '');
     }
     document.getElementById('tpPhoneContent').style.filter = '';
     document.getElementById('tpPhoneBottomNav').style.filter = '';
