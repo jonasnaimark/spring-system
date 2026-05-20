@@ -410,12 +410,36 @@
       font-family: inherit;
       color: var(--c-text-secondary);
       cursor: pointer;
-      transition: background 0.15s, color 0.15s;
+      transition: color 0.15s;
       white-space: nowrap;
+      position: relative;
+    }
+    .demo-mode-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      background: var(--c-surface-3);
+      opacity: 0;
+      transform: scale(0.5);
+      filter: blur(4px);
+      pointer-events: none;
+      transition: opacity 100ms cubic-bezier(0.40,0.00,1.00,1.00),
+                  transform 100ms cubic-bezier(0.40,0.00,1.00,1.00),
+                  filter 100ms cubic-bezier(0.40,0.00,1.00,1.00);
+    }
+    .demo-mode-btn.active::before {
+      opacity: 1;
+      transform: scale(1);
+      filter: blur(0px);
+      transition: opacity 200ms cubic-bezier(0.00,0.00,0.00,1.00),
+                  transform 200ms cubic-bezier(0.00,0.00,0.00,1.00),
+                  filter 200ms cubic-bezier(0.00,0.00,0.00,1.00);
     }
     .demo-mode-btn:hover { color: var(--c-text-primary); }
+    .demo-mode-btn:hover:not(.active)::before { opacity: 0.4; transform: scale(1); filter: blur(0px); }
     .demo-mode-btn.active {
-      background: var(--c-surface-3);
       color: var(--c-text-primary);
       font-weight: 500;
     }
