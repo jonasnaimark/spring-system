@@ -6489,10 +6489,9 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       popoverPanel.style.width        = simW.x + 'px';
       popoverPanel.style.height       = simH.x + 'px';
       popoverPanel.style.borderRadius = Math.max(0, simR.x) + 'px';
-      // Scrim fades from release opacity; stays at release value while panel is large, fades in final 40%
+      // Scrim fades continuously from release opacity to 0 as panel shrinks
       const wProg = tpPopoverClamp01(1 - (simW.x - toW) / Math.max(1, startW - toW));
-      const formulaScrim = Math.max(0, 1 - Math.max(0, (wProg - 0.6) / 0.4));
-      popoverScrim.style.opacity = Math.min(startScrimOpacity, formulaScrim).toFixed(3);
+      popoverScrim.style.opacity = (startScrimOpacity * (1 - wProg)).toFixed(3);
       const contentFade = tpPopoverSmoothstep(wProg, 0.02, 0.34);
       const pillFade = tpPopoverSmoothstep(wProg, 0.16, 0.62);
       const chipFade = tpPopoverSmoothstep(wProg, 0.28, 0.72);
