@@ -5481,6 +5481,7 @@ function tpExpandSearch() {
   }, 100);
 
   function tick(now) {
+    if (!tpSearchAnim) return;
     const t     = (now - startT) / 1000;
     const posXW = springPos(t, stiffness, dampingX);
     const posYH = springPos(t, stiffness, damping);
@@ -5537,6 +5538,7 @@ function tpCollapseSearch(onDone) {
   const DELAY = 0.08;
 
   function tick(now) {
+    if (!tpSearchAnim) return;
     const t     = (now - startT) / 1000;
     const posYH = springPos(t, stiffness, damping);
     const posXW = springPos(Math.max(0, t - DELAY), stiffness, dampingX);
@@ -7011,7 +7013,10 @@ const TP_DEMOS = {
       if (sScrim) { sScrim.style.opacity = '0'; sScrim.style.pointerEvents = 'none'; }
       const searchEl = document.querySelector('#tpPhoneContent .sk-search');
       if (searchEl) searchEl.style.visibility = '';
+      if (tpSearchAnim) { cancelAnimationFrame(tpSearchAnim); tpSearchAnim = null; }
       tpSearchState = null;
+      document.getElementById('tpPhoneContent').style.filter = '';
+      document.getElementById('tpPhoneBottomNav').style.filter = '';
     },
   },
   'push': {
@@ -8084,6 +8089,7 @@ document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
       document.getElementById('tpPhoneScreen'),
       () => {
         if (tpExpandAnim) { cancelAnimationFrame(tpExpandAnim); tpExpandAnim = null; }
+        if (tpSearchAnim) { cancelAnimationFrame(tpSearchAnim); tpSearchAnim = null; }
         const fsPanel  = document.getElementById('tpExpandPanel');
         const modPanel = document.getElementById('tpModalPanel');
         const scrim    = document.getElementById('tpExpandScrim');
@@ -8314,6 +8320,17 @@ document.querySelectorAll('.tp-tab').forEach(tab => {
     const key = tab.dataset.tp;
     if (tab.classList.contains('active')) return;
     window._tpAutoPlay?.stop({ silent: true });
+    if (tpSearchAnim) { cancelAnimationFrame(tpSearchAnim); tpSearchAnim = null; }
+    if (tpSearchState) {
+      const sPanel = document.getElementById('tpSearchPanel');
+      const sScrim = document.getElementById('tpSearchScrim');
+      if (sPanel) sPanel.style.display = 'none';
+      if (sScrim) { sScrim.style.opacity = '0'; sScrim.style.pointerEvents = 'none'; }
+      if (tpSearchState.searchEl) tpSearchState.searchEl.style.visibility = '';
+      tpSearchState = null;
+    }
+    document.getElementById('tpPhoneContent').style.filter = '';
+    document.getElementById('tpPhoneBottomNav').style.filter = '';
     const prevKey = document.querySelector('.tp-tab.active')?.dataset.tp;
     const deviceChanges = key === 'slide-up-fade' || prevKey === 'slide-up-fade';
     demoFade(
