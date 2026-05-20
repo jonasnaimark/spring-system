@@ -6451,7 +6451,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
     tpPopoverAnim = requestAnimationFrame(tick);
   }
 
-  function tpPopoverCollapseWithVelocity(velY) {
+  function tpPopoverCollapseWithVelocity(velY, startScrimOpacity = 1) {
     if (!tpPopoverState) return;
     if (tpPopoverAnim) cancelAnimationFrame(tpPopoverAnim);
     const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, chipEl } = tpPopoverState;
@@ -6489,9 +6489,10 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       popoverPanel.style.width        = simW.x + 'px';
       popoverPanel.style.height       = simH.x + 'px';
       popoverPanel.style.borderRadius = Math.max(0, simR.x) + 'px';
-      // Scrim stays opaque while panel is large; fades only in the final 40% of travel
+      // Scrim fades from release opacity; stays at release value while panel is large, fades in final 40%
       const wProg = tpPopoverClamp01(1 - (simW.x - toW) / Math.max(1, startW - toW));
-      popoverScrim.style.opacity = Math.max(0, 1 - Math.max(0, (wProg - 0.6) / 0.4)).toFixed(3);
+      const formulaScrim = Math.max(0, 1 - Math.max(0, (wProg - 0.6) / 0.4));
+      popoverScrim.style.opacity = Math.min(startScrimOpacity, formulaScrim).toFixed(3);
       const contentFade = tpPopoverSmoothstep(wProg, 0.02, 0.34);
       const pillFade = tpPopoverSmoothstep(wProg, 0.16, 0.62);
       const chipFade = tpPopoverSmoothstep(wProg, 0.28, 0.72);
@@ -6588,7 +6589,8 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
 
     const committedDown = Math.max(0, rawDY) > DISMISS_POS_THRESHOLD || (rawDY > 10 && velY > DISMISS_VEL_THRESHOLD);
     if (committedDown) {
-      tpPopoverCollapseWithVelocity(velY);
+      const scrimAtRelease = parseFloat(popoverScrim.style.opacity) || 1;
+      tpPopoverCollapseWithVelocity(velY, scrimAtRelease);
     } else {
       tpPopoverRevertToExpanded(velY);
     }
@@ -7935,7 +7937,7 @@ const TP_PHONE_LAYERS = {
 };
 const TP_ALL_LAYERS = ['tpPhoneContent','tpPushContent','tpPersistBar','tpTabContent','tpSheetContent','tpModalContent','tpSeqContent','tpLoadContent'];
 
-function switchTpDemo(key) {
+function switchTpDemo(key, { skipControlsDisplay = false } = {}) {
   const tab = document.querySelector(`.tp-tab[data-tp="${key}"]`);
   if (!tab) return;
   // Reset previous demo
@@ -8011,14 +8013,28 @@ function switchTpDemo(key) {
   const tpBottomNav = document.getElementById('tpPhoneBottomNav');
   if (tpBottomNav) tpBottomNav.style.display = (key === 'push' || key === 'push-fade' || key === 'cross-fade' || key === 'loading-fade') ? 'none' : '';
 
-  // Show grow mode toggle only for grow tab
-  document.getElementById('tpGrowModeToggle').style.display = key === 'grow' ? '' : 'none';
-  document.getElementById('tpSlideInModeToggle').style.display = key === 'push' ? '' : 'none';
-  document.getElementById('tpSlideUpModeToggle').style.display = key === 'slide-up' ? '' : 'none';
-  document.getElementById('tpLoadModeToggle').style.display = key === 'loading-fade' ? '' : 'none';
-  document.getElementById('tpCfModeToggle').style.display = key === 'cross-fade' ? '' : 'none';
+  // Show grow mode toggle only for grow tab (skip if caller handles animation)
+  if (!skipControlsDisplay) {
+    document.getElementById('tpGrowModeToggle').style.display = key === 'grow' ? '' : 'none';
+    document.getElementById('tpSlideInModeToggle').style.display = key === 'push' ? '' : 'none';
+    document.getElementById('tpSlideUpModeToggle').style.display = key === 'slide-up' ? '' : 'none';
+    document.getElementById('tpLoadModeToggle').style.display = key === 'loading-fade' ? '' : 'none';
+    document.getElementById('tpCfModeToggle').style.display = key === 'cross-fade' ? '' : 'none';
+    document.getElementById('tpCodeBtn').style.display = key === 'grow' ? '' : 'none';
+    // Reset opacity/transform in case a previous animation left them mid-state
+    [...document.querySelectorAll('#tpGrowModeToggle,#tpSlideInModeToggle,#tpSlideUpModeToggle,#tpLoadModeToggle,#tpCfModeToggle,#tpCodeBtn')].forEach(el => {
+      el.style.opacity = ''; el.style.transform = ''; el.style.transition = '';
+    });
+  } else {
+    // Hide all toggles/code btn — tpEnterControls will show the correct one
+    document.getElementById('tpGrowModeToggle').style.display = 'none';
+    document.getElementById('tpSlideInModeToggle').style.display = 'none';
+    document.getElementById('tpSlideUpModeToggle').style.display = 'none';
+    document.getElementById('tpLoadModeToggle').style.display = 'none';
+    document.getElementById('tpCfModeToggle').style.display = 'none';
+    document.getElementById('tpCodeBtn').style.display = 'none';
+  }
   document.getElementById('tpPlayBtn').style.display = key === 'loading-fade' ? 'none' : '';
-  document.getElementById('tpCodeBtn').style.display = key === 'grow' ? '' : 'none';
   const _cd = document.getElementById('tpCodeDialog'); if (_cd) { _cd.style.display = 'none'; _cd.style.opacity = '0'; }
   if (key === 'loading-fade') {
     TP_DEMOS['loading-fade'].reset();
@@ -8114,7 +8130,6 @@ function applyTpGrowMode(mode, { updateUrl = true } = {}) {
 document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (btn.dataset.mode === tpGrowMode) return;
-    const wasPlaying = window._tpAutoPlay?.isPlaying();
     window._tpAutoPlay?.stop({ silent: true });
     demoFade(
       document.getElementById('tpPhoneScreen'),
@@ -8157,7 +8172,7 @@ document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
         tpExpandCardIdx = 0;
         applyTpGrowMode(btn.dataset.mode);
       },
-      () => { if (wasPlaying) window._tpAutoPlay?.start({ silent: true }); }
+      () => { window._tpAutoPlay?.start({ silent: true }); }
     );
   });
 });
@@ -8182,12 +8197,11 @@ function applyTpSlideInMode(mode, { updateUrl = true } = {}) {
 document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (btn.dataset.mode === tpSlideInMode) return;
-    const wasPlaying = window._tpAutoPlay?.isPlaying();
     window._tpAutoPlay?.stop({ silent: true });
     demoFade(
       document.getElementById('tpPhoneScreen'),
       () => { if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; } TP_DEMOS['push'].reset(); applyTpSlideInMode(btn.dataset.mode); },
-      () => { if (wasPlaying) window._tpAutoPlay?.start({ silent: true }); }
+      () => { window._tpAutoPlay?.start({ silent: true }); }
     );
   });
 });
@@ -8235,12 +8249,11 @@ function applyTpSlideUpMode(mode, { updateUrl = true } = {}) {
 document.querySelectorAll('#tpSlideUpModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (btn.dataset.mode === tpSlideUpMode) return;
-    const wasPlaying = window._tpAutoPlay?.isPlaying();
     window._tpAutoPlay?.stop({ silent: true });
     demoFade(
       document.getElementById('tpPhoneScreen'),
       () => { if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; } TP_DEMOS['slide-up'].reset(); applyTpSlideUpMode(btn.dataset.mode); },
-      () => { if (wasPlaying) window._tpAutoPlay?.start({ silent: true }); }
+      () => { window._tpAutoPlay?.start({ silent: true }); }
     );
   });
 });
@@ -8295,7 +8308,6 @@ function applyCfMode(mode, { updateUrl = true } = {}) {
 document.querySelectorAll('#tpCfModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (btn.dataset.mode === tpCfMode) return;
-    const wasPlaying = window._tpAutoPlay?.isPlaying();
     window._tpAutoPlay?.stop({ silent: true });
     demoFade(
       document.getElementById('tpDeviceWrap'),
@@ -8316,7 +8328,7 @@ document.querySelectorAll('#tpCfModeToggle .demo-mode-btn').forEach(btn => {
         if (grid) { grid.style.transition = ''; grid.style.opacity = '0'; grid.style.transform = 'scale(0.92)'; grid.style.filter = ''; grid.style.pointerEvents = 'none'; }
         applyCfMode(btn.dataset.mode);
       },
-      () => { if (wasPlaying) window._tpAutoPlay?.start({ silent: true }); }
+      () => { window._tpAutoPlay?.start({ silent: true }); }
     );
   });
 });
@@ -8346,6 +8358,46 @@ document.querySelectorAll('#tpLoadModeToggle .demo-mode-btn').forEach(btn => {
   });
 });
 
+// Which toggles and extra buttons are visible for each demo key
+function tpControlsForKey(key) {
+  const toggleId =
+    key === 'grow'         ? 'tpGrowModeToggle'    :
+    key === 'push'         ? 'tpSlideInModeToggle'  :
+    key === 'slide-up'     ? 'tpSlideUpModeToggle'  :
+    key === 'loading-fade' ? 'tpLoadModeToggle'     :
+    key === 'cross-fade'   ? 'tpCfModeToggle'       : null;
+  const codeBtn = key === 'grow' ? 'tpCodeBtn' : null;
+  return [toggleId, codeBtn].filter(Boolean).map(id => document.getElementById(id)).filter(Boolean);
+}
+
+const EXIT_DUR_CTRL = 150;
+const EXIT_CURVE_CTRL = 'cubic-bezier(0.40,0.00,1.00,1.00)';
+const ENTER_DUR_CTRL = 400;
+const ENTER_CURVE_CTRL = 'cubic-bezier(0.00,0.00,0.00,1.00)';
+
+function tpExitControls(els) {
+  els.forEach(el => {
+    el.style.pointerEvents = 'none';
+    el.style.transition = `opacity ${EXIT_DUR_CTRL}ms ${EXIT_CURVE_CTRL}, transform ${EXIT_DUR_CTRL}ms ${EXIT_CURVE_CTRL}`;
+    requestAnimationFrame(() => { el.style.opacity = '0'; el.style.transform = 'scale(0.92)'; });
+  });
+}
+
+function tpEnterControls(els) {
+  els.forEach(el => {
+    el.style.display = '';
+    el.style.transition = '';
+    el.style.opacity = '0';
+    el.style.transform = 'scale(0.92)';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.style.transition = `opacity ${ENTER_DUR_CTRL}ms ${ENTER_CURVE_CTRL}, transform ${ENTER_DUR_CTRL}ms ${ENTER_CURVE_CTRL}`;
+      el.style.opacity = '1';
+      el.style.transform = 'scale(1)';
+      setTimeout(() => { el.style.transition = ''; el.style.pointerEvents = ''; }, ENTER_DUR_CTRL);
+    }));
+  });
+}
+
 document.querySelectorAll('.tp-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const key = tab.dataset.tp;
@@ -8373,10 +8425,18 @@ document.querySelectorAll('.tp-tab').forEach(tab => {
     document.getElementById('tpPhoneContent').style.filter = '';
     document.getElementById('tpPhoneBottomNav').style.filter = '';
     const prevKey = document.querySelector('.tp-tab.active')?.dataset.tp;
+    const outControls = tpControlsForKey(prevKey);
     const deviceChanges = key === 'slide-up-fade' || prevKey === 'slide-up-fade';
+    tpExitControls(outControls);
     demoFade(
       document.getElementById(deviceChanges ? 'tpDeviceWrap' : 'tpPhoneScreen'),
-      () => { switchTpDemo(key); },
+      () => {
+        // Hide outgoing controls instantly (exit anim already played)
+        outControls.forEach(el => { el.style.display = 'none'; el.style.opacity = ''; el.style.transform = ''; el.style.transition = ''; });
+        switchTpDemo(key, { skipControlsDisplay: true });
+        // Enter incoming controls
+        tpEnterControls(tpControlsForKey(key));
+      },
       () => { if (key !== 'loading-fade') window._tpAutoPlay?.start({ silent: true }); }
     );
     const growSlug = key === 'grow' ? (tpGrowMode === 'modal' ? '-modal' : tpGrowMode === 'search' ? '-search' : tpGrowMode === 'popover-chip' ? '-popover-chip' : '') : '';
@@ -10115,7 +10175,7 @@ function ngSheetInit() {
   ngHideSpare(ngPool[ngS]);
 }
 
-function switchNgDemo(key) {
+function switchNgDemo(key, { skipControlsDisplay = false } = {}) {
   const tab = document.querySelector(`.ng-tab[data-ng="${key}"]`);
   if (!tab) return;
   document.querySelectorAll('.ng-tab').forEach(t => t.classList.remove('active'));
@@ -10155,7 +10215,7 @@ function switchNgDemo(key) {
     phoneContent.style.visibility    = 'hidden';
     bottomNav.style.visibility       = 'hidden';
     playBtn.style.display            = 'none';
-    growToggle.style.display         = 'none';
+    if (!skipControlsDisplay) growToggle.style.display = 'none';
     hintText.textContent             = 'Try dragging down to dismiss';
     ngSheetInit();
   } else {
@@ -10165,7 +10225,7 @@ function switchNgDemo(key) {
     expandPanel.style.visibility     = '';
     phoneContent.style.visibility    = '';
     bottomNav.style.visibility       = '';
-    growToggle.style.display         = '';
+    if (!skipControlsDisplay) growToggle.style.display = '';
 
     // Restore mode-specific text and hint
     const demo = NG_DEMOS['grow-dismiss'];
@@ -10186,12 +10246,19 @@ function switchNgDemo(key) {
   }
 }
 
+function ngControlsForKey(key) {
+  const growToggle = document.getElementById('ngGrowModeToggle');
+  return key === 'grow-dismiss' ? [growToggle].filter(Boolean) : [];
+}
+
 document.querySelectorAll('.ng-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const key = tab.dataset.ng;
     if (tab.classList.contains('active')) { NG_DEMOS[key]?.play(); return; }
     const prevKey = document.querySelector('.ng-tab.active')?.dataset.ng;
     const ngPhone = document.getElementById('ngPhone');
+    const outNgControls = ngControlsForKey(prevKey);
+    tpExitControls(outNgControls);
     // Leaving sheet-dismiss: clear black bg before exit so it's absent during fade-out
     if (prevKey === 'sheet-dismiss') {
       ngPhone.style.transition = '';
@@ -10200,7 +10267,9 @@ document.querySelectorAll('.ng-tab').forEach(tab => {
     demoFade(
       document.getElementById('ngPhoneScreen'),
       () => {
-        switchNgDemo(key);
+        outNgControls.forEach(el => { el.style.display = 'none'; el.style.opacity = ''; el.style.transform = ''; el.style.transition = ''; });
+        switchNgDemo(key, { skipControlsDisplay: true });
+        tpEnterControls(ngControlsForKey(key));
         if (key === 'sheet-dismiss') {
           ngPhone.style.transition = '';
           ngPhone.style.background = 'transparent';
