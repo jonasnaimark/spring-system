@@ -307,7 +307,7 @@
     .demo-tabs-bar {
       display: flex;
       flex-wrap: nowrap;
-      gap: 6px;
+      gap: 4px;
       overflow-x: auto;
       scrollbar-width: none;
     }
@@ -316,8 +316,12 @@
       width: 4px; height: 4px; border-radius: 50%;
       background: var(--c-border-medium);
       flex-shrink: 0; align-self: center;
-      margin: 0 2px;
+      margin: 0 4px;
     }
+
+    /* Flatten the corners where paired tabs face each other */
+    .demo-tab:has(+ .demo-tab)  { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+    .demo-tab + .demo-tab        { border-top-left-radius:  8px; border-bottom-left-radius:  8px; }
 
     .grid-section {
       display: flex;
@@ -402,7 +406,7 @@
       border-radius: 14px;
       border: none;
       background: transparent;
-      font-size: var(--text-ui);
+      font-size: var(--text-small);
       font-family: inherit;
       color: var(--c-text-secondary);
       cursor: pointer;
@@ -418,7 +422,7 @@
 
     .demo-tab {
       padding: 9px 18px;
-      border-radius: 12px;
+      border-radius: 14px;
       font-size: var(--text-ui);
       font-weight: 400;
       color: var(--c-text-secondary);
@@ -2679,7 +2683,7 @@
       <svg id="tpIconPause" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="position:absolute;opacity:0;"><path d="M560-200v-560h160v560H560Zm-320 0v-560h160v560H240Z"/></svg>
     </button>
     <button class="play-circle" id="tpCodeBtn" style="left:auto;right:14px;display:none;" title="View animation code">
-      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M320-240 80-480l240-240 57 57-184 184 183 183-56 56Zm320 0-57-57 184-184-183-183 56-56 240 240-240 240Z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M320-240 80-480l240-240 57 57-184 184 183 183-56 56Zm320 0-57-57 184-184-183-183 56-56 240 240-240 240Z"/></svg>
     </button>
     <!-- Code dialog -->
     <div id="tpCodeDialog" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,calc(-50% + 50px));width:480px;height:560px;background:var(--c-surface-1);border:1px solid var(--c-border-subtle);border-radius:16px;padding:18px;z-index:200;opacity:0;box-shadow:0 8px 32px rgba(0,0,0,0.22);flex-direction:column;box-sizing:border-box;">
@@ -5188,12 +5192,12 @@ let tpExpandCardIdx = 0;
 let tpExpandAnim    = null;
 let tpPendingImgEl  = null; // imgEl hidden during expansion; cleared on next expand
 const TP_SPRING        = { stiffness: 500, damping: calcDamping(500, 1.0) };
-const TP_BOUNCE_SPRING = { stiffness: 400, damping: calcDamping(400, 0.82), dampingXW: calcDamping(400, 0.96) };
+const TP_BOUNCE_SPRING = { stiffness: 500, damping: calcDamping(500, 0.80), stiffnessXW: 750, dampingXW: calcDamping(750, 0.80) };
 
 const TP_SCALE_STANDARD = 'cubic-bezier(0.40,0.00,0.20,1.00)';
 const TP_SCALE_BOUNCE   = 'cubic-bezier(0.34,1.56,0.64,1)';
 
-function tpScalePulse(el, isOpen, { magnitude = 0.03, magnitudeClose = 0.07, startDelay = 0 } = {}) {
+function tpScalePulse(el, isOpen, { magnitude = 0.02, magnitudeClose = 0.07, startDelay = 0 } = {}) {
   if (!el) return;
   const peak  = isOpen ? (1 + magnitude).toFixed(3) : (1 - magnitudeClose).toFixed(3);
   const t1dur = isOpen ? 200 : 300, t2delay = 200, t2dur = 700;
@@ -5269,7 +5273,8 @@ function tpGetModalDest(phone) {
 function tpExpandCard(card) {
   if (tpExpandState || !card) return;
   const isModal = tpGrowMode === 'modal';
-  const { stiffness, damping, dampingXW } = isModal ? TP_BOUNCE_SPRING : TP_SPRING;
+  const { stiffness, damping, stiffnessXW, dampingXW } = isModal ? TP_BOUNCE_SPRING : TP_SPRING;
+  const stiffnessX = stiffnessXW ?? stiffness;
   const dampingX = dampingXW ?? damping;
   const phone  = document.getElementById('tpPhone');
   const bx = phone.clientLeft, by = phone.clientTop;
@@ -5319,7 +5324,7 @@ function tpExpandCard(card) {
   const DELAY = 0.08;
   function tick(now) {
     const t = (now - startT) / 1000;
-    const posXW = springPos(t, stiffness, dampingX);
+    const posXW = springPos(t, stiffnessX, dampingX);
     const posYH = springPos(Math.max(0, t - DELAY), stiffness, damping);
     const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
     const curW = toW + (fromW - toW) * posXW;
@@ -5337,7 +5342,7 @@ function tpExpandCard(card) {
     detailLayer.style.opacity = String(fade);
     cardLayer.style.opacity   = String(1 - fade);
     if (isModal) panel.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * fade).toFixed(3)})`;
-    if (t < 5 && (!isSettled(t, stiffness, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
+    if (t < 5 && (!isSettled(t, stiffnessX, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
       tpExpandAnim = requestAnimationFrame(tick);
     } else {
       panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
@@ -5358,7 +5363,8 @@ function tpExpandCard(card) {
 function tpCollapseCard(onDone) {
   if (!tpExpandState) return;
   const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, card, imgEl, isModal } = tpExpandState;
-  const { stiffness, damping, dampingXW } = isModal ? TP_BOUNCE_SPRING : TP_SPRING;
+  const { stiffness, damping, stiffnessXW, dampingXW } = isModal ? TP_BOUNCE_SPRING : TP_SPRING;
+  const stiffnessX = stiffnessXW ?? stiffness;
   const dampingX = dampingXW ?? damping;
   const phone = document.getElementById('tpPhone');
   const panel     = isModal ? document.getElementById('tpModalPanel')        : document.getElementById('tpExpandPanel');
@@ -5380,7 +5386,7 @@ function tpCollapseCard(onDone) {
   function tick(now) {
     const t = (now - startT) / 1000;
     const posYH = springPos(t, stiffness, damping);
-    const posXW = springPos(Math.max(0, t - DELAY), stiffness, dampingX);
+    const posXW = springPos(Math.max(0, t - DELAY), stiffnessX, dampingX);
     const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
     const pYH = 1 - posYH;
     const pXW = 1 - posXW;
@@ -5397,7 +5403,7 @@ function tpCollapseCard(onDone) {
     detailLayer.style.opacity = String(1 - fade);
     cardLayer.style.opacity   = String(fade);
     if (isModal) panel.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * (1 - fade)).toFixed(3)})`;
-    if (t < 5 && (!isSettled(t, stiffness, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
+    if (t < 5 && (!isSettled(t, stiffnessX, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
       tpExpandAnim = requestAnimationFrame(tick);
     } else {
       panel.style.display = 'none';
@@ -5423,7 +5429,8 @@ let tpSearchAnim  = null;
 const TP_SEARCH_SPRING = TP_BOUNCE_SPRING;
 function tpExpandSearch() {
   if (tpSearchState || tpSearchAnim) return;
-  const { stiffness, damping, dampingXW } = TP_SEARCH_SPRING;
+  const { stiffness, damping, stiffnessXW, dampingXW } = TP_SEARCH_SPRING;
+  const stiffnessX = stiffnessXW ?? stiffness;
   const dampingX = dampingXW ?? damping;
   const phone   = document.getElementById('tpPhone');
   const panel   = document.getElementById('tpSearchPanel');
@@ -5494,7 +5501,7 @@ function tpExpandSearch() {
   function tick(now) {
     if (!tpSearchAnim) return;
     const t     = (now - startT) / 1000;
-    const posXW = springPos(t, stiffness, dampingX);
+    const posXW = springPos(t, stiffnessX, dampingX);
     const posYH = springPos(t, stiffness, damping);
     if (!scalePulseFired) { scalePulseFired = true; tpScalePulse(panel, true, { magnitude: 0.015 }); }
     const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
@@ -5509,7 +5516,7 @@ function tpExpandSearch() {
     pillLayer.style.opacity    = String(1 - fade);
     contentLayer.style.opacity = String(fade);
     panel.style.boxShadow = `0 4px 24px rgba(0,0,0,${(0.14 * fade).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * fade).toFixed(3)})`;
-    if (t < 5 && (!isSettled(t, stiffness, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
+    if (t < 5 && (!isSettled(t, stiffnessX, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
       tpSearchAnim = requestAnimationFrame(tick);
     } else {
       panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
@@ -5529,7 +5536,8 @@ function tpExpandSearch() {
 
 function tpCollapseSearch(onDone) {
   if (!tpSearchState) return;
-  const { stiffness, damping, dampingXW } = TP_SEARCH_SPRING;
+  const { stiffness, damping, stiffnessXW, dampingXW } = TP_SEARCH_SPRING;
+  const stiffnessX = stiffnessXW ?? stiffness;
   const dampingX = dampingXW ?? damping;
   const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, searchEl } = tpSearchState;
   const panel        = document.getElementById('tpSearchPanel');
@@ -5552,7 +5560,7 @@ function tpCollapseSearch(onDone) {
     if (!tpSearchAnim) return;
     const t     = (now - startT) / 1000;
     const posYH = springPos(t, stiffness, damping);
-    const posXW = springPos(Math.max(0, t - DELAY), stiffness, dampingX);
+    const posXW = springPos(Math.max(0, t - DELAY), stiffnessX, dampingX);
     const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
     const pYH = 1 - posYH, pXW = 1 - posXW;
     panel.style.left         = (fromX + (toX - fromX) * pXW) + 'px';
@@ -5566,7 +5574,7 @@ function tpCollapseSearch(onDone) {
     contentLayer.style.opacity = String(1 - fade);
     panel.style.boxShadow = `0 4px 24px rgba(0,0,0,${(0.14 * (1 - fade)).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * (1 - fade)).toFixed(3)})`;
     document.getElementById('tpPhoneContent').style.filter = `blur(${(8 * scrimPos).toFixed(2)}px)`; document.getElementById('tpPhoneBottomNav').style.filter = `blur(${(8 * scrimPos).toFixed(2)}px)`;
-    if (t < 5 && (!isSettled(t, stiffness, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
+    if (t < 5 && (!isSettled(t, stiffnessX, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
       tpSearchAnim = requestAnimationFrame(tick);
     } else {
       panel.style.display = 'none';
@@ -5618,7 +5626,8 @@ function tpSetPopoverPillChipOpacity(opacity) {
 
 function tpExpandPopover() {
   if (tpPopoverState || tpPopoverAnim) return;
-  const { stiffness, damping, dampingXW } = TP_POPOVER_SPRING;
+  const { stiffness, damping, stiffnessXW, dampingXW } = TP_POPOVER_SPRING;
+  const stiffnessX = stiffnessXW ?? stiffness;
   const dampingX = dampingXW ?? damping;
   const phone        = document.getElementById('tpPhone');
   const panel        = document.getElementById('tpPopoverPanel');
@@ -5687,7 +5696,7 @@ function tpExpandPopover() {
 
   function tick(now) {
     const t      = (now - startT) / 1000;
-    const posXW  = springPos(t, stiffness, dampingX);
+    const posXW  = springPos(t, stiffnessX, dampingX);
     const posYH  = springPos(Math.max(0, t - DELAY), stiffness, damping);
     const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
     const curW = toW + (fromW - toW) * posXW;
@@ -5704,7 +5713,7 @@ function tpExpandPopover() {
     pillLayer.style.opacity    = String(1 - fade);
     tpSetPopoverPillChipOpacity(1);
     panel.style.boxShadow = `0 4px 24px rgba(0,0,0,${(0.14 * fade).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * fade).toFixed(3)})`;
-    if (t < 5 && (!isSettled(t, stiffness, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
+    if (t < 5 && (!isSettled(t, stiffnessX, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
       tpPopoverAnim = requestAnimationFrame(tick);
     } else {
       panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
@@ -5724,7 +5733,8 @@ function tpExpandPopover() {
 
 function tpCollapsePopover(onDone) {
   if (!tpPopoverState) return;
-  const { stiffness, damping, dampingXW } = TP_POPOVER_SPRING;
+  const { stiffness, damping, stiffnessXW, dampingXW } = TP_POPOVER_SPRING;
+  const stiffnessX = stiffnessXW ?? stiffness;
   const dampingX = dampingXW ?? damping;
   const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, chipEl } = tpPopoverState;
   const panel        = document.getElementById('tpPopoverPanel');
@@ -5747,7 +5757,7 @@ function tpCollapsePopover(onDone) {
   function tick(now) {
     const t      = (now - startT) / 1000;
     const posYH  = springPos(t, stiffness, damping);
-    const posXW  = springPos(Math.max(0, t - DELAY), stiffness, dampingX);
+    const posXW  = springPos(Math.max(0, t - DELAY), stiffnessX, dampingX);
     const pYH = 1 - posYH;
     const pXW = 1 - posXW;
     const curW = fromW + (toW - fromW) * pXW;
@@ -5767,7 +5777,7 @@ function tpCollapsePopover(onDone) {
     pillLayer.style.opacity    = pillFade.toFixed(3);
     tpSetPopoverPillChipOpacity(chipFade);
     panel.style.boxShadow = `0 4px 24px rgba(0,0,0,${(0.14 * (1 - pillFade)).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * (1 - pillFade)).toFixed(3)})`;
-    if (t < 5 && (!isSettled(t, stiffness, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
+    if (t < 5 && (!isSettled(t, stiffnessX, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
       tpPopoverAnim = requestAnimationFrame(tick);
     } else {
       panel.style.display = 'none';
