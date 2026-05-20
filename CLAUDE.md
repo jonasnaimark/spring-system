@@ -230,6 +230,151 @@ The scrim's `pointer-events` is restored to `auto` only when the next modal full
 
 ---
 
+## Grow transitions: reusable source → panel → source pattern
+
+This should be the default pattern for any grow/shrink transition in this prototype. The popover-chip demo was painful because it looked like a simple variant of the existing grow demos, but it violated one key rule: the collapsed visual layer did not actually contain the collapsed chip's content. The geometry was mostly right, but there was nothing for the chip icon/label to fade back in from.
+
+### 1. The morphing panel owns the solid surface
+
+The panel itself must carry the opaque background for the whole animation:
+
+```html
+<div id="tpPopoverPanel" style="background:var(--c-surface-0);overflow:hidden;">
+```
+
+Do not put the only white fill on child layers whose opacity crossfades. If both source and destination layers are partially transparent at the same time, the panel becomes see-through over the scrim/background. The source and destination layers should fade their content/stroke, not the container's base fill.
+
+### 2. Use two real visual layers, not "panel border now, source DOM later"
+
+Every grow transition needs:
+
+- **Source visual layer:** looks exactly like the collapsed source while the real source DOM is hidden.
+- **Destination visual layer:** full-size expanded content, scaled/clipped by the panel during the morph.
+- **Real source DOM:** hidden from expand start until collapse is fully done, then restored.
+
+For cards/search, the source visual is simple: an image skeleton or plain pill is enough. For chips, the source visual must include the chip internals. A blank stroked pill cannot fade in the icon/label.
+
+Popover-chip fix:
+
+```html
+<div id="tpPopoverPillLayer">
+  <div id="tpPopoverPillStroke"></div>
+  <div id="tpPopoverPillChip"></div>
+</div>
+<div id="tpPopoverContentLayer">
+  <div id="tpPopoverInner">...</div>
+</div>
+```
+
+At expand start, clone the tapped chip's children into the source layer:
+
+```js
+function tpSetPopoverPillChip(chipEl) {
+  const pillChip = document.getElementById('tpPopoverPillChip');
+  pillChip.replaceChildren();
+  pillChip.style.opacity = '0';
+  if (!chipEl) return;
+  chipEl.childNodes.forEach(node => pillChip.appendChild(node.cloneNode(true)));
+}
+```
+
+Then hide only the actual source element:
+
+```js
+if (chipEl) chipEl.style.visibility = 'hidden';
+```
+
+Restore that same element only in the collapse done block:
+
+```js
+if (chipEl) chipEl.style.visibility = '';
+```
+
+Do not hide/restore all chips with `querySelectorAll`; that causes unrelated chips to flash.
+
+### 3. Stroke should be its own rounded layer
+
+Do not use an inset `box-shadow` for a morphing chip stroke. Near the end of the shrink it can look clipped or masked by neighboring fading layers. Use a real border element that inherits the panel radius:
+
+```css
+#tpPopoverPillLayer,
+#tpPopoverContentLayer {
+  border-radius: inherit;
+}
+
+#tpPopoverPillLayer {
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+#tpPopoverContentLayer {
+  z-index: 1;
+  overflow: hidden;
+}
+
+#tpPopoverPillStroke {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border: 1.5px solid var(--c-border-medium);
+  border-radius: inherit;
+  pointer-events: none;
+}
+```
+
+The source/chip layer sits above the destination layer so the stroke stays clean during the final shrink frames. `pointer-events:none` keeps the overlay from stealing clicks when the panel is active.
+
+### 4. Crossfade by geometry progress, not only by elapsed time
+
+Elapsed-time fades work for simple card/image grows, but chip popovers need the source layer to appear as the panel gets close to chip geometry. Use shrink progress (`pXW` or `wProg`) and smoothstep ranges:
+
+```js
+const contentFade = tpPopoverSmoothstep(pXW, 0.02, 0.34);
+const pillFade = tpPopoverSmoothstep(pXW, 0.16, 0.62);
+const chipFade = tpPopoverSmoothstep(pXW, 0.28, 0.72);
+
+contentLayer.style.opacity = (1 - contentFade).toFixed(3);
+pillLayer.style.opacity = pillFade.toFixed(3);
+tpSetPopoverPillChipOpacity(chipFade);
+```
+
+Use the same fade logic in gesture/velocity collapse (`tpPopoverCollapseWithVelocity`) with `wProg`. Otherwise tap-dismiss and drag-dismiss diverge.
+
+### 5. Destination content scales inside the clipped panel
+
+Keep expanded content at its full target width and scale it from the top-left as the panel width changes:
+
+```js
+inner.style.width = toW + 'px';
+inner.style.transform = `scale(${curW / toW})`;     // expand
+inner.style.transform = `scale(${curW / fromW})`;   // collapse from current width
+```
+
+This prevents reflow while the panel is changing size. The panel clips the scaled content.
+
+### 6. Scrim timing is separate from panel opacity
+
+The scrim can stay dark while the panel is large and fade late in the collapse, but it should not be used to hide missing source visuals. If the source layer is correct, the scrim timing becomes a polish choice instead of a crutch.
+
+```js
+scrim.style.opacity = Math.max(0, 1 - Math.max(0, (pXW - 0.6) / 0.4)).toFixed(3);
+```
+
+### Checklist for a new grow transition
+
+1. Measure source rect from the real DOM element.
+2. Build a panel with an always-opaque base surface.
+3. Add a source visual layer that exactly represents the collapsed source.
+4. Add a destination content layer that can scale without reflow.
+5. Hide only the real source element during animation.
+6. Crossfade source/destination layers while geometry changes.
+7. Restore only the real source element in collapse done.
+8. Implement the same logic in click collapse and gesture/velocity collapse.
+9. Test mid-expand, mid-collapse, near-final collapse, and final state. Do not judge only the settled frame.
+
+---
+
 ## Collapse flash when interrupted mid-expand
 
 **Symptom:** The first time you close a zoom transition, it briefly flashes a full-screen frame before playing the collapse animation.
