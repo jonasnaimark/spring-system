@@ -838,6 +838,95 @@
       background: var(--c-border-medium);
     }
 
+    .sk-chip-icon {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      background: var(--c-border-medium);
+      flex-shrink: 0;
+      margin-right: 5px;
+    }
+
+    /* ── Grow→Popover panel ── */
+    .popover-panel-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 18px 18px 16px;
+    }
+    .popover-panel-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--sk);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .popover-panel-title {
+      height: 12px;
+      width: 60%;
+      background: var(--sk);
+      border-radius: 6px;
+      margin-bottom: 20px;
+      margin-top: 2px;
+    }
+    .popover-panel-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .popover-panel-chip {
+      height: 26px;
+      border-radius: 13px;
+      background: transparent;
+      border: 1.5px solid var(--c-border-medium, #d0d0d0);
+      display: flex;
+      align-items: center;
+      padding: 0 9px;
+    }
+    .popover-panel-chip-icon {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      background: var(--sk);
+      flex-shrink: 0;
+      margin-right: 5px;
+    }
+    .popover-panel-chip-text {
+      height: 8px;
+      border-radius: 4px;
+      background: var(--sk);
+    }
+    .popover-panel-chip--sm  .popover-panel-chip-text { width: 24px; }
+    .popover-panel-chip--md  .popover-panel-chip-text { width: 32px; }
+    .popover-panel-chip--lg  .popover-panel-chip-text { width: 42px; }
+    .popover-panel-chip--xl  .popover-panel-chip-text { width: 68px; }
+    .popover-panel-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 4px;
+    }
+    .popover-panel-clear {
+      height: 10px;
+      width: 48px;
+      background: var(--sk);
+      border-radius: 5px;
+    }
+    .popover-panel-cta {
+      height: 30px;
+      width: 88px;
+      border-radius: 8px;
+      background: var(--sk);
+    }
+
     .sk-bottom-nav {
       position: absolute;
       bottom: 0;
@@ -2560,7 +2649,8 @@
     </div>
     <div class="demo-mode-toggle" id="tpGrowModeToggle" style="display:none;right:58px;">
       <button class="demo-mode-btn active" data-mode="fullscreen">Fullscreen</button>
-      <button class="demo-mode-btn" data-mode="modal">Popover</button>
+      <button class="demo-mode-btn" data-mode="modal">Modal</button>
+      <button class="demo-mode-btn" data-mode="popover-chip">Popover</button>
       <button class="demo-mode-btn" data-mode="search">Search</button>
     </div>
     <div class="demo-mode-toggle" id="tpSlideInModeToggle" style="display:none;">
@@ -2583,6 +2673,8 @@
     <div class="phone-frame" id="tpPhone">
     <div id="tpPhoneScreen" style="position:absolute;inset:0;overflow:hidden;border-radius:40px;">
       <div class="phone-content" id="tpPhoneContent"></div>
+      <!-- Grow→Popover chip mode: search results screen (swapped in by applyTpGrowMode) -->
+      <div class="phone-content" id="tpPhoneContentPopover" style="display:none;"></div>
       <!-- Scrim -->
       <div id="tpExpandScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.32);opacity:0;pointer-events:none;z-index:11;"></div>
       <!-- Flying panel -->
@@ -2628,6 +2720,37 @@
             <div class="ll-img-row"><div class="ll-thumb" style="width:40px;height:40px;border-radius:8px;"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;width:72%;"></div><div class="ls-line short thin" style="margin-bottom:0;"></div></div></div>
             <div class="ll-img-row"><div class="ll-thumb" style="width:40px;height:40px;border-radius:8px;"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;width:85%;"></div><div class="ls-line med thin" style="margin-bottom:0;"></div></div></div>
             <div class="ll-img-row"><div class="ll-thumb" style="width:40px;height:40px;border-radius:8px;"></div><div class="ll-lines"><div class="ls-line" style="margin-bottom:0;width:68%;"></div><div class="ls-line short thin" style="margin-bottom:0;"></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grow→Popover scrim -->
+      <div id="tpPopoverScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.12);opacity:0;pointer-events:none;z-index:15;"></div>
+      <!-- Grow→Popover panel -->
+      <div id="tpPopoverPanel" style="display:none;position:absolute;z-index:16;background:var(--c-surface-0);border-radius:17px;overflow:hidden;pointer-events:none;">
+        <!-- collapsed state: chip pill (fades out) -->
+        <div id="tpPopoverPillLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
+        <!-- expanded state: popover content (fades in) -->
+        <div id="tpPopoverContentLayer" style="position:absolute;inset:0;opacity:0;">
+          <div class="popover-panel-inner">
+            <div class="popover-panel-close">
+              <svg id="tpPopoverCloseBtn" width="9" height="9" viewBox="0 0 10 10" fill="none"><line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="popover-panel-title"></div>
+            <div class="popover-panel-chips">
+              <div class="popover-panel-chip popover-panel-chip--lg"><div class="popover-panel-chip-icon"></div><div class="popover-panel-chip-text"></div></div>
+              <div class="popover-panel-chip popover-panel-chip--md"><div class="popover-panel-chip-icon"></div><div class="popover-panel-chip-text"></div></div>
+              <div class="popover-panel-chip popover-panel-chip--sm"><div class="popover-panel-chip-icon"></div><div class="popover-panel-chip-text"></div></div>
+              <div class="popover-panel-chip popover-panel-chip--xl"><div class="popover-panel-chip-icon"></div><div class="popover-panel-chip-text"></div></div>
+              <div class="popover-panel-chip popover-panel-chip--xl" style="--chip-text-w:55px"><div class="popover-panel-chip-icon"></div><div class="popover-panel-chip-text" style="width:55px"></div></div>
+              <div class="popover-panel-chip popover-panel-chip--sm"><div class="popover-panel-chip-icon"></div><div class="popover-panel-chip-text"></div></div>
+              <div class="popover-panel-chip popover-panel-chip--md"><div class="popover-panel-chip-icon"></div><div class="popover-panel-chip-text"></div></div>
+              <div class="popover-panel-chip popover-panel-chip--lg"><div class="popover-panel-chip-icon"></div><div class="popover-panel-chip-text"></div></div>
+            </div>
+            <div class="popover-panel-footer">
+              <div class="popover-panel-clear"></div>
+              <div class="popover-panel-cta"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -3840,6 +3963,34 @@
   <div class="inset-modal-cta"></div>
 </template>
 
+<template id="tpl-search-results-popover">
+  <div class="sk-searchbar-row">
+    <div class="sk-icon-btn">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="sk-search sk-search-narrow"></div>
+    <div class="sk-icon-btn">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="1.5" rx="0.75" fill="currentColor"/><rect x="4" y="7.25" width="8" height="1.5" rx="0.75" fill="currentColor"/><rect x="6" y="10.5" width="4" height="1.5" rx="0.75" fill="currentColor"/></svg>
+    </div>
+  </div>
+  <div class="sk-chips" style="justify-content:flex-start;margin-top:4px;">
+    <div class="sk-chip tp-popover-chip"><div class="sk-chip-icon"></div><div class="sk-chip-label" style="width:36px;"></div></div>
+    <div class="sk-chip tp-popover-chip"><div class="sk-chip-icon"></div><div class="sk-chip-label" style="width:28px;"></div></div>
+    <div class="sk-chip tp-popover-chip"><div class="sk-chip-icon"></div><div class="sk-chip-label" style="width:44px;"></div></div>
+  </div>
+  <div class="sk-card-img"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+  <div class="sk-section-label"></div>
+  <div class="sk-card-img partial"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+  <div class="sk-sub"></div>
+  <div class="sk-card-img partial"></div>
+  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
+  <div class="sk-sub"></div>
+</template>
+
 <template id="tpl-desktop-home-screen">
   <div class="dt-topbar">
     <div class="dt-logo"></div>
@@ -4192,6 +4343,10 @@ function stampTemplate(templateId, targetEl) {
   stampTemplate('tpl-search-results-content', document.getElementById('tpPersistDestInner'));
   // Mark first 6 cards in tpPhoneContent as tp-grow-card (rows 1+2)
   Array.from(document.querySelectorAll('#tpPhoneContent .sk-carousel-card')).slice(0, 6).forEach(c => c.classList.add('tp-grow-card'));
+
+  // tpl-search-results-popover — separate container swapped in for popover-chip grow mode
+  { const c = document.getElementById('tpPhoneContentPopover');
+    if (c) stampTemplate('tpl-search-results-popover', c); }
 
   // tpl-modal-card targets
   stampTemplate('tpl-modal-card', document.getElementById('demoModal'));
@@ -5323,6 +5478,159 @@ function tpCollapseSearch(onDone) {
   tpSearchAnim = requestAnimationFrame(tick);
 }
 
+// ── Grow→Popover (chip source) ─────────────────────────────────────
+let tpPopoverState = null;
+let tpPopoverAnim  = null;
+let tpPopoverChipIdx = 0;
+
+const TP_POPOVER_SPRING = { stiffness: 500, damping: calcDamping(500, 1.0) };
+
+function tpExpandPopover() {
+  if (tpPopoverState || tpPopoverAnim) return;
+  const { stiffness, damping } = TP_POPOVER_SPRING;
+  const phone      = document.getElementById('tpPhone');
+  const panel      = document.getElementById('tpPopoverPanel');
+  const scrim      = document.getElementById('tpPopoverScrim');
+  const pillLayer  = document.getElementById('tpPopoverPillLayer');
+  const contentLayer = document.getElementById('tpPopoverContentLayer');
+
+  // Source: the chip that was tapped (cycling left→right)
+  const chips = Array.from(document.querySelectorAll('#tpPhoneContentPopover .tp-popover-chip'));
+  const chipEl = chips[tpPopoverChipIdx % chips.length] || null;
+  const phoneRect = phone.getBoundingClientRect();
+  const bx = phone.clientLeft, by = phone.clientTop;
+  let fromX, fromY, fromW, fromH;
+  if (chipEl) {
+    const r = chipEl.getBoundingClientRect();
+    fromX = r.left - phoneRect.left - bx;
+    fromY = r.top  - phoneRect.top  - by;
+    fromW = r.width;
+    fromH = r.height;
+  } else {
+    fromX = 14; fromY = 60; fromW = 80; fromH = 26;
+  }
+  const fromR = fromH / 2;
+
+  // Destination: centered popover
+  const gap = 10;
+  const toX = gap;
+  const toW = phone.clientWidth - gap * 2;
+  const toR = 28;
+  panel.style.display = 'block';
+  panel.style.visibility = 'hidden';
+  panel.style.left = toX + 'px'; panel.style.width = toW + 'px'; panel.style.height = 'auto';
+  const toH = panel.scrollHeight || 200;
+  panel.style.height = ''; panel.style.display = 'none'; panel.style.visibility = '';
+  // Vertically center
+  const toY = Math.round((phone.clientHeight - toH) / 2);
+
+  pillLayer.style.opacity    = '1';
+  contentLayer.style.opacity = '0';
+  panel.style.left         = fromX + 'px';
+  panel.style.top          = fromY + 'px';
+  panel.style.width        = fromW + 'px';
+  panel.style.height       = fromH + 'px';
+  panel.style.borderRadius = fromR + 'px';
+  panel.style.pointerEvents = 'none';
+  panel.style.display = 'block';
+  scrim.style.opacity = '0';
+  if (chipEl) chipEl.style.visibility = 'hidden';
+
+  tpPopoverState = { fromX, fromY, fromW, fromH, fromR, toX, toY, toW, toH, toR, chipEl };
+  const startT = performance.now();
+  if (tpPopoverAnim) cancelAnimationFrame(tpPopoverAnim);
+  const DELAY = 0.04;
+
+  function tick(now) {
+    const t     = (now - startT) / 1000;
+    const posXW = springPos(t, stiffness, damping);
+    const posYH = springPos(Math.max(0, t - DELAY), stiffness, damping);
+    const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+    panel.style.left         = (toX + (fromX - toX) * posXW) + 'px';
+    panel.style.top          = (toY + (fromY - toY) * posYH) + 'px';
+    panel.style.width        = (toW + (fromW - toW) * posXW) + 'px';
+    panel.style.height       = (toH + (fromH - toH) * posYH) + 'px';
+    panel.style.borderRadius = (toR + (fromR - toR) * posXW) + 'px';
+    scrim.style.opacity      = (1 - scrimPos).toFixed(3);
+    document.getElementById('tpPhoneContentPopover').style.filter = `blur(${(8 * (1 - scrimPos)).toFixed(2)}px)`;
+    document.getElementById('tpPhoneBottomNav').style.filter      = `blur(${(8 * (1 - scrimPos)).toFixed(2)}px)`;
+    const fade = Math.min(t / 0.18, 1);
+    pillLayer.style.opacity    = String(1 - fade);
+    contentLayer.style.opacity = String(fade);
+    panel.style.boxShadow = `0 4px 24px rgba(0,0,0,${(0.14 * fade).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * fade).toFixed(3)})`;
+    if (t < 5 && (!isSettled(t, stiffness, damping) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
+      tpPopoverAnim = requestAnimationFrame(tick);
+    } else {
+      panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
+      panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
+      panel.style.borderRadius = toR + 'px';
+      panel.style.pointerEvents = 'auto';
+      panel.style.boxShadow = '0 4px 24px rgba(0,0,0,0.14),0 1px 4px rgba(0,0,0,0.08)';
+      scrim.style.opacity = '1'; scrim.style.pointerEvents = 'auto';
+      document.getElementById('tpPhoneContentPopover').style.filter = 'blur(8px)';
+      document.getElementById('tpPhoneBottomNav').style.filter      = 'blur(8px)';
+      contentLayer.style.opacity = '1'; pillLayer.style.opacity = '0';
+      tpPopoverAnim = null;
+    }
+  }
+  tpPopoverAnim = requestAnimationFrame(tick);
+}
+
+function tpCollapsePopover(onDone) {
+  if (!tpPopoverState) return;
+  const { stiffness, damping } = TP_POPOVER_SPRING;
+  const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, chipEl } = tpPopoverState;
+  const panel        = document.getElementById('tpPopoverPanel');
+  const scrim        = document.getElementById('tpPopoverScrim');
+  const pillLayer    = document.getElementById('tpPopoverPillLayer');
+  const contentLayer = document.getElementById('tpPopoverContentLayer');
+  const fromX = parseFloat(panel.style.left)         || toX;
+  const fromY = parseFloat(panel.style.top)          || toY;
+  const fromW = parseFloat(panel.style.width)        || toW;
+  const fromH = parseFloat(panel.style.height)       || toH;
+  const fromR = parseFloat(panel.style.borderRadius) || 18;
+  panel.style.pointerEvents = 'none';
+  scrim.style.pointerEvents = 'none';
+  const startT = performance.now();
+  if (tpPopoverAnim) cancelAnimationFrame(tpPopoverAnim);
+  const DELAY = 0.04;
+
+  function tick(now) {
+    const t     = (now - startT) / 1000;
+    const posYH = springPos(t, stiffness, damping);
+    const posXW = springPos(Math.max(0, t - DELAY), stiffness, damping);
+    const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+    const pYH = 1 - posYH, pXW = 1 - posXW;
+    panel.style.left         = (fromX + (toX - fromX) * pXW) + 'px';
+    panel.style.top          = (fromY + (toY - fromY) * pYH) + 'px';
+    panel.style.width        = (fromW + (toW - fromW) * pXW) + 'px';
+    panel.style.height       = (fromH + (toH - fromH) * pYH) + 'px';
+    panel.style.borderRadius = (fromR + (toR - fromR) * pXW) + 'px';
+    scrim.style.opacity      = scrimPos.toFixed(3);
+    const fade = Math.min(t / 0.18, 1);
+    pillLayer.style.opacity    = String(fade);
+    contentLayer.style.opacity = String(1 - fade);
+    panel.style.boxShadow = `0 4px 24px rgba(0,0,0,${(0.14 * (1 - fade)).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * (1 - fade)).toFixed(3)})`;
+    document.getElementById('tpPhoneContentPopover').style.filter = `blur(${(8 * scrimPos).toFixed(2)}px)`;
+    document.getElementById('tpPhoneBottomNav').style.filter      = `blur(${(8 * scrimPos).toFixed(2)}px)`;
+    if (t < 5 && (!isSettled(t, stiffness, damping) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
+      tpPopoverAnim = requestAnimationFrame(tick);
+    } else {
+      panel.style.display = 'none';
+      panel.style.boxShadow = 'none';
+      scrim.style.opacity = '0';
+      document.getElementById('tpPhoneContentPopover').style.filter = '';
+      document.getElementById('tpPhoneBottomNav').style.filter = '';
+      if (chipEl) chipEl.style.visibility = '';
+      tpPopoverChipIdx = (tpPopoverChipIdx + 1) % Math.max(1, document.querySelectorAll('#tpPhoneContentPopover .tp-popover-chip').length);
+      tpPopoverState = null;
+      tpPopoverAnim  = null;
+      onDone?.();
+    }
+  }
+  tpPopoverAnim = requestAnimationFrame(tick);
+}
+
 document.querySelectorAll('.expand-card').forEach(card => {
   card.addEventListener('click', () => {
     if (expandState) { collapseCard(); return; }
@@ -5377,6 +5685,28 @@ document.getElementById('tpSearchPanel').addEventListener('click', (e) => {
   e.stopPropagation();
   if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
   if (e.target.closest('#tpSearchCloseBtn') && tpSearchState && !tpSearchAnim) tpCollapseSearch();
+});
+
+// Popover chip clicks
+document.getElementById('tpPhoneContentPopover').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (tpGrowMode !== 'popover-chip') return;
+  if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
+  const chip = e.target.closest('.tp-popover-chip');
+  if (chip) {
+    const chips = Array.from(document.querySelectorAll('#tpPhoneContentPopover .tp-popover-chip'));
+    tpPopoverChipIdx = chips.indexOf(chip);
+    if (!tpPopoverState && !tpPopoverAnim) tpExpandPopover();
+  }
+});
+document.getElementById('tpPopoverScrim').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (tpPopoverState) tpCollapsePopover();
+});
+document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
+  if (e.target.closest('#tpPopoverCloseBtn') && tpPopoverState && !tpPopoverAnim) tpCollapsePopover();
 });
 
 // ── Grow dismiss gesture (fullscreen + modal) ─────────────────────
@@ -5915,6 +6245,199 @@ document.getElementById('tpSearchPanel').addEventListener('click', (e) => {
 
   searchPanel.addEventListener('pointerup',     onSearchGestureEnd);
   searchPanel.addEventListener('pointercancel', onSearchGestureEnd);
+
+  // ── Popover panel dismiss gesture ───────────────────────────────────
+  let tpPopoverGesture = null;
+  const popoverPanel = document.getElementById('tpPopoverPanel');
+  const popoverScrim = document.getElementById('tpPopoverScrim');
+
+  function tpPopoverRevertToExpanded(velY) {
+    if (!tpPopoverState) return;
+    if (tpPopoverAnim) cancelAnimationFrame(tpPopoverAnim);
+    const { toX, toY, toW, toH, toR } = tpPopoverState;
+    const curX = parseFloat(popoverPanel.style.left)         || toX;
+    const curY = parseFloat(popoverPanel.style.top)          || toY;
+    const curW = parseFloat(popoverPanel.style.width)        || toW;
+    const curH = parseFloat(popoverPanel.style.height)       || toH;
+    const curR = parseFloat(popoverPanel.style.borderRadius) || toR;
+    const simX = new SpringSim(curX); simX.target = toX;
+    const simY = new SpringSim(curY); simY.target = toY; simY.v = velY || 0;
+    const simW = new SpringSim(curW); simW.target = toW;
+    const simH = new SpringSim(curH); simH.target = toH;
+    const simR = new SpringSim(curR); simR.target = toR;
+    popoverPanel.style.pointerEvents = 'auto';
+    let lastTime = null;
+    function tick(now) {
+      if (!lastTime) lastTime = now;
+      const dt = Math.min((now - lastTime) / 1000, 0.033);
+      lastTime = now;
+      simX.step(dt, DISMISS_K, DISMISS_D); simY.step(dt, DISMISS_K, DISMISS_D);
+      simW.step(dt, DISMISS_K, DISMISS_D); simH.step(dt, DISMISS_K, DISMISS_D);
+      simR.step(dt, DISMISS_K, DISMISS_D);
+      popoverPanel.style.left         = simX.x + 'px';
+      popoverPanel.style.top          = simY.x + 'px';
+      popoverPanel.style.width        = simW.x + 'px';
+      popoverPanel.style.height       = simH.x + 'px';
+      popoverPanel.style.borderRadius = Math.max(0, simR.x) + 'px';
+      popoverScrim.style.opacity = '1';
+      document.getElementById('tpPhoneContentPopover').style.filter = 'blur(8px)';
+      document.getElementById('tpPhoneBottomNav').style.filter      = 'blur(8px)';
+      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
+        tpPopoverAnim = requestAnimationFrame(tick);
+      } else {
+        popoverPanel.style.left = toX + 'px'; popoverPanel.style.top = toY + 'px';
+        popoverPanel.style.width = toW + 'px'; popoverPanel.style.height = toH + 'px';
+        popoverPanel.style.borderRadius = toR + 'px';
+        tpPopoverAnim = null;
+      }
+    }
+    tpPopoverAnim = requestAnimationFrame(tick);
+  }
+
+  function tpPopoverCollapseWithVelocity(velY) {
+    if (!tpPopoverState) return;
+    if (tpPopoverAnim) cancelAnimationFrame(tpPopoverAnim);
+    const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, chipEl } = tpPopoverState;
+    const pillLayer    = document.getElementById('tpPopoverPillLayer');
+    const contentLayer = document.getElementById('tpPopoverContentLayer');
+    popoverPanel.style.pointerEvents = 'none';
+    popoverScrim.style.pointerEvents = 'none';
+    tpPopoverState = null;
+
+    const curX = parseFloat(popoverPanel.style.left)         || toX;
+    const curY = parseFloat(popoverPanel.style.top)          || toY;
+    const curW = parseFloat(popoverPanel.style.width)        || toW;
+    const curH = parseFloat(popoverPanel.style.height)       || toH;
+    const curR = parseFloat(popoverPanel.style.borderRadius) || toR;
+    const simX = new SpringSim(curX); simX.target = toX;
+    const simY = new SpringSim(curY); simY.target = toY; simY.v = velY || 0;
+    const simW = new SpringSim(curW); simW.target = toW;
+    const simH = new SpringSim(curH); simH.target = toH;
+    simH.target = toH;
+    const simR = new SpringSim(curR); simR.target = toR;
+    const simScrim = new SpringSim(parseFloat(popoverScrim.style.opacity) || 0); simScrim.target = 0;
+
+    let lastTime = null;
+    let fadeProgress = parseFloat(contentLayer.style.opacity) || 1;
+
+    function tick(now) {
+      if (!lastTime) lastTime = now;
+      const dt = Math.min((now - lastTime) / 1000, 0.033);
+      lastTime = now;
+      simX.step(dt, DISMISS_K, DISMISS_D); simY.step(dt, DISMISS_K, DISMISS_D);
+      simW.step(dt, DISMISS_K, DISMISS_D);
+      simH.step(dt, DISMISS_K, calcDamping(DISMISS_K, 0.88));
+      simR.step(dt, DISMISS_K, DISMISS_D);
+      simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
+      popoverPanel.style.left         = simX.x + 'px';
+      popoverPanel.style.top          = simY.x + 'px';
+      popoverPanel.style.width        = simW.x + 'px';
+      popoverPanel.style.height       = Math.max(toH, simH.x) + 'px';
+      popoverPanel.style.borderRadius = Math.max(0, simR.x) + 'px';
+      popoverPanel.style.boxShadow    = `0 4px 24px rgba(0,0,0,${(0.14 * Math.max(0, simScrim.x)).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * Math.max(0, simScrim.x)).toFixed(3)})`;
+      popoverScrim.style.opacity = Math.max(0, simScrim.x).toFixed(3);
+      const blurVal = (8 * Math.max(0, simScrim.x)).toFixed(2);
+      document.getElementById('tpPhoneContentPopover').style.filter = `blur(${blurVal}px)`;
+      document.getElementById('tpPhoneBottomNav').style.filter      = `blur(${blurVal}px)`;
+      fadeProgress = Math.max(0, fadeProgress - dt / 0.15);
+      contentLayer.style.opacity = fadeProgress.toFixed(3);
+      pillLayer.style.opacity    = (1 - fadeProgress).toFixed(3);
+      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
+        tpPopoverAnim = requestAnimationFrame(tick);
+      } else {
+        popoverPanel.style.display = 'none';
+        popoverPanel.style.boxShadow = 'none';
+        popoverScrim.style.opacity = '0';
+        document.getElementById('tpPhoneContentPopover').style.filter = '';
+        document.getElementById('tpPhoneBottomNav').style.filter = '';
+        if (chipEl) chipEl.style.visibility = '';
+        tpPopoverChipIdx = (tpPopoverChipIdx + 1) % Math.max(1, document.querySelectorAll('#tpPhoneContentPopover .tp-popover-chip').length);
+        tpPopoverAnim = null;
+      }
+    }
+    tpPopoverAnim = requestAnimationFrame(tick);
+  }
+
+  popoverPanel.addEventListener('pointerdown', (e) => {
+    if (!tpPopoverState || tpPopoverAnim) return;
+    if (e.target.closest('#tpPopoverCloseBtn')) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    tpPopoverGesture = {
+      startX: e.clientX, startY: e.clientY,
+      history: [{ x: e.clientX, y: e.clientY, t: performance.now() }],
+    };
+  });
+
+  popoverPanel.addEventListener('pointermove', (e) => {
+    if (!tpPopoverGesture || !tpPopoverState) return;
+    const { startY } = tpPopoverGesture;
+    const { toX, toY, toW, toH, toR } = tpPopoverState;
+    const now = performance.now();
+    tpPopoverGesture.history.push({ x: e.clientX, y: e.clientY, t: now });
+    tpPopoverGesture.history = tpPopoverGesture.history.filter(p => now - p.t < 80);
+
+    const rawDX = e.clientX - tpPopoverGesture.startX;
+    const rawDY = e.clientY - startY;
+
+    if (!tpPopoverGesture.intent) {
+      if (Math.abs(rawDY) > 8) tpPopoverGesture.intent = 'dismiss';
+      else if (Math.abs(rawDX) > 8) tpPopoverGesture.intent = 'cancelled';
+    }
+    if (tpPopoverGesture.intent === 'cancelled') {
+      tpPopoverRevertToExpanded(0);
+      tpPopoverGesture = null;
+      return;
+    }
+    if (!tpPopoverGesture.intent) return;
+
+    const dragX = (rawDX >= 0 ? 1 : -1) * 24 * (1 - Math.exp(-Math.abs(rawDX) / 60));
+    const dragY = applyRubberBandSigned(rawDY, phone.clientHeight * 0.35);
+    const progress = Math.min(Math.max(0, rawDY) / 120, 1);
+    const scaleDown = 1 - progress * 0.12;
+    const scaledW = toW * scaleDown;
+    const scaledH = toH * scaleDown;
+    const panelX = toX + dragX + (toW - scaledW) / 2;
+    const panelY = toY + dragY + (toH - scaledH) / 2;
+
+    popoverPanel.style.left         = panelX + 'px';
+    popoverPanel.style.top          = panelY + 'px';
+    popoverPanel.style.width        = scaledW + 'px';
+    popoverPanel.style.height       = scaledH + 'px';
+    popoverPanel.style.borderRadius = (toR + (20 - toR) * progress) + 'px';
+    popoverPanel.style.boxShadow    = `0 4px 24px rgba(0,0,0,${(0.14 * (1 - progress * 0.5)).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * (1 - progress * 0.5)).toFixed(3)})`;
+    popoverScrim.style.opacity      = (1 - progress * 0.5).toFixed(3);
+    const blurPx = (8 * (1 - progress * 0.5)).toFixed(2);
+    document.getElementById('tpPhoneContentPopover').style.filter = `blur(${blurPx}px)`;
+    document.getElementById('tpPhoneBottomNav').style.filter      = `blur(${blurPx}px)`;
+  });
+
+  function onPopoverGestureEnd(e) {
+    if (!tpPopoverGesture || !tpPopoverState) return;
+    const { startY, history, intent } = tpPopoverGesture;
+    tpPopoverGesture = null;
+    if (!intent) return;
+    _tpGestureDismissed = true;
+    if (intent === 'cancelled') return;
+
+    let velY = 0;
+    if (history.length >= 2) {
+      const oldest = history[0], newest = history[history.length - 1];
+      const dt = (newest.t - oldest.t) / 1000;
+      if (dt > 0) velY = (newest.y - oldest.y) / dt;
+    }
+    const lastPt = history[history.length - 1];
+    const rawDY = (lastPt?.y ?? startY) - startY;
+
+    const committedDown = Math.max(0, rawDY) > DISMISS_POS_THRESHOLD || (rawDY > 10 && velY > DISMISS_VEL_THRESHOLD);
+    if (committedDown) {
+      tpPopoverCollapseWithVelocity(velY);
+    } else {
+      tpPopoverRevertToExpanded(velY);
+    }
+  }
+
+  popoverPanel.addEventListener('pointerup',     onPopoverGestureEnd);
+  popoverPanel.addEventListener('pointercancel', onPopoverGestureEnd);
 })();
 
 // ── Copy + toast ─────────────────────────────────────────────────
@@ -6306,6 +6829,10 @@ const TP_DEMOS = {
     play() {
       if (tpGrowMode === 'search') {
         if (tpSearchState) { tpCollapseSearch(); } else { tpExpandSearch(); }
+        return;
+      }
+      if (tpGrowMode === 'popover-chip') {
+        if (tpPopoverState) { tpCollapsePopover(); } else { tpExpandPopover(); }
         return;
       }
       const cards = document.querySelectorAll('.tp-grow-card');
@@ -7250,6 +7777,30 @@ function switchTpDemo(key) {
   tpDemoState = 'out';
   tpTabIdx = 0; tpTabDir = 1;
 
+  // Clear any lingering search/popover blur+state from previous tab
+  if (tpSearchAnim) { cancelAnimationFrame(tpSearchAnim); tpSearchAnim = null; }
+  if (tpSearchState) {
+    const sPanel = document.getElementById('tpSearchPanel');
+    const sScrim = document.getElementById('tpSearchScrim');
+    if (sPanel) sPanel.style.display = 'none';
+    if (sScrim) { sScrim.style.opacity = '0'; sScrim.style.pointerEvents = 'none'; }
+    const searchEl = tpSearchState.searchEl;
+    if (searchEl) searchEl.style.visibility = '';
+    tpSearchState = null;
+  }
+  if (tpPopoverAnim) { cancelAnimationFrame(tpPopoverAnim); tpPopoverAnim = null; }
+  if (tpPopoverState) {
+    const pPanel = document.getElementById('tpPopoverPanel');
+    const pScrim = document.getElementById('tpPopoverScrim');
+    if (pPanel) pPanel.style.display = 'none';
+    if (pScrim) { pScrim.style.opacity = '0'; pScrim.style.pointerEvents = 'none'; }
+    if (tpPopoverState.chipEl) tpPopoverState.chipEl.style.visibility = '';
+    tpPopoverState = null;
+  }
+  document.getElementById('tpPhoneContentPopover').style.filter = '';
+  document.getElementById('tpPhoneContent').style.filter  = '';
+  document.getElementById('tpPhoneBottomNav').style.filter = '';
+
   // Show/hide the correct phone content layer
   const isDesktop = key === 'slide-up-fade';
   const phone = document.getElementById('tpPhone');
@@ -7348,9 +7899,10 @@ function switchTpDemo(key) {
 // Grow mode toggle (Fullscreen / Modal) — defined before tab click handlers that reference it
 let tpGrowMode = 'fullscreen';
 const TP_GROW_DESCRIPTIONS = {
-  fullscreen: 'Seamlessly grows an element to reveal more detail.',
-  modal:      'The same grow motion into a floating element rather than a full screen.',
-  search:     'A search bar grows into an elevated overlay with blurred content behind it.',
+  fullscreen:     'Seamlessly grows an element to reveal more detail.',
+  modal:          'The same grow motion into a floating element rather than a full screen.',
+  'popover-chip': 'Filter chips grow into a popover overlay with blurred content behind it.',
+  search:         'A search bar grows into an elevated overlay with blurred content behind it.',
 };
 function applyTpGrowMode(mode) {
   tpGrowMode = mode;
@@ -7359,8 +7911,18 @@ function applyTpGrowMode(mode) {
   );
   const bodyCopy = document.getElementById('tpBodyCopy');
   if (bodyCopy) bodyCopy.textContent = TP_GROW_DESCRIPTIONS[mode] || '';
-  const slug = mode === 'modal' ? '-popover' : mode === 'search' ? '-search' : '';
+  const slug = mode === 'modal' ? '-popover' : mode === 'search' ? '-search' : mode === 'popover-chip' ? '-popover-chip' : '';
   try { history.replaceState(null, '', `#transitions-grow${slug}`); } catch(e) {}
+  // Swap phone content layer: popover-chip uses tpPhoneContentPopover, everything else uses tpPhoneContent
+  const mainContent    = document.getElementById('tpPhoneContent');
+  const popoverContent = document.getElementById('tpPhoneContentPopover');
+  if (mode === 'popover-chip') {
+    mainContent.style.display    = 'none';
+    popoverContent.style.display = '';
+  } else {
+    mainContent.style.display    = '';
+    popoverContent.style.display = 'none';
+  }
 }
 document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -7383,6 +7945,15 @@ document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
         if (sScrim) { sScrim.style.opacity = '0'; sScrim.style.pointerEvents = 'none'; }
         const searchEl = document.querySelector('#tpPhoneContent .sk-search');
         if (searchEl) searchEl.style.visibility = '';
+        // Clear popover state
+        if (tpPopoverAnim) { cancelAnimationFrame(tpPopoverAnim); tpPopoverAnim = null; }
+        const pPanel = document.getElementById('tpPopoverPanel');
+        const pScrim = document.getElementById('tpPopoverScrim');
+        if (pPanel) { pPanel.style.display = 'none'; pPanel.style.boxShadow = 'none'; }
+        if (pScrim) { pScrim.style.opacity = '0'; pScrim.style.pointerEvents = 'none'; }
+        document.querySelectorAll('#tpPhoneContentPopover .tp-popover-chip').forEach(c => { c.style.visibility = ''; });
+        document.getElementById('tpPhoneContentPopover').style.filter = '';
+        tpPopoverState = null; tpPopoverChipIdx = 0;
         document.getElementById('tpPhoneContent').style.filter = '';
         document.getElementById('tpPhoneBottomNav').style.filter = '';
         tpSearchState = null;
@@ -7593,7 +8164,7 @@ document.querySelectorAll('.tp-tab').forEach(tab => {
       () => { switchTpDemo(key); },
       () => { if (key !== 'loading-fade') window._tpAutoPlay?.start(); }
     );
-    const growSlug = key === 'grow' ? (tpGrowMode === 'modal' ? '-modal' : tpGrowMode === 'search' ? '-search' : '') : '';
+    const growSlug = key === 'grow' ? (tpGrowMode === 'modal' ? '-modal' : tpGrowMode === 'search' ? '-search' : tpGrowMode === 'popover-chip' ? '-popover-chip' : '') : '';
     try { history.replaceState(null, '', `#transitions-${key}${growSlug}`); } catch(e) {}
   });
 });
@@ -7607,6 +8178,9 @@ if (hashTp) {
   } else if (rawKey === 'grow-popover' || rawKey === 'grow-modal') {
     switchTpDemo('grow');
     applyTpGrowMode('modal');
+  } else if (rawKey === 'grow-popover-chip') {
+    switchTpDemo('grow');
+    applyTpGrowMode('popover-chip');
   } else if (rawKey === 'push-persistent-bar') {
     switchTpDemo('push');
     applyTpSlideInMode('persistent-bar');
@@ -7654,6 +8228,14 @@ if (hashTp) {
         scheduleNext(1400, () => {
           if (!tpPlaying) return;
           tpCollapseSearch(() => { scheduleNext(1000, onCycle); });
+        });
+        return;
+      }
+      if (tpGrowMode === 'popover-chip') {
+        tpExpandPopover();
+        scheduleNext(1400, () => {
+          if (!tpPlaying) return;
+          tpCollapsePopover(() => { scheduleNext(1000, onCycle); });
         });
         return;
       }
@@ -7994,6 +8576,7 @@ animate(scrim, { opacity:[0,0.32] },
         if (tpSearchState) { tpCollapseSearch(); } else { tpExpandSearch(); }
         return;
       }
+      if (tpGrowMode === 'popover-chip') return; // chip click handler owns it
       return;
     }
     if (key === 'slide-up') return; // container handler owns all slide-up clicks

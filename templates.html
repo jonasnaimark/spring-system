@@ -526,6 +526,102 @@
       margin-top: 28px;
       margin-bottom: 0;
     }
+    .popover-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .popover-scrim {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.40);
+    }
+    .popover {
+      position: relative;
+      width: calc(100% - 20px);
+      background: var(--c-surface-0);
+      border-radius: 28px;
+      padding: 20px 20px 18px;
+      display: flex;
+      flex-direction: column;
+      z-index: 1;
+    }
+    .popover-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--sk);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .popover-title {
+      height: 13px;
+      width: 65%;
+      background: var(--sk);
+      border-radius: 6px;
+      margin-bottom: 24px;
+      margin-top: 2px;
+    }
+    .popover-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+    .popover-chip {
+      height: 26px;
+      border-radius: 13px;
+      background: transparent;
+      border: 1.5px solid var(--c-border-medium, #d0d0d0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 9px;
+    }
+    .popover-chip-icon {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      background: var(--sk);
+      flex-shrink: 0;
+      margin-right: 5px;
+    }
+    .popover-chip-text {
+      height: 8px;
+      border-radius: 4px;
+      background: var(--sk);
+    }
+    .popover-chip--sm  .popover-chip-text { width: 24px; }
+    .popover-chip--md  .popover-chip-text { width: 32px; }
+    .popover-chip--lg  .popover-chip-text { width: 42px; }
+    .popover-chip--xl  .popover-chip-text { width: 68px; }
+    .popover-chip--2xl .popover-chip-text { width: 84px; }
+    .popover-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 4px;
+    }
+    .popover-clear {
+      height: 11px;
+      width: 52px;
+      background: var(--sk);
+      border-radius: 5px;
+    }
+    .popover-cta {
+      height: 30px;
+      width: 90px;
+      border-radius: 8px;
+      background: var(--sk);
+    }
 
     /* ── Search results screen ── */
     .sk-searchbar-row {
@@ -561,20 +657,29 @@
     }
 
     .sk-chip {
-      height: 22px;
-      border-radius: 11px;
+      height: 26px;
+      border-radius: 13px;
       border: 1.5px solid var(--c-border-medium);
       background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 10px;
+      padding: 0 8px;
     }
 
     .sk-chip-label {
       height: 7px;
       border-radius: 4px;
       background: var(--c-border-medium);
+    }
+
+    .sk-chip-icon {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      background: var(--c-border-medium);
+      flex-shrink: 0;
+      margin-right: 5px;
     }
 
     /* ── List screen (full-screen) ── */
@@ -849,9 +954,9 @@
     </div>
   </div>
   <div class="sk-chips">
-    <div class="sk-chip"><div class="sk-chip-label" style="width:36px;"></div></div>
-    <div class="sk-chip"><div class="sk-chip-label" style="width:28px;"></div></div>
-    <div class="sk-chip"><div class="sk-chip-label" style="width:44px;"></div></div>
+    <div class="sk-chip"><div class="sk-chip-icon"></div><div class="sk-chip-label" style="width:36px;"></div></div>
+    <div class="sk-chip"><div class="sk-chip-icon"></div><div class="sk-chip-label" style="width:28px;"></div></div>
+    <div class="sk-chip"><div class="sk-chip-icon"></div><div class="sk-chip-label" style="width:44px;"></div></div>
   </div>
   <div class="sk-card-img"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
@@ -1091,6 +1196,35 @@
       <div class="inset-modal-title-1"></div>
       <div class="inset-modal-title-2"></div>
       <div class="inset-modal-cta"></div>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-popover">
+  <div class="popover-wrap">
+    <div class="popover-scrim"></div>
+    <div class="popover">
+      <div class="popover-close">
+        <svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="popover-title"></div>
+      <div class="popover-chips">
+        <div class="popover-chip popover-chip--lg"><div class="popover-chip-icon"></div><div class="popover-chip-text"></div></div>
+        <div class="popover-chip popover-chip--md"><div class="popover-chip-icon"></div><div class="popover-chip-text"></div></div>
+        <div class="popover-chip popover-chip--sm"><div class="popover-chip-icon"></div><div class="popover-chip-text"></div></div>
+        <div class="popover-chip popover-chip--xl"><div class="popover-chip-icon"></div><div class="popover-chip-text"></div></div>
+        <div class="popover-chip popover-chip--xl" style="--chip-text-w:55px"><div class="popover-chip-icon"></div><div class="popover-chip-text" style="width:55px"></div></div>
+        <div class="popover-chip popover-chip--sm"><div class="popover-chip-icon"></div><div class="popover-chip-text"></div></div>
+        <div class="popover-chip popover-chip--md"><div class="popover-chip-icon"></div><div class="popover-chip-text"></div></div>
+        <div class="popover-chip popover-chip--lg"><div class="popover-chip-icon"></div><div class="popover-chip-text"></div></div>
+      </div>
+      <div class="popover-footer">
+        <div class="popover-clear"></div>
+        <div class="popover-cta"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -1478,6 +1612,12 @@
   insetModalPhone.className = 'phone-frame';
   insetModalPhone.appendChild(stamp('tpl-inset-modal'));
   grid.appendChild(makeItem('Inset Modal', 'tpl-inset-modal', insetModalPhone));
+
+  // ── tpl-popover ──
+  const popoverPhone = document.createElement('div');
+  popoverPhone.className = 'phone-frame';
+  popoverPhone.appendChild(stamp('tpl-popover'));
+  grid.appendChild(makeItem('Popover', 'tpl-popover', popoverPhone));
 
   // ── tpl-bottom-bar-nav ──
   const barNavPhone = document.createElement('div');
