@@ -395,8 +395,9 @@
       display: flex;
       align-items: center;
       background: var(--c-surface-0);
+      border: 1px solid var(--c-border-subtle);
       border-radius: 18px;
-      padding: 3px;
+      padding: 2px;
       gap: 2px;
       z-index: 10;
     }
@@ -422,23 +423,12 @@
       border-radius: inherit;
       background: var(--c-surface-3);
       opacity: 0;
-      transform: scale(0.5);
-      filter: blur(4px);
       pointer-events: none;
-      transition: opacity 100ms cubic-bezier(0.40,0.00,1.00,1.00),
-                  transform 100ms cubic-bezier(0.40,0.00,1.00,1.00),
-                  filter 100ms cubic-bezier(0.40,0.00,1.00,1.00);
+      transition: opacity 0.15s;
     }
-    .demo-mode-btn.active::before {
-      opacity: 1;
-      transform: scale(1);
-      filter: blur(0px);
-      transition: opacity 200ms cubic-bezier(0.00,0.00,0.00,1.00),
-                  transform 200ms cubic-bezier(0.00,0.00,0.00,1.00),
-                  filter 200ms cubic-bezier(0.00,0.00,0.00,1.00);
-    }
+    .demo-mode-btn.active::before { opacity: 1; }
     .demo-mode-btn:hover { color: var(--c-text-primary); }
-    .demo-mode-btn:hover:not(.active)::before { opacity: 0.4; transform: scale(1); filter: blur(0px); }
+    .demo-mode-btn:hover:not(.active)::before { opacity: 0.4; }
     .demo-mode-btn.active {
       color: var(--c-text-primary);
       font-weight: 500;
@@ -451,7 +441,7 @@
       font-weight: 400;
       color: var(--c-text-secondary);
       background: var(--c-surface-2);
-      border: 1.5px solid var(--c-border-faint);
+      border: 1px solid var(--c-border-subtle);
       cursor: pointer;
       user-select: none;
       transition: background 0.15s, color 0.15s, border-color 0.15s;
