@@ -7459,7 +7459,8 @@ const TP_DEMOS = {
     play(onDoneCallback) {
       // Toast mode: toggle notif in/out
       if (tpSufMode === 'toast') {
-        const { stiffness, damping } = TP_SPRING;
+        const stiffness = Math.round(750 * 0.5); // snappy·large.bounce
+        const damping   = calcDamping(stiffness, 0.5);
         const n = document.getElementById('tpSufNotif');
         const isIn = tpDemoState === 'in';
         tpDemoState = isIn ? 'out' : 'in';
