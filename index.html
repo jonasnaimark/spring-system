@@ -2738,8 +2738,8 @@
     </div>
     <div class="demo-mode-toggle" id="tpGrowModeToggle" style="display:none;right:58px;">
       <button class="demo-mode-btn active" data-mode="fullscreen">Fullscreen</button>
-      <button class="demo-mode-btn" data-mode="modal">Sheet</button>
       <button class="demo-mode-btn" data-mode="popover-chip">Popover</button>
+      <button class="demo-mode-btn" data-mode="modal">Sheet</button>
       <button class="demo-mode-btn" data-mode="search">Search</button>
     </div>
     <div class="demo-mode-toggle" id="tpSlideInModeToggle" style="display:none;">
@@ -2749,6 +2749,10 @@
     <div class="demo-mode-toggle" id="tpSlideUpModeToggle" style="display:none;">
       <button class="demo-mode-btn active" data-mode="fitted">Fitted</button>
       <button class="demo-mode-btn" data-mode="full-height">Full Height</button>
+    </div>
+    <div class="demo-mode-toggle" id="tpSufModeToggle" style="display:none;">
+      <button class="demo-mode-btn active" data-mode="sheet">Sheet</button>
+      <button class="demo-mode-btn" data-mode="toast">Toast</button>
     </div>
     <!-- Device area: phone + desktop + icons — only this fades on demo switch -->
     <div id="tpDeviceWrap" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
@@ -3054,15 +3058,31 @@
     </div><!-- end tpPhoneScreen -->
     </div><!-- end tpPhone -->
 
-    <!-- slide-up-fade: desktop bezel (shown instead of phone) -->
+    <!-- slide-up-fade: desktop bezel (sheet mode) + phone (toast mode) -->
     <div id="tpDesktopWrap" style="display:none;position:absolute;inset:0;padding:20px 28px;flex-direction:column;align-items:center;justify-content:center;">
-      <div class="desktop-bezel" style="cursor:default;">
+      <div id="tpSufDesktop" class="desktop-bezel" style="cursor:default;">
         <div style="position:absolute;inset:0;overflow:hidden;display:flex;">
           <div class="dt-ui" id="tpDesktopBg" style="flex:1;"></div>
           <div id="tpSufScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);opacity:0;pointer-events:none;"></div>
           <div id="tpSufModal0" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 30px));background:var(--c-surface-0);border-radius:16px;padding:20px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></div>
           <div id="tpSufModal1" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 30px));background:var(--c-surface-0);border-radius:16px;padding:20px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></div>
           <div id="tpSufModal2" style="position:absolute;left:30%;right:30%;top:50%;transform:translateY(calc(-50% + 30px));background:var(--c-surface-0);border-radius:16px;padding:20px;opacity:0;will-change:transform,opacity;box-shadow:0 8px 40px rgba(0,0,0,0.18);"></div>
+        </div>
+      </div>
+      <div id="tpSufPhone" class="phone-frame" style="display:none;cursor:default;">
+        <div class="phone-content" id="tpSufPhoneContent"></div>
+        <div class="sk-bottom-nav">
+          <div class="sk-nav-icon"></div>
+          <div class="sk-nav-icon"></div>
+          <div class="sk-nav-icon"></div>
+          <div class="sk-nav-icon"></div>
+        </div>
+        <div class="notif" id="tpSufNotif" style="transform:translateY(40px);opacity:0;">
+          <div class="notif-icon"></div>
+          <div class="notif-text">
+            <div class="notif-line"></div>
+            <div class="notif-line short"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -4397,6 +4417,7 @@ function stampTemplate(templateId, targetEl) {
     document.querySelector('#view-sheet .phone-frame .phone-content'),
     document.querySelector('#view-modal .phone-frame .phone-content'),
     document.querySelector('#view-toast .phone-frame .phone-content'),
+    document.getElementById('tpSufPhoneContent'),
     document.querySelector('#tpSheetContent .phone-content'),
     document.querySelector('#tpModalContent .phone-content'),
     document.querySelector('#view-tooltip .phone-content'),
@@ -4867,34 +4888,37 @@ const SPRING_DEMOS = {
     },
     play() {
       const n   = document.getElementById('demoNotif');
+      const { stiffness, damping } = selected;
       const isIn = demoState === 'in';
       demoState  = isIn ? 'out' : 'in';
       if (demoAnim) cancelAnimationFrame(demoAnim);
       if (isIn) {
-        // exit: fade out over 100ms
-        const EXIT_DUR = 0.10;
+        // exit: slide down + fade out
+        const EXIT_DUR = 0.15, SLIDE_PX = 30;
         const exitStart = performance.now();
         function exitTick(now) {
           const t = Math.min((now - exitStart) / 1000, EXIT_DUR);
-          n.style.opacity = String(1 - t / EXIT_DUR);
-          if (t < EXIT_DUR) {
-            demoAnim = requestAnimationFrame(exitTick);
-          } else {
-            n.style.opacity = '0';
-          }
+          const prog = (t / EXIT_DUR) * (t / EXIT_DUR);
+          n.style.transform = `translateY(${prog * SLIDE_PX}px)`;
+          n.style.opacity = String(Math.max(1 - t / EXIT_DUR, 0));
+          if (t < EXIT_DUR) { demoAnim = requestAnimationFrame(exitTick); }
+          else { n.style.transform = `translateY(${SLIDE_PX}px)`; n.style.opacity = '0'; }
         }
         demoAnim = requestAnimationFrame(exitTick);
       } else {
-        // enter: fade in over 150ms
+        // enter: spring slide up + fade in
         n.style.opacity = '0';
+        n.style.transform = 'translateY(30px)';
         const enterStart = performance.now();
         function enterTick(now) {
           const t = (now - enterStart) / 1000;
+          const pos = springPos(t, stiffness, damping);
+          n.style.transform = `translateY(${pos * 30}px)`;
           n.style.opacity = String(Math.min(t / 0.15, 1));
-          if (t < 0.15) {
+          if (t < 5 && !isSettled(t, stiffness, damping)) {
             demoAnim = requestAnimationFrame(enterTick);
           } else {
-            n.style.opacity = '1';
+            n.style.transform = 'translateY(0)'; n.style.opacity = '1';
           }
         }
         demoAnim = requestAnimationFrame(enterTick);
@@ -5276,6 +5300,7 @@ let tpSlideUpStep = 0;
 let tpSufStep = 0;
 let tpSufAnimating = false;
 let tpSufCooldown  = 0;
+let tpSufMode = 'sheet';
 let tpSlideInMode = 'fullscreen';
 let tpLoadMode = 'shimmer';
 let tpCfMode = 'cards';
@@ -7044,7 +7069,7 @@ let tpCrossFadeAnimating = false;
 let tpCrossFadeCooldown  = 0;
 const TP_DEMOS = {
   'grow': {
-    description: 'Seamlessly grows an element to reveal more detail.',
+    description: 'Used to seamlessly grow an element to reveal more detail. Works for both full-screen transitions and to present floating elements like popovers.',
     play() {
       if (tpGrowMode === 'search') {
         if (tpSearchState) { tpCollapseSearch(); } else { tpExpandSearch(); }
@@ -7412,10 +7437,12 @@ const TP_DEMOS = {
 
   'slide-up-fade': {
     description: 'A lighter version of Slide Up, typically used on desktop or web.',
-    reset() {
+    reset(reason) {
+      if (reason === 'leaving') tpSufMode = 'sheet';
       tpSufStep = 0;
       tpSufAnimating = false;
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
+      // Sheet mode reset
       const scrim = document.getElementById('tpSufScrim');
       scrim.style.transition = 'none'; scrim.style.opacity = '0'; scrim.style.pointerEvents = 'none';
       [0,1,2].forEach(i => {
@@ -7424,8 +7451,52 @@ const TP_DEMOS = {
         m.style.opacity = '0';
         m.style.transform = 'translateY(calc(-50% + 30px)) scale(1)';
       });
+      // Toast mode reset
+      const n = document.getElementById('tpSufNotif');
+      if (n) { n.style.transform = 'translateY(40px)'; n.style.opacity = '0'; }
+      tpDemoState = 'out';
     },
     play(onDoneCallback) {
+      // Toast mode: toggle notif in/out
+      if (tpSufMode === 'toast') {
+        const { stiffness, damping } = TP_SPRING;
+        const n = document.getElementById('tpSufNotif');
+        const isIn = tpDemoState === 'in';
+        tpDemoState = isIn ? 'out' : 'in';
+        if (tpAnim) cancelAnimationFrame(tpAnim);
+        if (isIn) {
+          const EXIT_DUR = 0.15, SLIDE_PX = 30;
+          const exitStart = performance.now();
+          function exitTick(now) {
+            const t = Math.min((now - exitStart) / 1000, EXIT_DUR);
+            const prog = (t / EXIT_DUR) * (t / EXIT_DUR);
+            n.style.transform = `translateY(${prog * SLIDE_PX}px)`;
+            n.style.opacity = String(Math.max(1 - t / EXIT_DUR, 0));
+            if (t < EXIT_DUR) { tpAnim = requestAnimationFrame(exitTick); }
+            else { n.style.transform = `translateY(${SLIDE_PX}px)`; n.style.opacity = '0'; if (onDoneCallback) onDoneCallback(); }
+          }
+          tpAnim = requestAnimationFrame(exitTick);
+        } else {
+          n.style.opacity = '0';
+          n.style.transform = 'translateY(30px)';
+          const enterStart = performance.now();
+          function enterTick(now) {
+            const t = (now - enterStart) / 1000;
+            const pos = springPos(t, stiffness, damping);
+            n.style.transform = `translateY(${pos * 30}px)`;
+            n.style.opacity = String(Math.min(t / 0.15, 1));
+            if (t < 5 && !isSettled(t, stiffness, damping)) {
+              tpAnim = requestAnimationFrame(enterTick);
+            } else {
+              n.style.transform = 'translateY(0)'; n.style.opacity = '1';
+              if (onDoneCallback) onDoneCallback();
+            }
+          }
+          tpAnim = requestAnimationFrame(enterTick);
+        }
+        return;
+      }
+
       const { stiffness, damping } = TP_SPRING;
       const step  = tpSufStep;
       const scrim = document.getElementById('tpSufScrim');
@@ -8053,6 +8124,7 @@ function switchTpDemo(key, { skipControlsDisplay = false } = {}) {
   const desktopWrap = document.getElementById('tpDesktopWrap');
   phone.style.display       = isDesktop ? 'none' : '';
   desktopWrap.style.display = isDesktop ? 'flex' : 'none';
+  if (isDesktop) applyTpSufMode(tpSufMode, { updateUrl: false });
 
   // Show correct layer inside phone
   // For slide-in, choose between fullscreen (tpPushContent) and persistent-bar (tpPersistBar)
@@ -8079,9 +8151,10 @@ function switchTpDemo(key, { skipControlsDisplay = false } = {}) {
     document.getElementById('tpSlideUpModeToggle').style.display = key === 'slide-up' ? '' : 'none';
     document.getElementById('tpLoadModeToggle').style.display = key === 'loading-fade' ? '' : 'none';
     document.getElementById('tpCfModeToggle').style.display = key === 'cross-fade' ? '' : 'none';
+    document.getElementById('tpSufModeToggle').style.display = key === 'slide-up-fade' ? '' : 'none';
     document.getElementById('tpCodeBtn').style.display = key === 'grow' ? '' : 'none';
     // Reset opacity/transform in case a previous animation left them mid-state
-    [...document.querySelectorAll('#tpGrowModeToggle,#tpSlideInModeToggle,#tpSlideUpModeToggle,#tpLoadModeToggle,#tpCfModeToggle,#tpCodeBtn')].forEach(el => {
+    [...document.querySelectorAll('#tpGrowModeToggle,#tpSlideInModeToggle,#tpSlideUpModeToggle,#tpLoadModeToggle,#tpCfModeToggle,#tpSufModeToggle,#tpCodeBtn')].forEach(el => {
       el.style.opacity = ''; el.style.transform = ''; el.style.transition = '';
     });
   } else {
@@ -8091,6 +8164,7 @@ function switchTpDemo(key, { skipControlsDisplay = false } = {}) {
     document.getElementById('tpSlideUpModeToggle').style.display = 'none';
     document.getElementById('tpLoadModeToggle').style.display = 'none';
     document.getElementById('tpCfModeToggle').style.display = 'none';
+    document.getElementById('tpSufModeToggle').style.display = 'none';
     document.getElementById('tpCodeBtn').style.display = 'none';
   }
   document.getElementById('tpPlayBtn').style.display = key === 'loading-fade' ? 'none' : '';
@@ -8159,7 +8233,7 @@ function switchTpDemo(key, { skipControlsDisplay = false } = {}) {
 // Grow mode toggle (Fullscreen / Modal) — defined before tab click handlers that reference it
 let tpGrowMode = 'fullscreen';
 const TP_GROW_DESCRIPTIONS = {
-  fullscreen:     'Seamlessly grows an element to reveal more detail.',
+  fullscreen:     'Used to seamlessly grow an element to reveal more detail. Works for both full-screen transitions and to present floating elements like popovers.',
   modal:          'The same grow motion into a floating sheet rather than a full screen.',
   'popover-chip': 'Filter chips grow into a popover overlay with blurred content behind it.',
   search:         'A search bar grows into an elevated overlay with blurred content behind it.',
@@ -8317,6 +8391,28 @@ document.querySelectorAll('#tpSlideUpModeToggle .demo-mode-btn').forEach(btn => 
   });
 });
 
+// Slide-Up-Fade mode toggle (Sheet / Toast)
+function applyTpSufMode(mode, { updateUrl = true } = {}) {
+  tpSufMode = mode;
+  document.querySelectorAll('#tpSufModeToggle .demo-mode-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.mode === mode)
+  );
+  const sufDesktop = document.getElementById('tpSufDesktop');
+  const sufPhone   = document.getElementById('tpSufPhone');
+  if (sufDesktop) sufDesktop.style.display = mode === 'toast' ? 'none' : '';
+  if (sufPhone)   sufPhone.style.display   = mode === 'toast' ? 'block' : 'none';
+  if (updateUrl) { try { history.replaceState(null, '', `#transitions-slide-up-fade${mode === 'toast' ? '-toast' : ''}`); } catch(e) {} }
+}
+document.querySelectorAll('#tpSufModeToggle .demo-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.mode === tpSufMode) return;
+    window._tpAutoPlay?.stop({ silent: true });
+    TP_DEMOS['slide-up-fade'].reset();
+    applyTpSufMode(btn.dataset.mode);
+    window._tpAutoPlay?.start({ silent: true });
+  });
+});
+
 // Loading Fade mode toggle (Shimmer / Reveal)
 function tpApplyLoadShimmer(container) {
   const DURATION = 1350;
@@ -8424,7 +8520,8 @@ function tpControlsForKey(key) {
     key === 'push'         ? 'tpSlideInModeToggle'  :
     key === 'slide-up'     ? 'tpSlideUpModeToggle'  :
     key === 'loading-fade' ? 'tpLoadModeToggle'     :
-    key === 'cross-fade'   ? 'tpCfModeToggle'       : null;
+    key === 'cross-fade'   ? 'tpCfModeToggle'       :
+    key === 'slide-up-fade'? 'tpSufModeToggle'      : null;
   const codeBtn = key === 'grow' ? 'tpCodeBtn' : null;
   return [toggleId, codeBtn].filter(Boolean).map(id => document.getElementById(id)).filter(Boolean);
 }
@@ -8521,6 +8618,9 @@ if (hashTp) {
   } else if (rawKey === 'slide-up-full-height') {
     switchTpDemo('slide-up');
     applyTpSlideUpMode('full-height', { updateUrl: false });
+  } else if (rawKey === 'slide-up-fade-toast') {
+    switchTpDemo('slide-up-fade');
+    applyTpSufMode('toast', { updateUrl: false });
   } else if (rawKey === 'loading-fade-reveal') {
     switchTpDemo('loading-fade');
     applyTpLoadMode('reveal', { updateUrl: false });
@@ -8588,15 +8688,29 @@ if (hashTp) {
     } else if (key === 'grow-fade') {
       TP_DEMOS['grow-fade'].play(() => { scheduleNext(400, onCycle); });
     } else if (key === 'slide-up-fade') {
-      function nextSufStep() {
-        if (!tpPlaying) return;
+      if (tpSufMode === 'toast') {
+        // Toast: toggle in, hold, toggle out, hold, loop
         TP_DEMOS['slide-up-fade'].play(() => {
           if (!tpPlaying) return;
-          const isLast = tpSufStep === 0;
-          scheduleNext(isLast ? 500 : 800, isLast ? onCycle : nextSufStep);
+          scheduleNext(1200, () => {
+            if (!tpPlaying) return;
+            TP_DEMOS['slide-up-fade'].play(() => {
+              if (!tpPlaying) return;
+              scheduleNext(600, onCycle);
+            });
+          });
         });
+      } else {
+        function nextSufStep() {
+          if (!tpPlaying) return;
+          TP_DEMOS['slide-up-fade'].play(() => {
+            if (!tpPlaying) return;
+            const isLast = tpSufStep === 0;
+            scheduleNext(isLast ? 500 : 800, isLast ? onCycle : nextSufStep);
+          });
+        }
+        nextSufStep();
       }
-      nextSufStep();
     } else if (key === 'slide-up') {
       // step-based: fire each of 6 steps with a pause between, then loop
       function nextStep() {
@@ -8959,6 +9073,12 @@ animate(scrim, { opacity:[0,0.32] },
   document.getElementById('tpDesktopWrap').addEventListener('click', (e) => {
     if (tpPlaying) { stopTp(); return; }
     if (tpActiveKey() !== 'slide-up-fade') return;
+    // Toast mode: click phone to toggle toast in/out
+    if (tpSufMode === 'toast') {
+      if (tpAnim) return;
+      TP_DEMOS['slide-up-fade'].play();
+      return;
+    }
     if (tpSufAnimating || performance.now() < tpSufCooldown) return;
     const scrim  = document.getElementById('tpSufScrim');
     const m0     = document.getElementById('tpSufModal0');
