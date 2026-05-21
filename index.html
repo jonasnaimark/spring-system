@@ -8083,7 +8083,8 @@ function switchTpDemo(key, { skipControlsDisplay = false } = {}) {
   if (key === 'push')       document.getElementById('tpBodyCopy').textContent = TP_SLIDE_IN_DESCRIPTIONS[tpSlideInMode] || desc;
   if (key === 'slide-up')   document.getElementById('tpBodyCopy').textContent = TP_SLIDE_UP_DESCRIPTIONS[tpSlideUpMode] || desc;
   if (key === 'loading-fade') document.getElementById('tpBodyCopy').textContent = TP_LOAD_DESCRIPTIONS[tpLoadMode] || desc;
-  if (key === 'cross-fade')  document.getElementById('tpBodyCopy').textContent = TP_CF_DESCRIPTIONS[tpCfMode] || desc;
+  if (key === 'cross-fade')      document.getElementById('tpBodyCopy').textContent = TP_CF_DESCRIPTIONS[tpCfMode] || desc;
+  if (key === 'slide-up-fade')   document.getElementById('tpBodyCopy').textContent = TP_SUF_DESCRIPTIONS[tpSufMode] || desc;
 
   // Reset shared state
   tpDemoState = 'out';
@@ -8393,6 +8394,10 @@ document.querySelectorAll('#tpSlideUpModeToggle .demo-mode-btn').forEach(btn => 
 });
 
 // Slide-Up-Fade mode toggle (Sheet / Toast)
+const TP_SUF_DESCRIPTIONS = {
+  sheet: 'A lighter version of Slide Up, typically used on desktop or web.',
+  toast: 'A toast slides up and fades in, with a large bounce spring to catch the eye.',
+};
 function applyTpSufMode(mode, { updateUrl = true } = {}) {
   tpSufMode = mode;
   document.querySelectorAll('#tpSufModeToggle .demo-mode-btn').forEach(b =>
@@ -8402,6 +8407,8 @@ function applyTpSufMode(mode, { updateUrl = true } = {}) {
   const sufPhone   = document.getElementById('tpSufPhone');
   if (sufDesktop) sufDesktop.style.display = mode === 'toast' ? 'none' : '';
   if (sufPhone)   sufPhone.style.display   = mode === 'toast' ? 'block' : 'none';
+  const bodyCopy = document.getElementById('tpBodyCopy');
+  if (bodyCopy) bodyCopy.textContent = TP_SUF_DESCRIPTIONS[mode] || '';
   if (updateUrl) { try { history.replaceState(null, '', `#transitions-slide-up-fade${mode === 'toast' ? '-toast' : ''}`); } catch(e) {} }
 }
 document.querySelectorAll('#tpSufModeToggle .demo-mode-btn').forEach(btn => {
