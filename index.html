@@ -3193,7 +3193,7 @@
     <div class="demo-tab" data-demo="bottom-bar">Bottom Bar</div>
     <div class="demo-tab" data-demo="onboarding">Onboarding Flow</div>
     <div class="demo-tab" data-demo="modal">Modal</div>
-    <div class="demo-tab" data-demo="notif">Toast</div>
+    <div class="demo-tab" data-demo="toast">Toast</div>
     <div class="demo-tab" data-demo="tooltip">Tooltip</div>
     <div class="demo-tab" data-demo="flip">Card Flip</div>
   </div>
@@ -3280,7 +3280,7 @@
       </div>
 
       <!-- Notification demo -->
-      <div class="demo-view" id="view-notif" style="display:none; align-items:center; justify-content:center;">
+      <div class="demo-view" id="view-toast" style="display:none; align-items:center; justify-content:center;">
         <div class="phone-frame">
 
 
@@ -3772,7 +3772,7 @@
 <!-- ── Accessibility section ── -->
 <div class="section-wrap" id="accessibility">
   <h1 class="section-title">Accessibility</h1>
-  <p class="section-body">Some people experience motion as disorienting or distracting. These platform settings reduce or eliminate animation.</p>
+  <p class="section-body">Some people experience motion as disorienting or distracting. These platform settings reduce or remove animation.</p>
   <div class="section-content">
     <div style="display:flex; gap:24px; align-items:stretch;">
       <div style="flex:0 0 400px; width:400px; border:1px solid var(--c-border-subtle); border-radius:24px; padding:28px; display:flex; flex-direction:column; gap:36px;" id="accTextPanel">
@@ -4396,7 +4396,7 @@ function stampTemplate(templateId, targetEl) {
   const listTargets = [
     document.querySelector('#view-sheet .phone-frame .phone-content'),
     document.querySelector('#view-modal .phone-frame .phone-content'),
-    document.querySelector('#view-notif .phone-frame .phone-content'),
+    document.querySelector('#view-toast .phone-frame .phone-content'),
     document.querySelector('#tpSheetContent .phone-content'),
     document.querySelector('#tpModalContent .phone-content'),
     document.querySelector('#view-tooltip .phone-content'),
@@ -4657,7 +4657,7 @@ const SPRING_DEMOS = {
   },
 
   'nav-transition': {
-    description:   'A smooth spring balances speed and comfort.',
+    description:   'A default smooth spring balances speed and comfort.',
     defaultSpring: { speed: 'default', char: 'smooth'        },
     reset() {
       document.getElementById('pushSource').style.transform = 'translateX(0%)';
@@ -4858,48 +4858,43 @@ const SPRING_DEMOS = {
     },
   },
 
-  notif: {
+  toast: {
     description:   'A fast spring with medium bounce calls a bit of attention to its entrance.',
-    defaultSpring: { speed: 'fast',    char: 'medium.bounce' },
+    defaultSpring: { speed: 'snappy',  char: 'large.bounce' },
     reset() {
       const n = document.getElementById('demoNotif');
-      n.style.transform = 'translateY(40px)'; n.style.opacity = '0';
+      n.style.transform = ''; n.style.opacity = '0';
     },
     play() {
       const n   = document.getElementById('demoNotif');
-      const { stiffness, damping } = selected;
       const isIn = demoState === 'in';
       demoState  = isIn ? 'out' : 'in';
       if (demoAnim) cancelAnimationFrame(demoAnim);
       if (isIn) {
-        // exit: ease-in slide down 60px, fade out after 50ms delay over 100ms
-        const EXIT_DUR = 0.15, FADE_DELAY = 0.05, FADE_DUR = 0.10, SLIDE_PX = 40;
+        // exit: fade out over 100ms
+        const EXIT_DUR = 0.10;
         const exitStart = performance.now();
         function exitTick(now) {
           const t = Math.min((now - exitStart) / 1000, EXIT_DUR);
-          const prog = (t / EXIT_DUR) * (t / EXIT_DUR); // ease-in
-          n.style.transform = `translateY(${prog * SLIDE_PX}px)`;
-          n.style.opacity = String(Math.max(1 - Math.max(t - FADE_DELAY, 0) / FADE_DUR, 0));
+          n.style.opacity = String(1 - t / EXIT_DUR);
           if (t < EXIT_DUR) {
             demoAnim = requestAnimationFrame(exitTick);
           } else {
-            n.style.transform = `translateY(${SLIDE_PX}px)`; n.style.opacity = '0';
+            n.style.opacity = '0';
           }
         }
         demoAnim = requestAnimationFrame(exitTick);
       } else {
-        // enter: spring slide up from 80px, fade in over 150ms
+        // enter: fade in over 150ms
         n.style.opacity = '0';
         const enterStart = performance.now();
         function enterTick(now) {
           const t = (now - enterStart) / 1000;
-          const pos = springPos(t, stiffness, damping);
-          n.style.transform = `translateY(${pos * 40}px)`;
           n.style.opacity = String(Math.min(t / 0.15, 1));
-          if (t < 5 && !isSettled(t, stiffness, damping)) {
+          if (t < 0.15) {
             demoAnim = requestAnimationFrame(enterTick);
           } else {
-            n.style.transform = 'translateY(0)'; n.style.opacity = '1';
+            n.style.opacity = '1';
           }
         }
         demoAnim = requestAnimationFrame(enterTick);
@@ -5031,7 +5026,7 @@ document.querySelectorAll('.demo-tab[data-demo]').forEach(tab => {
 });
 
 // Restore spring demo from URL hash on load
-const hashDemo = location.hash.slice(1);
+const hashDemo = location.hash.slice(1) === 'notif' ? 'toast' : location.hash.slice(1);
 if (hashDemo && !hashDemo.startsWith('transitions-') && !hashDemo.startsWith('gestures-') && document.querySelector(`.demo-tab[data-demo="${hashDemo}"]`)) {
   switchDemo(hashDemo);
 }
@@ -5211,21 +5206,64 @@ const TP_BOUNCE_SPRING = { stiffness: 500, damping: calcDamping(500, 0.80), stif
 const TP_SCALE_STANDARD = 'cubic-bezier(0.40,0.00,0.20,1.00)';
 const TP_SCALE_BOUNCE   = 'cubic-bezier(0.34,1.56,0.64,1)';
 
-function tpScalePulse(el, isOpen, { magnitude = 0.02, magnitudeClose = 0.07, startDelay = 0 } = {}) {
+const TP_SCALE_SPRING_K = 250;  // fast · large.bounce stiffness (500 * 0.5)
+const TP_SCALE_SPRING_D = calcDamping(250, 0.5);
+let _tpScalePulseRaf = null;
+let _tpScalePulseTimer1 = null;
+let _tpScalePulseTimer2 = null;
+let _tpScalePulseTimer3 = null;
+
+function tpScalePulseCancel() {
+  if (_tpScalePulseRaf)    { cancelAnimationFrame(_tpScalePulseRaf); _tpScalePulseRaf = null; }
+  if (_tpScalePulseTimer1) { clearTimeout(_tpScalePulseTimer1); _tpScalePulseTimer1 = null; }
+  if (_tpScalePulseTimer2) { clearTimeout(_tpScalePulseTimer2); _tpScalePulseTimer2 = null; }
+  if (_tpScalePulseTimer3) { clearTimeout(_tpScalePulseTimer3); _tpScalePulseTimer3 = null; }
+}
+
+function tpScalePulse(el, isOpen, { magnitude = 0.03, magnitudeClose = 0.07, startDelay = 0 } = {}) {
   if (!el) return;
-  const peak  = isOpen ? (1 + magnitude).toFixed(3) : (1 - magnitudeClose).toFixed(3);
+  tpScalePulseCancel();
+  const peak  = isOpen ? (1 + magnitude) : (1 - magnitudeClose);
   const t1dur = isOpen ? 200 : 300, t2delay = 200, t2dur = 700;
   el.style.transition = '';
   el.style.transform  = 'scale(1)';
-  setTimeout(() => {
+  _tpScalePulseTimer1 = setTimeout(() => {
+    _tpScalePulseTimer1 = null;
     requestAnimationFrame(() => {
       el.style.transition = `transform ${t1dur}ms ${TP_SCALE_STANDARD}`;
-      el.style.transform  = `scale(${peak})`;
-      setTimeout(() => {
-        el.style.transition = `transform ${t2dur}ms ${TP_SCALE_BOUNCE}`;
-        el.style.transform  = 'scale(1)';
-        setTimeout(() => { el.style.transition = ''; el.style.transform = ''; }, t2dur + 20);
-      }, t2delay);
+      el.style.transform  = `scale(${peak.toFixed(3)})`;
+      if (isOpen) {
+        // Phase 2: JS spring from peak back to 1.0
+        _tpScalePulseTimer2 = setTimeout(() => {
+          _tpScalePulseTimer2 = null;
+          el.style.transition = '';
+          const startT = performance.now();
+          const startScale = peak;
+          function springTick(now) {
+            const t = (now - startT) / 1000;
+            const pos = springPos(t, TP_SCALE_SPRING_K, TP_SCALE_SPRING_D);
+            el.style.transform = `scale(${(startScale + (1 - startScale) * (1 - pos)).toFixed(4)})`;
+            if (t < 10 && !isSettled(t, TP_SCALE_SPRING_K, TP_SCALE_SPRING_D)) {
+              _tpScalePulseRaf = requestAnimationFrame(springTick);
+            } else {
+              _tpScalePulseRaf = null;
+              el.style.transition = ''; el.style.transform = '';
+            }
+          }
+          _tpScalePulseRaf = requestAnimationFrame(springTick);
+        }, t2delay);
+      } else {
+        // Phase 2: CSS bounce back (close)
+        _tpScalePulseTimer2 = setTimeout(() => {
+          _tpScalePulseTimer2 = null;
+          el.style.transition = `transform ${t2dur}ms ${TP_SCALE_BOUNCE}`;
+          el.style.transform  = 'scale(1)';
+          _tpScalePulseTimer3 = setTimeout(() => {
+            _tpScalePulseTimer3 = null;
+            el.style.transition = ''; el.style.transform = '';
+          }, t2dur + 20);
+        }, t2delay);
+      }
     });
   }, startDelay);
 }
@@ -6766,7 +6804,7 @@ document.querySelectorAll('#bezTabsBar .demo-tab').forEach(tab => {
         activeBezDuration = 500;
         markBezDefaults('standard', 500);
       }
-    }, () => { runBezDemo(); });
+    });
   });
 });
 
@@ -6793,14 +6831,12 @@ function playSlowFade() {
     allItems[0]?.offsetHeight; // force reflow
 
     const domOrder = Array.from(sfUI.querySelectorAll('.dt-grid .dt-card, .dt-grid .dt-section-title'));
-    const SF_K = 100, SF_D = calcDamping(100, 1.0); // slow.smooth
+    const SF_K = 100, SF_D = calcDamping(100, 1.0);
     const OFFSET = 28;
     domOrder.forEach((el, i) => {
       const delay = i * 20;
-      // opacity: CSS with selected curve
       el.style.transition = `opacity ${activeBezDuration}ms ${easing} ${delay}ms`;
       el.style.opacity = '1';
-      // transform: JS spring
       const startT = performance.now() + delay;
       function animY(now) {
         const t = Math.max(0, now - startT) / 1000;
@@ -6998,7 +7034,7 @@ if (hashBez && document.querySelector(`#bezTabsBar .demo-tab[data-bez="${hashBez
 
 setTimeout(() => {
   const key = document.querySelector('#bezTabsBar .demo-tab.active')?.dataset.bez;
-  if (!key || key === 'slow-fade') { markBezDefaults('standard', 500); playSlowFade(); }
+  if (!key || key === 'slow-fade') { markBezDefaults('standard', 500); }
 }, 300);
 
 // ── Match phone frame height to card grid height ──────────────────
