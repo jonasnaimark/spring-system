@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Motion System</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🌀</text></svg>">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block">
   <style>
     @font-face {
       font-family: 'Cereal';
@@ -2644,11 +2644,11 @@
 <div class="topnav" id="topnav">
   <div class="topnav-inner">
     <div class="topnav-links">
-      <a class="nav-item" data-target="sec-transition" data-label="Transitions" data-short="Transitions">Transitions</a>
-      <a class="nav-item" data-target="sec-gestures" data-label="Gestures" data-short="Gestures">Gestures</a>
-      <a class="nav-item" data-target="sec-spring" data-label="Springs" data-short="Springs">Springs</a>
-      <a class="nav-item" data-target="sec-curve" data-label="Curves & Durations" data-short="Curves">Curves & Durations</a>
-      <a class="nav-item" data-target="sec-accessibility" data-label="Accessibility" data-short="A11Y">Accessibility</a>
+      <a class="nav-item" data-target="transitions" data-label="Transitions" data-short="Transitions">Transitions</a>
+      <a class="nav-item" data-target="gestures" data-label="Gestures" data-short="Gestures">Gestures</a>
+      <a class="nav-item" data-target="springs" data-label="Springs" data-short="Springs">Springs</a>
+      <a class="nav-item" data-target="curves" data-label="Curves & Durations" data-short="Curves">Curves & Durations</a>
+      <a class="nav-item" data-target="accessibility" data-label="Accessibility" data-short="A11Y">Accessibility</a>
     </div>
   </div>
   <div class="topnav-theme">
@@ -2673,7 +2673,7 @@
 <div class="section-divider"></div>
 
 <!-- ── Transition Patterns section ── -->
-<div class="section-wrap" id="sec-transition">
+<div class="section-wrap" id="transitions">
   <h1 class="section-title">Transitions</h1>
   <p class="section-body">Transitions orient people as they navigate. Grow seamlessly reveals more detail. Push moves to a new screen. Slide Up layers content without losing context. Fade swaps content in place.</p>
   <div class="demo-tabs-bar section-chips" id="tpTabsBar">
@@ -3074,7 +3074,7 @@
 <div class="section-divider"></div>
 
 <!-- ── Navigation Gestures section ── -->
-<div class="section-wrap" id="sec-gestures">
+<div class="section-wrap" id="gestures">
   <h1 class="section-title">Gestures</h1>
   <p class="section-body">Gestures enable fluid, physical navigation alongside tap-based controls.</p>
   <div class="demo-tabs-bar section-chips" id="ngTabsBar">
@@ -3183,7 +3183,7 @@
 
 <div class="section-divider"></div>
 
-<div class="section-wrap" id="sec-spring">
+<div class="section-wrap" id="springs">
   <h1 class="section-title">Spring Tokens</h1>
   <p class="section-body">Most animations use springs because they feel smooth and respond to gestures. Each spring is tuned along two axes: Speed and Bounciness. These are some common examples:</p>
   <div class="demo-tabs-bar section-chips">
@@ -3549,7 +3549,7 @@
 <div class="section-divider"></div>
 
 <!-- ── Curves & Durations Tokens section ── -->
-<div class="section-wrap" id="sec-curve">
+<div class="section-wrap" id="curves">
   <h1 class="section-title">Curves & Durations</h1>
   <p class="section-body">Curves are used for simple animations like fades or slides. Some common Curve & Duration combos:</p>
   <div class="demo-tabs-bar section-chips" id="bezTabsBar">
@@ -3770,7 +3770,7 @@
 <div class="section-divider"></div>
 
 <!-- ── Accessibility section ── -->
-<div class="section-wrap" id="sec-accessibility">
+<div class="section-wrap" id="accessibility">
   <h1 class="section-title">Accessibility</h1>
   <p class="section-body">Some people experience motion as disorienting or distracting. These platform settings reduce or eliminate animation.</p>
   <div class="section-content">
@@ -7157,7 +7157,7 @@ const TP_DEMOS = {
   },
 
   'push-fade': {
-    description: 'A softer push for multi-step flows, where each screen feels like the next step in a sequence.',
+    description: 'A softer push style, where each screen feels like the next step in the same flow.',
     reset() {
       tpTabIdx = 0; tpTabDir = 1;
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
@@ -7502,7 +7502,7 @@ const TP_DEMOS = {
   },
 
   'grow-fade': {
-    description: 'Floating elements fade and grow from center, or from their source element.',
+    description: 'Use when there\'s nothing to grow from. Floating elements scale up from their trigger, or from center when there\'s no clear source.',
     _seqTimer: null,
     _step: null, // tracks where we are so resume can pick up
     _cancelSeq() {
@@ -10348,11 +10348,11 @@ syncPhoneHeight();
 
 // ── Nav: scroll-to + scroll-spy ───────────────────────────────────
 const NAV_SECTIONS = [
-  { id: 'sec-transition', label: 'Transition Patterns' },
-  { id: 'sec-gestures',   label: 'Navigation Gestures' },
-  { id: 'sec-spring',     label: 'Spring Tokens' },
-  { id: 'sec-curve',      label: 'Curves & Durations' },
-  { id: 'sec-accessibility', label: 'Accessibility' },
+  { id: 'transitions', label: 'Transition Patterns' },
+  { id: 'gestures',   label: 'Navigation Gestures' },
+  { id: 'springs',     label: 'Spring Tokens' },
+  { id: 'curves',      label: 'Curves & Durations' },
+  { id: 'accessibility', label: 'Accessibility' },
 ];
 
 document.querySelectorAll('.nav-item[data-target]').forEach(item => {
@@ -10362,8 +10362,22 @@ document.querySelectorAll('.nav-item[data-target]').forEach(item => {
     const navH = document.getElementById('topnav')?.offsetHeight ?? 68;
     const top = el.getBoundingClientRect().top + window.scrollY - navH;
     window.scrollTo({ top, behavior: 'smooth' });
+    try { history.replaceState(null, '', '#' + item.dataset.target); } catch(e) {}
   });
 });
+
+// Scroll to section on load if hash matches a nav section
+(function() {
+  const hash = location.hash.slice(1);
+  if (!NAV_SECTIONS.find(s => s.id === hash)) return;
+  const el = document.getElementById(hash);
+  if (!el) return;
+  requestAnimationFrame(() => {
+    const navH = document.getElementById('topnav')?.offsetHeight ?? 68;
+    const top = el.getBoundingClientRect().top + window.scrollY - navH;
+    window.scrollTo({ top, behavior: 'instant' });
+  });
+})();
 
 function updateNavActive() {
   const scrollY = window.scrollY + window.innerHeight * 0.15;
