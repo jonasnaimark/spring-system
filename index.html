@@ -8073,7 +8073,10 @@ function switchTpDemo(key, { skipControlsDisplay = false } = {}) {
   if (!tab) return;
   // Reset previous demo
   const prevKey = document.querySelector('.tp-tab.active')?.dataset.tp;
-  if (prevKey && prevKey !== key) TP_DEMOS[prevKey]?.reset?.('leaving');
+  if (prevKey && prevKey !== key) {
+    TP_DEMOS[prevKey]?.reset?.('leaving');
+    if (prevKey === 'grow-fade') document.getElementById('tpPhone').classList.remove('cursor-default');
+  }
   document.querySelectorAll('.tp-tab').forEach(t => t.classList.remove('active'));
   tab.classList.add('active');
   const desc = TP_DEMOS[key]?.description;
@@ -8805,7 +8808,7 @@ if (hashTp) {
     const key = tpActiveKey();
     if (key === 'grow-fade') TP_DEMOS['grow-fade']._cancelSeq();
     if (!silent) iconCrossFade(document.getElementById('tpIconPause'), document.getElementById('tpIconPlay'));
-    document.getElementById('tpPhone').classList.remove('cursor-default');
+    if (tpActiveKey() !== 'grow-fade') document.getElementById('tpPhone').classList.remove('cursor-default');
     window._refreshTouchDot?.();
   }
 
@@ -9443,7 +9446,7 @@ animate(scrim, { opacity:[0,0.32] },
       tpPlaying = false;
       cancelLoop();
       iconCrossFade(document.getElementById('tpIconPause'), document.getElementById('tpIconPlay'));
-      document.getElementById('tpPhone').classList.remove('cursor-default');
+      if (tpActiveKey() !== 'grow-fade') document.getElementById('tpPhone').classList.remove('cursor-default');
       window._refreshTouchDot?.();
     }
 
