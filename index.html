@@ -8415,9 +8415,11 @@ document.querySelectorAll('#tpSufModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (btn.dataset.mode === tpSufMode) return;
     window._tpAutoPlay?.stop({ silent: true });
-    TP_DEMOS['slide-up-fade'].reset();
-    applyTpSufMode(btn.dataset.mode);
-    window._tpAutoPlay?.start({ silent: true });
+    demoFade(
+      document.getElementById('tpDeviceWrap'),
+      () => { TP_DEMOS['slide-up-fade'].reset(); applyTpSufMode(btn.dataset.mode); },
+      () => { window._tpAutoPlay?.start({ silent: true }); }
+    );
   });
 });
 
