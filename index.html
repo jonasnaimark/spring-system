@@ -1456,11 +1456,11 @@
       flex-shrink: 0;
     }
     .inset-modal-img {
-      width: 120px;
-      height: 108px;
+      width: 176px;
+      height: 148px;
       background: var(--sk);
-      border-radius: 10px;
-      margin: 34px 0 14px;
+      border-radius: 20px;
+      margin: 36px 0 16px;
     }
     .inset-modal-badge {
       height: 18px;
@@ -1469,14 +1469,14 @@
       background: var(--sk);
       margin-bottom: 10px;
     }
-    .inset-modal-title-1 { height: 11px; width: 80%; background: var(--sk); border-radius: 5px; margin-bottom: 10px; }
-    .inset-modal-title-2 { height: 11px; width: 60%; background: var(--sk); border-radius: 5px; margin-bottom: 0; }
+    .inset-modal-title-1 { height: 11px; width: 68%; background: var(--sk); border-radius: 5px; margin-bottom: 10px; }
+    .inset-modal-title-2 { height: 11px; width: 50%; background: var(--sk); border-radius: 5px; margin-bottom: 38px; }
     .inset-modal-cta {
       width: 100%;
       height: 36px;
       border-radius: 10px;
       background: var(--sk);
-      margin-top: 28px;
+      margin-top: 0;
       margin-bottom: 0;
     }
 
@@ -2884,7 +2884,7 @@
       <div class="expand-hero-panel" id="tpModalPanel" style="display:none;box-shadow:0 8px 32px rgba(0,0,0,0.28);">
         <div id="tpModalCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
         <div id="tpModalContentLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
-          <div id="tpModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px 16px 12px;"></div>
+          <div id="tpModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px;"></div>
         </div>
         <!-- Full-screen website layer (fades in during sheet→full expand) -->
         <div id="tpModalWebsiteLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;pointer-events:none;">
@@ -3286,7 +3286,7 @@
           <div class="expand-hero-panel" id="ngModalPanel" style="display:none;touch-action:none;box-shadow:0 8px 32px rgba(0,0,0,0.28);position:absolute;z-index:20;">
             <div id="ngModalCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
             <div id="ngModalDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
-              <div id="ngModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px 16px 12px;"></div>
+              <div id="ngModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px;"></div>
             </div>
           </div>
           <!-- Sheet dismiss stack -->
@@ -4208,7 +4208,6 @@
     </svg>
   </div>
   <div class="inset-modal-img"></div>
-  <div class="inset-modal-badge"></div>
   <div class="inset-modal-title-1"></div>
   <div class="inset-modal-title-2"></div>
   <div class="inset-modal-cta"></div>
@@ -5480,7 +5479,8 @@ function tpGetModalDest(phone) {
   panel.style.width = toW + 'px';
   panel.style.height = 'auto';
   if (inner) inner.style.transform = 'scale(1)';
-  const toH = panel.scrollHeight || 320;
+  const innerH = inner ? inner.scrollHeight : 0;
+  const toH = (innerH > 0 ? innerH : panel.scrollHeight) || 320;
   panel.style.display = wasDisplay;
   panel.style.visibility = '';
   const toY = phone.clientHeight - toH - gap;
@@ -5534,7 +5534,11 @@ function tpExpandCard(card) {
   if (isModal) scrim.style.pointerEvents = 'auto';
 
   tpExpandState = { fromX, fromY, fromW, fromH, fromR, card, imgEl, isModal, toX, toY, toW, toH, toR };
-  if (isModal) tpModalSheetPhase = 'pre';
+  if (isModal) {
+    tpModalSheetPhase = 'pre';
+    const cta = document.querySelector('#tpModalInner .inset-modal-cta');
+    if (cta) cta.style.borderRadius = Math.max(4, toR - 16) + 'px';
+  }
   const startT = performance.now();
   if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
   let scalePulseFired = false;
@@ -8515,7 +8519,7 @@ function switchTpDemo(key, { skipControlsDisplay = false } = {}) {
 let tpGrowMode = 'fullscreen';
 const TP_GROW_DESCRIPTIONS = {
   fullscreen:     'Used to seamlessly grow an element to reveal more detail.',
-  modal:          'Grows present floating elements like inset sheets and cards. They also expand those elements to full-height or full-screen.',
+  modal:          'Grows present floating elements like inset sheets. They can also expand those elements to show more detail.',
   'popover-chip': 'Grows can also be used to present floating elements like popovers.',
   search:         'Grows can also be used to present floating elements like a search input.',
 };
@@ -9998,7 +10002,8 @@ function ngGetModalDest(phone) {
   panel.style.width = toW + 'px';
   panel.style.height = 'auto';
   if (inner) inner.style.transform = 'scale(1)';
-  const toH = panel.scrollHeight || 320;
+  const innerH = inner ? inner.scrollHeight : 0;
+  const toH = (innerH > 0 ? innerH : panel.scrollHeight) || 320;
   panel.style.display = wasDisplay;
   panel.style.visibility = '';
   const toY = phone.clientHeight - toH - gap;
@@ -10054,6 +10059,10 @@ function ngExpandCard(card) {
   // refW = toW for modal (scale(1) at rest), NG_DETAIL_REF_W for fullscreen
   const refW = isModal ? toW : NG_DETAIL_REF_W;
   ngExpandState = { fromX, fromY, fromW, fromH, fromR, toX, toY, toW, toH, toR, card, imgEl, isModal, refW };
+  if (isModal) {
+    const cta = document.querySelector('#ngModalInner .inset-modal-cta');
+    if (cta) cta.style.borderRadius = Math.max(4, toR - 16) + 'px';
+  }
 
   const startT = performance.now();
   if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);

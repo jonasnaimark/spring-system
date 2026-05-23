@@ -784,3 +784,23 @@ inner.style.transform = `scale(${curPanelWidth / REF_W})`;
 **Padding:** Use `padding: 14px 18px 18px; box-sizing: border-box` for full-screen destinations (small top for status bar area). The navbar (`.ws-navbar`) uses `margin: 0 -18px` to break out to full width since it has its own internal padding.
 
 **Where `.push-dest-inner` IS correct:** inside `.push-screen` containers (push transitions, room detail). Those containers have a stable CSS width so `calc(100% / var(--phone-scale))` resolves correctly.
+
+---
+
+## Inset modal sheet height measurement (`tpGetModalDest` / `ngGetModalDest`)
+
+The sheet height is measured dynamically each time a card is tapped — it's not cached. The panel is briefly shown off-screen (`visibility:hidden`) and its height is read.
+
+**The bug:** `panel.scrollHeight` always returns 0 (or near-0) because `tpModalInner`/`ngModalInner` is `position:absolute` inside the panel. Absolutely-positioned children don't contribute to a parent's `scrollHeight`.
+
+**The fix:** Measure `inner.scrollHeight` instead:
+
+```js
+if (inner) inner.style.transform = 'scale(1)';
+const innerH = inner ? inner.scrollHeight : 0;
+const toH = (innerH > 0 ? innerH : panel.scrollHeight) || 320;
+```
+
+`inner.scrollHeight` captures the true stacked height of all the content (image + text + CTA + padding). The `panel.scrollHeight` fallback covers the case where inner is null, and `|| 320` is the last-resort default.
+
+**Why this matters for content changes:** Any time you change the inset modal template (bigger image, more padding, extra rows), the sheet will auto-resize correctly on next open. You never need to hardcode a height.
