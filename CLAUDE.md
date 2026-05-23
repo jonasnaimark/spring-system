@@ -709,6 +709,43 @@ For the fullscreen settled state (animation complete, `tpModalFullAnim` null, `t
 
 For the sheet settled state (`tpExpandState` set, `tpModalFullState` null) — leave CSS as-is. Resume → check `tpModalSheetPhase`.
 
+### Demo tab switch leaves panel visible (recurring bug)
+
+**Symptom:** Switch away from a multi-step demo mid-animation, come back, and the panel is stuck on screen — wrong opacity, wrong position, or two close buttons visible.
+
+**Cause:** `reset()` is called on the outgoing demo when switching tabs, but if any of these are true the panel stays broken:
+- An in-flight `rAF` handle (e.g. `tpModalFullAnim`) is still running after `reset()` — it fires one more frame and overwrites the reset
+- `tpModalFullState` / phase flags are not cleared, so the next autoplay start resumes mid-sequence instead of from scratch
+- Layer opacities (e.g. `tpModalWebsiteLayer`) are not reset, leaving ghost content visible
+
+**Fix — `reset()` must do all of these for every animation handle it owns:**
+
+```js
+reset() {
+  // 1. Cancel every rAF handle
+  if (tpExpandAnim)    { cancelAnimationFrame(tpExpandAnim);    tpExpandAnim    = null; }
+  if (tpModalFullAnim) { cancelAnimationFrame(tpModalFullAnim); tpModalFullAnim = null; }
+  tpScalePulseCancel();
+
+  // 2. Clear all state flags
+  tpModalFullState  = null;
+  tpModalSheetPhase = 'pre';
+  tpExpandState     = null;
+
+  // 3. Hide every panel and reset every layer opacity
+  modPanel.style.display  = 'none';
+  modPanel.style.transform = '';
+  document.getElementById('tpModalContentLayer').style.opacity  = '0';
+  document.getElementById('tpModalWebsiteLayer').style.opacity  = '0';
+  document.getElementById('tpModalWebsiteLayer').style.pointerEvents = 'none';
+  // ... etc for every layer that the animation touches
+}
+```
+
+**Rule:** For every CSS property an animation writes to, `reset()` must write the settled/hidden value. If you add a new layer or property to an animation, add it to `reset()` in the same PR.
+
+---
+
 ### Adding a new multi-step sequence
 
 1. Add an `onDone` callback parameter to every animation function in the chain
