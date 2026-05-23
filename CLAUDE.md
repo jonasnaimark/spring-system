@@ -361,13 +361,34 @@ The scrim can stay dark while the panel is large and fade late in the collapse, 
 scrim.style.opacity = Math.max(0, 1 - Math.max(0, (pXW - 0.6) / 0.4)).toFixed(3);
 ```
 
+### Source visual layer must contain actual content, not just a background color
+
+The most common failure mode when building a new grow: `pillLayer` / `sourcePillLayer` is an empty div with the right background color. During collapse it fades in as a blank box — visually invisible since it matches the panel background — then the real source element snaps into view at the end.
+
+**Fix:** put a copy of the source element's content inside the source layer:
+
+```html
+<!-- WRONG — empty layer, content pops in at end of collapse -->
+<div id="tpSearchPillLayer" style="background:var(--c-surface-0);"></div>
+
+<!-- CORRECT — layer contains a visual replica of the collapsed source -->
+<div id="tpSearchPillLayer" style="background:var(--c-surface-0); display:flex; align-items:center; justify-content:center;">
+  <div class="sk-search-dot"></div>
+  <div class="sk-search-text"></div>
+</div>
+```
+
+For cards, `cardLayer` works because it contains the actual card image element. For chips, `pillLayer` works because it contains cloned chip internals. The same rule applies to any new grow: before thinking the crossfade is broken, check whether the source layer has real content in it.
+
+**Never try to work around this by fading `sourceEl.style.opacity`** — that causes a double-image because the source DOM and the panel are both composited simultaneously. The only correct approach: source layer has content, `sourceEl` is `visibility:hidden` for the full duration.
+
 ### Checklist for a new grow transition
 
 1. Measure source rect from the real DOM element.
 2. Build a panel with an always-opaque base surface.
-3. Add a source visual layer that exactly represents the collapsed source.
+3. Add a source visual layer that **contains a replica of the source element's content** (not just a background).
 4. Add a destination content layer that can scale without reflow.
-5. Hide only the real source element during animation.
+5. Hide only the real source element (`visibility:hidden`) from expand start until collapse is fully done.
 6. Crossfade source/destination layers while geometry changes.
 7. Restore only the real source element in collapse done.
 8. Implement the same logic in click collapse and gesture/velocity collapse.
@@ -641,3 +662,88 @@ Every tab click that switches demo content uses a cross-fade: fast ease-out exit
      ```
 
 3. **Why delay the fade-in:** setting the black instantly in `swap()` causes a visible black flash at the start of the spring enter, even though `#ngPhoneScreen` is fading in. The 200ms delay + 200ms fade means the black only becomes visible late in the animation — right when the white gaps would otherwise appear — and it reads as part of the content resolving rather than a separate background pop.
+
+---
+
+## Play/pause system for multi-step demos (e.g. grow-sheet)
+
+The autoplay loop runs via `startTp` / `stopTp` and a `scheduleNext(ms, fn)` timer chain. Understanding the architecture is critical when adding a new multi-step sequence.
+
+### How the loop works
+
+```
+startTp() → scheduleNext(300, loop) → loop() → runCycle(key, loop)
+```
+
+`runCycle` fires the animations in sequence using nested `scheduleNext` callbacks. Each step waits for the previous animation to complete (via `onDone` callback) then schedules the next one. `tpPlaying` is checked at every callback entry — if `stopTp()` was called, the chain halts.
+
+### stopTp / startTp contract
+
+`stopTp` must:
+1. Set `tpPlaying = false`
+2. Cancel `tpLoopTimer` (the next scheduled step)
+3. Cancel any in-flight `rAF` animation handles (e.g. `tpModalFullAnim`)
+4. Cancel `tpScalePulse` if running
+5. Snap all panels to the nearest valid settled state
+
+`startTp` with `{ resume: true }` must detect which settled state the demo is in and continue from the correct next step — NOT call `reset()` which wipes all state.
+
+### Multi-step demos need phase tracking
+
+For sequences where the same visual state (e.g. "sheet visible") can occur at two different points in the sequence, a phase flag is required to resume correctly.
+
+Example: `tpModalSheetPhase = 'pre' | 'post'`
+- Set to `'pre'` when card expands to sheet (not yet gone fullscreen)
+- Set to `'post'` when fullscreen collapses back to sheet
+- Resume logic checks this flag to know whether to expand-to-full (`'pre'`) or collapse-card (`'post'`)
+
+Without this flag, pausing on the sheet post-fullscreen would incorrectly resume by re-expanding to full.
+
+### Snap-on-pause logic for mid-animation states
+
+When `stopTp` fires while `tpModalFullAnim` is running (mid-spring), check `tpModalFullState` to determine direction:
+- `tpModalFullState !== null` → mid expand-to-full → snap to fullscreen settled state
+- `tpModalFullState === null` → mid collapse-to-sheet → snap to sheet settled state using `tpExpandState.toX/Y/W/H/R`
+
+For the fullscreen settled state (animation complete, `tpModalFullAnim` null, `tpModalFullState` set) — leave CSS as-is. Resume → collapse to sheet.
+
+For the sheet settled state (`tpExpandState` set, `tpModalFullState` null) — leave CSS as-is. Resume → check `tpModalSheetPhase`.
+
+### Adding a new multi-step sequence
+
+1. Add an `onDone` callback parameter to every animation function in the chain
+2. In `runCycle`, nest `scheduleNext` calls inside those `onDone` callbacks
+3. Check `if (!tpPlaying) return;` at the start of every `scheduleNext` callback
+4. In `stopTp`, cancel all rAF handles for the new sequence and snap to the nearest settled state
+5. In `startTp` resume path, detect which settled state you're in and continue from the right step
+6. If the same visual state appears multiple times in the sequence, add a phase flag
+
+---
+
+## Stamping a template into a flying panel (grow/expand destination)
+
+When a grow transition expands to reveal a full-screen template (not a `.push-screen` or `.phone-content`), the inner content wrapper needs explicit width + scale management. **Do not use `.push-dest-inner` class** — it uses `calc(100% / var(--phone-scale))` which doesn't work inside a JS-sized panel.
+
+**The correct pattern** (matches `tpDetailInner`, `ngDetailInner`):
+
+```html
+<!-- Fixed 278px reference width, transform-origin top left, JS drives the scale -->
+<div id="myInner" style="position:absolute;top:0;left:0;width:278px;transform-origin:top left;display:flex;flex-direction:column;gap:5px;padding:14px 18px 18px;box-sizing:border-box;">
+</div>
+```
+
+```js
+const REF_W = 278;
+// On init (before animation):
+inner.style.width = REF_W + 'px';
+inner.style.transform = `scale(${panelTargetWidth / REF_W})`;
+
+// Every animation tick as panel width changes:
+inner.style.transform = `scale(${curPanelWidth / REF_W})`;
+```
+
+**Why:** The panel's own width is set by JS during the spring animation. A percentage-based inner div will reflow on every frame. A fixed 278px div scaled to `curW / 278` gives smooth, reflow-free content that matches the reference density of every other phone template.
+
+**Padding:** Use `padding: 14px 18px 18px; box-sizing: border-box` for full-screen destinations (small top for status bar area). The navbar (`.ws-navbar`) uses `margin: 0 -18px` to break out to full width since it has its own internal padding.
+
+**Where `.push-dest-inner` IS correct:** inside `.push-screen` containers (push transitions, room detail). Those containers have a stable CSS width so `calc(100% / var(--phone-scale))` resolves correctly.

@@ -686,7 +686,7 @@
       border-color: var(--c-text-primary);
     }
 
-    [data-theme="dark"] .phone-frame { border-color: #48484a; }
+    [data-theme="dark"] .phone-frame { border-color: #000; }
     #tpDemoContainer .phone-frame { height: 580px; }
     @media (max-width: 1080px) {
       /* tpDemoContainer height handled by inline style */
@@ -775,8 +775,34 @@
     .sk-search {
       height: 38px;
       border-radius: 19px;
+      background: var(--c-surface-0);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    [data-theme="dark"] .sk-search {
+      background: var(--c-surface-2);
+      box-shadow: none;
+    }
+    [data-theme="dark"] .sk-search-loaded {
+      background: var(--c-surface-2);
+      box-shadow: none;
+    }
+    .sk-search-text {
+      height: 10px;
+      width: 90px;
+      background: var(--sk);
+      border-radius: 4px;
+    }
+    .sk-search-dot {
+      width: 12px;
+      height: 10px;
+      border-radius: 4px;
       background: var(--sk);
       flex-shrink: 0;
+      margin-right: 6px;
     }
 
     .sk-cats {
@@ -820,10 +846,9 @@
       width: 100%;
       height: 170px;
       background: var(--sk);
-      border-radius: 18px;
+      border-radius: 16px;
       flex-shrink: 0;
       margin-top: 10px;
-      margin-bottom: 8px;
     }
 
     .sk-card-meta {
@@ -831,11 +856,13 @@
       justify-content: space-between;
       align-items: center;
       flex-shrink: 0;
+      margin-top: 4px;
     }
 
     .sk-title { height: 9px; width: 55%; background: var(--sk); border-radius: 5px; }
     .sk-price { height: 9px; width: 18%; background: var(--sk); border-radius: 5px; }
     .sk-sub   { height: 8px; width: 38%; background: var(--sk); border-radius: 4px; flex-shrink: 0; }
+    .sk-row-end { margin-bottom: 8px; }
 
     .sk-section-label {
       height: 8px;
@@ -1057,6 +1084,7 @@
       margin-top: 6px;
       margin-right: -18px;
       overflow: hidden;
+      margin-bottom: 8px;
     }
     .sk-carousel-card {
       flex: 0 0 105px;
@@ -1067,12 +1095,54 @@
     .sk-carousel-img {
       width: 105px;
       height: 100px;
-      border-radius: 10px;
+      border-radius: 14px;
       background: var(--sk);
       flex-shrink: 0;
+      margin-bottom: 4px;
     }
     .sk-carousel-title { height: 7px; width: 80%; background: var(--sk); border-radius: 4px; }
     .sk-carousel-sub   { height: 7px; width: 60%; background: var(--sk); border-radius: 4px; }
+    .sk-carousel-card.sm { flex: 0 0 73px; }
+    .sk-carousel-card.sm .sk-carousel-img { width: 73px; height: 69px; }
+    .sk-carousel-card.lg { flex: 0 0 114px; }
+    .sk-carousel-card.lg .sk-carousel-img { width: 114px; height: 108px; }
+
+    /* ── Website screen navbar ── */
+    .ws-navbar {
+      display: flex;
+      align-items: center;
+      padding: 10px 0px 16px;
+      flex-shrink: 0;
+      position: relative;
+      margin-top: -12px;
+    }
+    .ws-navbar-icon {
+      font-size: 22px;
+      color: var(--c-text-tertiary);
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      flex-shrink: 0;
+    }
+    .ws-navbar-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 9px;
+      width: 80px;
+      background: var(--sk);
+      border-radius: 5px;
+    }
+    .ws-navbar-close {
+      margin-left: auto;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--c-surface-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--c-text-tertiary);
+    }
 
     .sk-nav-icon {
       width: 20px;
@@ -1117,7 +1187,7 @@
     .sk-search-loaded {
       height: 38px;
       border-radius: 19px;
-      background: #fff;
+      background: var(--c-surface-0);
       box-shadow: 0 2px 10px rgba(0,0,0,0.13);
       flex-shrink: 0;
       display: flex;
@@ -1153,10 +1223,12 @@
     .ld-cat.active { color: var(--c-text-primary); font-weight: 600; }
 
     /* ── Loading-fade: loaded card ── */
-    .ld-card { flex-shrink: 0; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.10); background: var(--c-surface-0); display: flex; flex-direction: column; margin-top: 6px; }
-    .ld-card-img { width: calc(100% - 10px); height: 140px; border-radius: 10px; flex-shrink: 0; margin: 5px 5px 0; }
+    .ld-card { flex-shrink: 0; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.10); background: var(--c-surface-0); display: flex; flex-direction: column; margin-top: 6px; margin-bottom: 8px; }
+    .ld-card-img { width: calc(100% - 10px); height: 140px; border-radius: 16px; flex-shrink: 0; margin: 5px 5px 0; }
     .ld-card-img-1 { background: #a8c8e8; }
     .ld-card-img-2 { background: #b8d4a8; }
+    [data-theme="dark"] .ld-card-img-1 { background: #2a4a62; }
+    [data-theme="dark"] .ld-card-img-2 { background: #2a4a32; }
 
 /* ── Bottom bar template ── */
     .sk-bottom-bar {
@@ -1206,10 +1278,11 @@
     .ll-img-row { display: flex; gap: 10px; margin-bottom: 13px; align-items: center; }
     .ll-thumb { width: 64px; height: 64px; border-radius: 10px; background: var(--sk); flex-shrink: 0; }
     .ll-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
-    .gs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 10px; }
-    .gs-card { display: flex; flex-direction: column; gap: 8px; }
-    .gs-card-img { width: 100%; aspect-ratio: 1 / 1; border-radius: 8px; background: var(--sk); }
-    .gs-card-line { height: 7px; border-radius: 4px; background: var(--sk); }
+    .gs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 10px; }
+    .gs-grid .gs-card-img { border-radius: 14px; }
+    .gs-card { display: flex; flex-direction: column; gap: 0; }
+    .gs-card-img { width: 100%; aspect-ratio: 1 / 1; border-radius: 16px; background: var(--sk); margin-bottom: 6px; }
+    .gs-card-line { height: 7px; border-radius: 4px; background: var(--sk); margin-bottom: 4px; }
     .setup-screen { display: flex; flex-direction: column; position: absolute; inset: 0; background: var(--c-surface-0); }
     .setup-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 14px; gap: 18px; margin-bottom: 40px; }
     .setup-img-placeholder { width: 92%; aspect-ratio: 1 / 1; background: var(--sk); border-radius: 20px; }
@@ -1452,7 +1525,7 @@
     }
 
     .modal-btn.primary {
-      background: var(--sk);
+      background: var(--sk-dark);
     }
 
     /* ── Context menu ── */
@@ -2543,7 +2616,7 @@
     .ff-img--loaded { background: #b5d5f5; }
 
     .ff-body {
-      padding: 7px 10px 10px;
+      padding: 11px 10px 10px;
       display: flex;
       flex-direction: column;
       gap: 0;
@@ -2813,13 +2886,17 @@
         <div id="tpModalContentLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
           <div id="tpModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px 16px 12px;"></div>
         </div>
+        <!-- Full-screen website layer (fades in during sheet→full expand) -->
+        <div id="tpModalWebsiteLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;pointer-events:none;">
+          <div id="tpModalWebsiteInner" style="position:absolute;top:0;left:0;width:278px;transform-origin:top left;display:flex;flex-direction:column;gap:5px;padding:24px 18px 18px;box-sizing:border-box;"></div>
+        </div>
       </div>
       <!-- Grow→Search blur scrim -->
       <div id="tpSearchScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.12);opacity:0;pointer-events:none;z-index:13;"></div>
       <!-- Grow→Search panel -->
       <div id="tpSearchPanel" style="display:none;position:absolute;z-index:14;background:var(--c-surface-0);border-radius:17px;overflow:hidden;pointer-events:none;">
         <!-- collapsed state: plain pill (fades out) -->
-        <div id="tpSearchPillLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
+        <div id="tpSearchPillLayer" style="position:absolute;inset:0;background:var(--c-surface-0);box-shadow:0 2px 10px rgba(0,0,0,0.12);display:flex;align-items:center;justify-content:center;"><div class="sk-search-dot"></div><div class="sk-search-text"></div></div>
         <!-- expanded state: search overlay content (fades in) -->
         <div id="tpSearchContentLayer" style="position:absolute;inset:0;opacity:0;display:flex;flex-direction:column;padding:12px 14px 14px;gap:18px;">
           <!-- active search bar row -->
@@ -4030,7 +4107,7 @@
 </template>
 
 <template id="tpl-home-screen">
-  <div class="sk-search"></div>
+  <div class="sk-search"><div class="sk-search-dot"></div><div class="sk-search-text"></div></div>
   <div class="sk-cats">
     <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
     <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
@@ -4041,18 +4118,18 @@
   <div class="sk-card-img" style="position:relative;"><div class="sk-overflow-btn"></div></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
-  <div class="sk-section-label"></div>
+  <div class="sk-section-label sk-row-end"></div>
   <div class="sk-card-img partial" style="position:relative;"><div class="sk-overflow-btn"></div></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
-  <div class="sk-sub"></div>
+  <div class="sk-sub sk-row-end"></div>
   <div class="sk-card-img partial" style="position:relative;"><div class="sk-overflow-btn"></div></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
 </template>
 
 <template id="tpl-home-screen-carousels">
-  <div class="sk-search"></div>
+  <div class="sk-search"><div class="sk-search-dot"></div><div class="sk-search-text"></div></div>
   <div class="sk-cats">
     <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
     <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
@@ -4077,6 +4154,39 @@
     <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
     <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
     <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+  </div>
+</template>
+
+<template id="tpl-website-screen">
+  <div class="ws-navbar">
+    <span class="material-symbols-outlined ws-navbar-icon">menu</span>
+    <div class="ws-navbar-title"></div>
+    <div class="ws-navbar-close">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+        <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+  <div class="sk-search" style="margin-bottom:8px;"><div class="sk-search-dot"></div><div class="sk-search-text"></div></div>
+  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+  <div class="sk-carousel">
+    <div class="sk-carousel-card sm"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card sm"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card sm"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card sm"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+  </div>
+  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+  <div class="sk-carousel">
+    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+  </div>
+  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+  <div class="sk-carousel">
+    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
   </div>
 </template>
 
@@ -4109,7 +4219,7 @@
     <div class="sk-icon-btn">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
-    <div class="sk-search sk-search-narrow"></div>
+    <div class="sk-search sk-search-narrow"><div class="sk-search-dot"></div><div class="sk-search-text" style="width:80px;"></div></div>
     <div class="sk-icon-btn">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="1.5" rx="0.75" fill="currentColor"/><rect x="4" y="7.25" width="8" height="1.5" rx="0.75" fill="currentColor"/><rect x="6" y="10.5" width="4" height="1.5" rx="0.75" fill="currentColor"/></svg>
     </div>
@@ -4122,11 +4232,11 @@
   <div class="sk-card-img"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
-  <div class="sk-section-label"></div>
+  <div class="sk-section-label sk-row-end"></div>
   <div class="sk-card-img partial"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
-  <div class="sk-sub"></div>
+  <div class="sk-sub sk-row-end"></div>
   <div class="sk-card-img partial"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
@@ -4173,11 +4283,11 @@
   <div class="sk-card-img"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
-  <div class="sk-section-label"></div>
+  <div class="sk-section-label sk-row-end"></div>
   <div class="sk-card-img partial"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
-  <div class="sk-sub"></div>
+  <div class="sk-sub sk-row-end"></div>
   <div class="sk-card-img partial"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
@@ -4476,6 +4586,7 @@ function stampTemplate(templateId, targetEl) {
   stampTemplate('tpl-detail', document.getElementById('ngDetailInner'));
   stampTemplate('tpl-inset-modal', document.getElementById('ngModalInner'));
   stampTemplate('tpl-inset-modal', document.getElementById('tpModalInner'));
+  stampTemplate('tpl-website-screen', document.getElementById('tpModalWebsiteInner'));
 
   // tpl-home-screen-carousels targets
   stampTemplate('tpl-home-screen-carousels', document.getElementById('tpPhoneContent'));
@@ -5392,7 +5503,7 @@ function tpExpandCard(card) {
   const fromY = cardRect.top  - phoneRect.top  - by;
   const fromW = cardRect.width;
   const fromH = imgRect.height;
-  const fromR = 10;
+  const fromR = imgEl ? parseFloat(window.getComputedStyle(imgEl).borderRadius) || 14 : 14;
   const panel     = isModal ? document.getElementById('tpModalPanel')     : document.getElementById('tpExpandPanel');
   const cardLayer = isModal ? document.getElementById('tpModalCardLayer') : document.getElementById('tpExpandCardLayer');
   const detailLayer = isModal ? document.getElementById('tpModalContentLayer') : document.getElementById('tpExpandDetailLayer');
@@ -5423,6 +5534,7 @@ function tpExpandCard(card) {
   if (isModal) scrim.style.pointerEvents = 'auto';
 
   tpExpandState = { fromX, fromY, fromW, fromH, fromR, card, imgEl, isModal, toX, toY, toW, toH, toR };
+  if (isModal) tpModalSheetPhase = 'pre';
   const startT = performance.now();
   if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
   let scalePulseFired = false;
@@ -5521,11 +5633,139 @@ function tpCollapseCard(onDone) {
       tpPendingImgEl = null;
       tpExpandState = null;
       tpExpandAnim = null;
+      tpModalFullState = null;
+      // Reset website layer for next cycle
+      const wl = document.getElementById('tpModalWebsiteLayer');
+      if (wl) { wl.style.opacity = '0'; wl.style.pointerEvents = 'none'; }
       window._refreshTouchDot?.();
       onDone?.();
     }
   }
   tpExpandAnim = requestAnimationFrame(tick);
+}
+
+// ── Grow→Modal→Full expand/collapse ──────────────────────────────
+let tpModalFullAnim = null;
+let tpModalFullState = null; // { fromX, fromY, fromW, fromH, fromR }
+let tpModalSheetPhase = 'pre'; // 'pre' = sheet open, not yet gone full; 'post' = returned from full
+const TP_WEBSITE_REF_W = 278;
+
+function tpExpandModalToFull(onDone) {
+  if (tpModalFullAnim || tpModalFullState) return;
+  const { stiffness, damping } = TP_SPRING;
+  const phone = document.getElementById('tpPhone');
+  const panel = document.getElementById('tpModalPanel');
+  const sheetLayer   = document.getElementById('tpModalContentLayer');
+  const websiteLayer = document.getElementById('tpModalWebsiteLayer');
+  const websiteInner = document.getElementById('tpModalWebsiteInner');
+  const scrim = document.getElementById('tpExpandScrim');
+
+  const fromX = parseFloat(panel.style.left)         || 0;
+  const fromY = parseFloat(panel.style.top)           || 0;
+  const fromW = parseFloat(panel.style.width)         || phone.clientWidth;
+  const fromH = parseFloat(panel.style.height)        || phone.clientHeight;
+  const fromR = parseFloat(panel.style.borderRadius)  || 20;
+
+  const toX = 0, toY = 0, toW = phone.clientWidth, toH = phone.clientHeight, toR = 40;
+  tpModalFullState = { fromX, fromY, fromW, fromH, fromR };
+
+  websiteInner.style.width = TP_WEBSITE_REF_W + 'px';
+  websiteInner.style.transform = `scale(${toW / TP_WEBSITE_REF_W})`;
+  websiteLayer.style.opacity = '0';
+  websiteLayer.style.pointerEvents = 'none';
+  panel.style.pointerEvents = 'none';
+  panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0.28)';
+  scrim.style.opacity = '1';
+
+  const startT = performance.now();
+  function tick(now) {
+    const t = (now - startT) / 1000;
+    const pos = springPos(t, stiffness, damping);
+    const ease = 1 - pos;
+    const curW = fromW + (toW - fromW) * ease;
+    panel.style.left         = (fromX + (toX - fromX) * ease) + 'px';
+    panel.style.top          = (fromY + (toY - fromY) * ease) + 'px';
+    panel.style.width        = curW + 'px';
+    panel.style.height       = (fromH + (toH - fromH) * ease) + 'px';
+    panel.style.borderRadius = (fromR + (toR - fromR) * ease) + 'px';
+    websiteInner.style.transform = `scale(${curW / TP_WEBSITE_REF_W})`;
+    const fade = Math.min(t / 0.18, 1);
+    websiteLayer.style.opacity = String(fade);
+    sheetLayer.style.opacity   = String(1 - fade);
+    panel.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * (1 - fade)).toFixed(3)})`;
+    if (t < 5 && !isSettled(t, stiffness, damping)) {
+      tpModalFullAnim = requestAnimationFrame(tick);
+    } else {
+      panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
+      panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
+      panel.style.borderRadius = toR + 'px';
+      panel.style.boxShadow = 'none';
+      panel.style.pointerEvents = 'auto';
+      websiteLayer.style.opacity = '1';
+      sheetLayer.style.opacity = '0';
+      tpModalFullAnim = null;
+      onDone?.();
+    }
+  }
+  tpModalFullAnim = requestAnimationFrame(tick);
+}
+
+function tpCollapseModalFromFull(onDone) {
+  if (tpModalFullAnim || !tpModalFullState) return;
+  const { stiffness, damping, stiffnessXW, dampingXW } = TP_POPOVER_SPRING;
+  const stiffnessXY = stiffnessXW ?? stiffness;
+  const dampingXY   = dampingXW   ?? damping;
+  const phone = document.getElementById('tpPhone');
+  const panel = document.getElementById('tpModalPanel');
+  const sheetLayer   = document.getElementById('tpModalContentLayer');
+  const websiteLayer = document.getElementById('tpModalWebsiteLayer');
+  const scrim = document.getElementById('tpExpandScrim');
+
+  const websiteInner = document.getElementById('tpModalWebsiteInner');
+  const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR } = tpModalFullState;
+  const fromX = parseFloat(panel.style.left)        || 0;
+  const fromY = parseFloat(panel.style.top)         || 0;
+  const fromW = parseFloat(panel.style.width)       || phone.clientWidth;
+  const fromH = parseFloat(panel.style.height)      || phone.clientHeight;
+  const fromR = parseFloat(panel.style.borderRadius)|| 40;
+
+  panel.style.pointerEvents = 'none';
+  tpModalFullState = null;
+  tpScalePulse(panel, false, { magnitudeClose: 0.015 });
+
+  const startT = performance.now();
+  function tick(now) {
+    const t = (now - startT) / 1000;
+    const pos = springPos(t, stiffnessXY, dampingXY);
+    const ease = 1 - pos;
+    const curW = fromW + (toW - fromW) * ease;
+    panel.style.left         = (fromX + (toX - fromX) * ease) + 'px';
+    panel.style.top          = (fromY + (toY - fromY) * ease) + 'px';
+    panel.style.width        = curW + 'px';
+    websiteInner.style.transform = `scale(${curW / TP_WEBSITE_REF_W})`;
+    panel.style.height       = (fromH + (toH - fromH) * ease) + 'px';
+    panel.style.borderRadius = (fromR + (toR - fromR) * ease) + 'px';
+    const fade = Math.min(t / 0.18, 1);
+    sheetLayer.style.opacity   = String(fade);
+    websiteLayer.style.opacity = String(1 - fade);
+    panel.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * fade).toFixed(3)})`;
+    if (t < 5 && !isSettled(t, stiffnessXY, dampingXY)) {
+      tpModalFullAnim = requestAnimationFrame(tick);
+    } else {
+      panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
+      panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
+      panel.style.borderRadius = toR + 'px';
+      panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0.28)';
+      panel.style.pointerEvents = 'auto';
+      sheetLayer.style.opacity = '1';
+      websiteLayer.style.opacity = '0';
+      websiteLayer.style.pointerEvents = 'none';
+      tpModalFullAnim = null;
+      tpModalSheetPhase = 'post';
+      onDone?.();
+    }
+  }
+  tpModalFullAnim = requestAnimationFrame(tick);
 }
 
 // ── Grow→Search expand/collapse ──────────────────────────────────
@@ -5574,13 +5814,14 @@ function tpExpandSearch() {
   panel.style.display = 'none'; panel.style.visibility = '';
   const toY = fromY - 4;
 
-  pillLayer.style.opacity    = '1';
+  pillLayer.style.opacity    = '0';
   contentLayer.style.opacity = '0';
   panel.style.left         = fromX + 'px';
   panel.style.top          = fromY + 'px';
   panel.style.width        = fromW + 'px';
   panel.style.height       = fromH + 'px';
   panel.style.borderRadius = fromR + 'px';
+  panel.style.boxShadow    = '0 2px 10px rgba(0,0,0,0.12)';
   panel.style.pointerEvents = 'none';
   panel.style.display = 'block';
   scrim.style.opacity = '0';
@@ -5619,7 +5860,6 @@ function tpExpandSearch() {
     scrim.style.opacity      = (1 - scrimPos).toFixed(3);
     document.getElementById('tpPhoneContent').style.filter = `blur(${(8 * (1 - scrimPos)).toFixed(2)}px)`; document.getElementById('tpPhoneBottomNav').style.filter = `blur(${(8 * (1 - scrimPos)).toFixed(2)}px)`;
     const fade = Math.min(t / 0.18, 1);
-    pillLayer.style.opacity    = String(1 - fade);
     contentLayer.style.opacity = String(fade);
     panel.style.boxShadow = `0 4px 24px rgba(0,0,0,${(0.14 * fade).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * fade).toFixed(3)})`;
     if (t < 5 && (!isSettled(t, stiffnessX, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
@@ -5633,7 +5873,7 @@ function tpExpandSearch() {
       scrim.style.opacity = '1'; scrim.style.pointerEvents = 'auto';
       document.getElementById('tpPhoneContent').style.filter = 'blur(8px)';
       document.getElementById('tpPhoneBottomNav').style.filter = 'blur(8px)';
-      contentLayer.style.opacity = '1'; pillLayer.style.opacity = '0';
+      contentLayer.style.opacity = '1';
       tpSearchAnim = null;
     }
   }
@@ -5678,7 +5918,7 @@ function tpCollapseSearch(onDone) {
     const fade = Math.min(t / 0.18, 1);
     pillLayer.style.opacity    = String(fade);
     contentLayer.style.opacity = String(1 - fade);
-    panel.style.boxShadow = `0 4px 24px rgba(0,0,0,${(0.14 * (1 - fade)).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * (1 - fade)).toFixed(3)})`;
+    panel.style.boxShadow = '0 2px 10px rgba(0,0,0,0.12)';
     document.getElementById('tpPhoneContent').style.filter = `blur(${(8 * scrimPos).toFixed(2)}px)`; document.getElementById('tpPhoneBottomNav').style.filter = `blur(${(8 * scrimPos).toFixed(2)}px)`;
     if (t < 5 && (!isSettled(t, stiffnessX, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
       tpSearchAnim = requestAnimationFrame(tick);
@@ -6410,7 +6650,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       searchPanel.style.width        = simW.x + 'px';
       searchPanel.style.height       = Math.max(toH, simH.x) + 'px'; // never go below pill height
       searchPanel.style.borderRadius = Math.max(0, simR.x) + 'px';
-      searchPanel.style.boxShadow    = `0 4px 24px rgba(0,0,0,${(0.14 * Math.max(0, simScrim.x)).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * Math.max(0, simScrim.x)).toFixed(3)})`;
+      searchPanel.style.boxShadow    = '0 2px 10px rgba(0,0,0,0.12)';
       searchScrim.style.opacity = Math.max(0, simScrim.x).toFixed(3);
       const blurVal = (8 * Math.max(0, simScrim.x)).toFixed(2);
       document.getElementById('tpPhoneContent').style.filter   = `blur(${blurVal}px)`;
@@ -7117,6 +7357,10 @@ const TP_DEMOS = {
     },
     reset() {
       if (tpExpandAnim) { cancelAnimationFrame(tpExpandAnim); tpExpandAnim = null; }
+      if (tpModalFullAnim) { cancelAnimationFrame(tpModalFullAnim); tpModalFullAnim = null; }
+      tpScalePulseCancel();
+      tpModalFullState = null;
+      tpModalSheetPhase = 'pre';
       const panel = document.getElementById('tpExpandPanel');
       panel.style.display = 'none';
       panel.style.transform = '';
@@ -7126,8 +7370,11 @@ const TP_DEMOS = {
       const modPanel = document.getElementById('tpModalPanel');
       modPanel.style.display = 'none';
       modPanel.style.boxShadow = 'none';
+      modPanel.style.transform = '';
       document.getElementById('tpModalCardLayer').style.opacity    = '1';
       document.getElementById('tpModalContentLayer').style.opacity = '0';
+      document.getElementById('tpModalWebsiteLayer').style.opacity = '0';
+      document.getElementById('tpModalWebsiteLayer').style.pointerEvents = 'none';
       if (tpExpandState?.imgEl) tpExpandState.imgEl.style.visibility = '';
       document.querySelectorAll('.tp-grow-card .sk-carousel-img').forEach(c => c.style.visibility = '');
       tpExpandState   = null;
@@ -8268,7 +8515,7 @@ function switchTpDemo(key, { skipControlsDisplay = false } = {}) {
 let tpGrowMode = 'fullscreen';
 const TP_GROW_DESCRIPTIONS = {
   fullscreen:     'Used to seamlessly grow an element to reveal more detail.',
-  modal:          'Grows can also be used to present floating elements like inset sheets.',
+  modal:          'Grows present floating elements like inset sheets and cards. They also expand those elements to full-height or full-screen.',
   'popover-chip': 'Grows can also be used to present floating elements like popovers.',
   search:         'Grows can also be used to present floating elements like a search input.',
 };
@@ -8717,16 +8964,36 @@ if (hashTp) {
         });
         return;
       }
-      // expand current card, hold, collapse, hold, then advance
+      // expand current card, hold, [modal mode: expand to full, hold, collapse to modal, hold,] collapse, hold, advance
       const cards = document.querySelectorAll('.tp-grow-card');
       tpExpandCard(cards[tpExpandCardIdx]);
-      scheduleNext(1400, () => {
-        if (!tpPlaying) return;
-        tpCollapseCard(() => {
-          tpExpandCardIdx = (tpExpandCardIdx + 1) % cards.length;
-          scheduleNext(1000, onCycle);
+      if (tpGrowMode === 'modal') {
+        scheduleNext(1300, () => {
+          if (!tpPlaying) return;
+          tpExpandModalToFull(() => {
+            scheduleNext(1200, () => {
+              if (!tpPlaying) return;
+              tpCollapseModalFromFull(() => {
+                scheduleNext(1000, () => {
+                  if (!tpPlaying) return;
+                  tpCollapseCard(() => {
+                    tpExpandCardIdx = (tpExpandCardIdx + 1) % cards.length;
+                    scheduleNext(1200, onCycle);
+                  });
+                });
+              });
+            });
+          });
         });
-      });
+      } else {
+        scheduleNext(1400, () => {
+          if (!tpPlaying) return;
+          tpCollapseCard(() => {
+            tpExpandCardIdx = (tpExpandCardIdx + 1) % cards.length;
+            scheduleNext(1000, onCycle);
+          });
+        });
+      }
     } else if (key === 'grow-fade') {
       TP_DEMOS['grow-fade'].play(() => { scheduleNext(400, onCycle); });
     } else if (key === 'slide-up-fade') {
@@ -8824,6 +9091,51 @@ if (hashTp) {
         TP_DEMOS['grow-fade'].play(() => { scheduleNext(400, loop); }, true);
       }
       resumeCycle();
+    } else if (resume && key === 'grow' && tpGrowMode === 'modal' && tpExpandState) {
+      const cards = document.querySelectorAll('.tp-grow-card');
+      if (tpModalFullState) {
+        // Settled at fullscreen — resume from collapse-to-sheet
+        scheduleNext(500, () => {
+          if (!tpPlaying) return;
+          tpCollapseModalFromFull(() => {
+            scheduleNext(1000, () => {
+              if (!tpPlaying) return;
+              tpCollapseCard(() => {
+                tpExpandCardIdx = (tpExpandCardIdx + 1) % cards.length;
+                scheduleNext(1200, loop);
+              });
+            });
+          });
+        });
+      } else if (tpModalSheetPhase === 'pre') {
+        // Settled at sheet, not yet gone full — resume from expand-to-full
+        scheduleNext(500, () => {
+          if (!tpPlaying) return;
+          tpExpandModalToFull(() => {
+            scheduleNext(1200, () => {
+              if (!tpPlaying) return;
+              tpCollapseModalFromFull(() => {
+                scheduleNext(1000, () => {
+                  if (!tpPlaying) return;
+                  tpCollapseCard(() => {
+                    tpExpandCardIdx = (tpExpandCardIdx + 1) % cards.length;
+                    scheduleNext(1200, loop);
+                  });
+                });
+              });
+            });
+          });
+        });
+      } else {
+        // Settled at sheet post-fullscreen — resume by collapsing card
+        scheduleNext(500, () => {
+          if (!tpPlaying) return;
+          tpCollapseCard(() => {
+            tpExpandCardIdx = (tpExpandCardIdx + 1) % cards.length;
+            scheduleNext(1200, loop);
+          });
+        });
+      }
     } else {
       TP_DEMOS[key]?.reset?.();
       scheduleNext(300, loop);
@@ -8836,6 +9148,38 @@ if (hashTp) {
     // Cancel grow-fade's internal sequence so it freezes mid-animation
     const key = tpActiveKey();
     if (key === 'grow-fade') TP_DEMOS['grow-fade']._cancelSeq();
+    // Cancel any in-flight modal full-screen animation and snap to nearest settled state
+    tpScalePulseCancel();
+    if (tpModalFullAnim) {
+      cancelAnimationFrame(tpModalFullAnim); tpModalFullAnim = null;
+      const panel = document.getElementById('tpModalPanel');
+      if (key === 'grow' && tpGrowMode === 'modal' && panel) {
+        if (tpModalFullState) {
+          // Mid expand-to-full — snap to fullscreen
+          const phone = document.getElementById('tpPhone');
+          panel.style.left = '0px'; panel.style.top = '0px';
+          panel.style.width = phone.clientWidth + 'px'; panel.style.height = phone.clientHeight + 'px';
+          panel.style.borderRadius = '40px'; panel.style.transform = '';
+          panel.style.pointerEvents = 'auto';
+          document.getElementById('tpModalContentLayer').style.opacity = '0';
+          document.getElementById('tpModalWebsiteLayer').style.opacity = '1';
+          document.getElementById('tpExpandScrim').style.opacity = '0';
+          // tpModalFullState stays set so resume knows we're at fullscreen
+        } else {
+          // Mid collapse-to-sheet — snap to sheet using tpExpandState
+          if (tpExpandState) {
+            const { toX, toY, toW, toH, toR } = tpExpandState;
+            panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
+            panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
+            panel.style.borderRadius = toR + 'px'; panel.style.transform = '';
+            panel.style.pointerEvents = 'auto';
+            document.getElementById('tpModalContentLayer').style.opacity = '1';
+            document.getElementById('tpModalWebsiteLayer').style.opacity = '0';
+            document.getElementById('tpExpandScrim').style.opacity = '1';
+          }
+        }
+      }
+    }
     if (!silent) iconCrossFade(document.getElementById('tpIconPause'), document.getElementById('tpIconPlay'));
     if (tpActiveKey() !== 'grow-fade') document.getElementById('tpPhone').classList.remove('cursor-default');
     window._refreshTouchDot?.();

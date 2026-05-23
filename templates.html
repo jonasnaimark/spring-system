@@ -208,8 +208,34 @@
     .sk-search {
       height: 38px;
       border-radius: 19px;
+      background: var(--c-surface-0);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    [data-theme="dark"] .sk-search {
+      background: var(--c-surface-2);
+      box-shadow: none;
+    }
+    [data-theme="dark"] .sk-search-loaded {
+      background: var(--c-surface-2);
+      box-shadow: none;
+    }
+    .sk-search-text {
+      height: 10px;
+      width: 90px;
+      background: var(--sk);
+      border-radius: 4px;
+    }
+    .sk-search-dot {
+      width: 12px;
+      height: 10px;
+      border-radius: 4px;
       background: var(--sk);
       flex-shrink: 0;
+      margin-right: 6px;
     }
 
     .sk-cats {
@@ -253,7 +279,7 @@
       width: 100%;
       height: 170px;
       background: var(--sk);
-      border-radius: 12px;
+      border-radius: 16px;
       flex-shrink: 0;
       margin-top: 10px;
     }
@@ -264,7 +290,7 @@
     .sk-search-loaded {
       height: 38px;
       border-radius: 19px;
-      background: #fff;
+      background: var(--c-surface-0);
       box-shadow: 0 2px 10px rgba(0,0,0,0.13);
       flex-shrink: 0;
       display: flex;
@@ -288,10 +314,12 @@
     }
 
     /* loaded card */
-    .ld-card { flex-shrink: 0; border-radius: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.10); background: var(--c-surface-0); display: flex; flex-direction: column; margin-top: 10px; }
-    .ld-card-img { width: calc(100% - 16px); height: 150px; border-radius: 12px; flex-shrink: 0; margin: 8px 8px 0; }
+    .ld-card { flex-shrink: 0; border-radius: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.10); background: var(--c-surface-0); display: flex; flex-direction: column; margin-top: 10px; margin-bottom: 8px; }
+    .ld-card-img { width: calc(100% - 16px); height: 150px; border-radius: 16px; flex-shrink: 0; margin: 8px 8px 0; }
     .ld-card-img-1 { background: #a8c8e8; }
     .ld-card-img-2 { background: #b8d4a8; }
+    [data-theme="dark"] .ld-card-img-1 { background: #2a4a62; }
+    [data-theme="dark"] .ld-card-img-2 { background: #2a4a32; }
     .ld-cats { display: flex; gap: 14px; flex-shrink: 0; margin-top: 6px; margin-bottom: 6px; }
     .ld-cat { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; font-size: 9px; font-weight: 500; color: var(--c-text-tertiary); letter-spacing: 0.01em; }
     .ld-cat-dot { width: 34px; height: 34px; border-radius: 50%; background: var(--c-surface-3); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -299,7 +327,7 @@
     .ld-cat.active .ld-cat-dot { background: var(--sk); }
     .ld-cat.active .ld-cat-dot .material-symbols-outlined { color: var(--c-text-primary); }
     .ld-cat.active { color: var(--c-text-primary); font-weight: 600; }
-    .ff-body { padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 2px; }
+    .ff-body { padding: 12px 12px 12px; display: flex; flex-direction: column; gap: 2px; }
     .ff-title { font-size: 11px; font-weight: 600; color: var(--c-text-primary); letter-spacing: -0.01em; }
     .ff-sub { font-size: 10px; color: var(--c-text-secondary); }
     .ff-rating { font-size: 10px; color: var(--c-text-secondary); }
@@ -310,21 +338,64 @@
       justify-content: space-between;
       align-items: center;
       flex-shrink: 0;
+      margin-top: 4px;
     }
 
     .sk-title  { height: 9px; width: 55%; background: var(--sk); border-radius: 5px; }
     .sk-price  { height: 9px; width: 18%; background: var(--sk); border-radius: 5px; }
     .sk-sub    { height: 8px; width: 38%; background: var(--sk); border-radius: 4px; flex-shrink: 0; }
+    .sk-row-end { margin-bottom: 8px; }
     .sk-section-label { height: 8px; width: 30%; background: var(--sk); border-radius: 4px; flex-shrink: 0; }
+
+    /* ── Website screen navbar ── */
+    .ws-navbar {
+      display: flex;
+      align-items: center;
+      padding: 10px 0px 16px;
+      flex-shrink: 0;
+      position: relative;
+      margin-top: -12px;
+    }
+    .ws-navbar-icon {
+      font-size: 22px;
+      color: var(--c-text-tertiary);
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      flex-shrink: 0;
+    }
+    .ws-navbar-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 9px;
+      width: 80px;
+      background: var(--sk);
+      border-radius: 5px;
+    }
+    .ws-navbar-close {
+      margin-left: auto;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--c-surface-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--c-text-tertiary);
+    }
 
     /* ── Carousel list screen ── */
     .sk-section-row { display: flex; align-items: center; flex-shrink: 0; margin-top: 12px; }
     .sk-section-row-title { height: 10px; width: 55%; background: var(--sk); border-radius: 5px; }
-    .sk-carousel { display: flex; gap: 8px; flex-shrink: 0; margin-top: 6px; margin-right: -18px; overflow: hidden; }
+    .sk-carousel { display: flex; gap: 8px; flex-shrink: 0; margin-top: 6px; margin-right: -18px; overflow: hidden; margin-bottom: 8px; }
     .sk-carousel-card { flex: 0 0 105px; display: flex; flex-direction: column; gap: 4px; }
-    .sk-carousel-img { width: 105px; height: 100px; border-radius: 10px; background: var(--sk); flex-shrink: 0; }
+    .sk-carousel-img { width: 105px; height: 100px; border-radius: 14px; background: var(--sk); flex-shrink: 0; margin-bottom: 4px; }
     .sk-carousel-title { height: 7px; width: 80%; background: var(--sk); border-radius: 4px; }
     .sk-carousel-sub   { height: 7px; width: 60%; background: var(--sk); border-radius: 4px; }
+    .sk-carousel-card.sm { flex: 0 0 73px; }
+    .sk-carousel-card.sm .sk-carousel-img { width: 73px; height: 69px; }
+    .sk-carousel-card.lg { flex: 0 0 114px; }
+    .sk-carousel-card.lg .sk-carousel-img { width: 114px; height: 108px; }
 
     /* ── Detail screen ── */
     .push-screen {
@@ -397,7 +468,7 @@
     .modal-btn-row { display: flex; gap: 6px; margin-top: 4px; }
 
     .modal-btn { flex: 1; height: 28px; border-radius: 7px; background: var(--sk); }
-    .modal-btn.primary { background: var(--c-text-primary); }
+    .modal-btn.primary { background: var(--sk-dark); }
 
     /* ── Sheet ── */
     .sheet-standalone {
@@ -700,10 +771,11 @@
     .ll-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
 
     /* ── Grid Screen ── */
-    .gs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 10px; }
-    .gs-card { display: flex; flex-direction: column; gap: 8px; }
-    .gs-card-img { width: 100%; aspect-ratio: 1 / 1; border-radius: 8px; background: var(--sk); }
-    .gs-card-line { height: 7px; border-radius: 4px; background: var(--sk); }
+    .gs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 10px; }
+    .gs-card { display: flex; flex-direction: column; gap: 0; }
+    .gs-card-img { width: 100%; aspect-ratio: 1 / 1; border-radius: 16px; background: var(--sk); margin-bottom: 6px; }
+    .gs-grid .gs-card-img { border-radius: 14px; }
+    .gs-card-line { height: 7px; border-radius: 4px; background: var(--sk); margin-bottom: 4px; }
 
     /* ── Setup Screen ── */
     /* ── Setup Screen ── */
@@ -887,7 +959,7 @@
 </template>
 
 <template id="tpl-home-screen">
-  <div class="sk-search"></div>
+  <div class="sk-search"><div class="sk-search-dot"></div><div class="sk-search-text"></div></div>
   <div class="sk-cats">
     <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
     <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
@@ -898,18 +970,51 @@
   <div class="sk-card-img"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
-  <div class="sk-section-label"></div>
+  <div class="sk-section-label sk-row-end"></div>
   <div class="sk-card-img partial"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
-  <div class="sk-sub"></div>
+  <div class="sk-sub sk-row-end"></div>
   <div class="sk-card-img partial"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
 </template>
 
+<template id="tpl-website-screen">
+  <div class="ws-navbar">
+    <span class="material-symbols-outlined ws-navbar-icon">menu</span>
+    <div class="ws-navbar-title"></div>
+    <div class="ws-navbar-close">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+        <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+  <div class="sk-search" style="margin-bottom:8px;"><div class="sk-search-dot"></div><div class="sk-search-text"></div></div>
+  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+  <div class="sk-carousel">
+    <div class="sk-carousel-card sm"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card sm"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card sm"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card sm"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+  </div>
+  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+  <div class="sk-carousel">
+    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+  </div>
+  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
+  <div class="sk-carousel">
+    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
+  </div>
+</template>
+
 <template id="tpl-home-screen-carousels">
-  <div class="sk-search"></div>
+  <div class="sk-search"><div class="sk-search-dot"></div><div class="sk-search-text"></div></div>
   <div class="sk-cats">
     <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
     <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
@@ -944,7 +1049,7 @@
         <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
-    <div class="sk-search sk-search-narrow"></div>
+    <div class="sk-search sk-search-narrow"><div class="sk-search-dot"></div><div class="sk-search-text" style="width:80px;"></div></div>
     <div class="sk-icon-btn">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="2" y="4" width="12" height="1.5" rx="0.75" fill="currentColor"/>
@@ -961,11 +1066,11 @@
   <div class="sk-card-img"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
-  <div class="sk-section-label"></div>
+  <div class="sk-section-label sk-row-end"></div>
   <div class="sk-card-img partial"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
-  <div class="sk-sub"></div>
+  <div class="sk-sub sk-row-end"></div>
   <div class="sk-card-img partial"></div>
   <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
   <div class="sk-sub"></div>
@@ -1539,6 +1644,15 @@
   carouselNav.innerHTML = '<div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div><div class="sk-nav-icon"></div>';
   carouselPhone.appendChild(carouselNav);
   grid.appendChild(makeItem('Home Screen Carousels', 'tpl-home-screen-carousels', carouselPhone));
+
+  // ── tpl-website-screen ──
+  const websitePhone = document.createElement('div');
+  websitePhone.className = 'phone-frame';
+  const websiteContent = document.createElement('div');
+  websiteContent.className = 'phone-content';
+  websiteContent.appendChild(stamp('tpl-website-screen'));
+  websitePhone.appendChild(websiteContent);
+  grid.appendChild(makeItem('Website Screen', 'tpl-website-screen', websitePhone));
 
   // ── tpl-search-results-screen ──
   const searchResultsPhone = document.createElement('div');
