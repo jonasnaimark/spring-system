@@ -803,4 +803,28 @@ const toH = (innerH > 0 ? innerH : panel.scrollHeight) || 320;
 
 `inner.scrollHeight` captures the true stacked height of all the content (image + text + CTA + padding). The `panel.scrollHeight` fallback covers the case where inner is null, and `|| 320` is the last-resort default.
 
+---
+
+## `springPos` return value direction — the trap that kills inset-sheet animations
+
+`springPos(t, stiffness, damping)` returns **1 at t=0 and decays to 0**. This is the opposite of what you might expect (0→1 "progress"). Getting this wrong produces animations that flash or reverse.
+
+**Correct formulas for slide-up/slide-down:**
+
+```js
+// Opening: panel slides from 110% (off-screen) → 0% (visible)
+// p starts at 1 → decays to 0, so p*110 starts at 110 → 0 ✓
+insetPanel.style.transform = `translateY(${p * 110}%)`;
+insetScrim.style.opacity   = String(1 - sp);  // sp: 1→0, so 1-sp: 0→1 (fades in) ✓
+
+// Closing: panel slides from 0% → 110%
+// (1-p) starts at 0 → goes to 1, so (1-p)*110: 0→110 ✓
+insetPanel.style.transform = `translateY(${(1 - p) * 110}%)`;
+insetScrim.style.opacity   = String(sp);       // sp: 1→0 (fades out) ✓
+```
+
+**Mental model:** think of `p` as "how far from the destination you still are" — 1 = just started, 0 = arrived.
+
+**Always use `tpSpringAnimate`** for these, not a custom `requestAnimationFrame` tick. The custom tick shares `tpAnim` with `tpSpringAnimate`, so they conflict unpredictably. `tpSpringAnimate` is the single rAF manager — use it everywhere.
+
 **Why this matters for content changes:** Any time you change the inset modal template (bigger image, more padding, extra rows), the sheet will auto-resize correctly on next open. You never need to hardcode a height.

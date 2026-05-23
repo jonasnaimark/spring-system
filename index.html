@@ -1142,7 +1142,15 @@
       justify-content: center;
       flex-shrink: 0;
       color: var(--c-text-tertiary);
+      cursor: none;
+      position: relative;
     }
+    .ws-navbar-close::after {
+      content: '';
+      position: absolute;
+      inset: -12px;
+    }
+
 
     .sk-nav-icon {
       width: 20px;
@@ -1281,8 +1289,8 @@
     .gs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 10px; }
     .gs-grid .gs-card-img { border-radius: 14px; }
     .gs-card { display: flex; flex-direction: column; gap: 0; }
-    .gs-card-img { width: 100%; aspect-ratio: 1 / 1; border-radius: 16px; background: var(--sk); margin-bottom: 6px; }
-    .gs-card-line { height: 7px; border-radius: 4px; background: var(--sk); margin-bottom: 4px; }
+    .gs-card-img { width: 100%; aspect-ratio: 1 / 1; border-radius: 16px; background: var(--sk); margin-bottom: 8px; }
+    .gs-card-line { height: 8px; border-radius: 4px; background: var(--sk); margin-bottom: 4px; }
     .setup-screen { display: flex; flex-direction: column; position: absolute; inset: 0; background: var(--c-surface-0); }
     .setup-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 14px; gap: 18px; margin-bottom: 40px; }
     .setup-img-placeholder { width: 92%; aspect-ratio: 1 / 1; background: var(--sk); border-radius: 20px; }
@@ -1449,11 +1457,18 @@
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: var(--sk);
+      background: var(--c-surface-3);
+      color: var(--c-text-tertiary);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      cursor: none;
+    }
+    .inset-modal-close::after {
+      content: '';
+      position: absolute;
+      inset: -10px;
     }
     .inset-modal-img {
       width: 176px;
@@ -2851,6 +2866,7 @@
     <div class="demo-mode-toggle" id="tpSlideUpModeToggle" style="display:none;">
       <button class="demo-mode-btn active" data-mode="fitted">Fitted</button>
       <button class="demo-mode-btn" data-mode="full-height">Full Height</button>
+      <button class="demo-mode-btn" data-mode="inset-sheet">Inset Sheet</button>
     </div>
     <div class="demo-mode-toggle" id="tpSufModeToggle" style="display:none;">
       <button class="demo-mode-btn active" data-mode="sheet">Sheet</button>
@@ -3052,6 +3068,11 @@
         <div class="sheet" id="tpSheet0" style="transform:translateY(100%);z-index:11;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);"></div>
         <div class="sheet" id="tpSheet1" style="transform:translateY(100%);z-index:12;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);"></div>
         <div class="sheet" id="tpSheet2" style="transform:translateY(100%);z-index:13;transform-origin:top center;opacity:0;box-shadow:0 -2px 20px rgba(0,0,0,0);"></div>
+        <!-- Inset sheet panel -->
+        <div id="tpInsetSheetScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.40);opacity:0;pointer-events:none;z-index:14;visibility:hidden;"></div>
+        <div id="tpInsetSheetSlide" data-open="false" style="position:absolute;bottom:10px;left:10px;right:10px;transform:translateY(110%);z-index:15;visibility:hidden;">
+          <div id="tpInsetSheetPanel" style="background:var(--c-surface-0);box-shadow:0 8px 32px rgba(0,0,0,0.28);overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:16px;transform-origin:center bottom;"></div>
+        </div>
       </div>
 
       <!-- scale-in: modal + tooltip -->
@@ -4631,6 +4652,8 @@ function stampTemplate(templateId, targetEl) {
   // Overlay scrims for pushed sheets
   const tpSheetOverlay0 = document.createElement('div'); tpSheetOverlay0.className = 'sheet-overlay'; document.getElementById('tpSheet0').appendChild(tpSheetOverlay0);
   const tpSheetOverlay1 = document.createElement('div'); tpSheetOverlay1.className = 'sheet-overlay'; document.getElementById('tpSheet1').appendChild(tpSheetOverlay1);
+  // Stamp inset modal content into inset sheet panel
+  stampTemplate('tpl-inset-modal', document.getElementById('tpInsetSheetPanel'));
 })();
 
 // ── Spring definitions ────────────────────────────────────────────
@@ -5656,6 +5679,9 @@ const TP_WEBSITE_REF_W = 278;
 
 function tpExpandModalToFull(onDone) {
   if (tpModalFullAnim || tpModalFullState) return;
+  tpScalePulseCancel();
+  const panel2 = document.getElementById('tpModalPanel');
+  panel2.style.transition = ''; panel2.style.transform = '';
   const { stiffness, damping } = TP_SPRING;
   const phone = document.getElementById('tpPhone');
   const panel = document.getElementById('tpModalPanel');
@@ -5707,6 +5733,7 @@ function tpExpandModalToFull(onDone) {
       panel.style.pointerEvents = 'auto';
       websiteLayer.style.opacity = '1';
       sheetLayer.style.opacity = '0';
+      
       tpModalFullAnim = null;
       onDone?.();
     }
@@ -5764,6 +5791,7 @@ function tpCollapseModalFromFull(onDone) {
       sheetLayer.style.opacity = '1';
       websiteLayer.style.opacity = '0';
       websiteLayer.style.pointerEvents = 'none';
+      
       tpModalFullAnim = null;
       tpModalSheetPhase = 'post';
       onDone?.();
@@ -6177,15 +6205,32 @@ document.querySelectorAll('.tp-grow-card').forEach(card => {
   });
 });
 let _tpGestureDismissed = false;
-[document.getElementById('tpExpandPanel'), document.getElementById('tpModalPanel')].forEach(panel => {
-  panel.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (_tpGestureDismissed) { _tpGestureDismissed = false; return; }
-    if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
-    if (e.target.closest('.detail-close-btn') || e.target.closest('.inset-modal-close')) {
-      if (tpExpandState) tpCollapseCard();
+document.getElementById('tpExpandPanel').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (_tpGestureDismissed) { _tpGestureDismissed = false; return; }
+  if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
+  if (e.target.closest('.detail-close-btn') || e.target.closest('.inset-modal-close')) {
+    if (tpExpandState) tpCollapseCard();
+  }
+});
+document.getElementById('tpModalPanel').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (_tpGestureDismissed) { _tpGestureDismissed = false; return; }
+  if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
+  if (!tpExpandState?.isModal) return;
+  // Fullscreen: X closes back to sheet
+  if (tpModalFullState && (e.target.closest('.ws-navbar-close') || e.target.closest('.inset-modal-close'))) {
+    if (!tpModalFullAnim) tpCollapseModalFromFull();
+    return;
+  }
+  // Sheet: X button dismisses; tap anywhere else opens fullscreen
+  if (!tpModalFullState && !tpModalFullAnim && !tpExpandAnim) {
+    if (e.target.closest('.inset-modal-close')) {
+      tpCollapseCard();
+    } else {
+      tpExpandModalToFull();
     }
-  });
+  }
 });
 document.getElementById('tpExpandScrim').addEventListener('click', (e) => {
   e.stopPropagation();
@@ -6247,12 +6292,19 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
   function tpRevertToExpanded(velX, velY) {
     if (!tpExpandState) return;
     if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
-    const { toX, toY, toW, toH, toR, isModal, imgEl } = tpExpandState;
+    const { toX: sheetX, toY: sheetY, toW: sheetW, toH: sheetH, toR: sheetR, isModal } = tpExpandState;
     const phone     = document.getElementById('tpPhone');
     const panel     = isModal ? document.getElementById('tpModalPanel') : document.getElementById('tpExpandPanel');
-    const detailInner = isModal ? document.getElementById('tpModalInner') : document.getElementById('tpDetailInner');
     const scrim     = document.getElementById('tpExpandScrim');
     panel.style.pointerEvents = 'auto';
+
+    // Revert to fullscreen if currently fullscreen, otherwise revert to sheet
+    const isFullscreen = isModal && !!tpModalFullState;
+    const toX = isFullscreen ? 0 : sheetX;
+    const toY = isFullscreen ? 0 : sheetY;
+    const toW = isFullscreen ? phone.clientWidth  : sheetW;
+    const toH = isFullscreen ? phone.clientHeight : sheetH;
+    const toR = isFullscreen ? 40 : sheetR;
 
     const curX = parseFloat(panel.style.left)         || 0;
     const curY = parseFloat(panel.style.top)          || 0;
@@ -6280,24 +6332,37 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       simH.step(dt, DISMISS_K, DISMISS_D);
       simR.step(dt, DISMISS_K, DISMISS_D);
       simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
-      const scale = isModal ? simW.x / toW : simW.x / toW;
       panel.style.left         = simX.x + 'px';
       panel.style.top          = simY.x + 'px';
       panel.style.width        = simW.x + 'px';
       panel.style.height       = simH.x + 'px';
       panel.style.borderRadius = Math.max(0, simR.x) + 'px';
       scrim.style.opacity      = Math.max(0, simScrim.x).toFixed(3);
-      if (isModal) panel.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * Math.min(simScrim.x, 1)).toFixed(3)})`;
-      if (detailInner) detailInner.style.transform = `scale(${Math.max(0.01, scale)})`;
+      if (isModal) {
+        panel.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * Math.min(simScrim.x, 1)).toFixed(3)})`;
+        if (isFullscreen) {
+          const websiteInner = document.getElementById('tpModalWebsiteInner');
+          if (websiteInner) websiteInner.style.transform = `scale(${simW.x / TP_WEBSITE_REF_W})`;
+        }
+      } else {
+        const detailInner = document.getElementById('tpDetailInner');
+        if (detailInner) detailInner.style.transform = `scale(${simW.x / toW})`;
+      }
       if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
         tpExpandAnim = requestAnimationFrame(tick);
       } else {
         panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
         panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
         panel.style.borderRadius = toR + 'px';
-        if (detailInner) detailInner.style.transform = 'scale(1)';
         scrim.style.opacity = String(scrimTarget);
-        if (isModal) { panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0.28)'; scrim.style.pointerEvents = 'auto'; }
+        if (isModal) { panel.style.boxShadow = isFullscreen ? 'none' : '0 8px 32px rgba(0,0,0,0.28)'; scrim.style.pointerEvents = 'auto'; }
+        if (isFullscreen) {
+          panel.style.pointerEvents = 'auto';
+          document.getElementById('tpModalWebsiteLayer').style.opacity = '1';
+          document.getElementById('tpModalWebsiteLayer').style.pointerEvents = 'auto';
+          document.getElementById('tpModalContentLayer').style.opacity = '0';
+          
+        }
         tpExpandAnim = null;
       }
     }
@@ -6480,8 +6545,11 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
 
   modalPanel.addEventListener('pointerdown', (e) => {
     if (!tpExpandState || !tpExpandState.isModal) return;
-    if (e.target.closest('.detail-close-btn') || e.target.closest('.inset-modal-close')) return;
+    if (e.target.closest('.detail-close-btn') || e.target.closest('.inset-modal-close') || e.target.closest('.ws-navbar-close')) return;
+    if (tpModalFullAnim) return; // don't start drag while animating fullscreen transition
+    if (window._tpAutoPlay?.isPlaying()) window._tpAutoPlay.stop();
     if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
+    
     e.currentTarget.setPointerCapture(e.pointerId);
     tpModalGesture = {
       startX: e.clientX, startY: e.clientY,
@@ -6492,7 +6560,6 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
   modalPanel.addEventListener('pointermove', (e) => {
     if (!tpModalGesture || !tpExpandState) return;
     const { startX, startY } = tpModalGesture;
-    const { toX, toY, toW, toH, toR } = tpExpandState;
     const now = performance.now();
     tpModalGesture.history.push({ x: e.clientX, y: e.clientY, t: now });
     tpModalGesture.history = tpModalGesture.history.filter(p => now - p.t < 80);
@@ -6503,7 +6570,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
     if (!tpModalGesture.intent) {
       const absX = Math.abs(rawDX), absY = Math.abs(rawDY);
       if (absY > 8) tpModalGesture.intent = 'dismiss';
-      else if (absX > 8) tpModalGesture.intent = 'dismiss'; // allow horizontal too
+      else if (absX > 8) tpModalGesture.intent = 'dismiss';
     }
     if (tpModalGesture.intent === 'cancelled') {
       tpRevertToExpanded(0, 0);
@@ -6511,29 +6578,42 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       return;
     }
 
-    // Gradual rubber-band on X — resists for ~80px before softly capping around 32px
+    const isFullscreen = !!tpModalFullState;
+    // Base rect: fullscreen (0,0,full) or sheet (toX/Y/W/H)
+    const baseX = isFullscreen ? 0 : tpExpandState.toX;
+    const baseY = isFullscreen ? 0 : tpExpandState.toY;
+    const baseW = isFullscreen ? phone.clientWidth  : tpExpandState.toW;
+    const baseH = isFullscreen ? phone.clientHeight : tpExpandState.toH;
+    const baseR = isFullscreen ? 40 : tpExpandState.toR;
+
     const dragX = (rawDX >= 0 ? 1 : -1) * 32 * (1 - Math.exp(-Math.abs(rawDX) / 80));
     const dragY = applyRubberBandSigned(rawDY, phone.clientHeight);
     const progress = Math.min(Math.max(0, rawDY) / phone.clientHeight, 1);
-    const scaleDown = 1 - progress * 0.15;
-    const scaledW = toW * scaleDown;
-    const scaledH = toH * scaleDown;
-    const panelX = toX + dragX + (toW - scaledW) / 2;
-    const panelY = toY + dragY + (toH - scaledH) / 2;
+    const scaleDown = isFullscreen ? 1 - progress * 0.45 : 1 - progress * 0.15;
+    const scaledW = baseW * scaleDown;
+    const scaledH = baseH * scaleDown;
+    const panelX = baseX + dragX + (baseW - scaledW) / 2;
+    const panelY = baseY + dragY + (baseH - scaledH) / 2;
+    const targetR = isFullscreen ? 40 : 20;
 
     modalPanel.style.left         = panelX + 'px';
     modalPanel.style.top          = panelY + 'px';
     modalPanel.style.width        = scaledW + 'px';
     modalPanel.style.height       = scaledH + 'px';
-    modalPanel.style.borderRadius = (toR + (20 - toR) * progress) + 'px';
+    modalPanel.style.borderRadius = (baseR + (targetR - baseR) * progress) + 'px';
     modalPanel.style.boxShadow    = `0 8px 32px rgba(0,0,0,${(0.28 * (1 - progress * 0.5)).toFixed(3)})`;
 
-    const detailInner = document.getElementById('tpModalInner');
-    if (detailInner) detailInner.style.transform = `scale(${scaleDown})`;
-
-    document.getElementById('tpModalContentLayer').style.opacity = '1';
-    document.getElementById('tpModalCardLayer').style.opacity    = '0';
-
+    if (isFullscreen) {
+      const websiteInner = document.getElementById('tpModalWebsiteInner');
+      if (websiteInner) websiteInner.style.transform = `scale(${scaledW / TP_WEBSITE_REF_W})`;
+      document.getElementById('tpModalWebsiteLayer').style.opacity = '1';
+      document.getElementById('tpModalContentLayer').style.opacity = '0';
+    } else {
+      const detailInner = document.getElementById('tpModalInner');
+      if (detailInner) detailInner.style.transform = `scale(${scaleDown})`;
+      document.getElementById('tpModalContentLayer').style.opacity = '1';
+    }
+    document.getElementById('tpModalCardLayer').style.opacity = '0';
     document.getElementById('tpExpandScrim').style.opacity = (1 - progress * 0.5).toFixed(3);
   });
 
@@ -6557,7 +6637,13 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
     const committedDown = Math.max(0, rawDY) > DISMISS_POS_THRESHOLD || (rawDY > 10 && velY > DISMISS_VEL_THRESHOLD);
     if (committedDown) {
       _tpGestureDismissed = true;
-      tpCollapseWithVelocity(0, velY);
+      if (tpModalFullState) {
+        // Fullscreen → collapse back to sheet
+        tpCollapseModalFromFull();
+      } else {
+        // Sheet → collapse back to card
+        tpCollapseWithVelocity(0, velY);
+      }
     } else {
       tpRevertToExpanded(0, velY);
     }
@@ -7379,6 +7465,7 @@ const TP_DEMOS = {
       document.getElementById('tpModalContentLayer').style.opacity = '0';
       document.getElementById('tpModalWebsiteLayer').style.opacity = '0';
       document.getElementById('tpModalWebsiteLayer').style.pointerEvents = 'none';
+      
       if (tpExpandState?.imgEl) tpExpandState.imgEl.style.visibility = '';
       document.querySelectorAll('.tp-grow-card .sk-carousel-img').forEach(c => c.style.visibility = '');
       tpExpandState   = null;
@@ -7594,8 +7681,44 @@ const TP_DEMOS = {
         const ov = s.querySelector('.sheet-overlay');
         if (ov) ov.style.opacity = '0';
       });
+      // Inset sheet reset
+      tpScalePulseCancel();
+      const insetSlide = document.getElementById('tpInsetSheetSlide');
+      const insetPanel = document.getElementById('tpInsetSheetPanel');
+      const insetScrim = document.getElementById('tpInsetSheetScrim');
+      if (insetSlide) { insetSlide.style.transform = 'translateY(110%)'; insetSlide.dataset.open = 'false'; }
+      if (insetScrim) insetScrim.style.opacity = '0';
+      if (insetPanel) { insetPanel.style.transition = ''; insetPanel.style.transform = ''; }
     },
     play(onDoneCallback) {
+      // ── Inset sheet mode ─────────────────────────────────────────
+      if (tpSlideUpMode === 'inset-sheet') {
+        const insetSlide = document.getElementById('tpInsetSheetSlide');
+        const insetPanel = document.getElementById('tpInsetSheetPanel');
+        const insetScrim = document.getElementById('tpInsetSheetScrim');
+        const isOpen = insetSlide?.dataset.open === 'true';
+        tpScalePulse(insetPanel, !isOpen, { magnitude: 0.04, magnitudeClose: 0.12, startDelay: isOpen ? 0 : 150 });
+        const startSlide = () => tpSpringAnimate((t) => {
+          const p  = springPos(t, TP_BOUNCE_SPRING.stiffness, TP_BOUNCE_SPRING.damping);
+          const sp = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+          if (isOpen) {
+            // closing: slide down (0% → 110%), scrim fades out (1 → 0)
+            insetSlide.style.transform = `translateY(${(1 - p) * 110}%)`;
+            insetScrim.style.opacity   = String(sp);
+          } else {
+            // opening: slide up (110% → 0%), scrim fades in (0 → 1)
+            insetSlide.style.transform = `translateY(${p * 110}%)`;
+            insetScrim.style.opacity   = String(1 - sp);
+          }
+        }, TP_BOUNCE_SPRING, () => {
+          insetSlide.style.transform = isOpen ? 'translateY(110%)' : 'translateY(0%)';
+          insetSlide.dataset.open    = isOpen ? 'false' : 'true';
+          insetScrim.style.opacity   = isOpen ? '0' : '1';
+          if (onDoneCallback) onDoneCallback();
+        });
+        if (isOpen) { setTimeout(startSlide, 80); } else { startSlide(); }
+        return;
+      }
       if (tpSheetAnimating) return;
       const { stiffness, damping } = TP_SPRING;
       const step  = tpSlideUpStep;
@@ -8519,9 +8642,9 @@ function switchTpDemo(key, { skipControlsDisplay = false } = {}) {
 let tpGrowMode = 'fullscreen';
 const TP_GROW_DESCRIPTIONS = {
   fullscreen:     'Used to seamlessly grow an element to reveal more detail.',
-  modal:          'Grows present floating elements like inset sheets. They can also expand those elements to show more detail.',
+  modal:          'Grows present floating elements like inset sheets, and expand them to show more detail.',
   'popover-chip': 'Grows can also be used to present floating elements like popovers.',
-  search:         'Grows can also be used to present floating elements like a search input.',
+  search:         'Grows present floating elements like a search input.',
 };
 function applyTpGrowMode(mode, { updateUrl = true } = {}) {
   tpGrowMode = mode;
@@ -8626,8 +8749,9 @@ document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(btn => 
 
 // Slide-up mode toggle (Fitted / Full Height)
 const TP_SLIDE_UP_DESCRIPTIONS = {
-  fitted:       'Layers content over the current screen to keep context.',
+  fitted:        'Layers content over the current screen to keep context.',
   'full-height': 'A taller variant that reveals more content.',
+  'inset-sheet': 'A bouncier spring gives inset sheets a lighter, more energetic feel.',
 };
 let tpSlideUpMode = 'fitted';
 function applyTpSlideUpMode(mode, { updateUrl = true } = {}) {
@@ -8639,10 +8763,37 @@ function applyTpSlideUpMode(mode, { updateUrl = true } = {}) {
   if (bodyCopy) bodyCopy.textContent = TP_SLIDE_UP_DESCRIPTIONS[mode] || '';
   const content = document.getElementById('tpSheetContent');
   const darkBg  = document.getElementById('tpSheetDarkBg');
+  const insetSlide = document.getElementById('tpInsetSheetSlide');
+  const insetPanel = document.getElementById('tpInsetSheetPanel');
+  const insetScrim = document.getElementById('tpInsetSheetScrim');
+  // Hide/show sheet stack vs inset panel
+  ['tpSheet0','tpSheet1','tpSheet2','tpSheetScrim'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.visibility = mode === 'inset-sheet' ? 'hidden' : '';
+  });
+  if (insetSlide) insetSlide.style.visibility = mode === 'inset-sheet' ? '' : 'hidden';
+  if (insetScrim) insetScrim.style.visibility = mode === 'inset-sheet' ? '' : 'hidden';
+  if (mode === 'inset-sheet' && insetSlide) {
+    // Ensure slide wrapper starts off-screen
+    insetSlide.style.transform = 'translateY(110%)';
+    insetSlide.dataset.open = 'false';
+    if (insetScrim) insetScrim.style.opacity = '0';
+    if (insetPanel) { insetPanel.style.transition = ''; insetPanel.style.transform = ''; }
+    // Compute concentric radius from phone
+    const phone = document.getElementById('tpPhone');
+    if (phone && insetPanel) {
+      const phoneCS = window.getComputedStyle(phone);
+      const gap = 10;
+      const r = Math.max(0, parseFloat(phoneCS.borderRadius) - parseFloat(phoneCS.borderWidth) - gap);
+      insetPanel.style.borderRadius = r + 'px';
+      const cta = insetPanel.querySelector('.inset-modal-cta');
+      if (cta) cta.style.borderRadius = Math.max(4, r - 16) + 'px';
+    }
+  }
+
   if (mode === 'full-height') {
     content.classList.add('full-height');
     if (darkBg) { darkBg.style.opacity = '1'; darkBg.style.borderRadius = '28px'; }
-    // Re-stamp sheets with taller content
     [0,1,2].forEach(i => {
       const s = document.getElementById(`tpSheet${i}`);
       s.innerHTML = '';
@@ -8653,16 +8804,20 @@ function applyTpSlideUpMode(mode, { updateUrl = true } = {}) {
     });
   } else {
     content.classList.remove('full-height');
-    [0,1,2].forEach(i => {
-      const s = document.getElementById(`tpSheet${i}`);
-      s.innerHTML = '';
-      stampTemplate('tpl-sheet', s);
-      const ov = document.createElement('div');
-      ov.className = 'sheet-overlay';
-      s.appendChild(ov);
-    });
+    if (darkBg && mode !== 'inset-sheet') { darkBg.style.opacity = '0'; }
+    if (mode !== 'inset-sheet') {
+      [0,1,2].forEach(i => {
+        const s = document.getElementById(`tpSheet${i}`);
+        s.innerHTML = '';
+        stampTemplate('tpl-sheet', s);
+        const ov = document.createElement('div');
+        ov.className = 'sheet-overlay';
+        s.appendChild(ov);
+      });
+    }
   }
-  if (updateUrl) { try { history.replaceState(null, '', `#transitions-slide-up${mode === 'full-height' ? '-full-height' : ''}`); } catch(e) {} }
+  const urlSuffix = mode === 'full-height' ? '-full-height' : mode === 'inset-sheet' ? '-inset-sheet' : '';
+  if (updateUrl) { try { history.replaceState(null, '', `#transitions-slide-up${urlSuffix}`); } catch(e) {} }
 }
 document.querySelectorAll('#tpSlideUpModeToggle .demo-mode-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -8911,6 +9066,9 @@ if (hashTp) {
   } else if (rawKey === 'slide-up-full-height') {
     switchTpDemo('slide-up');
     applyTpSlideUpMode('full-height', { updateUrl: false });
+  } else if (rawKey === 'slide-up-inset-sheet') {
+    switchTpDemo('slide-up');
+    applyTpSlideUpMode('inset-sheet', { updateUrl: false });
   } else if (rawKey === 'slide-up-fade-toast') {
     switchTpDemo('slide-up-fade');
     applyTpSufMode('toast', { updateUrl: false });
@@ -9025,16 +9183,30 @@ if (hashTp) {
         nextSufStep();
       }
     } else if (key === 'slide-up') {
-      // step-based: fire each of 6 steps with a pause between, then loop
-      function nextStep() {
-        if (!tpPlaying) return;
+      if (tpSlideUpMode === 'inset-sheet') {
+        // simple open → hold → close → hold → loop
         TP_DEMOS['slide-up'].play(() => {
           if (!tpPlaying) return;
-          const isLast = tpSlideUpStep === 0; // reset() was called after step 5
-          scheduleNext(isLast ? 500 : 800, isLast ? onCycle : nextStep);
+          scheduleNext(1400, () => {
+            if (!tpPlaying) return;
+            TP_DEMOS['slide-up'].play(() => {
+              if (!tpPlaying) return;
+              scheduleNext(800, onCycle);
+            });
+          });
         });
+      } else {
+        // step-based: fire each of 6 steps with a pause between, then loop
+        function nextStep() {
+          if (!tpPlaying) return;
+          TP_DEMOS['slide-up'].play(() => {
+            if (!tpPlaying) return;
+            const isLast = tpSlideUpStep === 0; // reset() was called after step 5
+            scheduleNext(isLast ? 500 : 800, isLast ? onCycle : nextStep);
+          });
+        }
+        nextStep();
       }
-      nextStep();
     } else if (key === 'loading-fade') {
       if (tpLoadMode === 'shimmer') {
         // shimmer is a looping CSS animation — just hold for a cycle
