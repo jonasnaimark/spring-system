@@ -5195,7 +5195,7 @@ const SPRING_DEMOS = {
 
   'inset-sheet': {
     description:   'A bouncy spring gives inset sheets a light, energetic feel.',
-    defaultSpring: { speed: 'default', char: 'small.bounce' },
+    defaultSpring: { speed: 'fast', char: 'small.bounce' },
     reset() {
       const slide = document.getElementById('insetSheetSlide');
       const panel = document.getElementById('insetSheetPanel');
@@ -5541,7 +5541,7 @@ let tpExpandAnim    = null;
 let tpPendingImgEl  = null; // imgEl hidden during expansion; cleared on next expand
 const TP_SPRING        = { stiffness: 500, damping: calcDamping(500, 1.0) };
 const TP_BOUNCE_SPRING = { stiffness: 500, damping: calcDamping(500, 0.80), stiffnessXW: 750, dampingXW: calcDamping(750, 0.80) };
-const TP_INSET_SHEET_SPRING = { stiffness: 300, damping: calcDamping(300, 0.80) }; // default.small.bounce
+const TP_INSET_SHEET_SPRING = { stiffness: 500, damping: calcDamping(500, 0.80) }; // fast.small.bounce
 
 const TP_SCALE_STANDARD = 'cubic-bezier(0.40,0.00,0.20,1.00)';
 const TP_SCALE_BOUNCE   = 'cubic-bezier(0.34,1.56,0.64,1)';
