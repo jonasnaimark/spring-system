@@ -7566,7 +7566,7 @@ const TP_DEMOS = {
     },
   },
   'push': {
-    description: 'Used to move forward in a flow. Conveys direction and progress.',
+    description: 'Used to navigate somewhere new.',
     reset() {
       tpDemoState = 'out';
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
@@ -8859,7 +8859,7 @@ document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
 
 // Slide-in mode toggle (Fullscreen / Persistent Bar)
 const TP_SLIDE_IN_DESCRIPTIONS = {
-  fullscreen:      'Used to move forward in a flow. Conveys direction and progress.',
+  fullscreen:      'Used to navigate somewhere new.',
   'persistent-bar': 'Shared elements like bars or search can stay fixed across the transition.',
 };
 function applyTpSlideInMode(mode, { updateUrl = true } = {}) {
