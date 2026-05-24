@@ -969,69 +969,102 @@ if (!e.target.closest('#mySlide')) { triggerDismiss(); return; }
 
 ---
 
-## Gesture dismiss demos — two known bugs and their fixes
+## Gesture dismiss demos — collapse snap fixes
 
 These notes apply to `#gestures-fullscreen-dismiss` and `#gestures-popover-dismiss`.
 
-### Bug 1: Corner rounding snaps on dismiss (wrong `fromR`)
+### Fix 1: Corner rounding snaps (hardcoded `fromR`)
 
-**Symptom:** When a card collapses back to its placeholder after a dismiss gesture, the panel's corner radius snaps — it settles at one value, then the placeholder card appears at a different radius.
+**Symptom:** Panel corner radius snaps on the last frame of collapse — panel settles at one radius, card reappears at a different one.
 
-**Root cause:** `ngExpandCard` and `tpExpandCard` hardcoded `fromR = 10` (or `fromR = 14`) as a constant instead of reading the actual CSS computed value. The card elements have `border-radius: 14px` in CSS, so when the panel settled at 10px and then the card reappeared at 14px, you saw a snap.
+**Root cause A — hardcoded constant:** `fromR` was hardcoded as `10` or `14` instead of reading the card's actual CSS value.
 
-**Fix — read computed style at expand time:**
+**Fix:** Read computed style at expand time:
 ```js
-// ngExpandCard:
 const fromR = imgEl ? parseFloat(window.getComputedStyle(imgEl).borderRadius) || 14 : 14;
-
-// tpExpandCard (or wherever fromR is computed):
-const fromR = cardEl ? parseFloat(window.getComputedStyle(cardEl).borderRadius) || 14 : 14;
 ```
 
-**Fix — corner rounding during gesture drag:** During gesture-based dismiss, the code was interpolating `cornerR = toR + (40 - toR) * progress`, hardcoding 40 as the "source" radius. Replace 40 with the saved `fromR`:
+**Root cause B — drag interpolation used wrong source radius:** The gesture drag handler interpolated toward a hardcoded `40` instead of `fromR`.
+
+**Fix:**
 ```js
 // ng drag handler:
-const targetCornerR = ngExpandState?.fromR ?? 10;
+const targetCornerR = ngExpandState?.fromR ?? 14;
 const cornerR = toR + (targetCornerR - toR) * progress;
 
 // tp drag handler:
 panel.style.borderRadius = (toR + ((tpExpandState?.fromR ?? 14) - toR) * progress) + 'px';
 ```
 
-### Bug 2: Panel snap at end of first dismiss (stale card position)
+### Fix 2: Corner rounding pop on every dismiss (CSS radius vs. visual radius)
 
-**Symptom:** When dismissing a card (especially the first time), the panel springs correctly but snaps at the very end — the panel briefly clips or appears in the wrong position before the card reappears.
+**Symptom:** A subtle corner-rounding pop on every single dismiss in the ng gesture demos, regardless of which card or how many times you dismiss.
 
-**Root cause:** `toX/toY` (the collapse destination) is taken from `ngExpandState.fromX/fromY`, which was captured at *expand time*. If the phone layout reflowed between expand and collapse (e.g. first-paint layout settling, or the panel being shown for the first time causes a reflow), the card's rect shifts by a few pixels. The panel springs to the stale expand-time position, then the card reappears at its current position — a visible snap.
+**Root cause:** The ng phone uses `--phone-scale: calc(318/278) ≈ 1.144` via a CSS `scale()` transform on `.phone-content`. `getComputedStyle(imgEl).borderRadius` returns the CSS value (`14px`) not the visual rendered size (`14 * 1.144 ≈ 16px`). The panel collapses to 14px, then the card reappears visually at 16px — a snap every time.
 
-This is confirmed via logging: `panel settled at 23.8, 214.2` but `card rect NOW: 20.6, 211.6` — 3px difference.
-
-**Fix — re-measure card rect at collapse start:**
-
+**Fix:** Multiply the CSS radius by the element's effective visual scale at expand time:
 ```js
-// ngCollapseCard and tpPopoverCollapseWithVelocity:
-let toX = savedFromX, toY = savedFromY; // fallback to expand-time
+const fromRcss = imgEl ? parseFloat(window.getComputedStyle(imgEl).borderRadius) || 14 : 14;
+const fromRscale = imgEl && imgEl.offsetWidth ? imgRect.width / imgEl.offsetWidth : 1;
+const fromR = fromRcss * fromRscale;
+```
+`imgRect.width` is from `getBoundingClientRect()` (visual pixels); `imgEl.offsetWidth` is the CSS layout size. Their ratio is the effective scale.
+
+**Rule:** Whenever an element is inside a CSS `scale()` container, `getComputedStyle` gives CSS values, not visual values. Always scale radii/sizes by `getBoundingClientRect().width / offsetWidth`.
+
+### Fix 3: Panel snaps to wrong position/size at end of first dismiss (stale rect)
+
+**Symptom:** On the first dismiss (or intermittently), the panel springs correctly then snaps at the very end — a brief position or size mismatch before the card reappears.
+
+**Root cause:** `toX/toY/toW/toH` come from `ngExpandState.fromX/fromY/fromW/fromH`, captured at expand time. A first-paint layout reflow between expand and collapse shifts the card's rect by a few pixels. Confirmed by logging: panel settled at `23.8, 214.2` but card rect was `20.6, 211.6`.
+
+**Fix — re-measure the full card rect at collapse start, not at expand time:**
+```js
+// In ngCollapseCard / tpPopoverCollapseWithVelocity:
+let toX = savedFromX, toY = savedFromY, toW = savedFromW, toH = savedFromH;
 if (card) {
   const phoneRect = phone.getBoundingClientRect();
-  const cardRect = card.getBoundingClientRect();
+  const cardRect  = card.getBoundingClientRect();
+  const liveImg   = card.querySelector('.sk-carousel-img');
+  const imgRect   = liveImg ? liveImg.getBoundingClientRect() : cardRect;
   toX = cardRect.left - phoneRect.left - phone.clientLeft;
   toY = cardRect.top  - phoneRect.top  - phone.clientTop;
+  toW = cardRect.width;
+  toH = imgRect.height;
 }
 ```
+The card is `visibility:hidden` at this point but still in layout — its rect is accurate.
 
-**Rule:** Never use `fromX/fromY` from expand state as the collapse target. Always re-measure via `getBoundingClientRect()` at collapse time. The card is `visibility:hidden` but still in layout — its rect is accurate.
+**Rule:** Never use expand-state `fromX/fromY/fromW/fromH` as the collapse spring target. Always re-measure at collapse time.
 
-### Also: clamp left/top in all collapse ticks
+### Fix 4: `simR` missing from settled check → radius snap on done frame
 
-**Symptom:** Brief edge clipping during the spring animation on near-zero-position cards.
+**Symptom:** Subtle corner snap right at the end of every collapse.
 
-**Root cause:** Spring physics overshoot pushes `simX.x` / `simY.x` briefly below 0. Clipped by `phone-frame`'s `overflow:hidden`.
+**Root cause:** The `settled()` check only tested `simX/simY/simW/simH`. The radius spring (`simR`) could still be slightly off when the done block fired, then snapped to `toR`.
 
-**Do NOT fix with `overflow:visible` on the phone frame** — that leaks all phone content outside the device border (major regression).
+**Two-part fix:**
+1. Add `simR` to the settled check in every collapse tick:
+```js
+if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled() || !simR.settled())
+```
+2. Hard-snap `borderRadius` to `toR` in the done block before `display:none`:
+```js
+panel.style.borderRadius = toR + 'px';
+panel.style.display = 'none';
+```
+
+### Fix 5: Edge clipping on near-zero-position cards (spring overshoot)
+
+**Symptom:** Brief left/top edge clipping during collapse spring animation, only on cards near position 0.
+
+**Root cause:** Spring overshoot pushes `simX.x`/`simY.x` briefly below 0, clipped by `phone-frame`'s `overflow:hidden`.
+
+**Do NOT fix with `overflow:visible` on the phone frame** — that leaks all phone content outside the device border (major regression confirmed).
 
 **Fix — clamp in every collapse tick:**
 ```js
 panel.style.left = Math.max(0, simX.x) + 'px';
 panel.style.top  = Math.max(0, simY.x) + 'px';
 ```
-Apply to: `tpCollapseCard` (both ticks), `ngCollapseCard`, `ngRevertToExpanded`, `tpPopoverCollapseWithVelocity` (both ticks), `tpPopoverRevertToExpanded`, `tpSearchCollapseWithVelocity` (both ticks).
+Apply to every collapse/revert tick: `tpCollapseCard` (both), `ngCollapseCard`, `ngRevertToExpanded`, `tpPopoverCollapseWithVelocity` (both), `tpPopoverRevertToExpanded`, `tpSearchCollapseWithVelocity` (both).
