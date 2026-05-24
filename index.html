@@ -6400,7 +6400,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
         const detailInner = document.getElementById('tpDetailInner');
         if (detailInner) detailInner.style.transform = `scale(${simW.x / toW})`;
       }
-      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
+      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled() || !simR.settled()) {
         tpExpandAnim = requestAnimationFrame(tick);
       } else {
         panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
@@ -6476,7 +6476,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       const rProg  = Math.max(0, Math.min(1, 1 - (simR.x - toR) / rRange));
       detailLayer.style.opacity = Math.max(0, 1 - rProg).toFixed(3);
       cardLayer.style.opacity   = rProg.toFixed(3);
-      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
+      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled() || !simR.settled()) {
         tpExpandAnim = requestAnimationFrame(tick);
       } else {
         panel.style.display = 'none';
@@ -6744,7 +6744,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       searchScrim.style.opacity = '1';
       document.getElementById('tpPhoneContent').style.filter   = 'blur(8px)';
       document.getElementById('tpPhoneBottomNav').style.filter = 'blur(8px)';
-      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
+      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled() || !simR.settled()) {
         tpSearchAnim = requestAnimationFrame(tick);
       } else {
         searchPanel.style.left = toX + 'px'; searchPanel.style.top = toY + 'px';
@@ -6804,7 +6804,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       fadeProgress = Math.max(0, fadeProgress - dt / 0.15);
       contentLayer.style.opacity = fadeProgress.toFixed(3);
       pillLayer.style.opacity    = (1 - fadeProgress).toFixed(3);
-      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
+      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled() || !simR.settled()) {
         tpSearchAnim = requestAnimationFrame(tick);
       } else {
         searchPanel.style.display = 'none';
@@ -6940,7 +6940,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       popoverPanel.style.borderRadius = Math.max(0, simR.x) + 'px';
       inner.style.transform = `scale(${simW.x / expandedW})`;
       popoverScrim.style.opacity = '1';
-      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
+      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled() || !simR.settled()) {
         tpPopoverAnim = requestAnimationFrame(tick);
       } else {
         popoverPanel.style.left = toX + 'px'; popoverPanel.style.top = toY + 'px';
@@ -6957,21 +6957,23 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
     if (!tpPopoverState) return;
     if (tpPopoverAnim) cancelAnimationFrame(tpPopoverAnim);
     tpScalePulseCancel();
-    const { fromX: savedFromX, fromY: savedFromY, fromW: toW, fromH: toH, fromR: toR, chipEl } = tpPopoverState;
+    const { fromX: savedFromX, fromY: savedFromY, fromW: savedFromW, fromH: savedFromH, fromR: toR, chipEl } = tpPopoverState;
     const pillLayer    = document.getElementById('tpPopoverPillLayer');
     const contentLayer = document.getElementById('tpPopoverContentLayer');
     const inner        = document.getElementById('tpPopoverInner');
     popoverPanel.style.pointerEvents = 'none';
     popoverScrim.style.pointerEvents = 'none';
     tpPopoverState = null;
-    // Re-measure chip position at collapse time — chip may have shifted since expand
+    // Re-measure chip rect at collapse time — position and size may have shifted since expand
     const tpPhoneEl = document.getElementById('tpPhone');
     const tpPhoneRect2 = tpPhoneEl.getBoundingClientRect();
-    let toX = savedFromX, toY = savedFromY;
+    let toX = savedFromX, toY = savedFromY, toW = savedFromW, toH = savedFromH;
     if (chipEl) {
       const chipRect = chipEl.getBoundingClientRect();
       toX = chipRect.left - tpPhoneRect2.left - tpPhoneEl.clientLeft;
       toY = chipRect.top  - tpPhoneRect2.top  - tpPhoneEl.clientTop;
+      toW = chipRect.width;
+      toH = chipRect.height;
     }
 
     const startW = parseFloat(popoverPanel.style.width)        || toW;
@@ -7011,7 +7013,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       pillLayer.style.opacity    = pillFade.toFixed(3);
       tpSetPopoverPillChipOpacity(chipFade);
       popoverPanel.style.boxShadow = `0 4px 24px rgba(0,0,0,${(0.14 * (1 - pillFade)).toFixed(3)}),0 1px 4px rgba(0,0,0,${(0.08 * (1 - pillFade)).toFixed(3)})`;
-      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
+      if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled() || !simR.settled()) {
         tpPopoverAnim = requestAnimationFrame(tick);
       } else {
         popoverPanel.style.display = 'none';
@@ -10626,17 +10628,23 @@ function ngExpandCard(card) {
 function ngCollapseCard(velX, velY) {
   if (!ngExpandState) return;
   if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
-  const { fromW: toW, fromH: toH, fromR: toR, card, imgEl, isModal, refW } = ngExpandState;
+  const { fromR: toR, card, imgEl, isModal, refW } = ngExpandState;
   const phone     = document.getElementById('ngPhone');
   const panel     = isModal ? document.getElementById('ngModalPanel') : document.getElementById('ngExpandPanel');
-  // Re-measure card position at collapse time — card may have shifted since expand (e.g. layout reflow)
+  // Re-measure card rect at collapse time — position and size may have shifted since expand
   const phoneRect = phone.getBoundingClientRect();
   let toX = ngExpandState.fromX;
   let toY = ngExpandState.fromY;
+  let toW = ngExpandState.fromW;
+  let toH = ngExpandState.fromH;
   if (card) {
     const cardRect = card.getBoundingClientRect();
+    const liveImgEl = card.querySelector('.sk-carousel-img');
+    const imgRect = liveImgEl ? liveImgEl.getBoundingClientRect() : cardRect;
     toX = cardRect.left - phoneRect.left - phone.clientLeft;
     toY = cardRect.top  - phoneRect.top  - phone.clientTop;
+    toW = cardRect.width;
+    toH = imgRect.height;
   }
   panel.style.pointerEvents = 'none';
   document.getElementById('ngExpandScrim').style.pointerEvents = 'none';
@@ -10696,7 +10704,7 @@ function ngCollapseCard(velX, velY) {
     cardLayer.style.opacity   = (1 - fadeProgress).toFixed(3);
     if (isModal) panel.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * fadeProgress).toFixed(3)})`;
 
-    if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
+    if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled() || !simR.settled()) {
       ngExpandAnim = requestAnimationFrame(tick);
     } else {
       ngExpandAnim = null;
@@ -10765,7 +10773,7 @@ function ngRevertToExpanded(velX, velY) {
     scrim.style.opacity = Math.max(0, simScrim.x).toFixed(3);
     if (detailInner) detailInner.style.transform = `scale(${Math.max(0.01, scale)})`;
 
-    if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
+    if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled() || !simR.settled()) {
       ngExpandAnim = requestAnimationFrame(tick);
     } else {
       panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
