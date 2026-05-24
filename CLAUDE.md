@@ -828,3 +828,141 @@ insetScrim.style.opacity   = String(sp);       // sp: 1→0 (fades out) ✓
 **Always use `tpSpringAnimate`** for these, not a custom `requestAnimationFrame` tick. The custom tick shares `tpAnim` with `tpSpringAnimate`, so they conflict unpredictably. `tpSpringAnimate` is the single rAF manager — use it everywhere.
 
 **Why this matters for content changes:** Any time you change the inset modal template (bigger image, more padding, extra rows), the sheet will auto-resize correctly on next open. You never need to hardcode a height.
+
+---
+
+## Press-to-scale + drag-to-dismiss + X-to-dismiss pattern
+
+This is the inset sheet interaction pattern. Reuse it for any floating element that should feel physically responsive to touch.
+
+### The two-element split (critical)
+
+The slide animation (`translateY`) and the scale animation must live on **separate elements** or they'll fight each other:
+
+```html
+<!-- Outer: owns translateY for slide/drag -->
+<div id="mySlide" data-open="false" style="position:absolute; transform:translateY(110%);">
+  <!-- Inner: owns scale for press/pulse -->
+  <div id="myPanel" style="transform-origin:center center;">
+    <!-- content -->
+  </div>
+</div>
+```
+
+Never put both on the same element.
+
+### State variables (must be outer scope, not inside an IIFE)
+
+`play()` and the drag/press handlers live in different scopes. If you declare these inside an IIFE they'll be invisible to `play()` and cancel will silently fail:
+
+```js
+let tpInsetAnimating  = false;  // blocks re-entry during animation
+let tpInsetPressRaf   = null;   // tracks the press spring RAF
+let tpInsetPressScale = 1.0;    // tracks current scale so springs chain correctly
+```
+
+### Press spring
+
+On `pointerdown`, spring the inner element toward 0.96. Use a **critically damped** ratio (1.0) for press-down so it eases straight in with no overshoot:
+
+```js
+container.addEventListener('pointerdown', (e) => {
+  if (!e.target.closest('#mySlide')) return;
+  animatePressScale(pulse, 0.96, 350, 1.0); // critically damped press-down
+  dragActive = true;
+  dragStartY = e.clientY;
+}, { passive: true });
+```
+
+On `pointerup`, spring back with bounce (ratio ~0.50):
+
+```js
+container.addEventListener('pointerup', (e) => {
+  if (e.target.closest('.my-close-btn')) return; // X will dismiss — don't spring back
+  const dy = Math.max(0, e.clientY - dragStartY);
+  if (dy > 4) return; // drag handler takes over
+  animatePressScale(pulse, 1.0, 300, 0.50);
+}, { passive: true });
+```
+
+The `animatePressScale` function springs from the **current** `tpInsetPressScale` to the target, so chains work correctly mid-animation:
+
+```js
+function animatePressScale(pulse, toScale, k, ratio) {
+  if (tpInsetPressRaf) { cancelAnimationFrame(tpInsetPressRaf); tpInsetPressRaf = null; }
+  const d = calcDamping(k, ratio);
+  const from = tpInsetPressScale;
+  const startT = performance.now();
+  function tick(now) {
+    const t = (now - startT) / 1000;
+    const p = springPos(t, k, d);
+    tpInsetPressScale = from + (toScale - from) * (1 - p);
+    pulse.style.transform = `scale(${tpInsetPressScale.toFixed(4)})`;
+    if (t < 3 && !isSettled(t, k, d)) { tpInsetPressRaf = requestAnimationFrame(tick); }
+    else { tpInsetPressRaf = null; tpInsetPressScale = toScale; pulse.style.transform = toScale === 1 ? '' : `scale(${toScale})`; }
+  }
+  tpInsetPressRaf = requestAnimationFrame(tick);
+}
+```
+
+### Drag
+
+While dragging, lock the scale where it is (don't reset it):
+
+```js
+document.addEventListener('pointermove', (e) => {
+  if (!dragActive) return;
+  const dy = Math.max(0, e.clientY - dragStartY);
+  if (dy > 4) {
+    // Lock scale — cancel RAF but leave transform as-is
+    if (tpInsetPressRaf) { cancelAnimationFrame(tpInsetPressRaf); tpInsetPressRaf = null; }
+  }
+  slide.style.transform = `translateY(${dy}px)`;
+}, { passive: true });
+```
+
+On drag release: if past threshold → animate off screen; if not → spring both translateY and scale back:
+
+```js
+} else if (dy > 4) {
+  tpSpringAnimate(...spring slide back...);
+  animatePressScale(pulse, 1.0, 300, 0.50); // spring scale back simultaneously
+}
+```
+
+### X-to-dismiss
+
+When `play()` is called to close, cancel ALL scale animations before the dismiss slide starts — both the press spring and any `tpScalePulse`:
+
+```js
+tpScalePulseCancel();
+if (tpInsetPressRaf) { cancelAnimationFrame(tpInsetPressRaf); tpInsetPressRaf = null; }
+tpInsetPressScale = 1.0;
+// Do NOT clear insetPanel.style.transform here — leave scale at wherever it is
+// The slide-down plays over whatever scale state the panel is at
+setTimeout(startSlide, 80); // small delay so scale-down is visible before slide
+```
+
+**The trap:** clearing `insetPanel.style.transform = ''` before the slide starts causes a snap to 100% scale. Leave the transform alone — the slide-down animation runs on the outer element, so the inner scale just stays put.
+
+### Done callback cleanup
+
+Always reset panel scale when close finishes:
+
+```js
+}, TP_BOUNCE_SPRING, () => {
+  slide.style.transform = 'translateY(110%)';
+  slide.dataset.open = 'false';
+  if (isOpen) { tpScalePulseCancel(); panel.style.transition = ''; panel.style.transform = ''; }
+  tpInsetAnimating = false;
+  if (onDoneCallback) onDoneCallback();
+});
+```
+
+### Scrim dismiss
+
+The scrim has `pointer-events:none` so clicks fall through to the container. Check if the click landed outside the panel instead:
+
+```js
+if (!e.target.closest('#mySlide')) { triggerDismiss(); return; }
+```

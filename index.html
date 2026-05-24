@@ -1317,9 +1317,14 @@
       background: var(--c-surface-0);
       border-radius: 22px 22px 0 0;
       box-shadow: 0 -2px 20px rgba(0,0,0,0);
-      padding: 14px 18px;
+      padding: 0;
       will-change: transform;
       z-index: 11;
+      overflow: hidden;
+    }
+    .sheet-inner {
+      padding: 14px 18px;
+      transform-origin: center top;
     }
 
     /* Match sheet height to tp-slide-up (580px phone) so content fills without empty bottom space */
@@ -1677,10 +1682,6 @@
 
     /* ── Notification demo ── */
     .notif {
-      position: absolute;
-      bottom: calc(68px + 14px);
-      left: 14px;
-      right: 14px;
       background: var(--c-surface-0);
       border-radius: 14px;
       padding: 12px 14px;
@@ -1688,8 +1689,7 @@
       align-items: center;
       gap: 10px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-      will-change: transform, opacity;
-      z-index: 20;
+      will-change: transform;
     }
 
     .notif-icon {
@@ -2866,7 +2866,7 @@
     <div class="demo-mode-toggle" id="tpSlideUpModeToggle" style="display:none;">
       <button class="demo-mode-btn active" data-mode="fitted">Fitted</button>
       <button class="demo-mode-btn" data-mode="full-height">Full Height</button>
-      <button class="demo-mode-btn" data-mode="inset-sheet">Inset Sheet</button>
+      <button class="demo-mode-btn" data-mode="inset-sheet">Inset</button>
     </div>
     <div class="demo-mode-toggle" id="tpSufModeToggle" style="display:none;">
       <button class="demo-mode-btn active" data-mode="sheet">Sheet</button>
@@ -3071,7 +3071,7 @@
         <!-- Inset sheet panel -->
         <div id="tpInsetSheetScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.40);opacity:0;pointer-events:none;z-index:14;visibility:hidden;"></div>
         <div id="tpInsetSheetSlide" data-open="false" style="position:absolute;bottom:10px;left:10px;right:10px;transform:translateY(110%);z-index:15;visibility:hidden;">
-          <div id="tpInsetSheetPanel" style="background:var(--c-surface-0);box-shadow:0 8px 32px rgba(0,0,0,0.28);overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:16px;transform-origin:center bottom;"></div>
+          <div id="tpInsetSheetPanel" style="background:var(--c-surface-0);box-shadow:0 8px 32px rgba(0,0,0,0.28);overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:16px;transform-origin:center center;"></div>
         </div>
       </div>
 
@@ -3204,11 +3204,13 @@
           <div class="sk-nav-icon"></div>
           <div class="sk-nav-icon"></div>
         </div>
-        <div class="notif" id="tpSufNotif" style="transform:translateY(40px);opacity:0;">
-          <div class="notif-icon"></div>
-          <div class="notif-text">
-            <div class="notif-line"></div>
-            <div class="notif-line short"></div>
+        <div id="tpSufNotifSlide" style="position:absolute;bottom:calc(68px + 14px);left:14px;right:14px;transform:translateY(40px);opacity:0;z-index:20;">
+          <div class="notif" id="tpSufNotifInner" style="transform-origin:center bottom;">
+            <div class="notif-icon"></div>
+            <div class="notif-text">
+              <div class="notif-line"></div>
+              <div class="notif-line short"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -3997,6 +3999,7 @@
 <!-- ── Shared templates ─────────────────────────────────────────── -->
 
 <template id="tpl-sheet">
+  <div class="sheet-inner">
   <div class="sheet-header">
     <div class="sheet-close">
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
@@ -4049,6 +4052,7 @@
       <div class="sheet-line" style="margin-bottom:0;width:88%;"></div>
       <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -5388,6 +5392,7 @@ let tpExpandAnim    = null;
 let tpPendingImgEl  = null; // imgEl hidden during expansion; cleared on next expand
 const TP_SPRING        = { stiffness: 500, damping: calcDamping(500, 1.0) };
 const TP_BOUNCE_SPRING = { stiffness: 500, damping: calcDamping(500, 0.80), stiffnessXW: 750, dampingXW: calcDamping(750, 0.80) };
+const TP_INSET_SHEET_SPRING = { stiffness: 300, damping: calcDamping(300, 0.70) };
 
 const TP_SCALE_STANDARD = 'cubic-bezier(0.40,0.00,0.20,1.00)';
 const TP_SCALE_BOUNCE   = 'cubic-bezier(0.34,1.56,0.64,1)';
@@ -5406,11 +5411,11 @@ function tpScalePulseCancel() {
   if (_tpScalePulseTimer3) { clearTimeout(_tpScalePulseTimer3); _tpScalePulseTimer3 = null; }
 }
 
-function tpScalePulse(el, isOpen, { magnitude = 0.03, magnitudeClose = 0.07, startDelay = 0 } = {}) {
+function tpScalePulse(el, isOpen, { magnitude = 0.03, magnitudeClose = 0.07, startDelay = 0, springK = TP_SCALE_SPRING_K, springD = TP_SCALE_SPRING_D, phase2Delay = 200, phase1Dur = 200 } = {}) {
   if (!el) return;
   tpScalePulseCancel();
   const peak  = isOpen ? (1 + magnitude) : (1 - magnitudeClose);
-  const t1dur = isOpen ? 200 : 300, t2delay = 200, t2dur = 700;
+  const t1dur = isOpen ? phase1Dur : 300, t2delay = phase2Delay, t2dur = 700;
   el.style.transition = '';
   el.style.transform  = 'scale(1)';
   _tpScalePulseTimer1 = setTimeout(() => {
@@ -5427,9 +5432,9 @@ function tpScalePulse(el, isOpen, { magnitude = 0.03, magnitudeClose = 0.07, sta
           const startScale = peak;
           function springTick(now) {
             const t = (now - startT) / 1000;
-            const pos = springPos(t, TP_SCALE_SPRING_K, TP_SCALE_SPRING_D);
+            const pos = springPos(t, springK, springD);
             el.style.transform = `scale(${(startScale + (1 - startScale) * (1 - pos)).toFixed(4)})`;
-            if (t < 10 && !isSettled(t, TP_SCALE_SPRING_K, TP_SCALE_SPRING_D)) {
+            if (t < 10 && !isSettled(t, springK, springD)) {
               _tpScalePulseRaf = requestAnimationFrame(springTick);
             } else {
               _tpScalePulseRaf = null;
@@ -7426,6 +7431,9 @@ setTimeout(() => {
 // Each entry: { description, panel (optional HTML), play() }
 let tpCrossFadeAnimating = false;
 let tpCrossFadeCooldown  = 0;
+let tpInsetAnimating  = false;
+let tpInsetPressRaf   = null;
+let tpInsetPressScale = 1.0;
 const TP_DEMOS = {
   'grow': {
     description: 'Used to seamlessly grow an element to reveal more detail.',
@@ -7682,7 +7690,10 @@ const TP_DEMOS = {
         if (ov) ov.style.opacity = '0';
       });
       // Inset sheet reset
+      tpInsetAnimating = false;
       tpScalePulseCancel();
+      if (tpInsetPressRaf) { cancelAnimationFrame(tpInsetPressRaf); tpInsetPressRaf = null; }
+      tpInsetPressScale = 1.0;
       const insetSlide = document.getElementById('tpInsetSheetSlide');
       const insetPanel = document.getElementById('tpInsetSheetPanel');
       const insetScrim = document.getElementById('tpInsetSheetScrim');
@@ -7697,9 +7708,37 @@ const TP_DEMOS = {
         const insetPanel = document.getElementById('tpInsetSheetPanel');
         const insetScrim = document.getElementById('tpInsetSheetScrim');
         const isOpen = insetSlide?.dataset.open === 'true';
-        tpScalePulse(insetPanel, !isOpen, { magnitude: 0.04, magnitudeClose: 0.12, startDelay: isOpen ? 0 : 150 });
+        if (!insetSlide || !insetPanel) { tpInsetAnimating = false; return; }
+        tpInsetAnimating = true;
+        // Cancel any in-progress press spring before handing off to scale pulse
+        tpScalePulseCancel();
+        if (tpInsetPressRaf) { cancelAnimationFrame(tpInsetPressRaf); tpInsetPressRaf = null; }
+        tpInsetPressScale = 1.0;
+        if (!isOpen) {
+          insetPanel.style.transition = '';
+          insetPanel.style.transform = 'scale(0.90)';
+          tpScalePulseCancel();
+          const _isk = 150, _isd = calcDamping(150, 0.50);
+          _tpScalePulseTimer1 = setTimeout(() => {
+            _tpScalePulseTimer1 = null;
+            insetPanel.style.transition = '';
+            const _isStart = performance.now();
+            function _insetScaleTick(now) {
+              const t = (now - _isStart) / 1000;
+              const p = springPos(t, _isk, _isd);
+              insetPanel.style.transform = `scale(${(0.90 + 0.10 * (1 - p)).toFixed(4)})`;
+              if (t < 10 && !isSettled(t, _isk, _isd)) {
+                _tpScalePulseRaf = requestAnimationFrame(_insetScaleTick);
+              } else {
+                _tpScalePulseRaf = null;
+                insetPanel.style.transition = ''; insetPanel.style.transform = '';
+              }
+            }
+            _tpScalePulseRaf = requestAnimationFrame(_insetScaleTick);
+          }, 100);
+        }
         const startSlide = () => tpSpringAnimate((t) => {
-          const p  = springPos(t, TP_BOUNCE_SPRING.stiffness, TP_BOUNCE_SPRING.damping);
+          const p  = springPos(t, TP_INSET_SHEET_SPRING.stiffness, TP_INSET_SHEET_SPRING.damping);
           const sp = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
           if (isOpen) {
             // closing: slide down (0% → 110%), scrim fades out (1 → 0)
@@ -7710,13 +7749,32 @@ const TP_DEMOS = {
             insetSlide.style.transform = `translateY(${p * 110}%)`;
             insetScrim.style.opacity   = String(1 - sp);
           }
-        }, TP_BOUNCE_SPRING, () => {
+        }, TP_INSET_SHEET_SPRING, () => {
           insetSlide.style.transform = isOpen ? 'translateY(110%)' : 'translateY(0%)';
           insetSlide.dataset.open    = isOpen ? 'false' : 'true';
           insetScrim.style.opacity   = isOpen ? '0' : '1';
+          if (isOpen) { tpScalePulseCancel(); insetPanel.style.transition = ''; insetPanel.style.transform = ''; }
+          tpInsetAnimating = false;
           if (onDoneCallback) onDoneCallback();
         });
-        if (isOpen) { setTimeout(startSlide, 80); } else { startSlide(); }
+        if (isOpen) {
+          tpScalePulseCancel();
+          const _csk = 240, _csd = calcDamping(240, 0.70);
+          const _csStart = performance.now();
+          function _insetCloseScaleTick(now) {
+            const t = (now - _csStart) / 1000;
+            const p = springPos(t, _csk, _csd);
+            insetPanel.style.transform = `scale(${(0.90 + 0.10 * p).toFixed(4)})`;
+            if (t < 10 && !isSettled(t, _csk, _csd)) {
+              _tpScalePulseRaf = requestAnimationFrame(_insetCloseScaleTick);
+            } else {
+              _tpScalePulseRaf = null;
+              insetPanel.style.transform = 'scale(0.90)';
+            }
+          }
+          _tpScalePulseRaf = requestAnimationFrame(_insetCloseScaleTick);
+          setTimeout(startSlide, 50);
+        } else { startSlide(); }
         return;
       }
       if (tpSheetAnimating) return;
@@ -7855,8 +7913,10 @@ const TP_DEMOS = {
         m.style.transform = 'translateY(calc(-50% + 30px)) scale(1)';
       });
       // Toast mode reset
-      const n = document.getElementById('tpSufNotif');
+      const n = document.getElementById('tpSufNotifSlide');
       if (n) { n.style.transform = 'translateY(40px)'; n.style.opacity = '0'; }
+      const ni = document.getElementById('tpSufNotifInner');
+      if (ni) { tpScalePulseCancel(); ni.style.transition = ''; ni.style.transform = ''; if (ni) ni._pulseFired = false; }
       tpDemoState = 'out';
     },
     play(onDoneCallback) {
@@ -7864,35 +7924,49 @@ const TP_DEMOS = {
       if (tpSufMode === 'toast') {
         const stiffness = Math.round(750 * 0.5); // snappy·large.bounce
         const damping   = calcDamping(stiffness, 0.5);
-        const n = document.getElementById('tpSufNotif');
+        const n = document.getElementById('tpSufNotifSlide');
         const isIn = tpDemoState === 'in';
         tpDemoState = isIn ? 'out' : 'in';
         if (tpAnim) cancelAnimationFrame(tpAnim);
+        const ni = document.getElementById('tpSufNotifInner');
         if (isIn) {
-          const EXIT_DUR = 0.15, SLIDE_PX = 30;
+          // Scale down immediately, then slide down after 20ms
+          if (ni) { ni.style.transition = 'transform 120ms cubic-bezier(0.4,0,1,1)'; ni.style.transform = 'scale(0.85)'; }
+          const SLIDE_DELAY = 0.02, EXIT_DUR = 0.15, SLIDE_PX = 30;
           const exitStart = performance.now();
           function exitTick(now) {
-            const t = Math.min((now - exitStart) / 1000, EXIT_DUR);
-            const prog = (t / EXIT_DUR) * (t / EXIT_DUR);
+            const elapsed = (now - exitStart) / 1000;
+            if (elapsed < SLIDE_DELAY) { tpAnim = requestAnimationFrame(exitTick); return; }
+            const t = Math.min((elapsed - SLIDE_DELAY) / EXIT_DUR, 1);
+            const prog = t * t;
             n.style.transform = `translateY(${prog * SLIDE_PX}px)`;
-            n.style.opacity = String(Math.max(1 - t / EXIT_DUR, 0));
-            if (t < EXIT_DUR) { tpAnim = requestAnimationFrame(exitTick); }
-            else { n.style.transform = `translateY(${SLIDE_PX}px)`; n.style.opacity = '0'; if (onDoneCallback) onDoneCallback(); }
+            n.style.opacity = String(Math.max(1 - t, 0));
+            if (t < 1) { tpAnim = requestAnimationFrame(exitTick); }
+            else { n.style.transform = `translateY(${SLIDE_PX}px)`; n.style.opacity = '0'; if (ni) { ni.style.transition = ''; ni.style.transform = ''; } if (onDoneCallback) onDoneCallback(); }
           }
           tpAnim = requestAnimationFrame(exitTick);
         } else {
+          if (ni) { ni.style.transition = ''; ni.style.transform = 'scale(0.85)'; }
           n.style.opacity = '0';
           n.style.transform = 'translateY(30px)';
           const enterStart = performance.now();
+          const SCALE_DELAY = 0.08;
           function enterTick(now) {
             const t = (now - enterStart) / 1000;
             const pos = springPos(t, stiffness, damping);
             n.style.transform = `translateY(${pos * 30}px)`;
             n.style.opacity = String(Math.min(t / 0.15, 1));
+            if (ni && t >= SCALE_DELAY) {
+              const st = t - SCALE_DELAY;
+              const sk = 400, sd = calcDamping(400, 0.65);
+              const sp = springPos(st, sk, sd);
+              ni.style.transform = `scale(${0.85 + 0.15 * (1 - sp)})`;
+            }
             if (t < 5 && !isSettled(t, stiffness, damping)) {
               tpAnim = requestAnimationFrame(enterTick);
             } else {
               n.style.transform = 'translateY(0)'; n.style.opacity = '1';
+              if (ni) { ni.style.transform = ''; }
               if (onDoneCallback) onDoneCallback();
             }
           }
@@ -9886,6 +9960,31 @@ animate(scrim, { opacity:[0,0.32] },
 
     const container = document.getElementById('tpSheetContent');
 
+    let tapSheet = null;
+    function sheetTapDown(sheet) {
+      tapSheet = sheet;
+      const inner = sheet.querySelector('.sheet-inner');
+      if (!inner) return;
+      inner.style.transition = 'transform 120ms cubic-bezier(0.4,0,1,1)';
+      inner.style.transform  = 'scale(0.97)';
+    }
+    function sheetTapRelease(sheet) {
+      if (!sheet) return;
+      const inner = sheet.querySelector('.sheet-inner');
+      if (!inner) return;
+      inner.style.transition = '';
+      const k = 280, d = calcDamping(280, 0.60);
+      const startT = performance.now();
+      function tick(now) {
+        const t = (now - startT) / 1000;
+        const p = springPos(t, k, d);
+        inner.style.transform = `scale(${0.97 + 0.03 * (1 - p)})`;
+        if (t < 3 && !isSettled(t, k, d)) { requestAnimationFrame(tick); }
+        else { inner.style.transform = ''; }
+      }
+      requestAnimationFrame(tick);
+    }
+
     container.addEventListener('pointerdown', (e) => {
       if (tpPlaying) return;
       if (tpActiveKey() !== 'slide-up') return;
@@ -9893,6 +9992,7 @@ animate(scrim, { opacity:[0,0.32] },
       if (!info) return;
       // Only start drag if pointerdown is on a sheet (not scrim area)
       if (!e.target.closest('.sheet')) return;
+      sheetTapDown(info.top);
       // Cancel spring only when we actually start dragging (handled in pointermove instead)
       dragActive     = true;
       dragStartY     = e.clientY;
@@ -9963,6 +10063,8 @@ animate(scrim, { opacity:[0,0.32] },
       const bOvEl = below ? below.querySelector('.sheet-overlay') : null;
       const bOv = bOvEl ? (parseFloat(bOvEl.style.opacity) || 0) : 0;
       dragSheet = null; dragSheetBelow = null;
+      sheetTapRelease(dy <= 4 ? sheet : null);
+      if (dy > 4 && sheet) { const inner = sheet.querySelector('.sheet-inner'); if (inner) { inner.style.transition = ''; inner.style.transform = ''; } }
 
       if (dy > DISMISS_THRESHOLD_PX) {
         animateDismiss(sheet, below, dy, noBelow);
@@ -10020,6 +10122,17 @@ animate(scrim, { opacity:[0,0.32] },
       if (tpPlaying) { softStop(); return; }
       if (performance.now() < tpSheetClickCooldown) return;
 
+      // Inset sheet: X button closes, taps elsewhere do nothing
+      if (tpSlideUpMode === 'inset-sheet') {
+        if (tpInsetAnimating) return;
+        const slide = document.getElementById('tpInsetSheetSlide');
+        const isOpen = slide?.dataset.open === 'true';
+        if (!isOpen) { TP_DEMOS['slide-up'].play(); return; }
+        if (e.target.closest('.inset-modal-close')) { TP_DEMOS['slide-up'].play(); return; }
+        if (!e.target.closest('#tpInsetSheetSlide')) { TP_DEMOS['slide-up'].play(); return; } // tap outside panel (scrim area)
+        return;
+      }
+
       const onClose = !!e.target.closest('.sheet-close');
       const onSheet = !!e.target.closest('.sheet');
 
@@ -10028,6 +10141,121 @@ animate(scrim, { opacity:[0,0.32] },
       if (onSheet && tpSlideUpStep < 3) { TP_DEMOS['slide-up'].play(); return; }
       // Empty phone area (no sheets): open first sheet
       if (!onSheet && tpSlideUpStep === 0) { snapToStep(0); TP_DEMOS['slide-up'].play(); return; }
+    });
+  })();
+
+  // Drag-to-dismiss for inset sheet
+  (() => {
+    const DISMISS_THRESHOLD_PX = 60;
+    let dragActive = false, dragStartY = 0;
+    let insetAnimating = false;
+
+    function getSlide() { return document.getElementById('tpInsetSheetSlide'); }
+    function getScrim() { return document.getElementById('tpInsetSheetScrim'); }
+    function getPulse() { return document.getElementById('tpInsetSheetPanel'); }
+
+    const container = document.getElementById('tpSheetContent');
+
+    function animatePressScale(pulse, toScale, kk, ratio) {
+      if (tpInsetPressRaf) { cancelAnimationFrame(tpInsetPressRaf); tpInsetPressRaf = null; }
+      const dd = calcDamping(kk, ratio);
+      const from = tpInsetPressScale;
+      const range = toScale - from;
+      const startT = performance.now();
+      function tick(now) {
+        const t = (now - startT) / 1000;
+        const p = springPos(t, kk, dd);
+        tpInsetPressScale = from + range * (1 - p);
+        pulse.style.transform = `scale(${tpInsetPressScale.toFixed(4)})`;
+        if (t < 3 && !isSettled(t, kk, dd)) { tpInsetPressRaf = requestAnimationFrame(tick); }
+        else { tpInsetPressRaf = null; tpInsetPressScale = toScale; pulse.style.transform = toScale === 1 ? '' : `scale(${toScale})`; }
+      }
+      tpInsetPressRaf = requestAnimationFrame(tick);
+    }
+
+    container.addEventListener('pointerdown', (e) => {
+      if (tpPlaying) return;
+      if (tpActiveKey() !== 'slide-up' || tpSlideUpMode !== 'inset-sheet') return;
+      const slide = getSlide();
+      if (!slide || slide.dataset.open !== 'true') return;
+      if (!e.target.closest('#tpInsetSheetSlide')) return;
+      const pulse = getPulse();
+      if (pulse) animatePressScale(pulse, 0.96, 350, 1.0);
+      dragActive = true;
+      dragStartY = e.clientY;
+    }, { passive: true });
+
+    container.addEventListener('pointerup', (e) => {
+      if (tpPlaying) return;
+      if (tpActiveKey() !== 'slide-up' || tpSlideUpMode !== 'inset-sheet') return;
+      const dy = Math.max(0, e.clientY - dragStartY);
+      if (dy > 4) return;
+      if (e.target.closest('.inset-modal-close')) return; // X will dismiss — don't spring back
+      const pulse = getPulse();
+      if (pulse) animatePressScale(pulse, 1.0, 300, 0.50);
+    }, { passive: true });
+
+    document.addEventListener('pointermove', (e) => {
+      if (!dragActive) return;
+      const slide = getSlide(), scrim = getScrim();
+      if (!slide) return;
+      const dy   = Math.max(0, e.clientY - dragStartY);
+      if (dy > 4) {
+        // drag started — lock scale at pressed position
+        if (tpInsetPressRaf) { cancelAnimationFrame(tpInsetPressRaf); tpInsetPressRaf = null; }
+      }
+      const prog = Math.min(dy / slide.offsetHeight, 1);
+      slide.style.transform = `translateY(${dy}px)`;
+      if (scrim) scrim.style.opacity = String(Math.max(0, 1 - prog * 2));
+    }, { passive: true });
+
+    document.addEventListener('pointerup', (e) => {
+      if (!dragActive) return;
+      dragActive = false;
+      const slide = getSlide(), scrim = getScrim();
+      if (!slide) return;
+      const dy = Math.max(0, e.clientY - dragStartY);
+      if (dy > 4) tpDragDismissing = true;
+
+      if (dy > DISMISS_THRESHOLD_PX) {
+        // Animate off screen
+        tpInsetAnimating = true;
+        const slideH  = slide.offsetHeight + 40;
+        const scrimAt = parseFloat(scrim?.style.opacity ?? '0');
+        const startT  = performance.now(), dur = 280;
+        function dismiss(now) {
+          const t    = Math.min((now - startT) / dur, 1);
+          const ease = 1 - Math.pow(1 - t, 3);
+          slide.style.transform = `translateY(${dy + (slideH - dy) * ease}px)`;
+          if (scrim) scrim.style.opacity = String(scrimAt * (1 - ease));
+          if (t < 1) { requestAnimationFrame(dismiss); return; }
+          slide.style.transform = 'translateY(110%)';
+          slide.dataset.open    = 'false';
+          if (scrim) scrim.style.opacity = '0';
+          tpInsetAnimating = false;
+        }
+        requestAnimationFrame(dismiss);
+      } else if (dy > 4) {
+        // Spring back to resting position + spring scale back up
+        const k = 400, d = calcDamping(400, 0.75);
+        const scrimAt = parseFloat(scrim?.style.opacity ?? '0');
+        const pulse = getPulse();
+        tpSpringAnimate((t) => {
+          const p = springPos(t, k, d);
+          slide.style.transform = `translateY(${dy * p}px)`;
+          if (scrim) scrim.style.opacity = String(scrimAt + (1 - scrimAt) * (1 - p));
+        }, { stiffness: k, damping: d }, () => {
+          slide.style.transform = 'translateY(0%)';
+          if (scrim) scrim.style.opacity = '1';
+        });
+        if (pulse) animatePressScale(pulse, 1.0, 300, 0.50);
+      } else {
+        // Clean tap — spring scale back unless X was pressed (X triggers dismiss)
+        if (!e.target.closest('.inset-modal-close')) {
+          const pulse = getPulse();
+          if (pulse && tpInsetPressScale < 1.0) animatePressScale(pulse, 1.0, 300, 0.50);
+        }
+      }
     });
   })();
 
