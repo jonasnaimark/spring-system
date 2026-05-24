@@ -1002,17 +1002,22 @@ panel.style.borderRadius = (toR + ((tpExpandState?.fromR ?? 14) - toR) * progres
 
 **Symptom:** When dismissing the first card, the left and top edges of the panel are briefly clipped. Subsequent cards dismiss cleanly. Only happens with spring overshoot (the panel briefly goes to negative x/y).
 
-**Root cause:** The expand panels (`ngExpandPanel`, `ngModalPanel`, `tpExpandPanel`, `tpModalPanel`) were inside `ngPhoneScreen` / `tpPhoneScreen` which has `overflow:hidden; border-radius:40px`. Spring overshoot pushes the panel to slightly negative `left`/`top`, which gets clipped.
+**Root cause:** Spring physics overshoot during collapse pushes `simX.x` / `simY.x` briefly below 0. The panel `left`/`top` goes negative, getting clipped by `phone-frame`'s `overflow:hidden`. This only affects the first (or any near-zero-position) card because cards in other rows have larger `fromX/fromY` values that don't reach 0 during overshoot.
 
-**Fix pattern — mirror `#transitions-grow`:** In the grow demo, the flying panel is a direct child of `expandPhone` (the `.phone-frame` div). But `.phone-frame` also has `overflow:hidden` in its shared CSS.
+**Do NOT fix this with `overflow:visible` on the phone frame.** The `.phone-frame` container clips many other elements (push screens, sheets, detent panels). Setting `overflow:visible` causes all phone content to leak outside the device border — a major regression.
 
-**The actual fix:**
-1. Move the panels outside `ngPhoneScreen` to be direct children of `ngPhone` (they were already done in a previous edit).
-2. Set `overflow: visible` directly on `#ngPhone` and `#tpPhone` to override `.phone-frame`'s `overflow:hidden`:
+**The correct fix — clamp left/top in the collapse tick:**
 
-```html
-<div class="phone-frame" id="ngPhone" style="overflow:visible;">
-<div class="phone-frame" id="tpPhone" style="overflow:visible;">
+```js
+// In every collapse/revert tick that sets panel position:
+panel.style.left = Math.max(0, simX.x) + 'px';
+panel.style.top  = Math.max(0, simY.x) + 'px';
 ```
 
-**Why this is safe:** All phone content clipping is handled by `ngPhoneScreen` (which has its own `overflow:hidden; border-radius:40px`). The `ngSheetContent` and `ngDetentContent` elements are `position:absolute;inset:0` inside `ngPhone` and have their own `overflow:hidden`, so they don't overflow. The `.phone-frame` border is decorative only — removing its overflow clipping doesn't change the visual rounding of phone content.
+Apply to:
+- `tpCollapseCard` first tick (expand→card collapse)
+- `tpCollapseCard` second tick (detail→card collapse)
+- `ngCollapseCard` tick
+- `ngRevertToExpanded` tick
+
+The clamping is safe because the destination (`fromX/fromY`, the card thumbnail position) is always ≥ 0 — no card can be at a negative position inside the phone frame. Clamping prevents the overshoot from going below the frame edge without affecting the animation when targets are larger.

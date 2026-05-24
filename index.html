@@ -2884,7 +2884,7 @@
         <span id="tpCfIconBigB" class="material-symbols-outlined" style="position:absolute;width:120px;height:120px;font-size:120px;color:#1c1c1e;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48;line-height:1;display:flex;align-items:center;justify-content:center;opacity:0;">search</span>
       </div>
     </div>
-    <div class="phone-frame" id="tpPhone" style="overflow:visible;">
+    <div class="phone-frame" id="tpPhone">
     <div id="tpPhoneScreen" style="position:absolute;inset:0;overflow:hidden;border-radius:40px;">
       <div class="phone-content" id="tpPhoneContent"></div>
       <!-- Grow→Popover chip mode: search results screen (swapped in by applyTpGrowMode) -->
@@ -3293,7 +3293,7 @@
           <button class="demo-mode-btn" data-ng-mode="modal">Popover</button>
         </div>
         <div id="ngDemoScaler" style="transform-origin:center center; display:flex; flex-direction:column; align-items:center; gap:16px;">
-        <div class="phone-frame" id="ngPhone" style="overflow:visible;">
+        <div class="phone-frame" id="ngPhone">
         <div id="ngPhoneScreen" style="position:absolute;inset:0;overflow:hidden;border-radius:40px;">
           <div class="phone-content" id="ngPhoneContent"></div>
           <div class="sk-bottom-nav" id="ngBottomNav">
@@ -6384,8 +6384,8 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       simH.step(dt, DISMISS_K, DISMISS_D);
       simR.step(dt, DISMISS_K, DISMISS_D);
       simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
-      panel.style.left         = simX.x + 'px';
-      panel.style.top          = simY.x + 'px';
+      panel.style.left         = Math.max(0, simX.x) + 'px';
+      panel.style.top          = Math.max(0, simY.x) + 'px';
       panel.style.width        = simW.x + 'px';
       panel.style.height       = simH.x + 'px';
       panel.style.borderRadius = Math.max(0, simR.x) + 'px';
@@ -6463,8 +6463,8 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       simR.step(dt, DISMISS_K, DISMISS_D);
       simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
       const scale = simW.x / expandedW;
-      panel.style.left         = simX.x + 'px';
-      panel.style.top          = simY.x + 'px';
+      panel.style.left         = Math.max(0, simX.x) + 'px';
+      panel.style.top          = Math.max(0, simY.x) + 'px';
       panel.style.width        = simW.x + 'px';
       panel.style.height       = simH.x + 'px';
       panel.style.borderRadius = Math.max(0, simR.x) + 'px';
@@ -10664,8 +10664,8 @@ function ngCollapseCard(velX, velY) {
     simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
 
     const scale = simW.x / refW;
-    panel.style.left         = simX.x + 'px';
-    panel.style.top          = simY.x + 'px';
+    panel.style.left         = Math.max(0, simX.x) + 'px';
+    panel.style.top          = Math.max(0, simY.x) + 'px';
     panel.style.width        = simW.x + 'px';
     panel.style.height       = simH.x + 'px';
     panel.style.borderRadius = Math.max(0, simR.x) + 'px';
@@ -10738,8 +10738,8 @@ function ngRevertToExpanded(velX, velY) {
     simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
 
     const scale = simW.x / refW;
-    panel.style.left         = simX.x + 'px';
-    panel.style.top          = simY.x + 'px';
+    panel.style.left         = Math.max(0, simX.x) + 'px';
+    panel.style.top          = Math.max(0, simY.x) + 'px';
     panel.style.width        = simW.x + 'px';
     panel.style.height       = simH.x + 'px';
     panel.style.borderRadius = Math.max(0, simR.x) + 'px';
