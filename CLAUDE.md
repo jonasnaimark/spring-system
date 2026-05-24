@@ -998,26 +998,40 @@ const cornerR = toR + (targetCornerR - toR) * progress;
 panel.style.borderRadius = (toR + ((tpExpandState?.fromR ?? 14) - toR) * progress) + 'px';
 ```
 
-### Bug 2: Left/top edge clipping on first card dismiss
+### Bug 2: Panel snap at end of first dismiss (stale card position)
 
-**Symptom:** When dismissing the first card, the left and top edges of the panel are briefly clipped. Subsequent cards dismiss cleanly. Only happens with spring overshoot (the panel briefly goes to negative x/y).
+**Symptom:** When dismissing a card (especially the first time), the panel springs correctly but snaps at the very end — the panel briefly clips or appears in the wrong position before the card reappears.
 
-**Root cause:** Spring physics overshoot during collapse pushes `simX.x` / `simY.x` briefly below 0. The panel `left`/`top` goes negative, getting clipped by `phone-frame`'s `overflow:hidden`. This only affects the first (or any near-zero-position) card because cards in other rows have larger `fromX/fromY` values that don't reach 0 during overshoot.
+**Root cause:** `toX/toY` (the collapse destination) is taken from `ngExpandState.fromX/fromY`, which was captured at *expand time*. If the phone layout reflowed between expand and collapse (e.g. first-paint layout settling, or the panel being shown for the first time causes a reflow), the card's rect shifts by a few pixels. The panel springs to the stale expand-time position, then the card reappears at its current position — a visible snap.
 
-**Do NOT fix this with `overflow:visible` on the phone frame.** The `.phone-frame` container clips many other elements (push screens, sheets, detent panels). Setting `overflow:visible` causes all phone content to leak outside the device border — a major regression.
+This is confirmed via logging: `panel settled at 23.8, 214.2` but `card rect NOW: 20.6, 211.6` — 3px difference.
 
-**The correct fix — clamp left/top in the collapse tick:**
+**Fix — re-measure card rect at collapse start:**
 
 ```js
-// In every collapse/revert tick that sets panel position:
+// ngCollapseCard and tpPopoverCollapseWithVelocity:
+let toX = savedFromX, toY = savedFromY; // fallback to expand-time
+if (card) {
+  const phoneRect = phone.getBoundingClientRect();
+  const cardRect = card.getBoundingClientRect();
+  toX = cardRect.left - phoneRect.left - phone.clientLeft;
+  toY = cardRect.top  - phoneRect.top  - phone.clientTop;
+}
+```
+
+**Rule:** Never use `fromX/fromY` from expand state as the collapse target. Always re-measure via `getBoundingClientRect()` at collapse time. The card is `visibility:hidden` but still in layout — its rect is accurate.
+
+### Also: clamp left/top in all collapse ticks
+
+**Symptom:** Brief edge clipping during the spring animation on near-zero-position cards.
+
+**Root cause:** Spring physics overshoot pushes `simX.x` / `simY.x` briefly below 0. Clipped by `phone-frame`'s `overflow:hidden`.
+
+**Do NOT fix with `overflow:visible` on the phone frame** — that leaks all phone content outside the device border (major regression).
+
+**Fix — clamp in every collapse tick:**
+```js
 panel.style.left = Math.max(0, simX.x) + 'px';
 panel.style.top  = Math.max(0, simY.x) + 'px';
 ```
-
-Apply to:
-- `tpCollapseCard` first tick (expand→card collapse)
-- `tpCollapseCard` second tick (detail→card collapse)
-- `ngCollapseCard` tick
-- `ngRevertToExpanded` tick
-
-The clamping is safe because the destination (`fromX/fromY`, the card thumbnail position) is always ≥ 0 — no card can be at a negative position inside the phone frame. Clamping prevents the overshoot from going below the frame edge without affecting the animation when targets are larger.
+Apply to: `tpCollapseCard` (both ticks), `ngCollapseCard`, `ngRevertToExpanded`, `tpPopoverCollapseWithVelocity` (both ticks), `tpPopoverRevertToExpanded`, `tpSearchCollapseWithVelocity` (both ticks).
