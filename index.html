@@ -6736,8 +6736,8 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       simX.step(dt, DISMISS_K, DISMISS_D); simY.step(dt, DISMISS_K, DISMISS_D);
       simW.step(dt, DISMISS_K, DISMISS_D); simH.step(dt, DISMISS_K, DISMISS_D);
       simR.step(dt, DISMISS_K, DISMISS_D);
-      searchPanel.style.left         = simX.x + 'px';
-      searchPanel.style.top          = simY.x + 'px';
+      searchPanel.style.left         = Math.max(0, simX.x) + 'px';
+      searchPanel.style.top          = Math.max(0, simY.x) + 'px';
       searchPanel.style.width        = simW.x + 'px';
       searchPanel.style.height       = simH.x + 'px';
       searchPanel.style.borderRadius = Math.max(0, simR.x) + 'px';
@@ -6791,8 +6791,8 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       simH.step(dt, DISMISS_K, calcDamping(DISMISS_K, 0.88));
       simR.step(dt, DISMISS_K, DISMISS_D);
       simScrim.step(dt, SCRIM_STIFFNESS, SCRIM_DAMPING);
-      searchPanel.style.left         = simX.x + 'px';
-      searchPanel.style.top          = simY.x + 'px';
+      searchPanel.style.left         = Math.max(0, simX.x) + 'px';
+      searchPanel.style.top          = Math.max(0, simY.x) + 'px';
       searchPanel.style.width        = simW.x + 'px';
       searchPanel.style.height       = Math.max(toH, simH.x) + 'px'; // never go below pill height
       searchPanel.style.borderRadius = Math.max(0, simR.x) + 'px';
@@ -6933,8 +6933,8 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       simX.step(dt, DISMISS_K, DISMISS_D); simY.step(dt, DISMISS_K, DISMISS_D);
       simW.step(dt, DISMISS_K, DISMISS_D); simH.step(dt, DISMISS_K, DISMISS_D);
       simR.step(dt, DISMISS_K, DISMISS_D);
-      popoverPanel.style.left         = simX.x + 'px';
-      popoverPanel.style.top          = simY.x + 'px';
+      popoverPanel.style.left         = Math.max(0, simX.x) + 'px';
+      popoverPanel.style.top          = Math.max(0, simY.x) + 'px';
       popoverPanel.style.width        = simW.x + 'px';
       popoverPanel.style.height       = simH.x + 'px';
       popoverPanel.style.borderRadius = Math.max(0, simR.x) + 'px';
@@ -6987,8 +6987,8 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       simR.step(dt, DISMISS_K, DISMISS_D);
       const scale = simW.x / startW;
       if (inner) inner.style.transform = `scale(${scale})`;
-      popoverPanel.style.left         = simX.x + 'px';
-      popoverPanel.style.top          = simY.x + 'px';
+      popoverPanel.style.left         = Math.max(0, simX.x) + 'px';
+      popoverPanel.style.top          = Math.max(0, simY.x) + 'px';
       popoverPanel.style.width        = simW.x + 'px';
       popoverPanel.style.height       = simH.x + 'px';
       popoverPanel.style.borderRadius = Math.max(0, simR.x) + 'px';
