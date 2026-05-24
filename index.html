@@ -3285,7 +3285,7 @@
       </div>
       <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:16px;">
       <div style="background:var(--c-demo-bg); border-radius:24px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:37px 32px 19px; gap:16px; position:relative; overflow:hidden;" id="ngDemoContainer">
-        <button class="play-circle" id="ngPlayBtn">
+        <button class="play-circle" id="ngPlayBtn" style="display:none;">
           <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M320-200v-560l440 280-440 280Z"/></svg>
         </button>
         <div class="demo-mode-toggle" id="ngGrowModeToggle">
@@ -10977,9 +10977,6 @@ document.getElementById('ngPhone').addEventListener('click', (e) => {
   });
 });
 
-// Hide play button for fullscreen-dismiss (gesture only)
-document.getElementById('ngPlayBtn').style.display = 'none';
-
 // Apply grow mode (fullscreen vs modal)
 function applyNgGrowMode(mode) {
   ngGrowMode = mode;
@@ -11619,7 +11616,6 @@ function switchNgDemo(key, { skipControlsDisplay = false } = {}) {
     expandScrim.style.opacity        = '0';
     phoneContent.style.visibility    = 'hidden';
     bottomNav.style.visibility       = 'hidden';
-    playBtn.style.display            = 'none';
     if (!skipControlsDisplay) growToggle.style.display = 'none';
     hintText.textContent             = 'Try dragging down to dismiss';
     ngSheetInit();
@@ -11645,7 +11641,6 @@ function switchNgDemo(key, { skipControlsDisplay = false } = {}) {
     expandScrim.style.opacity        = '0';
     phoneContent.style.visibility    = 'hidden';
     bottomNav.style.visibility       = 'hidden';
-    playBtn.style.display            = '';
     if (!skipControlsDisplay) growToggle.style.display = 'none';
     hintText.textContent             = 'Try dragging the sheet up and down';
     ngDetentInit();
