@@ -3232,7 +3232,7 @@
   <p class="section-body">Gestures enable fluid, physical navigation alongside tap-based controls.</p>
   <div class="demo-tabs-bar section-chips" id="ngTabsBar">
     <div class="demo-tab ng-tab active" data-ng="fullscreen-dismiss">Fullscreen Dismiss</div>
-    <div class="demo-tab ng-tab" data-ng="popover-dismiss">Popover Dismiss</div>
+    <div class="demo-tab ng-tab" data-ng="inset-sheet-dismiss">Inset Sheet Dismiss</div>
     <div class="demo-tab ng-tab" data-ng="sheet-dismiss">Sheet Dismiss</div>
     <div class="demo-tab ng-tab" data-ng="sheet-detents">Sheet Detents</div>
   </div>
@@ -5438,7 +5438,7 @@ let tpExpandAnim    = null;
 let tpPendingImgEl  = null; // imgEl hidden during expansion; cleared on next expand
 const TP_SPRING        = { stiffness: 500, damping: calcDamping(500, 1.0) };
 const TP_BOUNCE_SPRING = { stiffness: 500, damping: calcDamping(500, 0.80), stiffnessXW: 750, dampingXW: calcDamping(750, 0.80) };
-const TP_INSET_SHEET_SPRING = { stiffness: 300, damping: calcDamping(300, 0.70) };
+const TP_INSET_SHEET_SPRING = { stiffness: 300, damping: calcDamping(300, 0.80) }; // default.small.bounce
 
 const TP_SCALE_STANDARD = 'cubic-bezier(0.40,0.00,0.20,1.00)';
 const TP_SCALE_BOUNCE   = 'cubic-bezier(0.34,1.56,0.64,1)';
@@ -10385,12 +10385,12 @@ const NG_DEMOS = {
     get panel() { return this.panelFullscreen; },
     play() {},
   },
-  'popover-dismiss': {
+  'inset-sheet-dismiss': {
     panel: `
       <div class="ng-group">
         <div class="ng-h1">Swipe direction</div>
         <div class="ng-subgroup">
-          <div><div class="ng-h2">Down</div><p class="ng-body">Swipe down to dismiss a popover.</p></div>
+          <div><div class="ng-h2">Down</div><p class="ng-body">Swipe down to dismiss an inset sheet.</p></div>
         </div>
       </div>
       <div class="ng-group">
@@ -10403,8 +10403,8 @@ const NG_DEMOS = {
       <div class="ng-group">
         <div class="ng-h1">Gesture driven motion</div>
         <div class="ng-subgroup">
-          <div><div class="ng-h2">Resistance</div><p class="ng-body">Horizontal resistance keeps the popover anchored side to side.</p></div>
-          <div><div class="ng-h2">Scale</div><p class="ng-body">The popover scales down slightly as it's dismissed.</p></div>
+          <div><div class="ng-h2">Resistance</div><p class="ng-body">Horizontal resistance keeps the inset sheet anchored side to side.</p></div>
+          <div><div class="ng-h2">Scale</div><p class="ng-body">The inset sheet scales down slightly as it's dismissed.</p></div>
         </div>
       </div>`,
     play() {},
@@ -10980,7 +10980,7 @@ document.getElementById('ngPhone').addEventListener('click', (e) => {
 function applyNgGrowMode(mode) {
   ngGrowMode = mode;
   const activeKey = document.querySelector('.ng-tab.active')?.dataset.ng;
-  try { history.replaceState(null, '', `#gestures-${activeKey || (mode === 'modal' ? 'popover-dismiss' : 'fullscreen-dismiss')}`); } catch(e) {}
+  try { history.replaceState(null, '', `#gestures-${activeKey || (mode === 'modal' ? 'inset-sheet-dismiss' : 'fullscreen-dismiss')}`); } catch(e) {}
 
   // Collapse any open expand state
   if (ngExpandState) {
@@ -11001,7 +11001,7 @@ function applyNgGrowMode(mode) {
   // Re-expand first card
   setTimeout(() => {
     const curKey = document.querySelector('.ng-tab.active')?.dataset.ng;
-    if (curKey !== 'fullscreen-dismiss' && curKey !== 'popover-dismiss') return;
+    if (curKey !== 'fullscreen-dismiss' && curKey !== 'inset-sheet-dismiss') return;
     const firstCard = document.querySelector('#ngPhoneContent .sk-carousel-card');
     if (firstCard && !ngExpandState) ngExpandCard(firstCard);
   }, 100);
@@ -11024,7 +11024,7 @@ requestAnimationFrame(() => {
 // Start on detail page — expand first card after a short delay, only if fullscreen/popover dismiss is active
 setTimeout(() => {
   const activeKey = document.querySelector('.ng-tab.active')?.dataset.ng;
-  if (activeKey !== 'fullscreen-dismiss' && activeKey !== 'popover-dismiss') return;
+  if (activeKey !== 'fullscreen-dismiss' && activeKey !== 'inset-sheet-dismiss') return;
   const firstCard = document.querySelector('#ngPhoneContent .sk-carousel-card');
   if (firstCard) ngExpandCard(firstCard);
 }, 300);
@@ -11653,15 +11653,15 @@ function switchNgDemo(key, { skipControlsDisplay = false } = {}) {
     bottomNav.style.visibility       = '';
     growToggle.style.display         = 'none'; // toggle removed — modes are separate tabs now
 
-    if (key === 'popover-dismiss') {
+    if (key === 'inset-sheet-dismiss') {
       applyNgGrowMode('modal');
     } else {
       applyNgGrowMode('fullscreen');
     }
 
     // Restore mode-specific text and hint
-    if (key === 'popover-dismiss') {
-      document.getElementById('ngTextPanel').innerHTML = NG_DEMOS['popover-dismiss'].panel;
+    if (key === 'inset-sheet-dismiss') {
+      document.getElementById('ngTextPanel').innerHTML = NG_DEMOS['inset-sheet-dismiss'].panel;
       hintText.textContent = 'Try pulling down to dismiss';
     } else {
       document.getElementById('ngTextPanel').innerHTML = NG_DEMOS['fullscreen-dismiss'].panelFullscreen;
@@ -11727,7 +11727,7 @@ const hashNg = location.hash.match(/^#gestures-(.+)$/);
 if (hashNg) {
   const ngRaw = hashNg[1];
   if (ngRaw === 'fullscreen-dismiss-popover') {
-    switchNgDemo('popover-dismiss');
+    switchNgDemo('inset-sheet-dismiss');
   } else {
     switchNgDemo(ngRaw);
   }
