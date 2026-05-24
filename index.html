@@ -7604,7 +7604,7 @@ let tpInsetPressRaf   = null;
 let tpInsetPressScale = 1.0;
 const TP_DEMOS = {
   'grow': {
-    description: 'Used to seamlessly grow an element to show more detail. Avoid for multi-step flows.',
+    description: 'Used to seamlessly grow an element to show more detail. Best for single-step reveals.',
     play() {
       if (tpGrowMode === 'search') {
         if (tpSearchState) { tpCollapseSearch(); } else { tpExpandSearch(); }
@@ -7669,7 +7669,7 @@ const TP_DEMOS = {
     },
   },
   'push': {
-    description: 'Used to navigate somewhere new.',
+    description: 'Used to navigate somewhere new. Best for multi-step flows.',
     reset() {
       tpDemoState = 'out';
       if (tpAnim) { cancelAnimationFrame(tpAnim); tpAnim = null; }
@@ -8883,7 +8883,7 @@ function switchTpDemo(key, { skipControlsDisplay = false } = {}) {
 // Grow mode toggle (Fullscreen / Modal) — defined before tab click handlers that reference it
 let tpGrowMode = 'fullscreen';
 const TP_GROW_DESCRIPTIONS = {
-  fullscreen:     'Used to seamlessly grow an element to show more detail. Avoid for multi-step flows.',
+  fullscreen:     'Used to seamlessly grow an element to show more detail. Best for single-step reveals.',
   modal:          'Grows present floating elements like inset sheets, and expand them to show more detail.',
   'popover-chip': 'Grows can also be used to present floating elements like popovers.',
   search:         'Grows present floating elements like a search input.',
@@ -8962,7 +8962,7 @@ document.querySelectorAll('#tpGrowModeToggle .demo-mode-btn').forEach(btn => {
 
 // Slide-in mode toggle (Fullscreen / Persistent Bar)
 const TP_SLIDE_IN_DESCRIPTIONS = {
-  fullscreen:      'Used to navigate somewhere new.',
+  fullscreen:      'Used to navigate somewhere new. Best for multi-step flows.',
   'persistent-bar': 'Shared elements like bars or search can stay fixed across the transition.',
 };
 function applyTpSlideInMode(mode, { updateUrl = true } = {}) {
