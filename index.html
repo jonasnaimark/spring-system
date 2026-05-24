@@ -6479,6 +6479,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled() || !simR.settled()) {
         tpExpandAnim = requestAnimationFrame(tick);
       } else {
+        panel.style.borderRadius = toR + 'px';
         panel.style.display = 'none';
         panel.style.boxShadow = 'none';
         panel.style.transform = '';
@@ -7016,6 +7017,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled() || !simR.settled()) {
         tpPopoverAnim = requestAnimationFrame(tick);
       } else {
+        popoverPanel.style.borderRadius = toR + 'px';
         popoverPanel.style.display = 'none';
         popoverPanel.style.boxShadow = 'none';
         popoverPanel.style.transform = '';
@@ -10708,6 +10710,7 @@ function ngCollapseCard(velX, velY) {
       ngExpandAnim = requestAnimationFrame(tick);
     } else {
       ngExpandAnim = null;
+      panel.style.borderRadius = toR + 'px';
       panel.style.display = 'none';
       panel.style.transform = '';
       if (detailInner) detailInner.style.transform = `scale(${toW / refW})`;
