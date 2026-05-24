@@ -3230,7 +3230,7 @@
 <div class="section-wrap" id="gestures">
   <h1 class="section-title">Gestures</h1>
   <p class="section-body">Gestures enable fluid, physical navigation alongside tap-based controls.</p>
-  <div class="demo-tabs-bar section-chips" id="ngTabsBar">
+  <div class="demo-tabs-bar section-chips" id="ngTabsBar" style="margin-bottom:24px;">
     <div class="demo-tab ng-tab active" data-ng="fullscreen-dismiss">Fullscreen Dismiss</div>
     <div class="demo-tab ng-tab" data-ng="sheet-dismiss">Sheet Dismiss</div>
     <div class="demo-tab ng-tab" data-ng="inset-sheet-dismiss">Inset Sheet Dismiss</div>
@@ -3373,6 +3373,7 @@
     <div class="demo-tab" data-demo="modal">Modal</div>
     <div class="demo-tab" data-demo="toast">Toast</div>
     <div class="demo-tab" data-demo="tooltip">Tooltip</div>
+    <div class="demo-tab" data-demo="inset-sheet">Inset Sheet</div>
     <div class="demo-tab" data-demo="flip">Card Flip</div>
   </div>
   <p class="section-body" id="spBodyCopy">A fast smooth spring keeps it feeling direct and physical.</p>
@@ -3416,6 +3417,23 @@
           </div>
           <div class="modal-backdrop" id="demoBackdrop" style="opacity:0; pointer-events:none;"></div>
           <div class="modal-card" id="demoModal" style="opacity:0; transform: scale(0.75); position:absolute; top:50%; left:50%; margin-top:-70px; margin-left:-110px; z-index:12;"></div>
+        </div>
+      </div>
+
+      <!-- Inset sheet demo -->
+      <div class="demo-view" id="view-inset-sheet" style="display:none; align-items:center; justify-content:center;">
+        <div class="phone-frame" id="insetSheetPhone">
+          <div class="phone-content" id="insetSheetPhoneContent"></div>
+          <div class="sk-bottom-nav" id="insetSheetBottomNav">
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+            <div class="sk-nav-icon"></div>
+          </div>
+          <div id="insetSheetScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.40);opacity:0;pointer-events:none;z-index:14;"></div>
+          <div id="insetSheetSlide" data-open="false" style="position:absolute;bottom:10px;left:10px;right:10px;transform:translateY(110%);z-index:15;">
+            <div id="insetSheetPanel" style="background:var(--c-surface-0);box-shadow:0 8px 32px rgba(0,0,0,0.28);overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:16px;transform-origin:center center;border-radius:24px;"></div>
+          </div>
         </div>
       </div>
 
@@ -4688,6 +4706,9 @@ function stampTemplate(templateId, targetEl) {
   const tpSheetOverlay1 = document.createElement('div'); tpSheetOverlay1.className = 'sheet-overlay'; document.getElementById('tpSheet1').appendChild(tpSheetOverlay1);
   // Stamp inset modal content into inset sheet panel
   stampTemplate('tpl-inset-modal', document.getElementById('tpInsetSheetPanel'));
+  // Stamp home screen and inset modal into the spring section inset-sheet demo
+  stampTemplate('tpl-home-screen', document.getElementById('insetSheetPhoneContent'));
+  stampTemplate('tpl-inset-modal', document.getElementById('insetSheetPanel'));
 })();
 
 // ── Spring definitions ────────────────────────────────────────────
@@ -5169,6 +5190,88 @@ const SPRING_DEMOS = {
         }
       }
       demoAnim = requestAnimationFrame(tick);
+    },
+  },
+
+  'inset-sheet': {
+    description:   'A bouncy spring gives inset sheets a light, energetic feel.',
+    defaultSpring: { speed: 'default', char: 'small.bounce' },
+    reset() {
+      const slide = document.getElementById('insetSheetSlide');
+      const panel = document.getElementById('insetSheetPanel');
+      const scrim = document.getElementById('insetSheetScrim');
+      demoState = 'out';
+      if (slide) { slide.style.transform = 'translateY(110%)'; slide.dataset.open = 'false'; }
+      if (scrim) scrim.style.opacity = '0';
+      if (panel) { panel.style.transition = ''; panel.style.transform = ''; }
+    },
+    play() {
+      const slide = document.getElementById('insetSheetSlide');
+      const panel = document.getElementById('insetSheetPanel');
+      const scrim = document.getElementById('insetSheetScrim');
+      if (!slide || !panel) return;
+      const { stiffness, damping } = selected;
+      const isOpen = slide.dataset.open === 'true';
+      // Scale pulse on open
+      if (!isOpen) {
+        panel.style.transition = '';
+        panel.style.transform  = 'scale(0.90)';
+        const _isk = stiffness * 0.5, _isd = calcDamping(_isk, 0.50);
+        setTimeout(() => {
+          const _isStart = performance.now();
+          function _scaleTick(now) {
+            const t = (now - _isStart) / 1000;
+            const p = springPos(t, _isk, _isd);
+            panel.style.transform = `scale(${(0.90 + 0.10 * (1 - p)).toFixed(4)})`;
+            if (t < 10 && !isSettled(t, _isk, _isd)) {
+              demoAnim = requestAnimationFrame(_scaleTick);
+            } else {
+              panel.style.transition = ''; panel.style.transform = '';
+            }
+          }
+          demoAnim = requestAnimationFrame(_scaleTick);
+        }, 100);
+      }
+      const startSlide = () => {
+        const start = performance.now();
+        function tick(now) {
+          const t  = (now - start) / 1000;
+          const p  = springPos(t, stiffness, damping);
+          const sp = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+          if (isOpen) {
+            slide.style.transform = `translateY(${(1 - p) * 110}%)`;
+            scrim.style.opacity   = String(sp);
+          } else {
+            slide.style.transform = `translateY(${p * 110}%)`;
+            scrim.style.opacity   = String(1 - sp);
+          }
+          if (t < 5 && !isSettled(t, stiffness, damping)) {
+            demoAnim = requestAnimationFrame(tick);
+          } else {
+            slide.style.transform = isOpen ? 'translateY(110%)' : 'translateY(0%)';
+            slide.dataset.open    = isOpen ? 'false' : 'true';
+            scrim.style.opacity   = isOpen ? '0' : '1';
+            if (isOpen) { panel.style.transition = ''; panel.style.transform = ''; }
+          }
+        }
+        demoAnim = requestAnimationFrame(tick);
+      };
+      if (isOpen) {
+        const _csk = stiffness * 0.8, _csd = calcDamping(_csk, 0.70);
+        const _csStart = performance.now();
+        function _closeScaleTick(now) {
+          const t = (now - _csStart) / 1000;
+          const p = springPos(t, _csk, _csd);
+          panel.style.transform = `scale(${(0.90 + 0.10 * p).toFixed(4)})`;
+          if (t < 10 && !isSettled(t, _csk, _csd)) {
+            demoAnim = requestAnimationFrame(_closeScaleTick);
+          } else {
+            panel.style.transform = 'scale(0.90)';
+          }
+        }
+        demoAnim = requestAnimationFrame(_closeScaleTick);
+        setTimeout(startSlide, 50);
+      } else { startSlide(); }
     },
   },
 
