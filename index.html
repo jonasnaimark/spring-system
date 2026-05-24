@@ -2891,26 +2891,7 @@
       <div class="phone-content" id="tpPhoneContentPopover" style="display:none;"></div>
       <!-- Scrim -->
       <div id="tpExpandScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.32);opacity:0;pointer-events:none;z-index:11;"></div>
-    </div>
-    <!-- Flying panels live outside tpPhoneScreen so overflow:hidden doesn't clip them -->
-    <div class="expand-hero-panel" id="tpExpandPanel" style="display:none;">
-      <div id="tpExpandCardLayer" style="position:absolute;inset:0;background:var(--sk);">
-      </div>
-      <div id="tpExpandDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
-        <div id="tpDetailInner" style="position:absolute;top:0;left:0;width:var(--tp-phone-w,200px);transform-origin:top left;display:flex;flex-direction:column;"></div>
-      </div>
-    </div>
-    <!-- Modal flying panel (grow→modal mode) -->
-    <div class="expand-hero-panel" id="tpModalPanel" style="display:none;box-shadow:0 8px 32px rgba(0,0,0,0.28);">
-      <div id="tpModalCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
-      <div id="tpModalContentLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
-        <div id="tpModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px;"></div>
-      </div>
-      <!-- Full-screen website layer (fades in during sheet→full expand) -->
-      <div id="tpModalWebsiteLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;pointer-events:none;">
-        <div id="tpModalWebsiteInner" style="position:absolute;top:0;left:0;width:278px;transform-origin:top left;display:flex;flex-direction:column;gap:5px;padding:24px 18px 18px;box-sizing:border-box;"></div>
-      </div>
-    </div>
+      <!-- All demo content below is inside tpPhoneScreen so demoFade covers it automatically -->
       <!-- Grow→Search blur scrim -->
       <div id="tpSearchScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.12);opacity:0;pointer-events:none;z-index:13;"></div>
       <!-- Grow→Search panel -->
@@ -3180,13 +3161,32 @@
         </div>
       </div>
 
-<div class="sk-bottom-nav" id="tpPhoneBottomNav">
+      <div class="sk-bottom-nav" id="tpPhoneBottomNav">
         <div class="sk-nav-icon"></div>
         <div class="sk-nav-icon"></div>
         <div class="sk-nav-icon"></div>
         <div class="sk-nav-icon"></div>
       </div>
     </div><!-- end tpPhoneScreen -->
+    <!-- Flying panels live outside tpPhoneScreen so overflow:hidden doesn't clip them during grow animations -->
+    <div class="expand-hero-panel" id="tpExpandPanel" style="display:none;">
+      <div id="tpExpandCardLayer" style="position:absolute;inset:0;background:var(--sk);">
+      </div>
+      <div id="tpExpandDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
+        <div id="tpDetailInner" style="position:absolute;top:0;left:0;width:var(--tp-phone-w,200px);transform-origin:top left;display:flex;flex-direction:column;"></div>
+      </div>
+    </div>
+    <!-- Modal flying panel (grow→modal mode) -->
+    <div class="expand-hero-panel" id="tpModalPanel" style="display:none;box-shadow:0 8px 32px rgba(0,0,0,0.28);">
+      <div id="tpModalCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
+      <div id="tpModalContentLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
+        <div id="tpModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px;"></div>
+      </div>
+      <!-- Full-screen website layer (fades in during sheet→full expand) -->
+      <div id="tpModalWebsiteLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;pointer-events:none;">
+        <div id="tpModalWebsiteInner" style="position:absolute;top:0;left:0;width:278px;transform-origin:top left;display:flex;flex-direction:column;gap:5px;padding:24px 18px 18px;box-sizing:border-box;"></div>
+      </div>
+    </div>
     </div><!-- end tpPhone -->
 
     <!-- slide-up-fade: desktop bezel (sheet mode) + phone (toast mode) -->
