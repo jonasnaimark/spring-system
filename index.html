@@ -11300,7 +11300,7 @@ function _ngDetentGeom(state, phoneH) {
   const h = phoneH || _ngDetentPhoneH();
   // Device frame inner radius ~40px; inset sheet at mx=10 → 30px radius (concentric)
   // Device frame inner radius ~40px; inset sheet at mx=10 → 30px radius (concentric)
-  if (state === 'full')      return { height: h - 40,               mx: 0,  mb: 0,  radiusTop: 40, radiusBot: 0,  pillOpacity: 0, contentOpacity: 1, handleOpacity: 1, closeOpacity: 1, fadeOpacity: 0, scrimOpacity: 1 };
+  if (state === 'full')      return { height: h - 40,               mx: 0,  mb: 0,  radiusTop: 40, radiusBot: 40, pillOpacity: 0, contentOpacity: 1, handleOpacity: 1, closeOpacity: 1, fadeOpacity: 0, scrimOpacity: 1 };
   if (state === 'default')   return { height: Math.round(h * 0.55), mx: 10, mb: 10, radiusTop: 30, radiusBot: 30, pillOpacity: 0, contentOpacity: 1, handleOpacity: 1, closeOpacity: 1, fadeOpacity: 1, scrimOpacity: 0 };
   if (state === 'minimized') return { height: 52,                   mx: 54, mb: 32, radiusTop: 26, radiusBot: 26, pillOpacity: 1, contentOpacity: 0, handleOpacity: 0, closeOpacity: 0, fadeOpacity: 0, scrimOpacity: 0 };
   // dismissed
