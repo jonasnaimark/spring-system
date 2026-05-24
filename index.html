@@ -10542,7 +10542,10 @@ function ngExpandCard(card) {
   const fromY = cardRect.top  - phoneRect.top  - phone.clientTop;
   const fromW = cardRect.width;
   const fromH = imgRect.height;
-  const fromR = imgEl ? parseFloat(window.getComputedStyle(imgEl).borderRadius) || 14 : 14;
+  // Scale CSS border-radius by the element's effective visual scale (phone-content scale transform)
+  const fromRcss = imgEl ? parseFloat(window.getComputedStyle(imgEl).borderRadius) || 14 : 14;
+  const fromRscale = imgEl && imgEl.offsetWidth ? imgRect.width / imgEl.offsetWidth : 1;
+  const fromR = fromRcss * fromRscale;
 
   const cardLayerId   = isModal ? 'ngModalCardLayer'   : 'ngExpandCardLayer';
   const detailLayerId = isModal ? 'ngModalDetailLayer' : 'ngExpandDetailLayer';
