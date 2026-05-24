@@ -7730,7 +7730,7 @@ const TP_DEMOS = {
   },
 
   'slide-up': {
-    description: 'Layers content over the current screen to keep context.',
+    description: 'Used to layer content over the current screen to keep context.',
     reset(reason) {
       if (reason === 'leaving') applyTpSlideUpMode('fitted', { updateUrl: false });
       tpSlideUpStep = 0;
@@ -8888,7 +8888,7 @@ document.querySelectorAll('#tpSlideInModeToggle .demo-mode-btn').forEach(btn => 
 
 // Slide-up mode toggle (Fitted / Full Height)
 const TP_SLIDE_UP_DESCRIPTIONS = {
-  fitted:        'Layers content over the current screen to keep context.',
+  fitted:        'Used to layer content over the current screen to keep context.',
   'full-height': 'A taller variant that reveals more content.',
   'inset-sheet': 'A bouncier spring gives inset sheets a lighter, more energetic feel.',
 };
