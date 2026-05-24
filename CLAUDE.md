@@ -663,37 +663,28 @@ Every tab click that switches demo content uses a cross-fade: fast ease-out exit
 
 3. **Why delay the fade-in:** setting the black instantly in `swap()` causes a visible black flash at the start of the spring enter, even though `#ngPhoneScreen` is fading in. The 200ms delay + 200ms fade means the black only becomes visible late in the animation — right when the white gaps would otherwise appear — and it reads as part of the content resolving rather than a separate background pop.
 
-### NG gesture demos: overlay elements outside ngPhoneScreen
+### Where to put new NG demo content
 
-`#ngSheetContent` and `#ngDetentContent` are `position:absolute;inset:0` **siblings** of `#ngPhoneScreen`, not children. `demoFade(ngPhoneScreen, ...)` fades only `ngPhoneScreen` — these overlays are unaffected and stay fully visible on top throughout the transition, breaking the crossfade.
+**Rule: all demo content divs must be children of `#ngPhoneScreen`, not siblings.**
 
-**Fix:** Manually fade them out before calling `demoFade`, then hide and reset them in the `swap()` callback:
+`demoFade(ngPhoneScreen)` fades `ngPhoneScreen` and everything inside it. Anything that is a sibling (even if visually stacked on top) is invisible to `demoFade` — it stays fully visible during the crossfade and breaks the transition.
 
-```js
-const sheetOverlay  = document.getElementById('ngSheetContent');
-const detentOverlay = document.getElementById('ngDetentContent');
-// Fade out any visible overlays alongside the phone screen exit
-[sheetOverlay, detentOverlay].forEach(el => {
-  if (el && el.style.display !== 'none') {
-    el.style.transition = 'opacity 150ms cubic-bezier(0.40,0.00,1.00,1.00)';
-    el.style.opacity = '0';
-  }
-});
-demoFade(
-  document.getElementById('ngPhoneScreen'),
-  () => {
-    // In swap: hide and fully reset the overlays
-    [sheetOverlay, detentOverlay].forEach(el => {
-      if (el) { el.style.transition = ''; el.style.opacity = ''; el.style.display = 'none'; }
-    });
-    switchNgDemo(key, { skipControlsDisplay: true });
-    // ...rest of swap
-  },
-  null
-);
+The only exception is the flying grow panels (`#ngExpandPanel`, `#ngModalPanel`) which intentionally live outside `ngPhoneScreen` because they need to overflow the phone frame during the grow animation.
+
+```
+#ngPhone
+  #ngPhoneScreen          ← demoFade target; all demo content goes here
+    #ngPhoneContent
+    #ngBottomNav
+    #ngExpandScrim
+    #ngSheetContent       ← inside = gets faded automatically ✓
+    #ngDetentContent      ← inside = gets faded automatically ✓
+    [your new demo]       ← put it here ✓
+  #ngExpandPanel          ← outside = intentional (needs overflow)
+  #ngModalPanel           ← outside = intentional (needs overflow)
 ```
 
-**Rule:** Whenever you add a new overlay (absolute-positioned sibling of `ngPhoneScreen`), you must add it to this list. If you forget, switching tabs will leave the overlay hanging over the incoming demo.
+If you accidentally put a content div outside `ngPhoneScreen`, the crossfade will appear broken even though `demoFade` is working correctly. **Don't add JS workarounds — fix the DOM structure.**
 
 ---
 
