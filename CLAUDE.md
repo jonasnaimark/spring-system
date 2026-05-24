@@ -625,13 +625,52 @@ Every tab click that switches demo content uses a cross-fade: fast ease-out exit
 | Bezier | `#dtContent` (inside `#dtScaler`) | `dtScaler` has its own `transform:scale()` from ResizeObserver — targeting the inner wrapper avoids overwriting it |
 | Spring | `.spring-screen` wrappers (JS-created) via `demoFadeSwap` | Bezel stays put; two different panels swap |
 
-### Adding a new section
+### Adding a new demo or section — the one rule
 
-1. Create a content wrapper (`position:absolute;inset:0;overflow:hidden`) inside the device bezel.
-2. Target that wrapper in your tab click handler — never the outer container or the bezel itself.
-3. Use `demoFade(wrapper, () => switchMyDemo(key), onReady)` for a single phone/device.
-4. Use `demoFadeSwap(outScreen, inScreen, swap)` if the outgoing and incoming content are different DOM elements.
-5. If your device type changes on some tab switches (like TP's slide-up-fade), detect that case and target a wider wrapper instead.
+**All demo content must be a child of the `demoFade` target element (`#tpPhoneScreen` or `#ngPhoneScreen`), not a sibling.**
+
+`demoFade` fades the element you pass it and everything inside it. A sibling div — even if it's `position:absolute;inset:0` and visually on top — is completely invisible to `demoFade`. It stays fully opaque during the transition and breaks the crossfade. This is the single most common mistake when adding new demos.
+
+**TP section DOM structure:**
+```
+#tpPhone
+  #tpPhoneScreen       ← demoFade target — put ALL new demo content here
+    #tpPhoneContent
+    #tpExpandScrim
+    #tpSearchPanel      ← inside ✓ (stays within phone bounds)
+    #tpPopoverPanel     ← inside ✓ (stays within phone bounds)
+    #tpPushContent      ← inside ✓
+    #tpSheetContent     ← inside ✓
+    #tpModalContent     ← inside ✓
+    #tpSeqContent       ← inside ✓
+    #tpLoadContent      ← inside ✓
+    #tpPhoneBottomNav   ← inside ✓
+    [your new demo]     ← put it here ✓
+  #tpExpandPanel        ← outside (spring overshoots past phone edge)
+  #tpModalPanel         ← outside (spring overshoots past phone edge)
+```
+
+**NG section DOM structure:**
+```
+#ngPhone
+  #ngPhoneScreen       ← demoFade target — put ALL new demo content here
+    #ngPhoneContent
+    #ngExpandScrim
+    #ngSheetContent     ← inside ✓
+    #ngDetentContent    ← inside ✓
+    [your new demo]     ← put it here ✓
+  #ngExpandPanel        ← outside (spring overshoots past phone edge)
+  #ngModalPanel         ← outside (spring overshoots past phone edge)
+```
+
+**The only valid reason to put a panel outside `PhoneScreen` is if its spring animation overshoots beyond the phone frame edge.** That is only `tpExpandPanel`, `tpModalPanel`, `ngExpandPanel`, `ngModalPanel`. Everything else belongs inside.
+
+**Steps for a new demo:**
+1. Add your content div inside `#tpPhoneScreen` or `#ngPhoneScreen` with `display:none;position:absolute;inset:0`
+2. Show/hide it in `switchTpDemo`/`switchNgDemo`
+3. Call `demoFade(phoneScreen, () => switchDemo(key), onReady)` in the tab click handler — nothing else needed
+
+If the crossfade looks broken, the first thing to check is whether the demo content is inside or outside `PhoneScreen`. **Don't add JS workarounds — fix the DOM structure.**
 
 ### NG sheet-dismiss: black background aliasing fix
 
@@ -663,28 +702,9 @@ Every tab click that switches demo content uses a cross-fade: fast ease-out exit
 
 3. **Why delay the fade-in:** setting the black instantly in `swap()` causes a visible black flash at the start of the spring enter, even though `#ngPhoneScreen` is fading in. The 200ms delay + 200ms fade means the black only becomes visible late in the animation — right when the white gaps would otherwise appear — and it reads as part of the content resolving rather than a separate background pop.
 
-### Where to put new NG demo content
+### Where to put new demo content
 
-**Rule: all demo content divs must be children of `#ngPhoneScreen`, not siblings.**
-
-`demoFade(ngPhoneScreen)` fades `ngPhoneScreen` and everything inside it. Anything that is a sibling (even if visually stacked on top) is invisible to `demoFade` — it stays fully visible during the crossfade and breaks the transition.
-
-The only exception is the flying grow panels (`#ngExpandPanel`, `#ngModalPanel`) which intentionally live outside `ngPhoneScreen` because they need to overflow the phone frame during the grow animation.
-
-```
-#ngPhone
-  #ngPhoneScreen          ← demoFade target; all demo content goes here
-    #ngPhoneContent
-    #ngBottomNav
-    #ngExpandScrim
-    #ngSheetContent       ← inside = gets faded automatically ✓
-    #ngDetentContent      ← inside = gets faded automatically ✓
-    [your new demo]       ← put it here ✓
-  #ngExpandPanel          ← outside = intentional (needs overflow)
-  #ngModalPanel           ← outside = intentional (needs overflow)
-```
-
-If you accidentally put a content div outside `ngPhoneScreen`, the crossfade will appear broken even though `demoFade` is working correctly. **Don't add JS workarounds — fix the DOM structure.**
+See "Adding a new demo or section — the one rule" above. It applies to both TP and NG sections identically.
 
 ---
 
