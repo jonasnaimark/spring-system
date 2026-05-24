@@ -966,3 +966,53 @@ The scrim has `pointer-events:none` so clicks fall through to the container. Che
 ```js
 if (!e.target.closest('#mySlide')) { triggerDismiss(); return; }
 ```
+
+---
+
+## Gesture dismiss demos — two known bugs and their fixes
+
+These notes apply to `#gestures-fullscreen-dismiss` and `#gestures-popover-dismiss`.
+
+### Bug 1: Corner rounding snaps on dismiss (wrong `fromR`)
+
+**Symptom:** When a card collapses back to its placeholder after a dismiss gesture, the panel's corner radius snaps — it settles at one value, then the placeholder card appears at a different radius.
+
+**Root cause:** `ngExpandCard` and `tpExpandCard` hardcoded `fromR = 10` (or `fromR = 14`) as a constant instead of reading the actual CSS computed value. The card elements have `border-radius: 14px` in CSS, so when the panel settled at 10px and then the card reappeared at 14px, you saw a snap.
+
+**Fix — read computed style at expand time:**
+```js
+// ngExpandCard:
+const fromR = imgEl ? parseFloat(window.getComputedStyle(imgEl).borderRadius) || 14 : 14;
+
+// tpExpandCard (or wherever fromR is computed):
+const fromR = cardEl ? parseFloat(window.getComputedStyle(cardEl).borderRadius) || 14 : 14;
+```
+
+**Fix — corner rounding during gesture drag:** During gesture-based dismiss, the code was interpolating `cornerR = toR + (40 - toR) * progress`, hardcoding 40 as the "source" radius. Replace 40 with the saved `fromR`:
+```js
+// ng drag handler:
+const targetCornerR = ngExpandState?.fromR ?? 10;
+const cornerR = toR + (targetCornerR - toR) * progress;
+
+// tp drag handler:
+panel.style.borderRadius = (toR + ((tpExpandState?.fromR ?? 14) - toR) * progress) + 'px';
+```
+
+### Bug 2: Left/top edge clipping on first card dismiss
+
+**Symptom:** When dismissing the first card, the left and top edges of the panel are briefly clipped. Subsequent cards dismiss cleanly. Only happens with spring overshoot (the panel briefly goes to negative x/y).
+
+**Root cause:** The expand panels (`ngExpandPanel`, `ngModalPanel`, `tpExpandPanel`, `tpModalPanel`) were inside `ngPhoneScreen` / `tpPhoneScreen` which has `overflow:hidden; border-radius:40px`. Spring overshoot pushes the panel to slightly negative `left`/`top`, which gets clipped.
+
+**Fix pattern — mirror `#transitions-grow`:** In the grow demo, the flying panel is a direct child of `expandPhone` (the `.phone-frame` div). But `.phone-frame` also has `overflow:hidden` in its shared CSS.
+
+**The actual fix:**
+1. Move the panels outside `ngPhoneScreen` to be direct children of `ngPhone` (they were already done in a previous edit).
+2. Set `overflow: visible` directly on `#ngPhone` and `#tpPhone` to override `.phone-frame`'s `overflow:hidden`:
+
+```html
+<div class="phone-frame" id="ngPhone" style="overflow:visible;">
+<div class="phone-frame" id="tpPhone" style="overflow:visible;">
+```
+
+**Why this is safe:** All phone content clipping is handled by `ngPhoneScreen` (which has its own `overflow:hidden; border-radius:40px`). The `ngSheetContent` and `ngDetentContent` elements are `position:absolute;inset:0` inside `ngPhone` and have their own `overflow:hidden`, so they don't overflow. The `.phone-frame` border is decorative only — removing its overflow clipping doesn't change the visual rounding of phone content.

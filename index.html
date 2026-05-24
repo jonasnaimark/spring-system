@@ -1323,7 +1323,7 @@
       overflow: hidden;
     }
     .sheet-inner {
-      padding: 14px 18px;
+      padding: calc(14px * var(--sheet-scale, 1)) calc(18px * var(--sheet-scale, 1));
       transform-origin: center top;
     }
 
@@ -1367,6 +1367,7 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      --sheet-scale: calc(318 / 278);
     }
     #ngSheetContent .sheet > * { flex-shrink: 0; }
 
@@ -1413,6 +1414,8 @@
       --sheet-scale: var(--phone-scale, 1);
       padding: calc(14px * var(--sheet-scale)) calc(18px * var(--sheet-scale));
     }
+    /* When sheet-inner is present it owns the padding */
+    .sheet:has(.sheet-inner) { padding: 0; }
     .sheet-line      { height: calc(10px * var(--sheet-scale, 1)); border-radius: calc(5px * var(--sheet-scale, 1)); margin-bottom: calc(9px * var(--sheet-scale, 1)); }
     .sheet-line.thin { height: calc(7px  * var(--sheet-scale, 1)); }
     .sheet-section-gap { height: calc(14px * var(--sheet-scale, 1)); }
@@ -1892,7 +1895,7 @@
 
     .push-hero {
       width: 100%;
-      aspect-ratio: 278 / 185;
+      aspect-ratio: 278 / 220;
       background: var(--sk);
       flex-shrink: 0;
     }
@@ -2170,7 +2173,7 @@
       flex: 1;
       background: var(--c-surface-0);
       border-radius: 24px 24px 0 0;
-      margin-top: -14px;
+      margin-top: -40px;
       position: relative;
     }
 
@@ -2881,32 +2884,33 @@
         <span id="tpCfIconBigB" class="material-symbols-outlined" style="position:absolute;width:120px;height:120px;font-size:120px;color:#1c1c1e;font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48;line-height:1;display:flex;align-items:center;justify-content:center;opacity:0;">search</span>
       </div>
     </div>
-    <div class="phone-frame" id="tpPhone">
+    <div class="phone-frame" id="tpPhone" style="overflow:visible;">
     <div id="tpPhoneScreen" style="position:absolute;inset:0;overflow:hidden;border-radius:40px;">
       <div class="phone-content" id="tpPhoneContent"></div>
       <!-- Grow→Popover chip mode: search results screen (swapped in by applyTpGrowMode) -->
       <div class="phone-content" id="tpPhoneContentPopover" style="display:none;"></div>
       <!-- Scrim -->
       <div id="tpExpandScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.32);opacity:0;pointer-events:none;z-index:11;"></div>
-      <!-- Flying panel -->
-      <div class="expand-hero-panel" id="tpExpandPanel" style="display:none;">
-        <div id="tpExpandCardLayer" style="position:absolute;inset:0;background:var(--sk);">
-        </div>
-        <div id="tpExpandDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
-          <div id="tpDetailInner" style="position:absolute;top:0;left:0;width:var(--tp-phone-w,200px);transform-origin:top left;display:flex;flex-direction:column;"></div>
-        </div>
+    </div>
+    <!-- Flying panels live outside tpPhoneScreen so overflow:hidden doesn't clip them -->
+    <div class="expand-hero-panel" id="tpExpandPanel" style="display:none;">
+      <div id="tpExpandCardLayer" style="position:absolute;inset:0;background:var(--sk);">
       </div>
-      <!-- Modal flying panel (grow→modal mode) -->
-      <div class="expand-hero-panel" id="tpModalPanel" style="display:none;box-shadow:0 8px 32px rgba(0,0,0,0.28);">
-        <div id="tpModalCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
-        <div id="tpModalContentLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
-          <div id="tpModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px;"></div>
-        </div>
-        <!-- Full-screen website layer (fades in during sheet→full expand) -->
-        <div id="tpModalWebsiteLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;pointer-events:none;">
-          <div id="tpModalWebsiteInner" style="position:absolute;top:0;left:0;width:278px;transform-origin:top left;display:flex;flex-direction:column;gap:5px;padding:24px 18px 18px;box-sizing:border-box;"></div>
-        </div>
+      <div id="tpExpandDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
+        <div id="tpDetailInner" style="position:absolute;top:0;left:0;width:var(--tp-phone-w,200px);transform-origin:top left;display:flex;flex-direction:column;"></div>
       </div>
+    </div>
+    <!-- Modal flying panel (grow→modal mode) -->
+    <div class="expand-hero-panel" id="tpModalPanel" style="display:none;box-shadow:0 8px 32px rgba(0,0,0,0.28);">
+      <div id="tpModalCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
+      <div id="tpModalContentLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
+        <div id="tpModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px;"></div>
+      </div>
+      <!-- Full-screen website layer (fades in during sheet→full expand) -->
+      <div id="tpModalWebsiteLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;pointer-events:none;">
+        <div id="tpModalWebsiteInner" style="position:absolute;top:0;left:0;width:278px;transform-origin:top left;display:flex;flex-direction:column;gap:5px;padding:24px 18px 18px;box-sizing:border-box;"></div>
+      </div>
+    </div>
       <!-- Grow→Search blur scrim -->
       <div id="tpSearchScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.12);opacity:0;pointer-events:none;z-index:13;"></div>
       <!-- Grow→Search panel -->
@@ -3227,8 +3231,10 @@
   <h1 class="section-title">Gestures</h1>
   <p class="section-body">Gestures enable fluid, physical navigation alongside tap-based controls.</p>
   <div class="demo-tabs-bar section-chips" id="ngTabsBar">
-    <div class="demo-tab ng-tab active" data-ng="grow-dismiss">Grow Dismiss</div>
+    <div class="demo-tab ng-tab active" data-ng="fullscreen-dismiss">Fullscreen Dismiss</div>
+    <div class="demo-tab ng-tab" data-ng="popover-dismiss">Popover Dismiss</div>
     <div class="demo-tab ng-tab" data-ng="sheet-dismiss">Sheet Dismiss</div>
+    <div class="demo-tab ng-tab" data-ng="sheet-detents">Sheet Detents</div>
   </div>
   <div class="section-content">
     <div style="display:flex; gap:24px; align-items:stretch; min-height:776px;">
@@ -3238,11 +3244,11 @@
           <div class="ng-subgroup">
             <div>
               <div class="ng-h2">Down</div>
-              <p class="ng-body">Grow transitions dismiss when swiping down from the top of a scroll view.</p>
+              <p class="ng-body">Swipe down from the top of a scroll view to dismiss.</p>
             </div>
             <div>
               <div class="ng-h2">Edge</div>
-              <p class="ng-body">Swiping the left edge also dismisses a fullscreen grow transition.</p>
+              <p class="ng-body">Swiping from the left edge also dismisses.</p>
             </div>
           </div>
         </div>
@@ -3251,11 +3257,11 @@
           <div class="ng-subgroup">
             <div>
               <div class="ng-h2">Position</div>
-              <p class="ng-body">A swipe beyond 50 points commits navigation on release. Releasing early reverts.</p>
+              <p class="ng-body">A swipe beyond 50 points commits on release.</p>
             </div>
             <div>
               <div class="ng-h2">Velocity</div>
-              <p class="ng-body">A swipe faster than 1000 pts/sec commits navigation on release.</p>
+              <p class="ng-body">A swipe faster than 1000 pts/sec commits immediately.</p>
             </div>
           </div>
         </div>
@@ -3264,7 +3270,7 @@
           <div class="ng-subgroup">
             <div>
               <div class="ng-h2">Resistance</div>
-              <p class="ng-body">The further you swipe toward the opposite edge, the less it follows your input.</p>
+              <p class="ng-body">Input resistance increases the further you swipe against the dismiss direction.</p>
             </div>
             <div>
               <div class="ng-h2">Scale</div>
@@ -3272,7 +3278,7 @@
             </div>
             <div>
               <div class="ng-h2">Scrim</div>
-              <p class="ng-body">The scrim fades out during dismiss swipes.</p>
+              <p class="ng-body">The scrim fades out during the swipe.</p>
             </div>
           </div>
         </div>
@@ -3287,7 +3293,7 @@
           <button class="demo-mode-btn" data-ng-mode="modal">Popover</button>
         </div>
         <div id="ngDemoScaler" style="transform-origin:center center; display:flex; flex-direction:column; align-items:center; gap:16px;">
-        <div class="phone-frame" id="ngPhone">
+        <div class="phone-frame" id="ngPhone" style="overflow:visible;">
         <div id="ngPhoneScreen" style="position:absolute;inset:0;overflow:hidden;border-radius:40px;">
           <div class="phone-content" id="ngPhoneContent"></div>
           <div class="sk-bottom-nav" id="ngBottomNav">
@@ -3298,20 +3304,21 @@
           </div>
           <!-- Scrim -->
           <div id="ngExpandScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.32);opacity:0;pointer-events:none;z-index:11;"></div>
-          <!-- Flying panel -->
-          <div class="expand-hero-panel" id="ngExpandPanel" style="display:none;touch-action:none;">
-            <div id="ngExpandCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
-            <div id="ngExpandDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
-              <div id="ngDetailInner" style="position:absolute;top:0;left:0;width:200px;transform-origin:top left;display:flex;flex-direction:column;"></div>
-            </div>
+        </div>
+        <!-- Flying panels live outside ngPhoneScreen so overflow:hidden doesn't clip them -->
+        <div class="expand-hero-panel" id="ngExpandPanel" style="display:none;touch-action:none;">
+          <div id="ngExpandCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
+          <div id="ngExpandDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
+            <div id="ngDetailInner" style="position:absolute;top:0;left:0;width:200px;transform-origin:top left;display:flex;flex-direction:column;"></div>
           </div>
-          <!-- Modal panel (grow-dismiss modal mode) -->
-          <div class="expand-hero-panel" id="ngModalPanel" style="display:none;touch-action:none;box-shadow:0 8px 32px rgba(0,0,0,0.28);position:absolute;z-index:20;">
-            <div id="ngModalCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
-            <div id="ngModalDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
-              <div id="ngModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px;"></div>
-            </div>
+        </div>
+        <!-- Modal panel (fullscreen-dismiss modal mode) -->
+        <div class="expand-hero-panel" id="ngModalPanel" style="display:none;touch-action:none;box-shadow:0 8px 32px rgba(0,0,0,0.28);position:absolute;z-index:20;">
+          <div id="ngModalCardLayer" style="position:absolute;inset:0;background:var(--sk);"></div>
+          <div id="ngModalDetailLayer" style="position:absolute;inset:0;opacity:0;overflow:hidden;">
+            <div id="ngModalInner" style="position:absolute;top:0;left:0;width:258px;transform-origin:top left;display:flex;flex-direction:column;align-items:center;padding:16px;"></div>
           </div>
+        </div>
           <!-- Sheet dismiss stack -->
           <div id="ngSheetContent" style="display:none;position:absolute;inset:0;pointer-events:none;overflow:hidden;background:#000;">
 
@@ -3319,6 +3326,29 @@
             <div class="sheet" id="ngSheet0" style="transform:translateY(100%);z-index:11;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);pointer-events:auto;touch-action:none;"></div>
             <div class="sheet" id="ngSheet1" style="transform:translateY(100%);z-index:12;transform-origin:top center;box-shadow:0 -2px 20px rgba(0,0,0,0);pointer-events:auto;touch-action:none;"></div>
             <div class="sheet" id="ngSheet2" style="transform:translateY(100%);z-index:13;transform-origin:top center;opacity:0;box-shadow:0 -2px 20px rgba(0,0,0,0);pointer-events:auto;touch-action:none;"></div>
+          </div>
+          <!-- Sheet detents demo -->
+          <div id="ngDetentContent" style="display:none;position:absolute;inset:0;overflow:hidden;">
+            <!-- grey map bg -->
+            <div style="position:absolute;inset:0;background:var(--sk);"></div>
+            <!-- scrim — fades in as sheet goes full height -->
+            <div id="ngDetentScrim" style="position:absolute;inset:0;background:rgba(0,0,0,0.4);opacity:0;pointer-events:none;"></div>
+            <!-- Single morphing sheet — handles all 3 detent states -->
+            <div id="ngDetentSheet" style="position:absolute;background:#fff;touch-action:none;overflow:hidden;will-change:transform;display:flex;flex-direction:column;box-shadow:0 4px 24px rgba(0,0,0,0.18);">
+              <!-- grab handle — hidden in minimized -->
+              <div id="ngDetentHandle" style="display:flex;justify-content:center;padding-top:8px;padding-bottom:20px;flex-shrink:0;opacity:0;">
+                <div style="width:36px;height:4px;border-radius:2px;background:rgba(0,0,0,0.18);"></div>
+              </div>
+              <!-- pill text — centered, pinned to top, visible only in minimized -->
+              <div id="ngDetentPillRow" style="display:flex;align-items:center;justify-content:center;padding:0 16px;position:absolute;top:0;left:0;right:0;height:52px;opacity:1;pointer-events:none;">
+                <div style="display:flex;align-items:center;justify-content:center;gap:0;"><div class="sk-search-dot" style="margin-right:6px;"></div><div class="sk-search-text"></div></div>
+              </div>
+              <div id="ngDetentClose" style="display:none;"></div>
+              <!-- list content — fades in as sheet expands -->
+              <div id="ngDetentList" style="flex:1;overflow:hidden;padding:4px 16px 0;opacity:0;position:relative;"></div>
+              <!-- bottom fade scrim — fades out as sheet goes full height -->
+              <div id="ngDetentFade" style="position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1));pointer-events:none;opacity:0;"></div>
+            </div>
           </div>
         </div><!-- end ngPhoneScreen -->
         </div><!-- end ngPhone -->
@@ -3440,11 +3470,13 @@
             <div class="sk-nav-icon"></div>
             <div class="sk-nav-icon"></div>
           </div>
-          <div class="notif" id="demoNotif" style="transform: translateY(40px); opacity: 0;">
-            <div class="notif-icon"></div>
-            <div class="notif-text">
-              <div class="notif-line"></div>
-              <div class="notif-line short"></div>
+          <div id="demoNotifSlide" style="position:absolute;bottom:calc(68px + 14px);left:14px;right:14px;transform:translateY(40px);opacity:0;z-index:20;">
+            <div class="notif" id="demoNotifInner" style="transform-origin:center bottom;transform:scale(0.85);">
+              <div class="notif-icon"></div>
+              <div class="notif-text">
+                <div class="notif-line"></div>
+                <div class="notif-line short"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -4344,54 +4376,53 @@
 </template>
 
 <template id="tpl-large-list-screen">
-  <div class="ls-line" style="height:11px;width:68%;border-radius:6px;margin-bottom:5px;"></div>
-  <div class="ls-line" style="height:8px;width:45%;border-radius:4px;margin-bottom:22px;"></div>
+  <div class="ls-line" style="height:11px;width:68%;border-radius:6px;margin-bottom:22px;"></div>
   <div class="ll-img-row">
     <div class="ll-thumb"></div>
     <div class="ll-lines">
-      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line" style="margin-bottom:0;width:88%;"></div>
       <div class="ls-line short thin" style="margin-bottom:0;"></div>
     </div>
   </div>
   <div class="ll-img-row">
     <div class="ll-thumb"></div>
     <div class="ll-lines">
-      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line" style="margin-bottom:0;width:82%;"></div>
       <div class="ls-line med thin" style="margin-bottom:0;"></div>
     </div>
   </div>
   <div class="ll-img-row">
     <div class="ll-thumb"></div>
     <div class="ll-lines">
-      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line" style="margin-bottom:0;width:92%;"></div>
       <div class="ls-line short thin" style="margin-bottom:0;"></div>
     </div>
   </div>
   <div class="ll-img-row">
     <div class="ll-thumb"></div>
     <div class="ll-lines">
-      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line" style="margin-bottom:0;width:85%;"></div>
       <div class="ls-line med thin" style="margin-bottom:0;"></div>
     </div>
   </div>
   <div class="ll-img-row">
     <div class="ll-thumb"></div>
     <div class="ll-lines">
-      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line" style="margin-bottom:0;width:78%;"></div>
       <div class="ls-line short thin" style="margin-bottom:0;"></div>
     </div>
   </div>
   <div class="ll-img-row">
     <div class="ll-thumb"></div>
     <div class="ll-lines">
-      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line" style="margin-bottom:0;width:90%;"></div>
       <div class="ls-line med thin" style="margin-bottom:0;"></div>
     </div>
   </div>
   <div class="ll-img-row">
     <div class="ll-thumb"></div>
     <div class="ll-lines">
-      <div class="ls-line" style="margin-bottom:0;"></div>
+      <div class="ls-line" style="margin-bottom:0;width:84%;"></div>
       <div class="ls-line short thin" style="margin-bottom:0;"></div>
     </div>
   </div>
@@ -5046,45 +5077,61 @@ const SPRING_DEMOS = {
   },
 
   toast: {
-    description:   'A fast spring with medium bounce calls a bit of attention to its entrance.',
+    description:   'A fast spring with large bounce calls attention to its entrance.',
     defaultSpring: { speed: 'snappy',  char: 'large.bounce' },
     reset() {
-      const n = document.getElementById('demoNotif');
-      n.style.transform = ''; n.style.opacity = '0';
+      const n  = document.getElementById('demoNotifSlide');
+      const ni = document.getElementById('demoNotifInner');
+      if (n)  { n.style.transform = 'translateY(40px)'; n.style.opacity = '0'; }
+      if (ni) { ni.style.transition = ''; ni.style.transform = 'scale(0.85)'; }
     },
     play() {
-      const n   = document.getElementById('demoNotif');
-      const { stiffness, damping } = selected;
+      const n  = document.getElementById('demoNotifSlide');
+      const ni = document.getElementById('demoNotifInner');
+      const stiffness = selected.stiffness;
+      const damping   = selected.damping;
       const isIn = demoState === 'in';
       demoState  = isIn ? 'out' : 'in';
       if (demoAnim) cancelAnimationFrame(demoAnim);
       if (isIn) {
-        // exit: slide down + fade out
-        const EXIT_DUR = 0.15, SLIDE_PX = 30;
+        // exit: scale down, then slide down + fade out
+        if (ni) { ni.style.transition = 'transform 120ms cubic-bezier(0.4,0,1,1)'; ni.style.transform = 'scale(0.85)'; }
+        const SLIDE_DELAY = 0.02, EXIT_DUR = 0.15, SLIDE_PX = 30;
         const exitStart = performance.now();
         function exitTick(now) {
-          const t = Math.min((now - exitStart) / 1000, EXIT_DUR);
-          const prog = (t / EXIT_DUR) * (t / EXIT_DUR);
+          const elapsed = (now - exitStart) / 1000;
+          if (elapsed < SLIDE_DELAY) { demoAnim = requestAnimationFrame(exitTick); return; }
+          const t = Math.min((elapsed - SLIDE_DELAY) / EXIT_DUR, 1);
+          const prog = t * t;
           n.style.transform = `translateY(${prog * SLIDE_PX}px)`;
-          n.style.opacity = String(Math.max(1 - t / EXIT_DUR, 0));
-          if (t < EXIT_DUR) { demoAnim = requestAnimationFrame(exitTick); }
-          else { n.style.transform = `translateY(${SLIDE_PX}px)`; n.style.opacity = '0'; }
+          n.style.opacity = String(Math.max(1 - t, 0));
+          if (t < 1) { demoAnim = requestAnimationFrame(exitTick); }
+          else { n.style.transform = `translateY(${SLIDE_PX}px)`; n.style.opacity = '0'; if (ni) { ni.style.transition = ''; ni.style.transform = 'scale(0.85)'; } }
         }
         demoAnim = requestAnimationFrame(exitTick);
       } else {
-        // enter: spring slide up + fade in
+        // enter: spring slide up + fade in, scale up after 80ms
+        if (ni) { ni.style.transition = ''; ni.style.transform = 'scale(0.85)'; }
         n.style.opacity = '0';
         n.style.transform = 'translateY(30px)';
         const enterStart = performance.now();
+        const SCALE_DELAY = 0.08;
         function enterTick(now) {
           const t = (now - enterStart) / 1000;
           const pos = springPos(t, stiffness, damping);
           n.style.transform = `translateY(${pos * 30}px)`;
           n.style.opacity = String(Math.min(t / 0.15, 1));
+          if (ni && t >= SCALE_DELAY) {
+            const st = t - SCALE_DELAY;
+            const sk = 400, sd = calcDamping(400, 0.65);
+            const sp = springPos(st, sk, sd);
+            ni.style.transform = `scale(${0.85 + 0.15 * (1 - sp)})`;
+          }
           if (t < 5 && !isSettled(t, stiffness, damping)) {
             demoAnim = requestAnimationFrame(enterTick);
           } else {
             n.style.transform = 'translateY(0)'; n.style.opacity = '1';
+            if (ni) { ni.style.transition = ''; ni.style.transform = ''; }
           }
         }
         demoAnim = requestAnimationFrame(enterTick);
@@ -6377,6 +6424,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
   function tpCollapseWithVelocity(velX, velY) {
     if (!tpExpandState) return;
     if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
+    tpScalePulseCancel();
     const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, toW: expandedW, imgEl, isModal } = tpExpandState;
     const phone       = document.getElementById('tpPhone');
     const panel       = isModal ? document.getElementById('tpModalPanel')        : document.getElementById('tpExpandPanel');
@@ -6388,8 +6436,8 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
     scrim.style.pointerEvents = 'none';
     tpExpandState = null;
 
-    const curX = parseFloat(panel.style.left)         || 0;
-    const curY = parseFloat(panel.style.top)          || 0;
+    const curX = Math.max(0, parseFloat(panel.style.left) || 0);
+    const curY = Math.max(0, parseFloat(panel.style.top)  || 0);
     const curW = parseFloat(panel.style.width)        || toW;
     const curH = parseFloat(panel.style.height)       || toH;
     const curR = parseFloat(panel.style.borderRadius) || toR;
@@ -6423,14 +6471,17 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       scrim.style.opacity      = Math.max(0, simScrim.x).toFixed(3);
       if (isModal) panel.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * Math.min(simScrim.x, 1)).toFixed(3)})`;
       if (detailInner) detailInner.style.transform = `scale(${Math.max(0.01, scale)})`;
-      fadeProgress = Math.max(0, fadeProgress - dt / 0.15);
-      detailLayer.style.opacity = fadeProgress.toFixed(3);
-      cardLayer.style.opacity   = (1 - fadeProgress).toFixed(3);
+      // Tie card layer fade-in to radius progress so card only appears once corners match
+      const rRange = Math.abs(curR - toR) || 1;
+      const rProg  = Math.max(0, Math.min(1, 1 - (simR.x - toR) / rRange));
+      detailLayer.style.opacity = Math.max(0, 1 - rProg).toFixed(3);
+      cardLayer.style.opacity   = rProg.toFixed(3);
       if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled()) {
         tpExpandAnim = requestAnimationFrame(tick);
       } else {
         panel.style.display = 'none';
         panel.style.boxShadow = 'none';
+        panel.style.transform = '';
         if (detailInner) detailInner.style.transform = 'scale(1)';
         detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
         scrim.style.opacity = '0';
@@ -6502,7 +6553,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
     panel.style.top          = panelY + 'px';
     panel.style.width        = scaledW + 'px';
     panel.style.height       = scaledH + 'px';
-    panel.style.borderRadius = (toR + (40 - toR) * progress) + 'px';
+    panel.style.borderRadius = (toR + ((tpExpandState?.fromR ?? 14) - toR) * progress) + 'px';
 
     const detailInner = document.getElementById('tpDetailInner');
     if (detailInner) detailInner.style.transform = `scale(${scaleDown})`;
@@ -6905,6 +6956,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
   function tpPopoverCollapseWithVelocity(velY, startScrimOpacity = 1) {
     if (!tpPopoverState) return;
     if (tpPopoverAnim) cancelAnimationFrame(tpPopoverAnim);
+    tpScalePulseCancel();
     const { fromX: toX, fromY: toY, fromW: toW, fromH: toH, fromR: toR, chipEl } = tpPopoverState;
     const pillLayer    = document.getElementById('tpPopoverPillLayer');
     const contentLayer = document.getElementById('tpPopoverContentLayer');
@@ -6955,6 +7007,7 @@ document.getElementById('tpPopoverPanel').addEventListener('click', (e) => {
       } else {
         popoverPanel.style.display = 'none';
         popoverPanel.style.boxShadow = 'none';
+        popoverPanel.style.transform = '';
         contentLayer.style.opacity = '0'; pillLayer.style.opacity = '1';
         tpSetPopoverPillChipOpacity(1);
         if (inner) inner.style.transform = 'scale(1)';
@@ -10272,28 +10325,28 @@ animate(scrim, { opacity:[0,0.32] },
 // ── Navigation Gestures registry ──────────────────────────────────
 // Each entry: { description (optional), panel (HTML for left text area), play() }
 const NG_DEMOS = {
-  'grow-dismiss': {
+  'fullscreen-dismiss': {
     panelFullscreen: `
       <div class="ng-group">
         <div class="ng-h1">Swipe direction</div>
         <div class="ng-subgroup">
-          <div><div class="ng-h2">Down</div><p class="ng-body">Grow transitions dismiss when swiping down from the top of a scroll view.</p></div>
-          <div><div class="ng-h2">Edge</div><p class="ng-body">Swiping the left edge also dismisses a fullscreen grow transition.</p></div>
+          <div><div class="ng-h2">Down</div><p class="ng-body">Swipe down from the top of a scroll view to dismiss.</p></div>
+          <div><div class="ng-h2">Edge</div><p class="ng-body">Swiping from the left edge also dismisses.</p></div>
         </div>
       </div>
       <div class="ng-group">
         <div class="ng-h1">Thresholds</div>
         <div class="ng-subgroup">
-          <div><div class="ng-h2">Position</div><p class="ng-body">A swipe beyond 50 points commits navigation on release. Releasing early reverts.</p></div>
-          <div><div class="ng-h2">Velocity</div><p class="ng-body">A swipe faster than 1000 pts/sec commits navigation on release.</p></div>
+          <div><div class="ng-h2">Position</div><p class="ng-body">A swipe beyond 50 points commits on release.</p></div>
+          <div><div class="ng-h2">Velocity</div><p class="ng-body">A swipe faster than 1000 pts/sec commits immediately.</p></div>
         </div>
       </div>
       <div class="ng-group">
         <div class="ng-h1">Gesture driven motion</div>
         <div class="ng-subgroup">
-          <div><div class="ng-h2">Resistance</div><p class="ng-body">The further you swipe toward the opposite edge, the less it follows your input.</p></div>
+          <div><div class="ng-h2">Resistance</div><p class="ng-body">Input resistance increases the further you swipe against the dismiss direction.</p></div>
           <div><div class="ng-h2">Scale</div><p class="ng-body">Elements scale down as they're dismissed.</p></div>
-          <div><div class="ng-h2">Scrim</div><p class="ng-body">The scrim fades out during dismiss swipes.</p></div>
+          <div><div class="ng-h2">Scrim</div><p class="ng-body">The scrim fades out during the swipe.</p></div>
         </div>
       </div>`,
     panelModal: `
@@ -10320,29 +10373,80 @@ const NG_DEMOS = {
     get panel() { return this.panelFullscreen; },
     play() {},
   },
-  'sheet-dismiss': {
+  'popover-dismiss': {
     panel: `
       <div class="ng-group">
         <div class="ng-h1">Swipe direction</div>
         <div class="ng-subgroup">
-          <div><div class="ng-h2">Down</div><p class="ng-body">Sheets dismiss with a downward drag using direct manipulation.</p></div>
+          <div><div class="ng-h2">Down</div><p class="ng-body">Swipe down to dismiss a popover.</p></div>
         </div>
       </div>
       <div class="ng-group">
         <div class="ng-h1">Thresholds</div>
         <div class="ng-subgroup">
-          <div><div class="ng-h2">Position</div><p class="ng-body">A swipe beyond 50 points commits the dismiss on release. Releasing early reverts the sheet to its resting position.</p></div>
-          <div><div class="ng-h2">Velocity</div><p class="ng-body">A swipe faster than 1000 pts/sec commits the dismiss regardless of position.</p></div>
+          <div><div class="ng-h2">Position</div><p class="ng-body">A swipe beyond 50 points commits on release.</p></div>
+          <div><div class="ng-h2">Velocity</div><p class="ng-body">A swipe faster than 1000 pts/sec commits immediately.</p></div>
         </div>
       </div>
       <div class="ng-group">
         <div class="ng-h1">Gesture driven motion</div>
         <div class="ng-subgroup">
-          <div><div class="ng-h2">Stack response</div><p class="ng-body">The sheet below scales and translates in sync with the drag, giving a sense of depth.</p></div>
+          <div><div class="ng-h2">Resistance</div><p class="ng-body">Horizontal resistance keeps the popover anchored side to side.</p></div>
+          <div><div class="ng-h2">Scale</div><p class="ng-body">The popover scales down slightly as it's dismissed.</p></div>
+        </div>
+      </div>`,
+    play() {},
+  },
+  'sheet-dismiss': {
+    panel: `
+      <div class="ng-group">
+        <div class="ng-h1">Swipe direction</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Down</div><p class="ng-body">Drag down to dismiss a sheet.</p></div>
+        </div>
+      </div>
+      <div class="ng-group">
+        <div class="ng-h1">Thresholds</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Position</div><p class="ng-body">A swipe beyond 50 points commits on release.</p></div>
+          <div><div class="ng-h2">Velocity</div><p class="ng-body">A swipe faster than 1000 pts/sec commits immediately.</p></div>
+        </div>
+      </div>
+      <div class="ng-group">
+        <div class="ng-h1">Gesture driven motion</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Stack response</div><p class="ng-body">The sheet below scales and translates in sync with the drag.</p></div>
           <div><div class="ng-h2">Scrims</div><p class="ng-body">Scrims fade in and out as sheets open and dismiss.</p></div>
         </div>
       </div>`,
     play() {},
+  },
+  'sheet-detents': {
+    panel: `
+      <div class="ng-group">
+        <div class="ng-h1">Swipe direction</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Up / Down</div><p class="ng-body">Up expands to next detent. Down collapses to previous.</p></div>
+        </div>
+      </div>
+      <div class="ng-group">
+        <div class="ng-h1">Thresholds</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Position</div><p class="ng-body">50pt past a detent boundary commits on release.</p></div>
+          <div><div class="ng-h2">Velocity</div><p class="ng-body">A swipe faster than 1000 pts/sec commits immediately.</p></div>
+        </div>
+      </div>
+      <div class="ng-group">
+        <div class="ng-h1">Gesture driven motion</div>
+        <div class="ng-subgroup">
+          <div><div class="ng-h2">Detents</div><p class="ng-body">Three resting positions — minimized, default, full height.</p></div>
+          <div><div class="ng-h2">Reveal</div><p class="ng-body">Content is revealed progressively as the sheet expands.</p></div>
+        </div>
+      </div>`,
+    play() {
+      // cycles: dismissed → default → full → default → minimized → dismissed
+      if (typeof ngDetentPlayCycle === 'function') ngDetentPlayCycle();
+    },
   },
 };
 
@@ -10425,7 +10529,7 @@ function ngExpandCard(card) {
   const fromY = cardRect.top  - phoneRect.top  - phone.clientTop;
   const fromW = cardRect.width;
   const fromH = imgRect.height;
-  const fromR = 10;
+  const fromR = imgEl ? parseFloat(window.getComputedStyle(imgEl).borderRadius) || 14 : 14;
 
   const cardLayerId   = isModal ? 'ngModalCardLayer'   : 'ngExpandCardLayer';
   const detailLayerId = isModal ? 'ngModalDetailLayer' : 'ngExpandDetailLayer';
@@ -10520,8 +10624,8 @@ function ngCollapseCard(velX, velY) {
   document.getElementById('ngExpandScrim').style.pointerEvents = 'none';
   ngExpandState = null;
 
-  const curX = parseFloat(panel.style.left)         || 0;
-  const curY = parseFloat(panel.style.top)          || 0;
+  const curX = Math.max(0, parseFloat(panel.style.left)  || 0);
+  const curY = Math.max(0, parseFloat(panel.style.top)   || 0);
   const curW = parseFloat(panel.style.width)        || phone.clientWidth;
   const curH = parseFloat(panel.style.height)       || phone.clientHeight;
   const curR = parseFloat(panel.style.borderRadius) || 40;
@@ -10737,7 +10841,8 @@ function ngAttachGestureListeners(panelEl) {
     const scaledH = toH * scaleDown;
     const panelX = toX + dragX + (toW - scaledW) / 2;
     const panelY = toY + dragY + (toH - scaledH) / 2;
-    const cornerR = toR + (40 - toR) * progress;
+    const targetCornerR = ngExpandState?.fromR ?? 10;
+    const cornerR = toR + (targetCornerR - toR) * progress;
 
     panelEl.style.left         = panelX + 'px';
     panelEl.style.top          = panelY + 'px';
@@ -10840,22 +10945,14 @@ document.getElementById('ngPhone').addEventListener('click', (e) => {
   });
 });
 
-// Hide play button for grow-dismiss (gesture only)
+// Hide play button for fullscreen-dismiss (gesture only)
 document.getElementById('ngPlayBtn').style.display = 'none';
 
 // Apply grow mode (fullscreen vs modal)
 function applyNgGrowMode(mode) {
   ngGrowMode = mode;
-  try { history.replaceState(null, '', `#gestures-grow-dismiss${mode === 'modal' ? '-popover' : ''}`); } catch(e) {}
-
-  // Lock text panel height before swapping content so shorter modal text doesn't shrink it
-  const textPanel = document.getElementById('ngTextPanel');
-  textPanel.style.minHeight = textPanel.offsetHeight + 'px';
-
-  // Update segmented control active state
-  document.querySelectorAll('#ngGrowModeToggle .demo-mode-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.ngMode === mode);
-  });
+  const activeKey = document.querySelector('.ng-tab.active')?.dataset.ng;
+  try { history.replaceState(null, '', `#gestures-${activeKey || (mode === 'modal' ? 'popover-dismiss' : 'fullscreen-dismiss')}`); } catch(e) {}
 
   // Collapse any open expand state
   if (ngExpandState) {
@@ -10873,21 +10970,10 @@ function applyNgGrowMode(mode) {
     document.getElementById('ngModalPanel').style.display = 'none';
   }
 
-  // Update left-panel text
-  const growDismissPanel = NG_DEMOS['grow-dismiss'];
-  document.getElementById('ngTextPanel').innerHTML = mode === 'modal'
-    ? growDismissPanel.panelModal
-    : growDismissPanel.panelFullscreen;
-
-  // Update hint text
-  document.getElementById('ngHintText').textContent = mode === 'modal'
-    ? 'Try pulling down to dismiss'
-    : 'Try pulling down or from the left edge to dismiss';
-
   // Re-expand first card
   setTimeout(() => {
-    const activeKey = document.querySelector('.ng-tab.active')?.dataset.ng;
-    if (activeKey !== 'grow-dismiss') return;
+    const curKey = document.querySelector('.ng-tab.active')?.dataset.ng;
+    if (curKey !== 'fullscreen-dismiss' && curKey !== 'popover-dismiss') return;
     const firstCard = document.querySelector('#ngPhoneContent .sk-carousel-card');
     if (firstCard && !ngExpandState) ngExpandCard(firstCard);
   }, 100);
@@ -10901,10 +10987,16 @@ document.querySelectorAll('#ngGrowModeToggle .demo-mode-btn').forEach(btn => {
   });
 });
 
-// Start on detail page — expand first card after a short delay, only if grow-dismiss is active
+// Lock ngTextPanel min-height to the tallest content (fullscreen-dismiss) so switching tabs doesn't resize it
+requestAnimationFrame(() => {
+  const textPanel = document.getElementById('ngTextPanel');
+  if (textPanel) textPanel.style.minHeight = textPanel.offsetHeight + 'px';
+});
+
+// Start on detail page — expand first card after a short delay, only if fullscreen/popover dismiss is active
 setTimeout(() => {
   const activeKey = document.querySelector('.ng-tab.active')?.dataset.ng;
-  if (activeKey !== 'grow-dismiss') return;
+  if (activeKey !== 'fullscreen-dismiss' && activeKey !== 'popover-dismiss') return;
   const firstCard = document.querySelector('#ngPhoneContent .sk-carousel-card');
   if (firstCard) ngExpandCard(firstCard);
 }, 300);
@@ -11149,6 +11241,307 @@ function ngSheetInit() {
   ngHideSpare(ngPool[ngS]);
 }
 
+// ── Sheet Detents demo ─────────────────────────────────────────────
+let _ngDetentInited   = false;
+let _ngDetentRaf      = null;
+let ngDetentState     = 'default';
+let _ngDetentDragActive = false;
+let _ngDetentDragStartY = 0;
+let _ngDetentDragStartH = 0;
+let _ngDetentDragLastY  = 0;
+let _ngDetentDragLastT  = 0;
+let _ngDetentDragVelY   = 0;
+let _ngDetentPlayStep   = 0;
+
+const NG_DETENT_K   = 300;
+const NG_DETENT_D   = calcDamping(300, 0.75);
+const NG_DETENT_VEL = 800;
+let _ngDetentPressRaf   = null;
+let _ngDetentPressScale = 1.0;
+
+// Detent geometry — all values in px relative to phone inner
+function _ngDetentPhoneH() {
+  const ph = document.getElementById('ngPhone');
+  return ph ? ph.offsetHeight - 12 : 600;
+}
+function _ngDetentGeom(state, phoneH) {
+  const h = phoneH || _ngDetentPhoneH();
+  // Device frame inner radius ~40px; inset sheet at mx=10 → 30px radius (concentric)
+  // Device frame inner radius ~40px; inset sheet at mx=10 → 30px radius (concentric)
+  if (state === 'full')      return { height: h - 40,               mx: 0,  mb: 0,  radius: 22, pillOpacity: 0, contentOpacity: 1, handleOpacity: 1, closeOpacity: 1, fadeOpacity: 0, scrimOpacity: 1 };
+  if (state === 'default')   return { height: Math.round(h * 0.55), mx: 10, mb: 10, radius: 30, pillOpacity: 0, contentOpacity: 1, handleOpacity: 1, closeOpacity: 1, fadeOpacity: 1, scrimOpacity: 0 };
+  if (state === 'minimized') return { height: 52,                   mx: 54, mb: 32, radius: 26, pillOpacity: 1, contentOpacity: 0, handleOpacity: 0, closeOpacity: 0, fadeOpacity: 0, scrimOpacity: 0 };
+  // dismissed
+  return { height: 0, mx: 54, mb: 32, radius: 26, pillOpacity: 1, contentOpacity: 0, handleOpacity: 0, closeOpacity: 0, fadeOpacity: 0, scrimOpacity: 0 };
+}
+
+// Apply geometry snapshot to the sheet element
+function _ngDetentApply(sheet, g) {
+  const phoneW = _ngDetentPhoneW();
+  sheet.style.height       = g.height + 'px';
+  sheet.style.left         = g.mx + 'px';
+  sheet.style.right        = g.mx + 'px';
+  sheet.style.bottom       = g.mb + 'px';
+  sheet.style.borderRadius = g.radius + 'px';
+  sheet.style.width        = '';
+
+  const handle  = document.getElementById('ngDetentHandle');
+  const pillRow = document.getElementById('ngDetentPillRow');
+  const closeEl = document.getElementById('ngDetentClose');
+  const listEl  = document.getElementById('ngDetentList');
+
+  if (handle)  handle.style.opacity  = g.handleOpacity;
+  if (pillRow) pillRow.style.opacity  = g.pillOpacity;
+  if (closeEl) closeEl.style.opacity  = g.closeOpacity;
+  if (listEl)  listEl.style.opacity   = g.contentOpacity;
+  const fadeEl  = document.getElementById('ngDetentFade');
+  if (fadeEl)  fadeEl.style.opacity   = g.fadeOpacity;
+  const scrimEl = document.getElementById('ngDetentScrim');
+  if (scrimEl) scrimEl.style.opacity  = g.scrimOpacity ?? 0;
+}
+
+function _ngDetentPhoneW() {
+  const ph = document.getElementById('ngPhone');
+  return ph ? ph.offsetWidth - 12 : 300;
+}
+
+// Interpolate between two geometry snapshots by t (0=from, 1=to)
+function _ngDetentLerp(a, b, t) {
+  const lerp = (x, y) => x + (y - x) * t;
+  return {
+    height:         lerp(a.height, b.height),
+    mx:             lerp(a.mx, b.mx),
+    mb:             lerp(a.mb, b.mb),
+    radius:         lerp(a.radius, b.radius),
+    pillOpacity:    lerp(a.pillOpacity, b.pillOpacity),
+    contentOpacity: lerp(a.contentOpacity, b.contentOpacity),
+    handleOpacity:  lerp(a.handleOpacity, b.handleOpacity),
+    closeOpacity:   lerp(a.closeOpacity, b.closeOpacity),
+    fadeOpacity:    lerp(a.fadeOpacity ?? 0, b.fadeOpacity ?? 0),
+    scrimOpacity:   lerp(a.scrimOpacity ?? 0, b.scrimOpacity ?? 0),
+  };
+}
+
+function ngDetentGoTo(state, animate, fromGeom) {
+  if (_ngDetentRaf) { cancelAnimationFrame(_ngDetentRaf); _ngDetentRaf = null; }
+  ngDetentState = state;
+  const sheet = document.getElementById('ngDetentSheet');
+  if (!sheet) return;
+
+  const phoneH = _ngDetentPhoneH();
+  const toG    = _ngDetentGeom(state, phoneH);
+
+  if (!animate) {
+    sheet.style.display = toG.height > 0 ? 'flex' : 'none';
+    if (toG.height > 0) _ngDetentApply(sheet, toG);
+    return;
+  }
+
+  // Capture current rendered geometry as start
+  const fromG = fromGeom || {
+    height:         parseFloat(sheet.style.height)       || 0,
+    mx:             parseFloat(sheet.style.left)         || 0,
+    mb:             parseFloat(sheet.style.bottom)       || 0,
+    radius:         parseFloat(sheet.style.borderRadius) || 22,
+    pillOpacity:    parseFloat(document.getElementById('ngDetentPillRow')?.style.opacity)    || 0,
+    contentOpacity: parseFloat(document.getElementById('ngDetentList')?.style.opacity)       || 0,
+    handleOpacity:  parseFloat(document.getElementById('ngDetentHandle')?.style.opacity)     || 0,
+    closeOpacity:   parseFloat(document.getElementById('ngDetentClose')?.style.opacity)      || 0,
+  };
+
+  sheet.style.display = 'flex';
+  const k = NG_DETENT_K, d = NG_DETENT_D;
+  const startT = performance.now();
+
+  function tick(now) {
+    if (ngDetentState !== state) return;
+    const t  = (now - startT) / 1000;
+    const p  = springPos(t, k, d);           // 1→0
+    const tt = 1 - p;                         // 0→1 progress
+    const g  = _ngDetentLerp(fromG, toG, tt);
+    if (g.height <= 0 && toG.height <= 0) {
+      sheet.style.display = 'none';
+      _ngDetentRaf = null;
+      return;
+    }
+    sheet.style.display = 'flex';
+    _ngDetentApply(sheet, g);
+    if (t < 5 && !isSettled(t, k, d)) {
+      _ngDetentRaf = requestAnimationFrame(tick);
+    } else {
+      _ngDetentApply(sheet, toG);
+      if (toG.height <= 0) sheet.style.display = 'none';
+      _ngDetentRaf = null;
+    }
+  }
+  _ngDetentRaf = requestAnimationFrame(tick);
+}
+
+function _ngDetentCurrentGeom() {
+  const sheet   = document.getElementById('ngDetentSheet');
+  const pillRow = document.getElementById('ngDetentPillRow');
+  const listEl  = document.getElementById('ngDetentList');
+  const handle  = document.getElementById('ngDetentHandle');
+  const closeEl = document.getElementById('ngDetentClose');
+  return {
+    height:         parseFloat(sheet?.style.height)       || 0,
+    mx:             parseFloat(sheet?.style.left)         || 0,
+    mb:             parseFloat(sheet?.style.bottom)       || 0,
+    radius:         parseFloat(sheet?.style.borderRadius) || 22,
+    pillOpacity:    parseFloat(pillRow?.style.opacity)    || 0,
+    contentOpacity: parseFloat(listEl?.style.opacity)     || 0,
+    handleOpacity:  parseFloat(handle?.style.opacity)     || 0,
+    closeOpacity:   parseFloat(closeEl?.style.opacity)    || 0,
+    fadeOpacity:    parseFloat(document.getElementById('ngDetentFade')?.style.opacity)  || 0,
+    scrimOpacity:   parseFloat(document.getElementById('ngDetentScrim')?.style.opacity) || 0,
+  };
+}
+
+function _ngDetentAnimatePress(toScale, kk, ratio) {
+  if (_ngDetentPressRaf) { cancelAnimationFrame(_ngDetentPressRaf); _ngDetentPressRaf = null; }
+  const dd = calcDamping(kk, ratio);
+  const from = _ngDetentPressScale;
+  const range = toScale - from;
+  const startT = performance.now();
+  const sheet = document.getElementById('ngDetentSheet');
+  function tick(now) {
+    const t = (now - startT) / 1000;
+    const p = springPos(t, kk, dd);
+    _ngDetentPressScale = from + range * (1 - p);
+    if (sheet) sheet.style.transform = `scale(${_ngDetentPressScale.toFixed(4)})`;
+    if (t < 3 && !isSettled(t, kk, dd)) { _ngDetentPressRaf = requestAnimationFrame(tick); }
+    else { _ngDetentPressRaf = null; _ngDetentPressScale = toScale; if (sheet) sheet.style.transform = toScale === 1 ? '' : `scale(${toScale})`; }
+  }
+  _ngDetentPressRaf = requestAnimationFrame(tick);
+}
+
+function ngDetentInit() {
+  if (!_ngDetentInited) {
+    _ngDetentInited = true;
+    stampTemplate('tpl-large-list-screen', document.getElementById('ngDetentList'));
+
+    const sheetEl = document.getElementById('ngDetentSheet');
+
+    let _ngDetentDragMoved = false;
+    sheetEl.addEventListener('pointerdown', (e) => {
+      if (_ngDetentRaf) { cancelAnimationFrame(_ngDetentRaf); _ngDetentRaf = null; }
+      _ngDetentDragActive = true;
+      _ngDetentDragMoved  = false;
+      _ngDetentDragStartY = e.clientY;
+      _ngDetentDragLastY  = e.clientY;
+      _ngDetentDragLastT  = performance.now();
+      _ngDetentDragVelY   = 0;
+      _ngDetentDragStartH = parseFloat(sheetEl.style.height) || _ngDetentGeom(ngDetentState).height;
+      _ngDetentAnimatePress(0.97, 350, 1.0);
+    }, { passive: true });
+
+    document.addEventListener('pointermove', (e) => {
+      if (!_ngDetentDragActive) return;
+      if (Math.abs(e.clientY - _ngDetentDragStartY) > 4) _ngDetentDragMoved = true;
+      const now   = performance.now();
+      const dt    = now - _ngDetentDragLastT;
+      if (dt > 0) _ngDetentDragVelY = (_ngDetentDragLastY - e.clientY) / (dt / 1000);
+      _ngDetentDragLastY = e.clientY;
+      _ngDetentDragLastT = now;
+
+      const totalUp = _ngDetentDragStartY - e.clientY; // positive = up
+      const phoneH  = _ngDetentPhoneH();
+      const newH    = Math.max(0, Math.min(phoneH - 30, _ngDetentDragStartH + totalUp));
+
+      // Interpolate geometry based on height
+      const minG  = _ngDetentGeom('minimized', phoneH);
+      const defG  = _ngDetentGeom('default',   phoneH);
+      const fulG  = _ngDetentGeom('full',       phoneH);
+      let g;
+      if (newH <= minG.height) {
+        // rubber band downward — hyperbolic falloff, asymptotes toward 20px max displacement
+        const overscroll = minG.height - newH;
+        const displacement = overscroll / (1 + overscroll / 20);
+        g = { ...minG, mb: minG.mb - displacement, scrimOpacity: 0 };
+      } else if (newH <= defG.height) {
+        const t = (newH - minG.height) / (defG.height - minG.height);
+        // content, handle, close fade out over first 40% of drag from default
+        const contentT = Math.max(0, Math.min((t - 0.6) / 0.4, 1));
+        // pill fades in later — delay until last 30% of drag toward minimized
+        const pillT = Math.max(0, (1 - t - 0.3) / 0.7);
+        g = _ngDetentLerp(minG, defG, t);
+        g.contentOpacity = defG.contentOpacity * contentT;
+        g.handleOpacity  = defG.handleOpacity  * contentT;
+        g.closeOpacity   = defG.closeOpacity   * contentT;
+        g.pillOpacity    = minG.pillOpacity    * pillT;
+        g.height = newH;
+      } else {
+        const t = (newH - defG.height) / (fulG.height - defG.height);
+        g = _ngDetentLerp(defG, fulG, Math.min(t, 1));
+        g.height = newH;
+        g.scrimOpacity = Math.min(t, 1);
+      }
+      sheetEl.style.display = 'flex';
+      _ngDetentApply(sheetEl, g);
+    }, { passive: true });
+
+    document.addEventListener('pointerup', (e) => {
+      if (!_ngDetentDragActive) return;
+      _ngDetentDragActive = false;
+
+      const vel    = _ngDetentDragVelY;
+      const curH   = parseFloat(sheetEl.style.height) || 0;
+      const phoneH = _ngDetentPhoneH();
+      const minH   = _ngDetentGeom('minimized', phoneH).height;
+      const defH   = _ngDetentGeom('default',   phoneH).height;
+      const fulH   = _ngDetentGeom('full',       phoneH).height;
+
+      let target;
+      if (Math.abs(vel) > NG_DETENT_VEL) {
+        if (vel > 0) { // fast up
+          target = curH < defH ? 'default' : 'full';
+        } else { // fast down
+          target = curH > defH ? 'default' : 'minimized';
+        }
+      } else {
+        // snap to nearest (no dismissed)
+        const dFull = Math.abs(curH - fulH);
+        const dDef  = Math.abs(curH - defH);
+        const dMin  = Math.abs(curH - minH);
+        if (dFull <= dDef && dFull <= dMin) target = 'full';
+        else if (dDef <= dMin) target = 'default';
+        else target = 'minimized';
+      }
+
+      ngDetentGoTo(target, true, _ngDetentCurrentGeom());
+      if (_ngDetentPressScale < 1.0) _ngDetentAnimatePress(1.0, 300, 0.50);
+    });
+
+    document.getElementById('ngDetentClose').addEventListener('click', (e) => {
+      e.stopPropagation();
+      ngDetentGoTo('minimized', true, _ngDetentCurrentGeom());
+    });
+
+    document.getElementById('ngDetentSheet').addEventListener('click', (e) => {
+      if (e.target.closest('#ngDetentClose')) return;
+      if (_ngDetentDragMoved) return;
+      if (ngDetentState === 'minimized') {
+        ngDetentGoTo('default', true, _ngDetentCurrentGeom());
+      }
+    });
+  }
+
+  _ngDetentPlayStep   = 0;
+  _ngDetentDragActive = false;
+  if (_ngDetentRaf) { cancelAnimationFrame(_ngDetentRaf); _ngDetentRaf = null; }
+  if (_ngDetentPressRaf) { cancelAnimationFrame(_ngDetentPressRaf); _ngDetentPressRaf = null; }
+  _ngDetentPressScale = 1.0;
+  const _dsEl = document.getElementById('ngDetentSheet');
+  if (_dsEl) _dsEl.style.transform = '';
+  ngDetentGoTo('default', false);
+}
+
+function ngDetentPlayCycle() {
+  const steps = ['default', 'full', 'minimized', 'dismissed'];
+  _ngDetentPlayStep = (_ngDetentPlayStep + 1) % steps.length;
+  ngDetentGoTo(steps[_ngDetentPlayStep], true, _ngDetentCurrentGeom());
+}
+
 function switchNgDemo(key, { skipControlsDisplay = false } = {}) {
   const tab = document.querySelector(`.ng-tab[data-ng="${key}"]`);
   if (!tab) return;
@@ -11184,6 +11577,7 @@ function switchNgDemo(key, { skipControlsDisplay = false } = {}) {
 
     sheetContent.style.display       = 'block';
     sheetContent.style.pointerEvents = 'auto';
+    document.getElementById('ngDetentContent').style.display = 'none';
     expandPanel.style.visibility     = 'hidden';
     expandScrim.style.opacity        = '0';
     phoneContent.style.visibility    = 'hidden';
@@ -11192,23 +11586,56 @@ function switchNgDemo(key, { skipControlsDisplay = false } = {}) {
     if (!skipControlsDisplay) growToggle.style.display = 'none';
     hintText.textContent             = 'Try dragging down to dismiss';
     ngSheetInit();
-  } else {
-    // grow-dismiss
+  } else if (key === 'sheet-detents') {
+    // Collapse any open grow panel
+    if (ngExpandState) {
+      if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
+      const { imgEl, isModal } = ngExpandState;
+      const p = isModal ? document.getElementById('ngModalPanel') : expandPanel;
+      p.style.display = 'none';
+      if (imgEl) imgEl.style.visibility = '';
+      ngExpandState = null; ngExpandAnim = null; ngGesture = null;
+    }
+    document.getElementById('ngModalPanel').style.display = 'none';
+
+    const dpanel = NG_DEMOS['sheet-detents']?.panel;
+    if (dpanel) document.getElementById('ngTextPanel').innerHTML = dpanel;
+
     sheetContent.style.display       = 'none';
     sheetContent.style.pointerEvents = 'none';
+    document.getElementById('ngDetentContent').style.display = 'block';
+    expandPanel.style.visibility     = 'hidden';
+    expandScrim.style.opacity        = '0';
+    phoneContent.style.visibility    = 'hidden';
+    bottomNav.style.visibility       = 'hidden';
+    playBtn.style.display            = '';
+    if (!skipControlsDisplay) growToggle.style.display = 'none';
+    hintText.textContent             = 'Try dragging the sheet up and down';
+    ngDetentInit();
+  } else {
+    // fullscreen-dismiss or popover-dismiss
+    sheetContent.style.display       = 'none';
+    sheetContent.style.pointerEvents = 'none';
+    document.getElementById('ngDetentContent').style.display = 'none';
     expandPanel.style.visibility     = '';
     phoneContent.style.visibility    = '';
     bottomNav.style.visibility       = '';
-    if (!skipControlsDisplay) growToggle.style.display = '';
+    growToggle.style.display         = 'none'; // toggle removed — modes are separate tabs now
+
+    if (key === 'popover-dismiss') {
+      applyNgGrowMode('modal');
+    } else {
+      applyNgGrowMode('fullscreen');
+    }
 
     // Restore mode-specific text and hint
-    const demo = NG_DEMOS['grow-dismiss'];
-    document.getElementById('ngTextPanel').style.minHeight = '';
-    document.getElementById('ngTextPanel').innerHTML = ngGrowMode === 'modal'
-      ? demo.panelModal : demo.panelFullscreen;
-    hintText.textContent = ngGrowMode === 'modal'
-      ? 'Try pulling down to dismiss'
-      : 'Try pulling down or from the left edge to dismiss';
+    if (key === 'popover-dismiss') {
+      document.getElementById('ngTextPanel').innerHTML = NG_DEMOS['popover-dismiss'].panel;
+      hintText.textContent = 'Try pulling down to dismiss';
+    } else {
+      document.getElementById('ngTextPanel').innerHTML = NG_DEMOS['fullscreen-dismiss'].panelFullscreen;
+      hintText.textContent = 'Try pulling down or from the left edge to dismiss';
+    }
 
     // Re-expand first card
     if (expandPanel.style.display === 'none' && document.getElementById('ngModalPanel').style.display === 'none') {
@@ -11221,8 +11648,7 @@ function switchNgDemo(key, { skipControlsDisplay = false } = {}) {
 }
 
 function ngControlsForKey(key) {
-  const growToggle = document.getElementById('ngGrowModeToggle');
-  return key === 'grow-dismiss' ? [growToggle].filter(Boolean) : [];
+  return [];
 }
 
 document.querySelectorAll('.ng-tab').forEach(tab => {
@@ -11237,6 +11663,13 @@ document.querySelectorAll('.ng-tab').forEach(tab => {
     if (prevKey === 'sheet-dismiss') {
       ngPhone.style.transition = '';
       ngPhone.style.background = '';
+    }
+    // Leaving sheet-detents: cancel any running detent animation
+    if (prevKey === 'sheet-detents') {
+      if (typeof _ngDetentRaf !== 'undefined' && _ngDetentRaf) {
+        cancelAnimationFrame(_ngDetentRaf);
+        _ngDetentRaf = null;
+      }
     }
     demoFade(
       document.getElementById('ngPhoneScreen'),
@@ -11262,9 +11695,8 @@ document.querySelectorAll('.ng-tab').forEach(tab => {
 const hashNg = location.hash.match(/^#gestures-(.+)$/);
 if (hashNg) {
   const ngRaw = hashNg[1];
-  if (ngRaw === 'grow-dismiss-popover') {
-    switchNgDemo('grow-dismiss');
-    applyNgGrowMode('modal');
+  if (ngRaw === 'fullscreen-dismiss-popover') {
+    switchNgDemo('popover-dismiss');
   } else {
     switchNgDemo(ngRaw);
   }
@@ -11274,8 +11706,10 @@ document.getElementById('ngPlayBtn').addEventListener('click', () => {
   const key = document.querySelector('.ng-tab.active')?.dataset.ng;
   NG_DEMOS[key]?.play();
 });
-document.getElementById('ngPhone').addEventListener('click', () => {
+document.getElementById('ngPhone').addEventListener('click', (e) => {
   const key = document.querySelector('.ng-tab.active')?.dataset.ng;
+  // sheet-detents has its own gesture handlers — don't fire play() on phone clicks
+  if (key === 'sheet-detents') return;
   NG_DEMOS[key]?.play();
 });
 document.querySelector('.bez-demo-panel').addEventListener('click', (e) => {
