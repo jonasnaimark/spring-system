@@ -11300,11 +11300,11 @@ function _ngDetentGeom(state, phoneH) {
   const h = phoneH || _ngDetentPhoneH();
   // Device frame inner radius ~40px; inset sheet at mx=10 → 30px radius (concentric)
   // Device frame inner radius ~40px; inset sheet at mx=10 → 30px radius (concentric)
-  if (state === 'full')      return { height: h - 40,               mx: 0,  mb: 0,  radius: 22, pillOpacity: 0, contentOpacity: 1, handleOpacity: 1, closeOpacity: 1, fadeOpacity: 0, scrimOpacity: 1 };
-  if (state === 'default')   return { height: Math.round(h * 0.55), mx: 10, mb: 10, radius: 30, pillOpacity: 0, contentOpacity: 1, handleOpacity: 1, closeOpacity: 1, fadeOpacity: 1, scrimOpacity: 0 };
-  if (state === 'minimized') return { height: 52,                   mx: 54, mb: 32, radius: 26, pillOpacity: 1, contentOpacity: 0, handleOpacity: 0, closeOpacity: 0, fadeOpacity: 0, scrimOpacity: 0 };
+  if (state === 'full')      return { height: h - 40,               mx: 0,  mb: 0,  radiusTop: 40, radiusBot: 0,  pillOpacity: 0, contentOpacity: 1, handleOpacity: 1, closeOpacity: 1, fadeOpacity: 0, scrimOpacity: 1 };
+  if (state === 'default')   return { height: Math.round(h * 0.55), mx: 10, mb: 10, radiusTop: 30, radiusBot: 30, pillOpacity: 0, contentOpacity: 1, handleOpacity: 1, closeOpacity: 1, fadeOpacity: 1, scrimOpacity: 0 };
+  if (state === 'minimized') return { height: 52,                   mx: 54, mb: 32, radiusTop: 26, radiusBot: 26, pillOpacity: 1, contentOpacity: 0, handleOpacity: 0, closeOpacity: 0, fadeOpacity: 0, scrimOpacity: 0 };
   // dismissed
-  return { height: 0, mx: 54, mb: 32, radius: 26, pillOpacity: 1, contentOpacity: 0, handleOpacity: 0, closeOpacity: 0, fadeOpacity: 0, scrimOpacity: 0 };
+  return { height: 0, mx: 54, mb: 32, radiusTop: 26, radiusBot: 26, pillOpacity: 1, contentOpacity: 0, handleOpacity: 0, closeOpacity: 0, fadeOpacity: 0, scrimOpacity: 0 };
 }
 
 // Apply geometry snapshot to the sheet element
@@ -11314,7 +11314,9 @@ function _ngDetentApply(sheet, g) {
   sheet.style.left         = g.mx + 'px';
   sheet.style.right        = g.mx + 'px';
   sheet.style.bottom       = g.mb + 'px';
-  sheet.style.borderRadius = g.radius + 'px';
+  const rt = (g.radiusTop ?? g.radius ?? 22).toFixed(2);
+  const rb = (g.radiusBot ?? g.radius ?? 22).toFixed(2);
+  sheet.style.borderRadius = `${rt}px ${rt}px ${rb}px ${rb}px`;
   sheet.style.width        = '';
 
   const handle  = document.getElementById('ngDetentHandle');
@@ -11344,7 +11346,8 @@ function _ngDetentLerp(a, b, t) {
     height:         lerp(a.height, b.height),
     mx:             lerp(a.mx, b.mx),
     mb:             lerp(a.mb, b.mb),
-    radius:         lerp(a.radius, b.radius),
+    radiusTop:      lerp(a.radiusTop ?? a.radius ?? 22, b.radiusTop ?? b.radius ?? 22),
+    radiusBot:      lerp(a.radiusBot ?? a.radius ?? 22, b.radiusBot ?? b.radius ?? 22),
     pillOpacity:    lerp(a.pillOpacity, b.pillOpacity),
     contentOpacity: lerp(a.contentOpacity, b.contentOpacity),
     handleOpacity:  lerp(a.handleOpacity, b.handleOpacity),
@@ -11374,7 +11377,8 @@ function ngDetentGoTo(state, animate, fromGeom) {
     height:         parseFloat(sheet.style.height)       || 0,
     mx:             parseFloat(sheet.style.left)         || 0,
     mb:             parseFloat(sheet.style.bottom)       || 0,
-    radius:         parseFloat(sheet.style.borderRadius) || 22,
+    radiusTop:      parseFloat(sheet.style.borderTopLeftRadius)    || 22,
+    radiusBot:      parseFloat(sheet.style.borderBottomLeftRadius) || 22,
     pillOpacity:    parseFloat(document.getElementById('ngDetentPillRow')?.style.opacity)    || 0,
     contentOpacity: parseFloat(document.getElementById('ngDetentList')?.style.opacity)       || 0,
     handleOpacity:  parseFloat(document.getElementById('ngDetentHandle')?.style.opacity)     || 0,
@@ -11419,7 +11423,8 @@ function _ngDetentCurrentGeom() {
     height:         parseFloat(sheet?.style.height)       || 0,
     mx:             parseFloat(sheet?.style.left)         || 0,
     mb:             parseFloat(sheet?.style.bottom)       || 0,
-    radius:         parseFloat(sheet?.style.borderRadius) || 22,
+    radiusTop:      parseFloat(sheet?.style.borderTopLeftRadius) || 22,
+    radiusBot:      parseFloat(sheet?.style.borderBottomLeftRadius) || 22,
     pillOpacity:    parseFloat(pillRow?.style.opacity)    || 0,
     contentOpacity: parseFloat(listEl?.style.opacity)     || 0,
     handleOpacity:  parseFloat(handle?.style.opacity)     || 0,
