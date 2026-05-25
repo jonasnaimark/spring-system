@@ -12602,6 +12602,25 @@ document.querySelectorAll('.nav-item[data-target]').forEach(item => {
   });
 })();
 
+// Restore micro animation card from URL hash on load
+(function() {
+  const m = location.hash.match(/^#micro-(.+)$/);
+  if (!m) return;
+  const key = m[1];
+  const card = document.querySelector(`.mi-card[data-mi="${key}"]`);
+  if (!card) return;
+  requestAnimationFrame(() => {
+    const navH = document.getElementById('topnav')?.offsetHeight ?? 68;
+    const top = document.getElementById('micro').getBoundingClientRect().top + window.scrollY - navH;
+    window.scrollTo({ top, behavior: 'instant' });
+    setTimeout(() => {
+      if (!card.classList.contains('mi-idle')) return;
+      card.classList.remove('mi-idle');
+      runMiCard(key);
+    }, 300);
+  });
+})();
+
 function updateNavActive() {
   const scrollY = window.scrollY + window.innerHeight * 0.15;
   let active = null;
@@ -13180,28 +13199,7 @@ function demoFadeSwap(outEl, inEl, swap) {
         document.getElementById('mi-replay-' + key),
         document.getElementById('mi-play-' + key)
       );
-      runMiCard(key);
-    });
-  });
-
-
-  function markDone(key) {
-    iconCrossFade(
-      document.getElementById('mi-play-' + key),
-      document.getElementById('mi-replay-' + key)
-    );
-    document.getElementById('mi-' + key).classList.add('mi-idle');
-  }
-
-  document.querySelectorAll('.mi-card').forEach(card => {
-    const key = card.dataset.mi;
-    card.addEventListener('click', () => {
-      if (!card.classList.contains('mi-idle')) return;
-      card.classList.remove('mi-idle');
-      iconCrossFade(
-        document.getElementById('mi-replay-' + key),
-        document.getElementById('mi-play-' + key)
-      );
+      try { history.replaceState(null, '', '#micro-' + key); } catch(e) {}
       runMiCard(key);
     });
   });
