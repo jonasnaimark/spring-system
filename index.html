@@ -256,7 +256,6 @@
       overflow: hidden;
       height: 52px;
       position: relative;
-      transition: width 0.3s cubic-bezier(0.4,0,0.2,1);
     }
     .mi-slot-col .mi-slot-strip {
       display: flex;
@@ -275,16 +274,16 @@
       font-variant-numeric: tabular-nums;
       line-height: 1;
       flex-shrink: 0;
+      padding: 0 2px;
     }
     .mi-slot-col.mi-slot-symbol .mi-slot-digit {
-      font-size: 28px;
+      font-size: 36px;
       font-weight: 600;
       letter-spacing: -0.02em;
-      align-items: flex-start;
-      padding-top: 8px;
     }
     .mi-slot-col.mi-slot-static .mi-slot-digit {
-      font-size: 32px;
+      font-size: 40px;
+      padding: 0 3px;
     }
 
     /* ── Top nav ── */
@@ -4082,7 +4081,7 @@
 
         <div class="mi-card mi-idle" id="mi-counter-up" data-mi="counter-up">
           <div class="mi-card-stage">
-            <div id="mi-price-counter" style="display:flex;align-items:center;overflow:hidden;height:52px;"></div>
+            <div id="mi-price-counter" style="display:flex;align-items:center;height:52px;position:relative;"></div>
           </div>
           <div class="mi-card-footer">
             <div class="mi-card-footer-text">
@@ -13193,13 +13192,13 @@ function demoFadeSwap(outEl, inEl, swap) {
   document.querySelectorAll('.mi-card').forEach(card => {
     const key = card.dataset.mi;
     card.addEventListener('click', () => {
+      try { history.replaceState(null, '', '#micro-' + key); } catch(e) {}
       if (!card.classList.contains('mi-idle')) return;
       card.classList.remove('mi-idle');
       iconCrossFade(
         document.getElementById('mi-replay-' + key),
         document.getElementById('mi-play-' + key)
       );
-      try { history.replaceState(null, '', '#micro-' + key); } catch(e) {}
       runMiCard(key);
     });
   });
@@ -13248,56 +13247,57 @@ function demoFadeSwap(outEl, inEl, swap) {
     return col;
   }
 
-  function springDuration(stiffness, dampingRatio) {
-    const omega = Math.sqrt(stiffness);
-    const gamma = dampingRatio * omega;
-    // Approximate time to settle within 0.5%
-    return Math.ceil((-Math.log(0.005) / gamma) * 1000);
-  }
-
   function animateSlotTo(col, targetDigit, onDone) {
     const strip = col._strip;
     const from = col._current;
-    const to = parseInt(targetDigit);
+    const to   = parseInt(targetDigit);
     if (from === to) { if (onDone) onDone(); return; }
 
-    // Direction: go up (translateY more negative) if target > from
-    const diff = to - from;
-    // We always scroll in the natural up direction (higher numbers = scroll up = more negative Y)
-    // Use spring: fast.smooth token → stiffness 500, ratio 1.0
-    const stiffness = 500; // fast.smooth
+    // Read actual current pixel position (handles mid-animation retrigger)
+    const currentTransform = strip.style.transform;
+    const currentY = currentTransform ? parseFloat(currentTransform.match(/-?\d+\.?\d*/)?.[0] ?? '0') : 0;
+
+    // Always scroll UP. If to < from the strip wraps using second set (index to+10).
+    const landingIdx = to >= from ? to : to + 10;
+    const startY = currentY;
+    const endY   = -landingIdx * SLOT_H;
+
+    // default.smooth — stiffness 300, ratio 1.0
+    const k     = 300;  // default.smooth
     const ratio = 1.0;
-    const omegaN = Math.sqrt(stiffness);
-    const gamma = ratio * omegaN;
-    const duration = springDuration(stiffness, ratio);
+    const omega = Math.sqrt(k);
+    const gamma = ratio * omega;  // 17.32
+    const settle = (-Math.log(0.005) / gamma) * 1000; // ~306ms
 
-    // Position the strip so current digit is visible, then animate to target
-    // Each digit is SLOT_H px tall. Strip has 20 items (0-9 twice).
-    // Set initial position to show 'from' in first set
-    strip.style.transition = 'none';
-    strip.style.transform = `translateY(${-from * SLOT_H}px)`;
+    // Cancel any in-flight loop for this column
+    col._animGen = (col._animGen || 0) + 1;
+    const gen = col._animGen;
 
-    const targetY = -(from + diff) * SLOT_H;
-    // Use rAF spring
-    const start = performance.now();
-    const startY = -from * SLOT_H;
-    const endY = -to * SLOT_H;
+    // Remove any CSS transition so rAF owns the strip completely
+    strip.style.transition = '';
+    strip.style.transform  = `translateY(${startY}px)`;
 
-    function frame(now) {
-      const t = (now - start) / 1000;
-      // Critically damped spring (ratio=1): x(t) = (1 + omega*t)*e^(-omega*t)
-      const decay = Math.exp(-gamma * t) * (1 + gamma * t);
-      const y = endY + (startY - endY) * decay;
-      strip.style.transform = `translateY(${y}px)`;
-      if ((now - start) < duration) {
-        requestAnimationFrame(frame);
-      } else {
-        strip.style.transform = `translateY(${endY}px)`;
-        col._current = to;
-        if (onDone) onDone();
+    // First rAF commits the snap position. Spring loop starts on the NEXT frame
+    // so t0 is always non-zero and the full travel is animated.
+    requestAnimationFrame(() => {
+      if (col._animGen !== gen) return;
+      const t0 = performance.now();
+      function tick(now) {
+        if (col._animGen !== gen) return;
+        const t     = (now - t0) / 1000;
+        const decay = Math.exp(-gamma * t) * (1 + gamma * t);
+        strip.style.transform = `translateY(${endY + (startY - endY) * decay}px)`;
+        if (t * 1000 < settle) {
+          requestAnimationFrame(tick);
+        } else {
+          // Reset to first-copy position so next animation starts clean
+          strip.style.transform = `translateY(${-to * SLOT_H}px)`;
+          col._current = to;
+          if (onDone) onDone();
+        }
       }
-    }
-    requestAnimationFrame(() => requestAnimationFrame(frame));
+      requestAnimationFrame(tick);
+    });
   }
 
   // Format a number as token array: [{type:'symbol'|'digit'|'comma', char}]
@@ -13314,47 +13314,109 @@ function demoFadeSwap(outEl, inEl, swap) {
     return tokens;
   }
 
-  // Reconcile container columns to match new token list, animate digits
-  function reconcileCounter(container, tokens, stagger, onAllDone) {
-    // Build key string for current cols
-    const cols = Array.from(container.children);
-    // Remove extra cols from right
-    while (container.children.length > tokens.length) {
-      container.removeChild(container.lastChild);
+  // Slide element to new translateX using default.smooth spring rAF loop
+  function springTranslateX(el, fromX, toX, onDone) {
+    if (Math.abs(fromX - toX) < 0.5) {
+      el.style.transform = `translateX(${toX}px)`;
+      if (onDone) onDone();
+      return;
     }
-    // Add missing cols on right
-    while (container.children.length < tokens.length) {
-      const t = tokens[container.children.length];
-      const col = buildSlotCol(t.char, t.type === 'symbol', t.type === 'comma');
-      container.appendChild(col);
+    const k     = 300;  // default.smooth
+    const ratio = 1.0;
+    const omega = Math.sqrt(k);
+    const gamma = ratio * omega;
+    const settle = (-Math.log(0.005) / gamma) * 1000;
+
+    el._txGen = (el._txGen || 0) + 1;
+    const gen = el._txGen;
+
+    el.style.transition = '';
+    el.style.transform  = `translateX(${fromX}px)`;
+
+    requestAnimationFrame(() => {
+      if (el._txGen !== gen) return;
+      const t0 = performance.now();
+      function tick(now) {
+        if (el._txGen !== gen) return;
+        const t     = (now - t0) / 1000;
+        const decay = Math.exp(-gamma * t) * (1 + gamma * t);
+        el.style.transform = `translateX(${toX + (fromX - toX) * decay}px)`;
+        if (t * 1000 < settle) {
+          requestAnimationFrame(tick);
+        } else {
+          el.style.transform = `translateX(${toX}px)`;
+          if (onDone) onDone();
+        }
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  // Reconcile container columns to match new token list, animate digits + slide to center
+  function reconcileCounter(container, tokens, stagger, onAllDone) {
+    // Get or create inner wrapper for centering via translateX
+    let inner = container._inner;
+    if (!inner) {
+      inner = document.createElement('div');
+      inner.style.cssText = 'display:inline-flex;align-items:center;position:absolute;top:0;left:50%;';
+      container.appendChild(inner);
+      container._inner = inner;
     }
 
-    // Center: measure and use margin
-    let pending = 0;
-    const digitCols = [];
-    Array.from(container.children).forEach((col, i) => {
-      const t = tokens[i];
-      if (t.type === 'digit') digitCols.push({ col, i, char: t.char });
+    // Measure current center position before rebuild (FLIP)
+    const prevWidth = inner.offsetWidth;
+
+    // Rebuild columns. Reuse digit cols aligned from the RIGHT so the ones column
+    // always maps to the ones position (preserves spring state correctly).
+    const oldDigitCols = Array.from(inner.children).filter(c => !c._isStatic);
+    const newDigitCount = tokens.filter(t => t.type === 'digit').length;
+    inner.innerHTML = '';
+    const newDigitCols = [];
+
+    // Build the pool offset: new has newDigitCount digits, old has oldDigitCols.length.
+    // Align from the right: if old=[a,b,c] and new needs 4, old maps to positions [1,2,3].
+    const poolOffset = newDigitCount - oldDigitCols.length;
+    let digitIdx = 0;
+
+    tokens.forEach(t => {
+      if (t.type === 'digit') {
+        const poolIdx = digitIdx - poolOffset;
+        let col = (poolIdx >= 0 && poolIdx < oldDigitCols.length) ? oldDigitCols[poolIdx] : buildSlotCol('0', false, false);
+        digitIdx++;
+        inner.appendChild(col);
+        newDigitCols.push({ col, char: t.char });
+      } else {
+        const col = buildSlotCol(t.char, t.type === 'symbol', t.type === 'comma');
+        inner.appendChild(col);
+      }
     });
 
-    // Animate digit columns with stagger
-    let doneCount = 0;
-    const total = digitCols.length;
-    if (total === 0) { if (onAllDone) onAllDone(); return; }
+    // FLIP centering: measure new width, spring from old center to new center
+    const newWidth = inner.offsetWidth;
+    const startX = parseFloat(inner.style.transform?.match(/-?\d+\.?\d*/)?.[0] ?? '0') || 0;
+    // When width changes by delta, center shifts by delta/2
+    const endX = startX - (newWidth - prevWidth) / 2;
+    springTranslateX(inner, startX, endX);
 
-    digitCols.forEach(({ col, i, char }) => {
+    // Animate digit columns with stagger R→L (ones first, most natural for counting)
+    const total = newDigitCols.length;
+    if (total === 0) { if (onAllDone) onAllDone(); return; }
+    let doneCount = 0;
+    newDigitCols.forEach(({ col, char }, i) => {
+      const delay = (total - 1 - i) * stagger;
       setTimeout(() => {
         animateSlotTo(col, char, () => {
           doneCount++;
           if (doneCount === total && onAllDone) onAllDone();
         });
-      }, i * stagger);
+      }, delay);
     });
   }
 
   function miCounterUp(key) {
     const container = document.getElementById('mi-price-counter');
     container.innerHTML = '';
+    container._inner = null;
 
     const PREFIX = '$';
     const STEPS = [0, 49, 149, 1299, 12849];
