@@ -3395,10 +3395,6 @@
         <button class="play-circle" id="ngPlayBtn" style="display:none;">
           <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M320-200v-560l440 280-440 280Z"/></svg>
         </button>
-        <div class="demo-mode-toggle" id="ngGrowModeToggle">
-          <button class="demo-mode-btn active" data-ng-mode="fullscreen">Fullscreen</button>
-          <button class="demo-mode-btn" data-ng-mode="modal">Popover</button>
-        </div>
         <div id="ngDemoScaler" style="transform-origin:center center; display:flex; flex-direction:column; align-items:center; gap:16px;">
         <div class="phone-frame" id="ngPhone">
         <div id="ngPhoneScreen" style="position:absolute;inset:0;overflow:hidden;border-radius:40px;">
@@ -11828,13 +11824,6 @@ function applyNgGrowMode(mode) {
   }, 100);
 }
 
-// Wire up segmented control
-document.querySelectorAll('#ngGrowModeToggle .demo-mode-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (btn.dataset.ngMode === ngGrowMode) return;
-    demoFade(document.getElementById('ngPhoneScreen'), () => applyNgGrowMode(btn.dataset.ngMode), null);
-  });
-});
 
 // Lock ngTextPanel min-height to the tallest content (fullscreen-dismiss) so switching tabs doesn't resize it
 requestAnimationFrame(() => {
@@ -12409,7 +12398,6 @@ function switchNgDemo(key, { skipControlsDisplay = false } = {}) {
   const phoneContent  = document.getElementById('ngPhoneContent');
   const bottomNav     = document.getElementById('ngBottomNav');
   const playBtn       = document.getElementById('ngPlayBtn');
-  const growToggle    = document.getElementById('ngGrowModeToggle');
 
   const textPanel = document.getElementById('ngTextPanel');
   textPanel.style.minHeight = textPanel.offsetHeight + 'px';
@@ -12436,7 +12424,6 @@ function switchNgDemo(key, { skipControlsDisplay = false } = {}) {
     expandScrim.style.opacity        = '0';
     phoneContent.style.visibility    = 'hidden';
     bottomNav.style.visibility       = 'hidden';
-    if (!skipControlsDisplay) growToggle.style.display = 'none';
     hintText.textContent             = 'Try dragging down to dismiss';
     ngSheetInit();
   } else if (key === 'sheet-detents') {
@@ -12461,7 +12448,6 @@ function switchNgDemo(key, { skipControlsDisplay = false } = {}) {
     expandScrim.style.opacity        = '0';
     phoneContent.style.visibility    = 'hidden';
     bottomNav.style.visibility       = 'hidden';
-    if (!skipControlsDisplay) growToggle.style.display = 'none';
     hintText.textContent             = 'Try dragging the sheet up and down';
     ngDetentInit();
   } else {
@@ -12472,7 +12458,6 @@ function switchNgDemo(key, { skipControlsDisplay = false } = {}) {
     expandPanel.style.visibility     = '';
     phoneContent.style.visibility    = '';
     bottomNav.style.visibility       = '';
-    growToggle.style.display         = 'none'; // toggle removed — modes are separate tabs now
 
     if (key === 'inset-sheet-dismiss') {
       applyNgGrowMode('modal');
