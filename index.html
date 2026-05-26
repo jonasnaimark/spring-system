@@ -293,7 +293,7 @@
     }
     .mi-slot-col.mi-slot-static .mi-slot-digit {
       font-size: 40px;
-      padding: 0 3px;
+      padding: 0;
     }
 
     /* ── Top nav ── */
@@ -13250,6 +13250,8 @@ function demoFadeSwap(outEl, inEl, swap) {
       strip.appendChild(d);
       col.appendChild(strip);
       col._isStatic = true;
+      // Size to measured glyph width + small padding (same system as digit cols)
+      col.style.width = (measureDigitWidth(char) + 2) + 'px';
     } else {
       // Numeric column: strip of 0-9 repeated
       const strip = document.createElement('div');
