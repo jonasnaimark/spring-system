@@ -4081,7 +4081,7 @@
 
         <div class="mi-card mi-idle" id="mi-counter-up" data-mi="counter-up">
           <div class="mi-card-stage">
-            <div id="mi-price-counter" style="display:flex;align-items:center;height:52px;position:relative;"></div>
+            <div id="mi-price-counter" style="display:flex;align-items:center;height:52px;position:relative;width:100%;box-sizing:border-box;padding:0 20px;"></div>
           </div>
           <div class="mi-card-footer">
             <div class="mi-card-footer-text">
@@ -13250,12 +13250,11 @@ function demoFadeSwap(outEl, inEl, swap) {
   // default.smooth spring: stiffness 300, critically damped (ratio 1.0)
   // decay(t) = e^(-γt)(1+γt). Settled when |decay| < 0.005.
   // For γ=17.32 that's t≈0.53s. We run until decay < threshold, not by fixed time.
-  const SPRING_K = 300;       // default.smooth
-  const SPRING_G = Math.sqrt(SPRING_K); // γ = 17.32 (critically damped: ratio=1)
-  const SPRING_THRESH = 0.005;
+  const SLOT_SPRING_G = Math.sqrt(300); // γ = 17.32, default.smooth critically damped
+  const SLOT_SPRING_THRESH = 0.005;
 
-  function springDecay(t) {
-    return Math.exp(-SPRING_G * t) * (1 + SPRING_G * t);
+  function slotSpringDecay(t) {
+    return Math.exp(-SLOT_SPRING_G * t) * (1 + SLOT_SPRING_G * t);
   }
 
   function animateSlotTo(col, targetDigit, onDone) {
@@ -13287,9 +13286,9 @@ function demoFadeSwap(outEl, inEl, swap) {
       function tick(now) {
         if (col._animGen !== gen) return;
         const t = (now - t0) / 1000;
-        const d = springDecay(t);
+        const d = slotSpringDecay(t);
         strip.style.transform = `translateY(${endY + (startY - endY) * d}px)`;
-        if (d > SPRING_THRESH) {
+        if (d > SLOT_SPRING_THRESH) {
           requestAnimationFrame(tick);
         } else {
           // Reset to first-copy position so next anim starts clean
@@ -13336,9 +13335,9 @@ function demoFadeSwap(outEl, inEl, swap) {
       function tick(now) {
         if (el._txGen !== gen) return;
         const t = (now - t0) / 1000;
-        const d = springDecay(t);
+        const d = slotSpringDecay(t);
         el.style.transform = `translateX(${toX + (fromX - toX) * d}px)`;
-        if (d > SPRING_THRESH) {
+        if (d > SLOT_SPRING_THRESH) {
           requestAnimationFrame(tick);
         } else {
           el.style.transform = `translateX(${toX}px)`;
