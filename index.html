@@ -274,17 +274,12 @@
       justify-content: center;
       font-size: 40px;
       font-weight: 700;
-      letter-spacing: 0;
+      letter-spacing: -0.04em;
       color: var(--c-text-primary);
-      font-variant-numeric: tabular-nums;
       line-height: 1;
       flex-shrink: 0;
       padding: 0;
-    }
-    /* Apply tracking at the container level so it affects visual spacing
-       without inflating each column's measured width */
-    #mi-price-counter {
-      letter-spacing: -0.04em;
+      white-space: nowrap;
     }
     .mi-slot-col.mi-slot-symbol,
     .mi-slot-col.mi-slot-static {
@@ -13224,10 +13219,23 @@ function demoFadeSwap(outEl, inEl, swap) {
   }
 
   // ── Price Counter (slot machine) ──────────
-  // Columns of 0-9, masked to one digit. Direction-aware scroll, staggered L→R.
-  // Supports leading symbol ($), trailing symbol, commas, centered layout.
   const SLOT_H = 52;
   const SLOT_DIGITS = ['0','1','2','3','4','5','6','7','8','9'];
+
+  // Measure the natural rendered width of a digit string at our font settings.
+  // Results are cached since font metrics don't change.
+  const _slotWidthCache = new Map();
+  function measureDigitWidth(char) {
+    if (_slotWidthCache.has(char)) return _slotWidthCache.get(char);
+    const el = document.createElement('span');
+    el.style.cssText = 'position:absolute;visibility:hidden;font-size:40px;font-weight:700;letter-spacing:-0.04em;white-space:nowrap;';
+    el.textContent = char;
+    document.body.appendChild(el);
+    const w = el.getBoundingClientRect().width;
+    el.remove();
+    _slotWidthCache.set(char, w);
+    return w;
+  }
 
   function buildSlotCol(char, isSymbol, isStatic) {
     const col = document.createElement('div');
@@ -13323,6 +13331,7 @@ function demoFadeSwap(outEl, inEl, swap) {
         } else {
           strip.style.transform = `translateY(${-to * SLOT_H}px)`;
           col._current = to;
+          col.style.width = measureDigitWidth(SLOT_DIGITS[to]) + 'px';
           if (onDone) onDone();
         }
       }
@@ -13489,6 +13498,8 @@ function demoFadeSwap(outEl, inEl, swap) {
     if (total === 0) { if (onAllDone) onAllDone(); return; }
     let doneCount = 0;
     newDigitCols.forEach(({ col, char }, i) => {
+      // Pre-size col to target digit width so FLIP layout is correct from the start
+      col.style.width = measureDigitWidth(char) + 'px';
       // i=0 is leftmost digit → SLOT_G_FAST; i=total-1 is rightmost → SLOT_G_SLOW
       const t = total > 1 ? i / (total - 1) : 0;
       const gamma = SLOT_G_FAST + (SLOT_G_SLOW - SLOT_G_FAST) * t;
