@@ -13247,17 +13247,17 @@ function demoFadeSwap(outEl, inEl, swap) {
     return col;
   }
 
-  // default.smooth spring: stiffness 300, critically damped (ratio 1.0)
-  // decay(t) = e^(-γt)(1+γt). Settled when |decay| < 0.005.
-  // For γ=17.32 that's t≈0.53s. We run until decay < threshold, not by fixed time.
-  const SLOT_SPRING_G = Math.sqrt(200); // γ = 14.14, between slow and default smooth
-  const SLOT_SPRING_THRESH = 0.0005; // ~0.1px at max travel (520px)
+  const SLOT_SPRING_THRESH = 0.0005;
+  // γ range: leftmost digit uses SLOT_G_FAST, rightmost uses SLOT_G_SLOW.
+  // Higher γ = stiffer spring = lands sooner.
+  const SLOT_G_FAST = Math.sqrt(300); // ~17.3 — default.smooth
+  const SLOT_G_SLOW = Math.sqrt(80);  // ~8.9  — noticeably slower
 
-  function slotSpringDecay(t) {
-    return Math.exp(-SLOT_SPRING_G * t) * (1 + SLOT_SPRING_G * t);
+  function slotSpringDecay(t, g) {
+    return Math.exp(-g * t) * (1 + g * t);
   }
 
-  function animateSlotTo(col, targetDigit, scrollDown, onDone) {
+  function animateSlotTo(col, targetDigit, scrollDown, onDone, gamma) {
     const strip = col._strip;
     const from = col._current; // -1 means fresh/new column
     const to   = parseInt(targetDigit);
@@ -13289,6 +13289,8 @@ function demoFadeSwap(outEl, inEl, swap) {
     strip.style.transition = 'none';
     strip.style.transform  = `translateY(${startY}px)`;
 
+    const g = gamma ?? SLOT_G_FAST;
+
     // Double-rAF: first frame commits the start position, t0 captured inside
     // so the spring always has full travel to animate.
     requestAnimationFrame(() => {
@@ -13297,7 +13299,7 @@ function demoFadeSwap(outEl, inEl, swap) {
       function tick(now) {
         if (col._animGen !== gen) return;
         const t = (now - t0) / 1000;
-        const d = slotSpringDecay(t);
+        const d = slotSpringDecay(t, g);
         strip.style.transform = `translateY(${endY + (startY - endY) * d}px)`;
         if (d > SLOT_SPRING_THRESH) {
           requestAnimationFrame(tick);
@@ -13359,7 +13361,7 @@ function demoFadeSwap(outEl, inEl, swap) {
   }
 
   // Reconcile container columns to match new token list, animate digits + slide to center
-  function reconcileCounter(container, tokens, stagger, scrollDown, onAllDone) {
+  function reconcileCounter(container, tokens, _stagger, scrollDown, onAllDone) {
     // Get or create inner wrapper for centering via translateX
     let inner = container._inner;
     if (!inner) {
@@ -13408,7 +13410,7 @@ function demoFadeSwap(outEl, inEl, swap) {
         function exitTick(now) {
           if (col._animGen !== gen) return;
           const t = (now - t0) / 1000;
-          const d = slotSpringDecay(t);
+          const d = slotSpringDecay(t, SLOT_G_FAST);
           strip.style.transform = `translateY(${exitY + (currentY - exitY) * d}px)`;
           if (d > SLOT_SPRING_THRESH) {
             requestAnimationFrame(exitTick);
@@ -13464,18 +13466,19 @@ function demoFadeSwap(outEl, inEl, swap) {
       if (Math.abs(dx) > 0.5) springTranslateX(col, dx, 0);
     });
 
-    // Animate digit columns with stagger R→L (ones first, most natural for counting)
+    // All digits start together — left digit uses fastest spring, right uses slowest.
+    // This creates a natural left-lands-first cascade without any time delay.
     const total = newDigitCols.length;
     if (total === 0) { if (onAllDone) onAllDone(); return; }
     let doneCount = 0;
     newDigitCols.forEach(({ col, char }, i) => {
-      const delay = i * stagger;
-      setTimeout(() => {
-        animateSlotTo(col, char, scrollDown, () => {
-          doneCount++;
-          if (doneCount === total && onAllDone) onAllDone();
-        });
-      }, delay);
+      // i=0 is leftmost digit → SLOT_G_FAST; i=total-1 is rightmost → SLOT_G_SLOW
+      const t = total > 1 ? i / (total - 1) : 0;
+      const gamma = SLOT_G_FAST + (SLOT_G_SLOW - SLOT_G_FAST) * t;
+      animateSlotTo(col, char, scrollDown, () => {
+        doneCount++;
+        if (doneCount === total && onAllDone) onAllDone();
+      }, gamma);
     });
   }
 
