@@ -13250,7 +13250,7 @@ function demoFadeSwap(outEl, inEl, swap) {
   // default.smooth spring: stiffness 300, critically damped (ratio 1.0)
   // decay(t) = e^(-γt)(1+γt). Settled when |decay| < 0.005.
   // For γ=17.32 that's t≈0.53s. We run until decay < threshold, not by fixed time.
-  const SLOT_SPRING_G = Math.sqrt(300); // γ = 17.32, default.smooth critically damped
+  const SLOT_SPRING_G = Math.sqrt(200); // γ = 14.14, between slow and default smooth
   const SLOT_SPRING_THRESH = 0.0005; // ~0.1px at max travel (520px)
 
   function slotSpringDecay(t) {
@@ -13362,10 +13362,10 @@ function demoFadeSwap(outEl, inEl, swap) {
     // Measure current center position before rebuild
     const prevWidth = inner.offsetWidth;
 
-    // FLIP step 1: record viewport X of every reused col before we touch the DOM
+    // FLIP step 1: record viewport X of ALL current children before touching the DOM
     const oldDigitCols = Array.from(inner.children).filter(c => !c._isStatic);
     const oldColX = new Map();
-    oldDigitCols.forEach(col => oldColX.set(col, col.getBoundingClientRect().left));
+    Array.from(inner.children).forEach(col => oldColX.set(col, col.getBoundingClientRect().left));
 
     const newDigitCount = tokens.filter(t => t.type === 'digit').length;
     inner.innerHTML = '';
@@ -13393,11 +13393,17 @@ function demoFadeSwap(outEl, inEl, swap) {
     const endX = startX - (newWidth - prevWidth) / 2;
     springTranslateX(inner, startX, endX);
 
-    // FLIP step 2: for each reused col, offset back to old position then spring to 0
-    newDigitCols.forEach(({ col }) => {
-      if (!oldColX.has(col)) return; // new col — scroll-in handles it
-      const dx = oldColX.get(col) - col.getBoundingClientRect().left;
-      if (Math.abs(dx) > 0.5) springTranslateX(col, dx, 0);
+    // FLIP step 2: spring all children to their new positions
+    Array.from(inner.children).forEach(col => {
+      if (oldColX.has(col)) {
+        // Reused: spring from old position to new
+        const dx = oldColX.get(col) - col.getBoundingClientRect().left;
+        if (Math.abs(dx) > 0.5) springTranslateX(col, dx, 0);
+      } else {
+        // New element (comma, new digit col): slide in from its own width to the left
+        const dx = -col.offsetWidth;
+        springTranslateX(col, dx, 0);
+      }
     });
 
     // Animate digit columns with stagger R→L (ones first, most natural for counting)
