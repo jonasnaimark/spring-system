@@ -13285,6 +13285,10 @@ function demoFadeSwap(outEl, inEl, swap) {
     const to   = parseInt(targetDigit);
     if (from === to) { if (onDone) onDone(); return; }
 
+    // Capture width before and after so we can spring it in sync with the scroll
+    const startW = parseFloat(col.style.width) || col.offsetWidth;
+    const endW   = measureDigitWidth(SLOT_DIGITS[to]) + 2;
+
     // Strip layout: [0-9][0-9] (indices 0-19). Scroll UP = strip moves -Y, DOWN = strip moves +Y.
     // Scroll DOWN trick: snap to second copy of `from` (-(from+10)*SLOT_H), then spring to
     // first copy of `to` (-to*SLOT_H). Since -(from+10) < -to always, motion is +Y. ✓
@@ -13326,12 +13330,13 @@ function demoFadeSwap(outEl, inEl, swap) {
         const ramp = Math.min(1, t / 0.06);
         const eased = ramp * ramp * d + (1 - ramp * ramp);
         strip.style.transform = `translateY(${endY + (startY - endY) * eased}px)`;
+        col.style.width = (endW + (startW - endW) * eased) + 'px';
         if (d > SLOT_SPRING_THRESH) {
           requestAnimationFrame(tick);
         } else {
           strip.style.transform = `translateY(${-to * SLOT_H}px)`;
+          col.style.width = endW + 'px';
           col._current = to;
-          col.style.width = (measureDigitWidth(SLOT_DIGITS[to]) + 4) + 'px';
           if (onDone) onDone();
         }
       }
@@ -13498,8 +13503,6 @@ function demoFadeSwap(outEl, inEl, swap) {
     if (total === 0) { if (onAllDone) onAllDone(); return; }
     let doneCount = 0;
     newDigitCols.forEach(({ col, char }, i) => {
-      // Pre-size col to target digit width so FLIP layout is correct from the start
-      col.style.width = (measureDigitWidth(char) + 4) + 'px';
       // i=0 is leftmost digit → SLOT_G_FAST; i=total-1 is rightmost → SLOT_G_SLOW
       const t = total > 1 ? i / (total - 1) : 0;
       const gamma = SLOT_G_FAST + (SLOT_G_SLOW - SLOT_G_FAST) * t;
