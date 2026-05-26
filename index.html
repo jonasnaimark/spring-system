@@ -13384,15 +13384,16 @@ function demoFadeSwap(outEl, inEl, swap) {
     const poolOffset = newDigitCount - oldDigitCols.length;
     const droppedDigitCols = poolOffset < 0 ? oldDigitCols.slice(0, -poolOffset) : [];
 
-    // Exit-animate dropped cols: pin them absolutely, scroll the strip one more slot then remove
+    // Exit-animate dropped cols: use position:fixed so viewport coords need no offset math
     droppedDigitCols.forEach(col => {
       const rect = col.getBoundingClientRect();
-      const parentRect = container.getBoundingClientRect();
-      col.style.position = 'absolute';
-      col.style.left = (rect.left - parentRect.left) + 'px';
-      col.style.top  = (rect.top  - parentRect.top)  + 'px';
+      col.style.position = 'fixed';
+      col.style.left = rect.left + 'px';
+      col.style.top  = rect.top  + 'px';
+      col.style.transform = 'none'; // clear any FLIP translateX; fixed left/top own position
+      col.style.margin = '0';
       col.style.pointerEvents = 'none';
-      container.appendChild(col);
+      document.body.appendChild(col);
       const strip = col._strip;
       const currentY = parseFloat(strip.style.transform?.match(/-?\d+\.?\d*/)?.[0] ?? '0') || 0;
       // Animate strip one full slot further in the scroll direction
