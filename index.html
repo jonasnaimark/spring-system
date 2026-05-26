@@ -13469,7 +13469,7 @@ function demoFadeSwap(outEl, inEl, swap) {
     if (total === 0) { if (onAllDone) onAllDone(); return; }
     let doneCount = 0;
     newDigitCols.forEach(({ col, char }, i) => {
-      const delay = (total - 1 - i) * stagger;
+      const delay = i * stagger;
       setTimeout(() => {
         animateSlotTo(col, char, scrollDown, () => {
           doneCount++;
@@ -13486,7 +13486,7 @@ function demoFadeSwap(outEl, inEl, swap) {
 
     const PREFIX = '$';
     const STEPS = [0, 49, 149, 1299, 12849, 8500, 1049, 99, 0];
-    const STAGGER = 60;
+    const STAGGER = 90;
     let step = 0;
 
     function runStep() {
