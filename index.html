@@ -13359,18 +13359,18 @@ function demoFadeSwap(outEl, inEl, swap) {
       container._inner = inner;
     }
 
-    // Measure current center position before rebuild (FLIP)
+    // Measure current center position before rebuild
     const prevWidth = inner.offsetWidth;
 
-    // Rebuild columns. Reuse digit cols aligned from the RIGHT so the ones column
-    // always maps to the ones position (preserves spring state correctly).
+    // FLIP step 1: record viewport X of every reused col before we touch the DOM
     const oldDigitCols = Array.from(inner.children).filter(c => !c._isStatic);
+    const oldColX = new Map();
+    oldDigitCols.forEach(col => oldColX.set(col, col.getBoundingClientRect().left));
+
     const newDigitCount = tokens.filter(t => t.type === 'digit').length;
     inner.innerHTML = '';
     const newDigitCols = [];
 
-    // Build the pool offset: new has newDigitCount digits, old has oldDigitCols.length.
-    // Align from the right: if old=[a,b,c] and new needs 4, old maps to positions [1,2,3].
     const poolOffset = newDigitCount - oldDigitCols.length;
     let digitIdx = 0;
 
@@ -13387,12 +13387,18 @@ function demoFadeSwap(outEl, inEl, swap) {
       }
     });
 
-    // FLIP centering: measure new width, spring from old center to new center
+    // Spring the wrapper to new center
     const newWidth = inner.offsetWidth;
     const startX = parseFloat(inner.style.transform?.match(/-?\d+\.?\d*/)?.[0] ?? '0') || 0;
-    // When width changes by delta, center shifts by delta/2
     const endX = startX - (newWidth - prevWidth) / 2;
     springTranslateX(inner, startX, endX);
+
+    // FLIP step 2: for each reused col, offset back to old position then spring to 0
+    newDigitCols.forEach(({ col }) => {
+      if (!oldColX.has(col)) return; // new col — scroll-in handles it
+      const dx = oldColX.get(col) - col.getBoundingClientRect().left;
+      if (Math.abs(dx) > 0.5) springTranslateX(col, dx, 0);
+    });
 
     // Animate digit columns with stagger R→L (ones first, most natural for counting)
     const total = newDigitCols.length;
