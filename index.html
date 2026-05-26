@@ -13448,21 +13448,18 @@ function demoFadeSwap(outEl, inEl, swap) {
   }
 
 
-  // Scale wave row down when card is narrow — transform:scale keeps flexbox centering intact
-  (function() {
+  // Scale wave row down when card is narrow
+  window._waveScaleToFit = function() {
     const stage = document.getElementById('mi-wave-stage');
     const inner = document.getElementById('mi-wave-inner');
     if (!stage || !inner) return;
-    let naturalW = 0;
-    function scaleToFit() {
-      inner.style.transform = 'translateX(-50%)';
-      if (!naturalW) naturalW = inner.offsetWidth;
-      const avail = stage.clientWidth - 32;
-      const s = naturalW > 0 ? Math.min(1, avail / naturalW) : 1;
-      inner.style.transform = `translateX(-50%) scale(${s})`;
-    }
-    new ResizeObserver(scaleToFit).observe(stage);
-  })();
+    inner.style.transform = 'translateX(-50%)'; // reset scale to measure true width
+    const naturalW = inner.offsetWidth;
+    const avail = stage.clientWidth - 32;
+    const s = naturalW > 0 ? Math.min(1, avail / naturalW) : 1;
+    inner.style.transform = `translateX(-50%) scale(${s})`;
+  };
+  new ResizeObserver(window._waveScaleToFit).observe(document.getElementById('mi-wave-stage'));
 
   // ── Text Wave ─────────────────────────────
   // Spec: scale 1→1.2 over 200ms (std curve), spring back k=250 ratio=0.3
@@ -13485,6 +13482,9 @@ function demoFadeSwap(outEl, inEl, swap) {
       container.appendChild(s);
       return s;
     });
+
+    // Re-measure now that text is populated
+    window._waveScaleToFit?.();
 
     // Spring: stiffness 250, damping ratio 0.3 → damping 9.49
     const omegaN = Math.sqrt(250);
