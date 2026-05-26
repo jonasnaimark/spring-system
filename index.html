@@ -4098,7 +4098,7 @@
 
         <div class="mi-card mi-idle" id="mi-wave" data-mi="wave">
           <div class="mi-card-stage" id="mi-wave-stage">
-            <div id="mi-wave-inner" style="display:flex;align-items:center;justify-content:center;gap:0;transform-origin:center center;">
+            <div id="mi-wave-inner" style="display:inline-flex;align-items:center;gap:0;transform-origin:center center;flex-shrink:0;">
               <div id="mi-wave-lottie" style="width:144px;height:144px;flex-shrink:0;margin-right:-33px;z-index:0;position:relative;opacity:0;transition:opacity 0.2s;"></div>
               <div id="mi-wave-text" style="display:flex;gap:0px;font-size:22px;font-weight:600;letter-spacing:-0.02em;color:var(--c-text-primary);position:relative;z-index:1;opacity:0;transition:opacity 0.2s;white-space:nowrap;"></div>
             </div>
@@ -13453,11 +13453,11 @@ function demoFadeSwap(outEl, inEl, swap) {
     const inner = document.getElementById('mi-wave-inner');
     if (!stage || !inner) return;
     function scaleToFit() {
-      inner.style.transform = '';
-      const sw = stage.clientWidth - 32; // 16px padding each side
-      const iw = inner.scrollWidth;
+      inner.style.transform = 'scale(1)';
+      const sw = stage.clientWidth - 48;
+      const iw = inner.offsetWidth;
       const s = iw > 0 ? Math.min(1, sw / iw) : 1;
-      inner.style.transform = `scale(${s})`;
+      inner.style.transform = s < 1 ? `scale(${s})` : '';
     }
     new ResizeObserver(scaleToFit).observe(stage);
     scaleToFit();
