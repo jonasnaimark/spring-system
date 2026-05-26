@@ -13265,15 +13265,20 @@ function demoFadeSwap(outEl, inEl, swap) {
 
     // Scroll UP (growing): start at first copy of `from`, land on `to` (second copy if to < from)
     // Scroll DOWN (shrinking): snap strip to second copy of `from`, land on first copy of `to`
+    const m = strip.style.transform && strip.style.transform.match(/-?\d+\.?\d*/);
     let startY, endY;
     if (from === -1) {
-      startY = scrollDown ? -SLOT_H : SLOT_H; // enter from above or below
+      // Fresh column: enter from below (scroll-up) or above (scroll-down)
+      startY = scrollDown ? -SLOT_H : SLOT_H;
       endY   = -to * SLOT_H;
     } else if (scrollDown) {
-      startY = -(from + 10) * SLOT_H; // second copy of current digit
-      endY   = -to * SLOT_H;          // first copy of target digit
+      // Scroll DOWN: strip moves to higher Y (more positive translateY)
+      // Start from current actual position, land at to (wrap to to-10 if to > from)
+      startY = m ? parseFloat(m[0]) : -from * SLOT_H;
+      endY   = -(to < from ? to : to - 10) * SLOT_H;
     } else {
-      const m = strip.style.transform && strip.style.transform.match(/-?\d+\.?\d*/);
+      // Scroll UP: strip moves to lower Y (more negative translateY)
+      // Start from current actual position, land at to (wrap to to+10 if to < from)
       startY = m ? parseFloat(m[0]) : -from * SLOT_H;
       endY   = -(to >= from ? to : to + 10) * SLOT_H;
     }
@@ -13442,7 +13447,7 @@ function demoFadeSwap(outEl, inEl, swap) {
     container._inner = null;
 
     const PREFIX = '$';
-    const STEPS = [0, 49, 149, 1299, 12849, 9999, 1049, 99, 0];
+    const STEPS = [0, 49, 149, 1299, 12849, 8500, 1049, 99, 0];
     const STAGGER = 60;
     let step = 0;
 
