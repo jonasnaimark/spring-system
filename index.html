@@ -13347,7 +13347,7 @@ function demoFadeSwap(outEl, inEl, swap) {
       function tick(now) {
         if (el._txGen !== gen) return;
         const t = (now - t0) / 1000;
-        const d = slotSpringDecay(t);
+        const d = slotSpringDecay(t, SLOT_G_FAST);
         el.style.transform = `translateX(${toX + (fromX - toX) * d}px)`;
         if (d > SLOT_SPRING_THRESH) {
           requestAnimationFrame(tick);
