@@ -274,7 +274,7 @@
       font-variant-numeric: tabular-nums;
       line-height: 1;
       flex-shrink: 0;
-      padding: 0 2px;
+      padding: 0;
     }
     .mi-slot-col.mi-slot-symbol .mi-slot-digit {
       font-size: 36px;
@@ -13247,6 +13247,17 @@ function demoFadeSwap(outEl, inEl, swap) {
     return col;
   }
 
+  // default.smooth spring: stiffness 300, critically damped (ratio 1.0)
+  // decay(t) = e^(-γt)(1+γt). Settled when |decay| < 0.005.
+  // For γ=17.32 that's t≈0.53s. We run until decay < threshold, not by fixed time.
+  const SPRING_K = 300;       // default.smooth
+  const SPRING_G = Math.sqrt(SPRING_K); // γ = 17.32 (critically damped: ratio=1)
+  const SPRING_THRESH = 0.005;
+
+  function springDecay(t) {
+    return Math.exp(-SPRING_G * t) * (1 + SPRING_G * t);
+  }
+
   function animateSlotTo(col, targetDigit, onDone) {
     const strip = col._strip;
     const from = col._current;
@@ -13254,43 +13265,34 @@ function demoFadeSwap(outEl, inEl, swap) {
     if (from === to) { if (onDone) onDone(); return; }
 
     // Read actual current pixel position (handles mid-animation retrigger)
-    const currentTransform = strip.style.transform;
-    const currentY = currentTransform ? parseFloat(currentTransform.match(/-?\d+\.?\d*/)?.[0] ?? '0') : 0;
+    const m = strip.style.transform && strip.style.transform.match(/-?\d+\.?\d*/);
+    const startY = m ? parseFloat(m[0]) : -from * SLOT_H;
 
     // Always scroll UP. If to < from the strip wraps using second set (index to+10).
     const landingIdx = to >= from ? to : to + 10;
-    const startY = currentY;
-    const endY   = -landingIdx * SLOT_H;
-
-    // default.smooth — stiffness 300, ratio 1.0
-    const k     = 300;  // default.smooth
-    const ratio = 1.0;
-    const omega = Math.sqrt(k);
-    const gamma = ratio * omega;  // 17.32
-    const settle = (-Math.log(0.005) / gamma) * 1000; // ~306ms
+    const endY = -landingIdx * SLOT_H;
 
     // Cancel any in-flight loop for this column
     col._animGen = (col._animGen || 0) + 1;
     const gen = col._animGen;
 
-    // Remove any CSS transition so rAF owns the strip completely
-    strip.style.transition = '';
+    strip.style.transition = 'none';
     strip.style.transform  = `translateY(${startY}px)`;
 
-    // First rAF commits the snap position. Spring loop starts on the NEXT frame
-    // so t0 is always non-zero and the full travel is animated.
+    // Double-rAF: first frame commits the start position, t0 captured inside
+    // so the spring always has full travel to animate.
     requestAnimationFrame(() => {
       if (col._animGen !== gen) return;
       const t0 = performance.now();
       function tick(now) {
         if (col._animGen !== gen) return;
-        const t     = (now - t0) / 1000;
-        const decay = Math.exp(-gamma * t) * (1 + gamma * t);
-        strip.style.transform = `translateY(${endY + (startY - endY) * decay}px)`;
-        if (t * 1000 < settle) {
+        const t = (now - t0) / 1000;
+        const d = springDecay(t);
+        strip.style.transform = `translateY(${endY + (startY - endY) * d}px)`;
+        if (d > SPRING_THRESH) {
           requestAnimationFrame(tick);
         } else {
-          // Reset to first-copy position so next animation starts clean
+          // Reset to first-copy position so next anim starts clean
           strip.style.transform = `translateY(${-to * SLOT_H}px)`;
           col._current = to;
           if (onDone) onDone();
@@ -13321,16 +13323,11 @@ function demoFadeSwap(outEl, inEl, swap) {
       if (onDone) onDone();
       return;
     }
-    const k     = 300;  // default.smooth
-    const ratio = 1.0;
-    const omega = Math.sqrt(k);
-    const gamma = ratio * omega;
-    const settle = (-Math.log(0.005) / gamma) * 1000;
 
     el._txGen = (el._txGen || 0) + 1;
     const gen = el._txGen;
 
-    el.style.transition = '';
+    el.style.transition = 'none';
     el.style.transform  = `translateX(${fromX}px)`;
 
     requestAnimationFrame(() => {
@@ -13338,10 +13335,10 @@ function demoFadeSwap(outEl, inEl, swap) {
       const t0 = performance.now();
       function tick(now) {
         if (el._txGen !== gen) return;
-        const t     = (now - t0) / 1000;
-        const decay = Math.exp(-gamma * t) * (1 + gamma * t);
-        el.style.transform = `translateX(${toX + (fromX - toX) * decay}px)`;
-        if (t * 1000 < settle) {
+        const t = (now - t0) / 1000;
+        const d = springDecay(t);
+        el.style.transform = `translateX(${toX + (fromX - toX) * d}px)`;
+        if (d > SPRING_THRESH) {
           requestAnimationFrame(tick);
         } else {
           el.style.transform = `translateX(${toX}px)`;
