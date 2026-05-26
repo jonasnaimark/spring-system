@@ -13263,22 +13263,21 @@ function demoFadeSwap(outEl, inEl, swap) {
     const to   = parseInt(targetDigit);
     if (from === to) { if (onDone) onDone(); return; }
 
-    // Scroll UP (growing): start at first copy of `from`, land on `to` (second copy if to < from)
-    // Scroll DOWN (shrinking): snap strip to second copy of `from`, land on first copy of `to`
+    // Strip layout: [0-9][0-9] (indices 0-19). Scroll UP = strip moves -Y, DOWN = strip moves +Y.
+    // Scroll DOWN trick: snap to second copy of `from` (-(from+10)*SLOT_H), then spring to
+    // first copy of `to` (-to*SLOT_H). Since -(from+10) < -to always, motion is +Y. ✓
     const m = strip.style.transform && strip.style.transform.match(/-?\d+\.?\d*/);
     let startY, endY;
     if (from === -1) {
-      // Fresh column: enter from below (scroll-up) or above (scroll-down)
-      startY = scrollDown ? -SLOT_H : SLOT_H;
+      // Fresh column: scroll-up enters from below (+SLOT_H), scroll-down enters from above.
+      startY = scrollDown ? -(to + 10) * SLOT_H : SLOT_H;
       endY   = -to * SLOT_H;
     } else if (scrollDown) {
-      // Scroll DOWN: strip moves to higher Y (more positive translateY)
-      // Start from current actual position, land at to (wrap to to-10 if to > from)
-      startY = m ? parseFloat(m[0]) : -from * SLOT_H;
-      endY   = -(to < from ? to : to - 10) * SLOT_H;
+      // Scroll DOWN: snap to second copy of `from`, spring to first copy of `to`.
+      startY = -(from + 10) * SLOT_H;
+      endY   = -to * SLOT_H;
     } else {
-      // Scroll UP: strip moves to lower Y (more negative translateY)
-      // Start from current actual position, land at to (wrap to to+10 if to < from)
+      // Scroll UP: start from current position, wrap to second copy if to < from
       startY = m ? parseFloat(m[0]) : -from * SLOT_H;
       endY   = -(to >= from ? to : to + 10) * SLOT_H;
     }
@@ -13380,10 +13379,47 @@ function demoFadeSwap(outEl, inEl, swap) {
     Array.from(inner.children).forEach(col => oldColX.set(col, col.getBoundingClientRect().left));
 
     const newDigitCount = tokens.filter(t => t.type === 'digit').length;
+
+    // Identify which digit cols will be dropped (leading cols when count shrinks)
+    const poolOffset = newDigitCount - oldDigitCols.length;
+    const droppedDigitCols = poolOffset < 0 ? oldDigitCols.slice(0, -poolOffset) : [];
+
+    // Exit-animate dropped cols: pin them in place absolutely, fade+scroll out
+    droppedDigitCols.forEach(col => {
+      const rect = col.getBoundingClientRect();
+      const parentRect = container.getBoundingClientRect();
+      col.style.position = 'absolute';
+      col.style.left = (rect.left - parentRect.left) + 'px';
+      col.style.top  = (rect.top  - parentRect.top)  + 'px';
+      col.style.pointerEvents = 'none';
+      container.appendChild(col);
+      // Slide the strip one slot further in the scroll direction, fade out
+      const strip = col._strip;
+      const currentY = parseFloat(strip.style.transform?.match(/-?\d+\.?\d*/)?.[0] ?? '0') || 0;
+      const exitY = scrollDown ? currentY + SLOT_H : currentY - SLOT_H;
+      col._animGen = (col._animGen || 0) + 1;
+      const gen = col._animGen;
+      strip.style.transition = 'none';
+      requestAnimationFrame(() => {
+        if (col._animGen !== gen) return;
+        const t0 = performance.now();
+        function exitTick(now) {
+          if (col._animGen !== gen) return;
+          const t = (now - t0) / 1000;
+          const d = slotSpringDecay(t);
+          strip.style.transform = `translateY(${exitY + (currentY - exitY) * d}px)`;
+          if (d > SLOT_SPRING_THRESH) {
+            requestAnimationFrame(exitTick);
+          } else {
+            col.remove();
+          }
+        }
+        requestAnimationFrame(exitTick);
+      });
+    });
+
     inner.innerHTML = '';
     const newDigitCols = [];
-
-    const poolOffset = newDigitCount - oldDigitCols.length;
     let digitIdx = 0;
 
     // Reuse static cols (symbol/comma) by key so they get FLIP treatment
