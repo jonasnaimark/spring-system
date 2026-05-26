@@ -13241,8 +13241,7 @@ function demoFadeSwap(outEl, inEl, swap) {
       });
       col.appendChild(strip);
       col._strip = strip;
-      col._current = 0;
-      // Start one slot below visible so new columns scroll in from below
+      col._current = -1; // -1 = fresh, needs scroll-in regardless of target digit
       strip.style.transform = `translateY(${SLOT_H}px)`;
     }
     return col;
@@ -13252,7 +13251,7 @@ function demoFadeSwap(outEl, inEl, swap) {
   // decay(t) = e^(-γt)(1+γt). Settled when |decay| < 0.005.
   // For γ=17.32 that's t≈0.53s. We run until decay < threshold, not by fixed time.
   const SLOT_SPRING_G = Math.sqrt(300); // γ = 17.32, default.smooth critically damped
-  const SLOT_SPRING_THRESH = 0.005;
+  const SLOT_SPRING_THRESH = 0.0005; // ~0.1px at max travel (520px)
 
   function slotSpringDecay(t) {
     return Math.exp(-SLOT_SPRING_G * t) * (1 + SLOT_SPRING_G * t);
@@ -13260,16 +13259,17 @@ function demoFadeSwap(outEl, inEl, swap) {
 
   function animateSlotTo(col, targetDigit, onDone) {
     const strip = col._strip;
-    const from = col._current;
+    const from = col._current; // -1 means fresh/new column
     const to   = parseInt(targetDigit);
     if (from === to) { if (onDone) onDone(); return; }
 
-    // Read actual current pixel position (handles mid-animation retrigger)
+    // Read actual current pixel position
     const m = strip.style.transform && strip.style.transform.match(/-?\d+\.?\d*/);
-    const startY = m ? parseFloat(m[0]) : -from * SLOT_H;
+    const startY = m ? parseFloat(m[0]) : (from === -1 ? SLOT_H : -from * SLOT_H);
 
-    // Always scroll UP. If to < from the strip wraps using second set (index to+10).
-    const landingIdx = to >= from ? to : to + 10;
+    // For fresh columns (from=-1), treat as if coming from below (landingIdx = to)
+    // For direction: always scroll UP; wrap via second copy when to < from
+    const landingIdx = (from === -1 || to >= from) ? to : to + 10;
     const endY = -landingIdx * SLOT_H;
 
     // Cancel any in-flight loop for this column
