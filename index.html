@@ -13365,6 +13365,7 @@ function demoFadeSwap(outEl, inEl, swap) {
     // FLIP step 1: record viewport X of ALL current children before touching the DOM
     const oldDigitCols = Array.from(inner.children).filter(c => !c._isStatic);
     const oldColX = new Map();
+    // Also grab any static cols from the pool that are currently in the DOM
     Array.from(inner.children).forEach(col => oldColX.set(col, col.getBoundingClientRect().left));
 
     const newDigitCount = tokens.filter(t => t.type === 'digit').length;
@@ -13374,6 +13375,11 @@ function demoFadeSwap(outEl, inEl, swap) {
     const poolOffset = newDigitCount - oldDigitCols.length;
     let digitIdx = 0;
 
+    // Reuse static cols (symbol/comma) by key so they get FLIP treatment
+    if (!container._staticCols) container._staticCols = new Map();
+    const staticPool = container._staticCols;
+    const usedStaticKeys = new Set();
+
     tokens.forEach(t => {
       if (t.type === 'digit') {
         const poolIdx = digitIdx - poolOffset;
@@ -13382,7 +13388,16 @@ function demoFadeSwap(outEl, inEl, swap) {
         inner.appendChild(col);
         newDigitCols.push({ col, char: t.char });
       } else {
-        const col = buildSlotCol(t.char, t.type === 'symbol', t.type === 'comma');
+        // Key by type+char to reuse across rebuilds
+        const key = t.type + ':' + t.char;
+        // If there are multiple commas, disambiguate by occurrence index
+        const useKey = usedStaticKeys.has(key) ? key + ':' + usedStaticKeys.size : key;
+        usedStaticKeys.add(key);
+        let col = staticPool.get(useKey);
+        if (!col) {
+          col = buildSlotCol(t.char, t.type === 'symbol', t.type === 'comma');
+          staticPool.set(useKey, col);
+        }
         inner.appendChild(col);
       }
     });
@@ -13393,17 +13408,11 @@ function demoFadeSwap(outEl, inEl, swap) {
     const endX = startX - (newWidth - prevWidth) / 2;
     springTranslateX(inner, startX, endX);
 
-    // FLIP step 2: spring all children to their new positions
+    // FLIP step 2: spring reused cols from old screen position to new
     Array.from(inner.children).forEach(col => {
-      if (oldColX.has(col)) {
-        // Reused: spring from old position to new
-        const dx = oldColX.get(col) - col.getBoundingClientRect().left;
-        if (Math.abs(dx) > 0.5) springTranslateX(col, dx, 0);
-      } else {
-        // New element (comma, new digit col): slide in from its own width to the left
-        const dx = -col.offsetWidth;
-        springTranslateX(col, dx, 0);
-      }
+      if (!oldColX.has(col)) return;
+      const dx = oldColX.get(col) - col.getBoundingClientRect().left;
+      if (Math.abs(dx) > 0.5) springTranslateX(col, dx, 0);
     });
 
     // Animate digit columns with stagger R→L (ones first, most natural for counting)
