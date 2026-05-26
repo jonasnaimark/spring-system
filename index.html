@@ -13300,7 +13300,10 @@ function demoFadeSwap(outEl, inEl, swap) {
         if (col._animGen !== gen) return;
         const t = (now - t0) / 1000;
         const d = slotSpringDecay(t, g);
-        strip.style.transform = `translateY(${endY + (startY - endY) * d}px)`;
+        // Ease-in: quadratic ramp over first 60ms holds the spring back at start
+        const ramp = Math.min(1, t / 0.06);
+        const eased = ramp * ramp * d + (1 - ramp * ramp);
+        strip.style.transform = `translateY(${endY + (startY - endY) * eased}px)`;
         if (d > SLOT_SPRING_THRESH) {
           requestAnimationFrame(tick);
         } else {
