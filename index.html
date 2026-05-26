@@ -4097,8 +4097,8 @@
         </div>
 
         <div class="mi-card mi-idle" id="mi-wave" data-mi="wave">
-          <div class="mi-card-stage" id="mi-wave-stage">
-            <div id="mi-wave-inner" style="display:inline-flex;align-items:center;gap:0;flex-shrink:0;">
+          <div class="mi-card-stage">
+            <div style="display:flex;align-items:center;margin-left:-40px;">
               <div id="mi-wave-lottie" style="width:144px;height:144px;flex-shrink:0;margin-right:-33px;z-index:0;position:relative;opacity:0;transition:opacity 0.2s;"></div>
               <div id="mi-wave-text" style="display:flex;gap:0px;font-size:22px;font-weight:600;letter-spacing:-0.02em;color:var(--c-text-primary);position:relative;z-index:1;opacity:0;transition:opacity 0.2s;white-space:nowrap;"></div>
             </div>
@@ -13447,21 +13447,6 @@ function demoFadeSwap(outEl, inEl, swap) {
     });
   }
 
-  // Scale wave inner row to always fit stage width
-  (function() {
-    const stage = document.getElementById('mi-wave-stage');
-    const inner = document.getElementById('mi-wave-inner');
-    if (!stage || !inner) return;
-    function scaleToFit() {
-      inner.style.zoom = '';
-      const sw = stage.clientWidth - 48;
-      const iw = inner.offsetWidth;
-      const s = iw > 0 ? Math.min(1, sw / iw) : 1;
-      if (s < 1) inner.style.zoom = String(s);
-    }
-    new ResizeObserver(scaleToFit).observe(stage);
-    scaleToFit();
-  })();
 
   // ── Text Wave ─────────────────────────────
   // Spec: scale 1→1.2 over 200ms (std curve), spring back k=250 ratio=0.3
