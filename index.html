@@ -13331,7 +13331,7 @@ function demoFadeSwap(outEl, inEl, swap) {
         } else {
           strip.style.transform = `translateY(${-to * SLOT_H}px)`;
           col._current = to;
-          col.style.width = measureDigitWidth(SLOT_DIGITS[to]) + 'px';
+          col.style.width = (measureDigitWidth(SLOT_DIGITS[to]) + 4) + 'px';
           if (onDone) onDone();
         }
       }
@@ -13499,7 +13499,7 @@ function demoFadeSwap(outEl, inEl, swap) {
     let doneCount = 0;
     newDigitCols.forEach(({ col, char }, i) => {
       // Pre-size col to target digit width so FLIP layout is correct from the start
-      col.style.width = measureDigitWidth(char) + 'px';
+      col.style.width = (measureDigitWidth(char) + 4) + 'px';
       // i=0 is leftmost digit → SLOT_G_FAST; i=total-1 is rightmost → SLOT_G_SLOW
       const t = total > 1 ? i / (total - 1) : 0;
       const gamma = SLOT_G_FAST + (SLOT_G_SLOW - SLOT_G_FAST) * t;
