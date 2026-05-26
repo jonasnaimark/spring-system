@@ -269,18 +269,22 @@
     }
     .mi-slot-col .mi-slot-digit {
       height: 52px;
-      width: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 40px;
       font-weight: 700;
-      letter-spacing: -0.04em;
+      letter-spacing: 0;
       color: var(--c-text-primary);
       font-variant-numeric: tabular-nums;
       line-height: 1;
       flex-shrink: 0;
       padding: 0;
+    }
+    /* Apply tracking at the container level so it affects visual spacing
+       without inflating each column's measured width */
+    #mi-price-counter {
+      letter-spacing: -0.04em;
     }
     .mi-slot-col.mi-slot-symbol,
     .mi-slot-col.mi-slot-static {
