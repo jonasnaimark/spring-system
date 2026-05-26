@@ -13257,20 +13257,26 @@ function demoFadeSwap(outEl, inEl, swap) {
     return Math.exp(-SLOT_SPRING_G * t) * (1 + SLOT_SPRING_G * t);
   }
 
-  function animateSlotTo(col, targetDigit, onDone) {
+  function animateSlotTo(col, targetDigit, scrollDown, onDone) {
     const strip = col._strip;
     const from = col._current; // -1 means fresh/new column
     const to   = parseInt(targetDigit);
     if (from === to) { if (onDone) onDone(); return; }
 
-    // Read actual current pixel position
-    const m = strip.style.transform && strip.style.transform.match(/-?\d+\.?\d*/);
-    const startY = m ? parseFloat(m[0]) : (from === -1 ? SLOT_H : -from * SLOT_H);
-
-    // For fresh columns (from=-1), treat as if coming from below (landingIdx = to)
-    // For direction: always scroll UP; wrap via second copy when to < from
-    const landingIdx = (from === -1 || to >= from) ? to : to + 10;
-    const endY = -landingIdx * SLOT_H;
+    // Scroll UP (growing): start at first copy of `from`, land on `to` (second copy if to < from)
+    // Scroll DOWN (shrinking): snap strip to second copy of `from`, land on first copy of `to`
+    let startY, endY;
+    if (from === -1) {
+      startY = scrollDown ? -SLOT_H : SLOT_H; // enter from above or below
+      endY   = -to * SLOT_H;
+    } else if (scrollDown) {
+      startY = -(from + 10) * SLOT_H; // second copy of current digit
+      endY   = -to * SLOT_H;          // first copy of target digit
+    } else {
+      const m = strip.style.transform && strip.style.transform.match(/-?\d+\.?\d*/);
+      startY = m ? parseFloat(m[0]) : -from * SLOT_H;
+      endY   = -(to >= from ? to : to + 10) * SLOT_H;
+    }
 
     // Cancel any in-flight loop for this column
     col._animGen = (col._animGen || 0) + 1;
@@ -13349,7 +13355,7 @@ function demoFadeSwap(outEl, inEl, swap) {
   }
 
   // Reconcile container columns to match new token list, animate digits + slide to center
-  function reconcileCounter(container, tokens, stagger, onAllDone) {
+  function reconcileCounter(container, tokens, stagger, scrollDown, onAllDone) {
     // Get or create inner wrapper for centering via translateX
     let inner = container._inner;
     if (!inner) {
@@ -13422,7 +13428,7 @@ function demoFadeSwap(outEl, inEl, swap) {
     newDigitCols.forEach(({ col, char }, i) => {
       const delay = (total - 1 - i) * stagger;
       setTimeout(() => {
-        animateSlotTo(col, char, () => {
+        animateSlotTo(col, char, scrollDown, () => {
           doneCount++;
           if (doneCount === total && onAllDone) onAllDone();
         });
@@ -13436,14 +13442,16 @@ function demoFadeSwap(outEl, inEl, swap) {
     container._inner = null;
 
     const PREFIX = '$';
-    const STEPS = [0, 49, 149, 1299, 12849];
+    const STEPS = [0, 49, 149, 1299, 12849, 9999, 1049, 99, 0];
     const STAGGER = 60;
     let step = 0;
 
     function runStep() {
       const val = STEPS[step];
+      const prevVal = step > 0 ? STEPS[step - 1] : 0;
+      const scrollDown = val < prevVal;
       const tokens = formatTokens(val, PREFIX, null);
-      reconcileCounter(container, tokens, STAGGER, () => {
+      reconcileCounter(container, tokens, STAGGER, scrollDown, () => {
         step++;
         if (step < STEPS.length) {
           setTimeout(runStep, 700);
