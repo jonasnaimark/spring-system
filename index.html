@@ -13384,7 +13384,7 @@ function demoFadeSwap(outEl, inEl, swap) {
     const poolOffset = newDigitCount - oldDigitCols.length;
     const droppedDigitCols = poolOffset < 0 ? oldDigitCols.slice(0, -poolOffset) : [];
 
-    // Exit-animate dropped cols: pin them in place absolutely, fade+scroll out
+    // Exit-animate dropped cols: pin them absolutely, scroll the strip one more slot then remove
     droppedDigitCols.forEach(col => {
       const rect = col.getBoundingClientRect();
       const parentRect = container.getBoundingClientRect();
@@ -13393,10 +13393,11 @@ function demoFadeSwap(outEl, inEl, swap) {
       col.style.top  = (rect.top  - parentRect.top)  + 'px';
       col.style.pointerEvents = 'none';
       container.appendChild(col);
-      // Slide the strip one slot further in the scroll direction, fade out
       const strip = col._strip;
       const currentY = parseFloat(strip.style.transform?.match(/-?\d+\.?\d*/)?.[0] ?? '0') || 0;
-      const exitY = scrollDown ? currentY + SLOT_H : currentY - SLOT_H;
+      // Animate strip one full slot further in the scroll direction
+      // (scrollDown = strip moves +Y; scrollUp = strip moves -Y)
+      const exitY = currentY + (scrollDown ? SLOT_H : -SLOT_H);
       col._animGen = (col._animGen || 0) + 1;
       const gen = col._animGen;
       strip.style.transition = 'none';
