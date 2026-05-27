@@ -194,10 +194,74 @@
       grid-template-columns: 2fr 3fr;
       gap: 28px;
     }
+    .mi-card-row--asymmetric {
+      grid-template-columns: 2fr 3fr;
+    }
+    .mi-card-row--equal {
+      grid-template-columns: 1fr 1fr 1fr;
+      margin-top: 28px;
+    }
+
+    /* Placeholder card stages */
+    .mi-placeholder-stage {
+      min-height: 180px;
+    }
+    .mi-placeholder-layout {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+    .mi-placeholder-layout--icon-text {
+      flex-direction: row;
+    }
+    .mi-ph-icon-block {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      background: var(--c-border-subtle);
+      flex-shrink: 0;
+    }
+    .mi-ph-lines { display: flex; flex-direction: column; gap: 8px; }
+    .mi-ph-line {
+      height: 10px; border-radius: 5px;
+      background: var(--c-border-subtle);
+    }
+    .mi-ph-line--wide  { width: 100px; }
+    .mi-ph-line--med   { width: 80px; }
+    .mi-ph-line--narrow { width: 60px; }
+
+    .mi-placeholder-layout--list { flex-direction: column; gap: 12px; align-items: flex-start; }
+    .mi-ph-row { display: flex; align-items: center; gap: 10px; }
+    .mi-ph-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--c-border-subtle); flex-shrink: 0;
+    }
+
+    .mi-placeholder-layout--badge { }
+    .mi-ph-badge {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--c-surface-1);
+      border: 1px solid var(--c-border-subtle);
+      border-radius: 100px;
+      padding: 10px 18px 10px 12px;
+    }
+    .mi-ph-badge-icon {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--c-border-subtle);
+    }
+    .mi-ph-badge-text {
+      width: 72px; height: 10px; border-radius: 5px;
+      background: var(--c-border-subtle);
+    }
     .mi-card {
       background: var(--c-surface-0);
       border: none;
       box-shadow: 0 2px 6px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.03);
+    }
+    [data-theme="dark"] .mi-card {
+      box-shadow: 0 0 0 1px var(--c-border-subtle);
+    }
+    .mi-card {
       border-radius: 24px;
       cursor: pointer;
       position: relative;
@@ -2867,9 +2931,98 @@
       transition: opacity 0.15s, transform 0.08s, background 0.08s;
     }
   </style>
+  <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
 </head>
-<script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
 <body>
+
+<!--
+  Machine-readable motion source of truth.
+  If runtime tokens or demo defaults change, update this block too.
+-->
+<script type="application/json" id="motion-spec">
+{
+  "version": "2026-05-27",
+  "springModel": {
+    "mass": 1,
+    "dampingFormula": "round(2 * dampingRatio * sqrt(stiffness))",
+    "settleThreshold": {
+      "position": 0.002,
+      "deltaPerFrame": 0.0005
+    }
+  },
+  "speedTokens": {
+    "slow": { "stiffness": 100, "label": "Slow" },
+    "default": { "stiffness": 300, "label": "Default" },
+    "fast": { "stiffness": 500, "label": "Fast" },
+    "snappy": { "stiffness": 750, "label": "Snappy" }
+  },
+  "characterTokens": {
+    "smooth": { "dampingRatio": 1.0, "stiffnessMultiplier": 1.0, "color": "#8e8e93" },
+    "small.bounce": { "dampingRatio": 0.8, "stiffnessMultiplier": 1.0, "color": "#5ac8fa" },
+    "medium.bounce": { "dampingRatio": 0.7, "stiffnessMultiplier": 0.8, "color": "#af52de" },
+    "large.bounce": { "dampingRatio": 0.5, "stiffnessMultiplier": 0.5, "color": "#FF385C" }
+  },
+  "computedSpringTokens": {
+    "slow-smooth": { "stiffness": 100, "damping": 20, "dampingRatio": 1.0 },
+    "default-smooth": { "stiffness": 300, "damping": 35, "dampingRatio": 1.0 },
+    "fast-smooth": { "stiffness": 500, "damping": 45, "dampingRatio": 1.0 },
+    "snappy-smooth": { "stiffness": 750, "damping": 55, "dampingRatio": 1.0 },
+    "slow-small.bounce": { "stiffness": 100, "damping": 16, "dampingRatio": 0.8 },
+    "default-small.bounce": { "stiffness": 300, "damping": 28, "dampingRatio": 0.8 },
+    "fast-small.bounce": { "stiffness": 500, "damping": 36, "dampingRatio": 0.8 },
+    "snappy-small.bounce": { "stiffness": 750, "damping": 44, "dampingRatio": 0.8 },
+    "slow-medium.bounce": { "stiffness": 80, "damping": 13, "dampingRatio": 0.7 },
+    "default-medium.bounce": { "stiffness": 240, "damping": 22, "dampingRatio": 0.7 },
+    "fast-medium.bounce": { "stiffness": 400, "damping": 28, "dampingRatio": 0.7 },
+    "snappy-medium.bounce": { "stiffness": 600, "damping": 34, "dampingRatio": 0.7 },
+    "slow-large.bounce": { "stiffness": 50, "damping": 7, "dampingRatio": 0.5 },
+    "default-large.bounce": { "stiffness": 150, "damping": 12, "dampingRatio": 0.5 },
+    "fast-large.bounce": { "stiffness": 250, "damping": 16, "dampingRatio": 0.5 },
+    "snappy-large.bounce": { "stiffness": 375, "damping": 19, "dampingRatio": 0.5 }
+  },
+  "curveTokens": {
+    "standard.curve": "cubic-bezier(0.40, 0.00, 0.20, 1.00)",
+    "linear.curve": "cubic-bezier(0.00, 0.00, 1.00, 1.00)",
+    "exit.curve": "cubic-bezier(0.40, 0.00, 1.00, 1.00)",
+    "enter.curve": "cubic-bezier(0.00, 0.00, 0.00, 1.00)"
+  },
+  "durationTokensMs": [100, 150, 300, 500, 750, 1000],
+  "durationGuidance": {
+    "100": "Immediate fades and tiny state changes.",
+    "150": "Fast exits, dismissals, and reduced-motion crossfades.",
+    "300": "Small UI transitions and modal exits.",
+    "500": "Default curve demo duration and slower content fades.",
+    "750": "Large illustrative or staged transitions.",
+    "1000": "Long educational demos only."
+  },
+  "sharedMotion": {
+    "scrimSpring": { "stiffness": 300, "damping": 34.64 },
+    "reducedMotion": "Replace scale, slide, parallax, and spring motion with simple 150ms crossfades.",
+    "windowsAndroidReducedMotion": "Disable animation and motion.",
+    "animatedAssets": "Animated illustrations, icons, and autoplaying video require static or paused fallbacks."
+  },
+  "springDemoDefaults": {
+    "sheet": "fast-smooth",
+    "nav-transition": "default-smooth",
+    "grow": "fast-smooth",
+    "bottom-bar": "snappy-smooth",
+    "onboarding": "default-smooth",
+    "modal": "snappy-medium.bounce",
+    "toast": "snappy-large.bounce",
+    "tooltip": "snappy-medium.bounce",
+    "inset-sheet": "fast-small.bounce",
+    "flip": "slow-medium.bounce",
+    "press": "default-smooth"
+  },
+  "transitionPatternDefaults": {
+    "grow": "fast-smooth",
+    "push": "default-smooth",
+    "slide-up": "fast-smooth",
+    "cross-fade": "150ms exit curve plus spring enter",
+    "loading-fade": "skeleton shimmer then fade reveal"
+  }
+}
+</script>
 
 <!-- ── Top nav ── -->
 <div class="topnav" id="topnav">
@@ -4086,7 +4239,7 @@
     <!-- Numbers & Text -->
     <div class="mi-theme-group">
       <div class="mi-theme-label ng-h1">Numbers &amp; Text</div>
-      <div class="mi-card-row">
+      <div class="mi-card-row mi-card-row--asymmetric">
 
         <div class="mi-card mi-idle" id="mi-counter-up" data-mi="counter-up">
           <div class="mi-card-stage">
@@ -4120,6 +4273,62 @@
               <svg id="mi-play-wave" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="position:absolute;"><path d="M320-200v-560l440 280-440 280Z"/></svg>
               <svg id="mi-replay-wave" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="position:absolute;opacity:0;"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
             </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Row 2: three equal cards — layout explorations -->
+      <div class="mi-card-row mi-card-row--equal">
+
+        <div class="mi-card">
+          <div class="mi-card-stage mi-placeholder-stage">
+            <div class="mi-placeholder-layout mi-placeholder-layout--icon-text">
+              <div class="mi-ph-icon-block"></div>
+              <div class="mi-ph-lines">
+                <div class="mi-ph-line mi-ph-line--wide"></div>
+                <div class="mi-ph-line mi-ph-line--narrow"></div>
+              </div>
+            </div>
+          </div>
+          <div class="mi-card-footer">
+            <div class="mi-card-footer-text">
+              <div class="mi-card-label">Icon + Text</div>
+              <div class="mi-card-desc">Icon animates in alongside a label.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mi-card">
+          <div class="mi-card-stage mi-placeholder-stage">
+            <div class="mi-placeholder-layout mi-placeholder-layout--list">
+              <div class="mi-ph-row"><div class="mi-ph-dot"></div><div class="mi-ph-line mi-ph-line--med"></div></div>
+              <div class="mi-ph-row"><div class="mi-ph-dot"></div><div class="mi-ph-line mi-ph-line--wide"></div></div>
+              <div class="mi-ph-row"><div class="mi-ph-dot"></div><div class="mi-ph-line mi-ph-line--narrow"></div></div>
+            </div>
+          </div>
+          <div class="mi-card-footer">
+            <div class="mi-card-footer-text">
+              <div class="mi-card-label">Staggered List</div>
+              <div class="mi-card-desc">Rows animate in with spring stagger.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mi-card">
+          <div class="mi-card-stage mi-placeholder-stage">
+            <div class="mi-placeholder-layout mi-placeholder-layout--badge">
+              <div class="mi-ph-badge">
+                <div class="mi-ph-badge-icon"></div>
+                <div class="mi-ph-badge-text"></div>
+              </div>
+            </div>
+          </div>
+          <div class="mi-card-footer">
+            <div class="mi-card-footer-text">
+              <div class="mi-card-label">Badge / Pill</div>
+              <div class="mi-card-desc">Status change with cross-fade or pop.</div>
+            </div>
           </div>
         </div>
 
@@ -4763,562 +4972,6 @@
 <div class="toast" id="toast"></div>
 
 
-</body>
-</html>
-</div><!-- end content-cover -->
-
-<!-- ── Shared templates ─────────────────────────────────────────── -->
-
-<template id="tpl-sheet">
-  <div class="sheet-inner">
-  <div class="sheet-header">
-    <div class="sheet-close">
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-        <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-    </div>
-  </div>
-  <div class="sheet-line" style="width:76%;"></div>
-  <div class="sheet-line thin" style="width:58%;"></div>
-  <div class="sheet-section-gap"></div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:86%;"></div>
-      <div class="sheet-line short thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:75%;"></div>
-      <div class="sheet-line med thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:82%;"></div>
-      <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:90%;"></div>
-      <div class="sheet-line med thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-img-row">
-    <div class="sheet-thumb"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:79%;"></div>
-      <div class="sheet-line short thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="sheet-img-row sheet-row-extra">
-    <div class="sheet-thumb"></div>
-    <div class="sheet-thumb-lines">
-      <div class="sheet-line" style="margin-bottom:0;width:88%;"></div>
-      <div class="sheet-line xshort thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  </div>
-</template>
-
-<template id="tpl-detail">
-  <div class="push-hero" style="flex-shrink:0;position:relative;">
-    <div class="detail-close-btn" style="position:absolute;top:20px;left:20px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.10);display:flex;align-items:center;justify-content:center;">
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <line x1="1" y1="1" x2="9" y2="9" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="9" y1="1" x2="1" y2="9" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-    </div>
-  </div>
-  <div class="expand-detail-content">
-    <div class="push-detail-row title" style="margin:8px auto 3px;"></div>
-    <div class="push-detail-row sub" style="margin:0 auto 10px;"></div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:2px;">
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 0;">
-        <div style="width:32px;height:32px;border-radius:50%;background:var(--sk);"></div>
-        <div style="height:7px;width:42%;background:var(--sk);border-radius:4px;margin-top:10px;"></div>
-      </div>
-      <div style="width:1px;height:28px;background:var(--c-border-subtle);flex-shrink:0;"></div>
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 0;">
-        <div style="width:32px;height:32px;border-radius:50%;background:var(--sk);"></div>
-        <div style="height:7px;width:42%;background:var(--sk);border-radius:4px;margin-top:10px;"></div>
-      </div>
-      <div style="width:1px;height:28px;background:var(--c-border-subtle);flex-shrink:0;"></div>
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 0;">
-        <div style="width:32px;height:32px;border-radius:50%;background:var(--sk);"></div>
-        <div style="height:7px;width:42%;background:var(--sk);border-radius:4px;margin-top:10px;"></div>
-      </div>
-    </div>
-    <div class="push-detail-divider"></div>
-    <div style="display:flex;flex-direction:column;gap:12px;margin:4px 0;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:26px;height:26px;border-radius:50%;background:var(--sk);flex-shrink:0;"></div>
-        <div style="display:flex;flex-direction:column;gap:7px;flex:1;">
-          <div style="height:7px;width:62%;background:var(--sk);border-radius:4px;"></div>
-          <div style="height:7px;width:80%;background:var(--sk);border-radius:4px;"></div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:26px;height:26px;border-radius:50%;background:var(--sk);flex-shrink:0;"></div>
-        <div style="display:flex;flex-direction:column;gap:7px;flex:1;">
-          <div style="height:7px;width:55%;background:var(--sk);border-radius:4px;"></div>
-          <div style="height:7px;width:75%;background:var(--sk);border-radius:4px;"></div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:26px;height:26px;border-radius:50%;background:var(--sk);flex-shrink:0;"></div>
-        <div style="display:flex;flex-direction:column;gap:7px;flex:1;">
-          <div style="height:7px;width:68%;background:var(--sk);border-radius:4px;"></div>
-          <div style="height:7px;width:82%;background:var(--sk);border-radius:4px;"></div>
-        </div>
-      </div>
-    </div>
-    <div class="push-detail-divider"></div>
-    <div class="push-detail-row section-title" style="width:72%;"></div>
-    <div class="push-detail-row" style="width:74%;"></div>
-    <div class="push-detail-row" style="width:88%;"></div>
-    <div class="push-detail-row med"></div>
-  </div>
-</template>
-
-<template id="tpl-desktop-modal">
-  <div data-suf-close style="position:absolute;top:14px;right:14px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="pointer-events:none;"><line x1="1" y1="1" x2="9" y2="9" stroke="var(--c-text-tertiary)" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="1" x2="1" y2="9" stroke="var(--c-text-tertiary)" stroke-width="1.5" stroke-linecap="round"/></svg>
-  </div>
-  <div style="height:10px;width:60%;background:var(--sk);border-radius:5px;margin-bottom:12px;"></div>
-  <div style="height:120px;width:100%;background:var(--sk);border-radius:8px;margin-bottom:14px;"></div>
-  <div style="height:7px;width:90%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
-  <div style="height:7px;width:70%;background:var(--sk);border-radius:4px;margin-bottom:7px;"></div>
-  <div style="height:7px;width:80%;background:var(--sk);border-radius:4px;margin-bottom:20px;"></div>
-  <div style="display:flex;gap:8px;">
-    <div style="flex:1;height:34px;background:var(--sk);border-radius:10px;"></div>
-    <div style="flex:1;height:34px;background:var(--sk);border-radius:10px;"></div>
-  </div>
-</template>
-
-<template id="tpl-home-screen">
-  <div class="sk-search"><div class="sk-search-dot"></div><div class="sk-search-text"></div></div>
-  <div class="sk-cats">
-    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-  </div>
-  <div class="sk-divider"></div>
-  <div class="sk-card-img" style="position:relative;"><div class="sk-overflow-btn"></div></div>
-  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-  <div class="sk-sub"></div>
-  <div class="sk-section-label sk-row-end"></div>
-  <div class="sk-card-img partial" style="position:relative;"><div class="sk-overflow-btn"></div></div>
-  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-  <div class="sk-sub"></div>
-  <div class="sk-sub sk-row-end"></div>
-  <div class="sk-card-img partial" style="position:relative;"><div class="sk-overflow-btn"></div></div>
-  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-  <div class="sk-sub"></div>
-</template>
-
-<template id="tpl-home-screen-carousels">
-  <div class="sk-search"><div class="sk-search-dot"></div><div class="sk-search-text"></div></div>
-  <div class="sk-cats">
-    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-  </div>
-  <div class="sk-divider"></div>
-  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
-  <div class="sk-carousel">
-    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-  </div>
-  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
-  <div class="sk-carousel">
-    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-  </div>
-  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
-  <div class="sk-carousel">
-    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-    <div class="sk-carousel-card"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-  </div>
-</template>
-
-<template id="tpl-website-screen">
-  <div class="ws-navbar">
-    <span class="material-symbols-outlined ws-navbar-icon">menu</span>
-    <div class="ws-navbar-title"></div>
-    <div class="ws-navbar-close">
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-        <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-    </div>
-  </div>
-  <div class="sk-search" style="margin-bottom:8px;"><div class="sk-search-dot"></div><div class="sk-search-text"></div></div>
-  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
-  <div class="sk-carousel">
-    <div class="sk-carousel-card sm"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-    <div class="sk-carousel-card sm"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-    <div class="sk-carousel-card sm"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-    <div class="sk-carousel-card sm"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-  </div>
-  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
-  <div class="sk-carousel">
-    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-  </div>
-  <div class="sk-section-row"><div class="sk-section-row-title"></div></div>
-  <div class="sk-carousel">
-    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-    <div class="sk-carousel-card lg"><div class="sk-carousel-img"></div><div class="sk-carousel-title"></div><div class="sk-carousel-sub"></div></div>
-  </div>
-</template>
-
-<template id="tpl-modal-card">
-  <div class="modal-line"></div>
-  <div class="modal-line short"></div>
-  <div class="modal-line"></div>
-  <div class="modal-btn-row">
-    <div class="modal-btn"></div>
-    <div class="modal-btn primary"></div>
-  </div>
-</template>
-
-<template id="tpl-inset-modal">
-  <div class="inset-modal-close">
-    <svg width="9" height="9" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-  </div>
-  <div class="inset-modal-img"></div>
-  <div class="inset-modal-title-1"></div>
-  <div class="inset-modal-title-2"></div>
-  <div class="inset-modal-cta"></div>
-</template>
-
-<template id="tpl-search-results-popover">
-  <div class="sk-searchbar-row">
-    <div class="sk-icon-btn">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </div>
-    <div class="sk-search sk-search-narrow"><div class="sk-search-dot"></div><div class="sk-search-text" style="width:80px;"></div></div>
-    <div class="sk-icon-btn">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="4" width="12" height="1.5" rx="0.75" fill="currentColor"/><rect x="4" y="7.25" width="8" height="1.5" rx="0.75" fill="currentColor"/><rect x="6" y="10.5" width="4" height="1.5" rx="0.75" fill="currentColor"/></svg>
-    </div>
-  </div>
-  <div class="sk-chips" style="justify-content:flex-start;margin-top:4px;">
-    <div class="sk-chip tp-popover-chip"><div class="sk-chip-icon"></div><div class="sk-chip-label" style="width:36px;"></div></div>
-    <div class="sk-chip tp-popover-chip"><div class="sk-chip-icon"></div><div class="sk-chip-label" style="width:28px;"></div></div>
-    <div class="sk-chip tp-popover-chip"><div class="sk-chip-icon"></div><div class="sk-chip-label" style="width:44px;"></div></div>
-  </div>
-  <div class="sk-card-img"></div>
-  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-  <div class="sk-sub"></div>
-  <div class="sk-section-label sk-row-end"></div>
-  <div class="sk-card-img partial"></div>
-  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-  <div class="sk-sub"></div>
-  <div class="sk-sub sk-row-end"></div>
-  <div class="sk-card-img partial"></div>
-  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-  <div class="sk-sub"></div>
-</template>
-
-<template id="tpl-desktop-home-screen">
-  <div class="dt-topbar">
-    <div class="dt-logo"></div>
-    <div class="dt-search"></div>
-    <div class="dt-nav-icons">
-      <div class="dt-nav-icon"></div>
-      <div class="dt-nav-icon"></div>
-      <div class="dt-nav-icon dt-nav-icon--avatar"></div>
-    </div>
-  </div>
-  <div class="dt-pills">
-    <div class="dt-pill dt-pill--active"></div>
-    <div class="dt-pill"></div>
-    <div class="dt-pill"></div>
-    <div class="dt-pill"></div>
-    <div class="dt-pill"></div>
-    <div class="dt-pill"></div>
-  </div>
-  <div class="dt-grid">
-    <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:30%; background:var(--sk); border-radius:4px; margin-top:8px;"></div>
-    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-    <div class="dt-section-title" style="grid-column:1/-1; height:8px; width:25%; background:var(--sk); border-radius:4px; margin-top:16px;"></div>
-    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-    <div class="dt-card"><div class="dt-card-img"></div><div class="dt-card-body"><div class="dt-card-row dt-card-row--title"></div><div class="dt-card-row dt-card-row--sub"></div><div class="dt-card-row dt-card-row--price"></div></div></div>
-  </div>
-</template>
-
-<template id="tpl-search-results-content">
-  <div class="sk-chips">
-    <div class="sk-chip"><div class="sk-chip-label" style="width:36px;"></div></div>
-    <div class="sk-chip"><div class="sk-chip-label" style="width:28px;"></div></div>
-    <div class="sk-chip"><div class="sk-chip-label" style="width:44px;"></div></div>
-  </div>
-  <div class="sk-card-img"></div>
-  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-  <div class="sk-sub"></div>
-  <div class="sk-section-label sk-row-end"></div>
-  <div class="sk-card-img partial"></div>
-  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-  <div class="sk-sub"></div>
-  <div class="sk-sub sk-row-end"></div>
-  <div class="sk-card-img partial"></div>
-  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-  <div class="sk-sub"></div>
-</template>
-
-<template id="tpl-bottom-bar-nav">
-  <!-- Global tab nav: 4 icon slots spread across center -->
-  <div class="sk-bottom-bar">
-    <div class="sk-bar-center" style="gap:0;justify-content:space-around;flex:unset;width:100%;">
-      <div class="sk-nav-icon"></div>
-      <div class="sk-nav-icon"></div>
-      <div class="sk-nav-icon"></div>
-      <div class="sk-nav-icon"></div>
-    </div>
-  </div>
-</template>
-
-<template id="tpl-bottom-bar-back-next">
-  <!-- Step flow bar: back icon left, next pill right -->
-  <div class="sk-bottom-bar">
-    <div class="sk-bar-left">
-      <div class="sk-bar-icon-btn" style="display:flex;align-items:center;justify-content:center;color:var(--c-text-tertiary);">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 2L3.5 6L7.5 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-    </div>
-    <div class="sk-bar-right">
-      <div class="sk-bar-pill"></div>
-    </div>
-  </div>
-</template>
-
-<template id="tpl-large-list-screen">
-  <div class="ls-line" style="height:11px;width:68%;border-radius:6px;margin-bottom:22px;"></div>
-  <div class="ll-img-row">
-    <div class="ll-thumb"></div>
-    <div class="ll-lines">
-      <div class="ls-line" style="margin-bottom:0;width:88%;"></div>
-      <div class="ls-line short thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="ll-img-row">
-    <div class="ll-thumb"></div>
-    <div class="ll-lines">
-      <div class="ls-line" style="margin-bottom:0;width:82%;"></div>
-      <div class="ls-line med thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="ll-img-row">
-    <div class="ll-thumb"></div>
-    <div class="ll-lines">
-      <div class="ls-line" style="margin-bottom:0;width:92%;"></div>
-      <div class="ls-line short thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="ll-img-row">
-    <div class="ll-thumb"></div>
-    <div class="ll-lines">
-      <div class="ls-line" style="margin-bottom:0;width:85%;"></div>
-      <div class="ls-line med thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="ll-img-row">
-    <div class="ll-thumb"></div>
-    <div class="ll-lines">
-      <div class="ls-line" style="margin-bottom:0;width:78%;"></div>
-      <div class="ls-line short thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="ll-img-row">
-    <div class="ll-thumb"></div>
-    <div class="ll-lines">
-      <div class="ls-line" style="margin-bottom:0;width:90%;"></div>
-      <div class="ls-line med thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-  <div class="ll-img-row">
-    <div class="ll-thumb"></div>
-    <div class="ll-lines">
-      <div class="ls-line" style="margin-bottom:0;width:84%;"></div>
-      <div class="ls-line short thin" style="margin-bottom:0;"></div>
-    </div>
-  </div>
-</template>
-
-<template id="tpl-grid-screen">
-  <div class="ls-line" style="height:11px;width:68%;border-radius:6px;margin-bottom:5px;"></div>
-  <div class="ls-line" style="height:8px;width:45%;border-radius:4px;margin-bottom:22px;"></div>
-  <div class="gs-grid">
-    <div class="gs-card">
-      <div class="gs-card-img"></div>
-      <div class="gs-card-line" style="width:80%;"></div>
-    </div>
-    <div class="gs-card">
-      <div class="gs-card-img"></div>
-      <div class="gs-card-line" style="width:65%;"></div>
-    </div>
-    <div class="gs-card">
-      <div class="gs-card-img"></div>
-      <div class="gs-card-line" style="width:75%;"></div>
-    </div>
-    <div class="gs-card">
-      <div class="gs-card-img"></div>
-      <div class="gs-card-line" style="width:55%;"></div>
-    </div>
-    <div class="gs-card">
-      <div class="gs-card-img"></div>
-      <div class="gs-card-line" style="width:70%;"></div>
-    </div>
-    <div class="gs-card">
-      <div class="gs-card-img"></div>
-      <div class="gs-card-line" style="width:60%;"></div>
-    </div>
-    <div class="gs-card">
-      <div class="gs-card-img"></div>
-      <div class="gs-card-line" style="width:78%;"></div>
-    </div>
-    <div class="gs-card">
-      <div class="gs-card-img"></div>
-      <div class="gs-card-line" style="width:63%;"></div>
-    </div>
-  </div>
-</template>
-
-<template id="tpl-setup-screen">
-  <div class="setup-screen">
-    <div class="setup-body">
-      <div class="setup-img-placeholder"></div>
-      <div class="setup-text">
-        <div class="setup-title" style="width:75%;"></div>
-        <div class="setup-title" style="width:55%;"></div>
-      </div>
-    </div>
-    <div class="sk-bottom-bar">
-      <div class="sk-bar-cta"></div>
-    </div>
-  </div>
-</template>
-
-<template id="tpl-bottom-bar-cta">
-  <div class="sk-bottom-bar">
-    <div class="sk-bar-cta"></div>
-  </div>
-</template>
-
-<template id="tpl-checkout">
-  <div class="co-titlebar"><div class="co-title"></div></div>
-  <div class="co-body">
-    <div class="co-card">
-      <div class="co-listing">
-        <div class="co-listing-img"></div>
-        <div class="co-listing-lines">
-          <div class="co-line full"></div>
-          <div class="co-line med"></div>
-          <div class="co-line short"></div>
-        </div>
-      </div>
-      <div class="co-divider"></div>
-      <div class="co-row"><div class="co-row-lines"><div class="co-line" style="width:38%;"></div><div class="co-line short"></div></div><div class="co-btn"></div></div>
-      <div class="co-divider"></div>
-      <div class="co-row"><div class="co-row-lines"><div class="co-line" style="width:32%;"></div><div class="co-line" style="width:28%;"></div></div><div class="co-btn"></div></div>
-      <div class="co-divider"></div>
-      <div class="co-row"><div class="co-row-lines"><div class="co-line" style="width:42%;"></div><div class="co-line med"></div></div><div class="co-btn"></div></div>
-      <div class="co-divider"></div>
-      <div class="co-row" style="padding-bottom:12px;"><div class="co-row-lines"><div class="co-line" style="width:55%;"></div><div class="co-line full"></div></div></div>
-    </div>
-    <div class="co-section-title" style="margin-top:16px;margin-bottom:4px;"></div>
-    <div class="co-card">
-      <div class="co-option-row"><div class="co-option-lines"><div class="co-line" style="width:60%;"></div></div><div class="co-radio selected"></div></div>
-      <div class="co-divider"></div>
-      <div class="co-option-row"><div class="co-option-lines"><div class="co-line" style="width:72%;"></div></div><div class="co-radio"></div></div>
-    </div>
-    <div class="co-section-title" style="width:48%;margin-top:16px;margin-bottom:4px;"></div>
-    <div class="co-card">
-      <div class="co-payment-row">
-        <div class="co-line" style="width:76px;"></div>
-        <div class="co-chevron" style="margin-right:8px;"></div>
-      </div>
-      <div class="co-divider"></div>
-      <div class="co-payment-row">
-        <div class="co-line" style="width:88px;"></div>
-        <div class="co-chevron" style="margin-right:8px;"></div>
-      </div>
-    </div>
-  </div>
-</template>
-
-<template id="tpl-load-skeleton">
-  <div class="sk-search"></div>
-  <div class="sk-cats">
-    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-    <div class="sk-cat"><div class="sk-cat-dot"></div><div class="sk-cat-label"></div></div>
-  </div>
-  <div class="sk-divider"></div>
-  <div class="sk-card-img"></div>
-  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-  <div class="sk-sub"></div>
-  <div class="sk-section-label"></div>
-  <div class="sk-card-img partial"></div>
-  <div class="sk-card-meta"><div class="sk-title"></div><div class="sk-price"></div></div>
-  <div class="sk-sub"></div>
-</template>
-
-<template id="tpl-load-reveal">
-  <div class="sk-search-loaded">
-    <span class="material-symbols-outlined">search</span>
-    <span class="sk-search-loaded-text">Start your search</span>
-  </div>
-  <div class="ld-cats">
-    <div class="ld-cat active"><div class="ld-cat-dot"><span class="material-symbols-outlined">globe</span></div>All</div>
-    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">home_and_garden</span></div>Homes</div>
-    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">mountain_flag</span></div>Experiences</div>
-    <div class="ld-cat"><div class="ld-cat-dot"><span class="material-symbols-outlined">room_service</span></div>Services</div>
-  </div>
-  <div class="sk-divider"></div>
-  <div class="ld-card">
-    <div class="ld-card-img ld-card-img-1"></div>
-    <div class="ff-body">
-      <div class="ff-title">Cozy loft in the Mission</div>
-      <div class="ff-sub">San Francisco · 2 guests</div>
-      <div class="ff-rating">★ 4.92 · 128 reviews</div>
-      <div class="ff-price">$189 / night</div>
-    </div>
-  </div>
-  <div class="ld-card">
-    <div class="ld-card-img ld-card-img-2"></div>
-    <div class="ff-body">
-      <div class="ff-title">Cabin by the lake</div>
-      <div class="ff-sub">Lake Tahoe · 4 guests</div>
-      <div class="ff-rating">★ 4.87 · 94 reviews</div>
-      <div class="ff-price">$245 / night</div>
-    </div>
-  </div>
-</template>
-
 <script>
 // ── Theme toggle ──────────────────────────────────────────────────
 (function() {
@@ -5434,6 +5087,7 @@ function stampTemplate(templateId, targetEl) {
 })();
 
 // ── Spring definitions ────────────────────────────────────────────
+// Keep these in sync with the machine-readable #motion-spec block near the top.
 const SPEEDS = [
   { key: 'slow',    stiffness: 100, label: 'Slow' },
   { key: 'default', stiffness: 300, label: 'Default' },
@@ -8027,6 +7681,7 @@ document.querySelectorAll('.dur-card').forEach(card => {
 
 // ── Bezier curve selection ────────────────────────────────────────
 const BEZ_CURVES = {
+  // Keep these in sync with the machine-readable #motion-spec block near the top.
   standard: 'cubic-bezier(0.40, 0.00, 0.20, 1.00)',
   linear:   'cubic-bezier(0.00, 0.00, 1.00, 1.00)',
   exit:     'cubic-bezier(0.40, 0.00, 1.00, 1.00)',
@@ -13620,7 +13275,10 @@ function demoFadeSwap(outEl, inEl, swap) {
       return 'rgb(' + Math.round(a[0]+(b[0]-a[0])*p) + ',' + Math.round(a[1]+(b[1]-a[1])*p) + ',' + Math.round(a[2]+(b[2]-a[2])*p) + ')';
     }
 
-    const hofRgb    = [28, 28, 30];   // --c-text-primary light
+    // Read actual computed text color so dark mode works
+    const computedColor = getComputedStyle(container).color;
+    const m = computedColor.match(/\d+/g) || ['28','28','30'];
+    const hofRgb    = [+m[0], +m[1], +m[2]];
     const rauschRgb = [0xDA, 0x12, 0x49]; // #DA1249
 
     const lastIdx = spans.length - 1;
@@ -13675,9 +13333,6 @@ function demoFadeSwap(outEl, inEl, swap) {
 })();
 
 </script>
-<div class="toast" id="toast"></div>
-
 
 </body>
 </html>
-
