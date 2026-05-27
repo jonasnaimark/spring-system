@@ -184,10 +184,62 @@
 
     /* ── Micro Animations ── */
     .mi-theme-group {
-      margin-bottom: 48px;
+      border-radius: 16px;
+      border: 1px solid var(--c-border-subtle);
+      margin-bottom: 10px;
+    }
+    .mi-theme-group.mi-open {
+      border: none;
+      border-radius: 0;
+      margin-bottom: 32px;
+    }
+    .mi-theme-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      cursor: pointer;
+      user-select: none;
+      border-radius: 15px;
+      transition: background 0.15s;
+    }
+    .mi-theme-header:hover {
+      background: var(--c-surface-1);
+    }
+    .mi-theme-group.mi-open .mi-theme-header {
+      border-radius: 0;
+    }
+    .mi-theme-group.mi-open .mi-theme-header:hover {
+      background: none;
+    }
+    .mi-theme-header:hover .mi-theme-label {
+      color: var(--c-text-primary);
     }
     .mi-theme-label {
-      margin-bottom: 24px;
+      font-size: var(--text-body);
+      font-weight: 600;
+      color: var(--c-text-secondary);
+      letter-spacing: -0.01em;
+      margin: 0;
+      transition: color 0.15s;
+    }
+    .mi-theme-chevron {
+      width: 20px;
+      height: 20px;
+      color: var(--c-text-tertiary);
+      flex-shrink: 0;
+      transition: color 0.15s;
+      transform: rotate(90deg);
+    }
+    .mi-theme-group.mi-open .mi-theme-label {
+      color: var(--c-text-primary);
+    }
+    .mi-theme-body {
+      height: 0;
+      overflow: hidden;
+    }
+    .mi-theme-body-inner {
+      opacity: 0;
     }
     .mi-card-row {
       display: grid;
@@ -199,6 +251,8 @@
     }
     .mi-card-row--equal {
       grid-template-columns: 1fr 1fr 1fr;
+    }
+    .mi-card-row + .mi-card-row {
       margin-top: 28px;
     }
 
@@ -4237,101 +4291,187 @@
   <div class="section-content">
 
     <!-- Numbers & Text -->
-    <div class="mi-theme-group">
-      <div class="mi-theme-label ng-h1">Numbers &amp; Text</div>
-      <div class="mi-card-row mi-card-row--asymmetric">
-
-        <div class="mi-card mi-idle" id="mi-counter-up" data-mi="counter-up">
-          <div class="mi-card-stage">
-            <div id="mi-price-counter" style="display:flex;align-items:center;justify-content:center;height:62px;position:relative;width:100%;box-sizing:border-box;padding:0 20px;"></div>
-          </div>
-          <div class="mi-card-footer">
-            <div class="mi-card-footer-text">
-              <div class="mi-card-label">Price Counter</div>
-              <div class="mi-card-desc">Price updates, discounts, and offers.</div>
-            </div>
-            <button class="play-circle mi-card-btn" id="mi-btn-counter-up">
-              <svg id="mi-play-counter-up" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="position:absolute;"><path d="M320-200v-560l440 280-440 280Z"/></svg>
-              <svg id="mi-replay-counter-up" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="position:absolute;opacity:0;"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <div class="mi-card mi-idle" id="mi-wave" data-mi="wave">
-          <div class="mi-card-stage" id="mi-wave-stage">
-            <div id="mi-wave-inner" style="display:flex;align-items:center;position:absolute;left:50%;transform:translateX(-50%);transform-origin:center center;white-space:nowrap;">
-              <div id="mi-wave-lottie" style="width:144px;height:144px;flex-shrink:0;margin-left:-40px;margin-right:-33px;z-index:0;position:relative;opacity:0;transition:opacity 0.2s;"></div>
-              <div id="mi-wave-text" style="display:flex;gap:0px;font-size:22px;font-weight:600;letter-spacing:-0.02em;color:var(--c-text-primary);position:relative;z-index:1;opacity:0;transition:opacity 0.2s;white-space:nowrap;"></div>
-            </div>
-          </div>
-          <div class="mi-card-footer">
-            <div class="mi-card-footer-text">
-              <div class="mi-card-label">Text Wave</div>
-              <div class="mi-card-desc">Celebration moments and positive feedback.</div>
-            </div>
-            <button class="play-circle mi-card-btn" id="mi-btn-wave">
-              <svg id="mi-play-wave" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="position:absolute;"><path d="M320-200v-560l440 280-440 280Z"/></svg>
-              <svg id="mi-replay-wave" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="position:absolute;opacity:0;"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
-            </button>
-          </div>
-        </div>
-
+    <div class="mi-theme-group mi-open">
+      <div class="mi-theme-header">
+        <div class="mi-theme-label">Numbers &amp; Text</div>
+        <svg class="mi-theme-chevron" viewBox="0 0 20 20" fill="none">
+          <path d="M7 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
+      <div class="mi-theme-body">
+        <div class="mi-theme-body-inner">
+          <div class="mi-card-row mi-card-row--asymmetric">
 
-      <!-- Row 2: three equal cards — layout explorations -->
-      <div class="mi-card-row mi-card-row--equal">
-
-        <div class="mi-card">
-          <div class="mi-card-stage mi-placeholder-stage">
-            <div class="mi-placeholder-layout mi-placeholder-layout--icon-text">
-              <div class="mi-ph-icon-block"></div>
-              <div class="mi-ph-lines">
-                <div class="mi-ph-line mi-ph-line--wide"></div>
-                <div class="mi-ph-line mi-ph-line--narrow"></div>
+            <div class="mi-card mi-idle" id="mi-counter-up" data-mi="counter-up">
+              <div class="mi-card-stage">
+                <div id="mi-price-counter" style="display:flex;align-items:center;justify-content:center;height:62px;position:relative;width:100%;box-sizing:border-box;padding:0 20px;"></div>
+              </div>
+              <div class="mi-card-footer">
+                <div class="mi-card-footer-text">
+                  <div class="mi-card-label">Price Counter</div>
+                  <div class="mi-card-desc">Price updates, discounts, and offers.</div>
+                </div>
+                <button class="play-circle mi-card-btn" id="mi-btn-counter-up">
+                  <svg id="mi-play-counter-up" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="position:absolute;"><path d="M320-200v-560l440 280-440 280Z"/></svg>
+                  <svg id="mi-replay-counter-up" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="position:absolute;opacity:0;"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
+                </button>
               </div>
             </div>
-          </div>
-          <div class="mi-card-footer">
-            <div class="mi-card-footer-text">
-              <div class="mi-card-label">Icon + Text</div>
-              <div class="mi-card-desc">Icon animates in alongside a label.</div>
-            </div>
-          </div>
-        </div>
 
-        <div class="mi-card">
-          <div class="mi-card-stage mi-placeholder-stage">
-            <div class="mi-placeholder-layout mi-placeholder-layout--list">
-              <div class="mi-ph-row"><div class="mi-ph-dot"></div><div class="mi-ph-line mi-ph-line--med"></div></div>
-              <div class="mi-ph-row"><div class="mi-ph-dot"></div><div class="mi-ph-line mi-ph-line--wide"></div></div>
-              <div class="mi-ph-row"><div class="mi-ph-dot"></div><div class="mi-ph-line mi-ph-line--narrow"></div></div>
-            </div>
-          </div>
-          <div class="mi-card-footer">
-            <div class="mi-card-footer-text">
-              <div class="mi-card-label">Staggered List</div>
-              <div class="mi-card-desc">Rows animate in with spring stagger.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="mi-card">
-          <div class="mi-card-stage mi-placeholder-stage">
-            <div class="mi-placeholder-layout mi-placeholder-layout--badge">
-              <div class="mi-ph-badge">
-                <div class="mi-ph-badge-icon"></div>
-                <div class="mi-ph-badge-text"></div>
+            <div class="mi-card mi-idle" id="mi-wave" data-mi="wave">
+              <div class="mi-card-stage" id="mi-wave-stage">
+                <div id="mi-wave-inner" style="display:flex;align-items:center;position:absolute;left:50%;transform:translateX(-50%);transform-origin:center center;white-space:nowrap;">
+                  <div id="mi-wave-lottie" style="width:144px;height:144px;flex-shrink:0;margin-left:-40px;margin-right:-33px;z-index:0;position:relative;opacity:0;transition:opacity 0.2s;"></div>
+                  <div id="mi-wave-text" style="display:flex;gap:0px;font-size:22px;font-weight:600;letter-spacing:-0.02em;color:var(--c-text-primary);position:relative;z-index:1;opacity:0;transition:opacity 0.2s;white-space:nowrap;"></div>
+                </div>
+              </div>
+              <div class="mi-card-footer">
+                <div class="mi-card-footer-text">
+                  <div class="mi-card-label">Text Wave</div>
+                  <div class="mi-card-desc">Celebration moments and positive feedback.</div>
+                </div>
+                <button class="play-circle mi-card-btn" id="mi-btn-wave">
+                  <svg id="mi-play-wave" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="position:absolute;"><path d="M320-200v-560l440 280-440 280Z"/></svg>
+                  <svg id="mi-replay-wave" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor" style="position:absolute;opacity:0;"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z"/></svg>
+                </button>
               </div>
             </div>
-          </div>
-          <div class="mi-card-footer">
-            <div class="mi-card-footer-text">
-              <div class="mi-card-label">Badge / Pill</div>
-              <div class="mi-card-desc">Status change with cross-fade or pop.</div>
-            </div>
+
           </div>
         </div>
+      </div>
+    </div>
 
+    <!-- Loading -->
+    <div class="mi-theme-group">
+      <div class="mi-theme-header">
+        <div class="mi-theme-label">Loading</div>
+        <svg class="mi-theme-chevron" viewBox="0 0 20 20" fill="none">
+          <path d="M7 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="mi-theme-body">
+        <div class="mi-theme-body-inner">
+          <div class="mi-card-row mi-card-row--equal">
+
+            <div class="mi-card">
+              <div class="mi-card-stage mi-placeholder-stage">
+                <div class="mi-placeholder-layout mi-placeholder-layout--list">
+                  <div class="mi-ph-row"><div class="mi-ph-dot" style="width:60px;height:10px;border-radius:5px;"></div></div>
+                  <div class="mi-ph-row"><div class="mi-ph-dot" style="width:120px;height:10px;border-radius:5px;"></div></div>
+                  <div class="mi-ph-row"><div class="mi-ph-dot" style="width:90px;height:10px;border-radius:5px;"></div></div>
+                </div>
+              </div>
+              <div class="mi-card-footer">
+                <div class="mi-card-footer-text">
+                  <div class="mi-card-label">Skeleton</div>
+                  <div class="mi-card-desc">Shimmer placeholder before content loads.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mi-card">
+              <div class="mi-card-stage mi-placeholder-stage">
+                <div class="mi-placeholder-layout">
+                  <div style="width:32px;height:32px;border-radius:50%;border:3px solid var(--c-border-subtle);border-top-color:var(--c-text-tertiary);"></div>
+                </div>
+              </div>
+              <div class="mi-card-footer">
+                <div class="mi-card-footer-text">
+                  <div class="mi-card-label">Spinner</div>
+                  <div class="mi-card-desc">Indeterminate progress for async actions.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mi-card">
+              <div class="mi-card-stage mi-placeholder-stage">
+                <div class="mi-placeholder-layout mi-placeholder-layout--icon-text">
+                  <div class="mi-ph-icon-block" style="opacity:0.3;"></div>
+                  <div class="mi-ph-lines">
+                    <div class="mi-ph-line mi-ph-line--wide" style="opacity:0.3;"></div>
+                    <div class="mi-ph-line mi-ph-line--narrow" style="opacity:0.3;"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="mi-card-footer">
+                <div class="mi-card-footer-text">
+                  <div class="mi-card-label">Reveal</div>
+                  <div class="mi-card-desc">Content fades and slides in once loaded.</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success States -->
+    <div class="mi-theme-group">
+      <div class="mi-theme-header">
+        <div class="mi-theme-label">Success States</div>
+        <svg class="mi-theme-chevron" viewBox="0 0 20 20" fill="none">
+          <path d="M7 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="mi-theme-body">
+        <div class="mi-theme-body-inner">
+          <div class="mi-card-row mi-card-row--equal">
+
+            <div class="mi-card">
+              <div class="mi-card-stage mi-placeholder-stage">
+                <div class="mi-placeholder-layout">
+                  <div style="width:44px;height:44px;border-radius:50%;background:var(--c-border-subtle);display:flex;align-items:center;justify-content:center;">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10l4.5 4.5L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/></svg>
+                  </div>
+                </div>
+              </div>
+              <div class="mi-card-footer">
+                <div class="mi-card-footer-text">
+                  <div class="mi-card-label">Checkmark</div>
+                  <div class="mi-card-desc">Confirmation after a completed action.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mi-card">
+              <div class="mi-card-stage mi-placeholder-stage">
+                <div class="mi-placeholder-layout">
+                  <div class="mi-ph-badge">
+                    <div class="mi-ph-badge-icon" style="background:var(--c-border-subtle);"></div>
+                    <div class="mi-ph-badge-text"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="mi-card-footer">
+                <div class="mi-card-footer-text">
+                  <div class="mi-card-label">Toast / Banner</div>
+                  <div class="mi-card-desc">Transient confirmation that slides in and out.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mi-card">
+              <div class="mi-card-stage mi-placeholder-stage">
+                <div class="mi-placeholder-layout mi-placeholder-layout--icon-text">
+                  <div class="mi-ph-icon-block"></div>
+                  <div class="mi-ph-lines">
+                    <div class="mi-ph-line mi-ph-line--med"></div>
+                    <div class="mi-ph-line mi-ph-line--narrow"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="mi-card-footer">
+                <div class="mi-card-footer-text">
+                  <div class="mi-card-label">State Transition</div>
+                  <div class="mi-card-desc">Cross-fade between empty and filled states.</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
     </div>
 
@@ -13301,6 +13441,105 @@ function demoFadeSwap(outEl, inEl, swap) {
       }, 500 + i * 15);
     });
   }
+
+  // Collapsible theme groups — default.smooth spring (stiffness 300, ratio 1.0)
+  // γ = sqrt(300) ≈ 17.32; critically damped: decay(t) = e^(-γt)(1+γt)
+  const MI_SPRING_K = 300;
+  const MI_SPRING_G = Math.sqrt(MI_SPRING_K); // 17.32
+
+  function miSpringVal(from, to, startT, nowT) {
+    const t = (nowT - startT) / 1000;
+    const d = Math.exp(-MI_SPRING_G * t) * (1 + MI_SPRING_G * t);
+    return to + (from - to) * d;
+  }
+
+  // Per-group animation state
+  const miGroupState = new WeakMap();
+
+  function miAnimateGroup(group, opening) {
+    const header = group.querySelector('.mi-theme-header');
+    const body = group.querySelector('.mi-theme-body');
+    const inner = group.querySelector('.mi-theme-body-inner');
+    const chevron = group.querySelector('.mi-theme-chevron');
+
+    // Measure natural height
+    body.style.height = 'auto';
+    body.style.overflow = 'visible';
+    const naturalH = inner.scrollHeight;
+    body.style.overflow = 'hidden';
+
+    // Read current animated values as starting points
+    const st = miGroupState.get(group) || {};
+    const fromH   = parseFloat(body.style.height)   || (opening ? 0 : naturalH);
+    const fromOp  = parseFloat(inner.style.opacity)  || (opening ? 0 : 1);
+    const fromRot = st.rot  !== undefined ? st.rot  : (opening ? 90 : -90);
+    const fromPT  = st.pt   !== undefined ? st.pt   : (opening ? 14 : 18);
+    const fromPX  = st.px   !== undefined ? st.px   : (opening ? 16 : 0);
+
+    const toH   = opening ? naturalH : 0;
+    const toOp  = opening ? 1 : 0;
+    const toRot = opening ? -90 : 90;
+    const toPT  = opening ? 18 : 14;
+    const toPX  = opening ? 0 : 16;
+
+    if (st.raf) cancelAnimationFrame(st.raf);
+
+    const startT = performance.now();
+
+    function frame(now) {
+      const h   = miSpringVal(fromH,  toH,  startT, now);
+      const op  = miSpringVal(fromOp, toOp, startT, now);
+      const rot = miSpringVal(fromRot, toRot, startT, now);
+      const pt  = miSpringVal(fromPT,  toPT,  startT, now);
+      const px  = miSpringVal(fromPX,  toPX,  startT, now);
+
+      body.style.height  = h + 'px';
+      inner.style.opacity = op;
+      chevron.style.transform = `rotate(${rot}deg)`;
+      header.style.padding = `${pt}px ${px}px`;
+
+      // overflow: visible only once fully open and settled
+      body.style.overflow = (opening && Math.abs(h - naturalH) < 0.5) ? 'visible' : 'hidden';
+
+      const settled = Math.abs(h - toH) < 0.3 && Math.abs(op - toOp) < 0.005 && Math.abs(rot - toRot) < 0.1;
+      if (settled) {
+        body.style.height  = toH === 0 ? '0' : naturalH + 'px';
+        inner.style.opacity = toOp;
+        chevron.style.transform = `rotate(${toRot}deg)`;
+        header.style.padding = `${toPT}px ${toPX}px`;
+        body.style.overflow = opening ? 'visible' : 'hidden';
+        miGroupState.set(group, { rot: toRot, pt: toPT, px: toPX, raf: null });
+        return;
+      }
+
+      const raf = requestAnimationFrame(frame);
+      miGroupState.set(group, { rot, pt, px, raf });
+    }
+
+    miGroupState.set(group, { rot: fromRot, pt: fromPT, px: fromPX, raf: requestAnimationFrame(frame) });
+  }
+
+  document.querySelectorAll('.mi-theme-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const group = header.closest('.mi-theme-group');
+      const opening = !group.classList.contains('mi-open');
+      group.classList.toggle('mi-open', opening);
+      miAnimateGroup(group, opening);
+    });
+  });
+
+  // Initialize open groups to correct visual state
+  document.querySelectorAll('.mi-theme-group.mi-open').forEach(group => {
+    const body  = group.querySelector('.mi-theme-body');
+    const inner = group.querySelector('.mi-theme-body-inner');
+    const chevron = group.querySelector('.mi-theme-chevron');
+    const header = group.querySelector('.mi-theme-header');
+    body.style.height = 'auto';
+    body.style.overflow = 'visible';
+    inner.style.opacity = '1';
+    chevron.style.transform = 'rotate(-90deg)';
+    header.style.padding = '18px 0px';
+  });
 
   // Auto-play on first scroll into view
   const miObserver = new IntersectionObserver(entries => {
