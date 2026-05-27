@@ -240,6 +240,7 @@
     }
     .mi-theme-body-inner {
       opacity: 0;
+      padding-bottom: 20px;
     }
     .mi-card-row {
       display: grid;
@@ -13442,10 +13443,10 @@ function demoFadeSwap(outEl, inEl, swap) {
     });
   }
 
-  // Collapsible theme groups — default.smooth spring (stiffness 300, ratio 1.0)
-  // γ = sqrt(300) ≈ 17.32; critically damped: decay(t) = e^(-γt)(1+γt)
-  const MI_SPRING_K = 300;
-  const MI_SPRING_G = Math.sqrt(MI_SPRING_K); // 17.32
+  // Collapsible theme groups — fast.smooth spring (stiffness 500, ratio 1.0)
+  // γ = sqrt(500) ≈ 22.36; critically damped: decay(t) = e^(-γt)(1+γt)
+  const MI_SPRING_K = 500;
+  const MI_SPRING_G = Math.sqrt(MI_SPRING_K); // 22.36
 
   function miSpringVal(from, to, startT, nowT) {
     const t = (nowT - startT) / 1000;
@@ -13462,9 +13463,8 @@ function demoFadeSwap(outEl, inEl, swap) {
     const inner = group.querySelector('.mi-theme-body-inner');
     const chevron = group.querySelector('.mi-theme-chevron');
 
-    // Measure natural height
+    // Measure natural height (padding-bottom on inner keeps shadows inside clip)
     body.style.height = 'auto';
-    body.style.overflow = 'visible';
     const naturalH = inner.scrollHeight;
     body.style.overflow = 'hidden';
 
@@ -13493,21 +13493,17 @@ function demoFadeSwap(outEl, inEl, swap) {
       const pt  = miSpringVal(fromPT,  toPT,  startT, now);
       const px  = miSpringVal(fromPX,  toPX,  startT, now);
 
-      body.style.height  = h + 'px';
+      body.style.height   = h + 'px';
       inner.style.opacity = op;
       chevron.style.transform = `rotate(${rot}deg)`;
       header.style.padding = `${pt}px ${px}px`;
 
-      // overflow: visible only once fully open and settled
-      body.style.overflow = (opening && Math.abs(h - naturalH) < 0.5) ? 'visible' : 'hidden';
-
       const settled = Math.abs(h - toH) < 0.3 && Math.abs(op - toOp) < 0.005 && Math.abs(rot - toRot) < 0.1;
       if (settled) {
-        body.style.height  = toH === 0 ? '0' : naturalH + 'px';
+        body.style.height   = toH === 0 ? '0' : naturalH + 'px';
         inner.style.opacity = toOp;
         chevron.style.transform = `rotate(${toRot}deg)`;
         header.style.padding = `${toPT}px ${toPX}px`;
-        body.style.overflow = opening ? 'visible' : 'hidden';
         miGroupState.set(group, { rot: toRot, pt: toPT, px: toPX, raf: null });
         return;
       }
@@ -13530,12 +13526,12 @@ function demoFadeSwap(outEl, inEl, swap) {
 
   // Initialize open groups to correct visual state
   document.querySelectorAll('.mi-theme-group.mi-open').forEach(group => {
-    const body  = group.querySelector('.mi-theme-body');
-    const inner = group.querySelector('.mi-theme-body-inner');
+    const body   = group.querySelector('.mi-theme-body');
+    const inner  = group.querySelector('.mi-theme-body-inner');
     const chevron = group.querySelector('.mi-theme-chevron');
     const header = group.querySelector('.mi-theme-header');
-    body.style.height = 'auto';
-    body.style.overflow = 'visible';
+    body.style.height = inner.scrollHeight + 'px';
+    body.style.overflow = 'hidden';
     inner.style.opacity = '1';
     chevron.style.transform = 'rotate(-90deg)';
     header.style.padding = '18px 0px';
