@@ -4243,7 +4243,7 @@
 
         <div class="mi-card mi-idle" id="mi-counter-up" data-mi="counter-up">
           <div class="mi-card-stage">
-            <div id="mi-price-counter" style="display:flex;align-items:center;height:62px;position:relative;width:100%;box-sizing:border-box;padding:0 20px;"></div>
+            <div id="mi-price-counter" style="display:flex;align-items:center;justify-content:center;height:62px;position:relative;width:100%;box-sizing:border-box;padding:0 20px;"></div>
           </div>
           <div class="mi-card-footer">
             <div class="mi-card-footer-text">
@@ -13053,7 +13053,7 @@ function demoFadeSwap(outEl, inEl, swap) {
     let inner = container._inner;
     if (!inner) {
       inner = document.createElement('div');
-      inner.style.cssText = 'display:inline-flex;align-items:center;position:absolute;top:0;left:50%;';
+      inner.style.cssText = 'display:inline-flex;align-items:center;flex-shrink:0;';
       container.appendChild(inner);
       container._inner = inner;
     }
@@ -13140,16 +13140,7 @@ function demoFadeSwap(outEl, inEl, swap) {
       }
     });
 
-    // Spring the wrapper to new center
-    const newWidth = inner.offsetWidth;
-    const startX = parseFloat(inner.style.transform?.match(/-?\d+\.?\d*/)?.[0] ?? '0') || 0;
-    const endX = startX - (newWidth - prevWidth) / 2;
-    // On first build prevWidth is 0, so endX = -newWidth/2. Skip the spring — just place it.
-    if (prevWidth === 0) {
-      inner.style.transform = `translateX(${endX}px)`;
-    } else {
-      springTranslateX(inner, startX, endX);
-    }
+    // Centering is handled by the container's justify-content:center — no translateX needed.
 
     // FLIP step 2: spring reused cols from old screen position to new
     Array.from(inner.children).forEach(col => {
