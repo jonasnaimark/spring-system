@@ -239,8 +239,9 @@
       overflow: hidden;
     }
     .mi-theme-body-inner {
-      padding: 0 0 20px;
-      overflow: visible;
+      /* extend past body's left/right edges so overflow:hidden doesn't clip horizontal shadows */
+      margin: 0 -20px;
+      padding: 0 20px 20px;
     }
     .mi-theme-body-inner > * {
       opacity: 0;
