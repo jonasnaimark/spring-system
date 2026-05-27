@@ -239,8 +239,11 @@
       overflow: hidden;
     }
     .mi-theme-body-inner {
+      padding: 0 0 20px;
+      overflow: visible;
+    }
+    .mi-theme-body-inner > * {
       opacity: 0;
-      padding-bottom: 20px;
     }
     .mi-card-row {
       display: grid;
@@ -13469,9 +13472,10 @@ function demoFadeSwap(outEl, inEl, swap) {
     body.style.overflow = 'hidden';
 
     // Read current animated values as starting points
+    const contentEl = inner.firstElementChild;
     const st = miGroupState.get(group) || {};
     const fromH   = parseFloat(body.style.height)   || (opening ? 0 : naturalH);
-    const fromOp  = parseFloat(inner.style.opacity)  || (opening ? 0 : 1);
+    const fromOp  = parseFloat(contentEl.style.opacity)  || (opening ? 0 : 1);
     const fromRot = st.rot  !== undefined ? st.rot  : (opening ? 90 : -90);
     const fromPT  = st.pt   !== undefined ? st.pt   : (opening ? 14 : 18);
     const fromPX  = st.px   !== undefined ? st.px   : (opening ? 16 : 0);
@@ -13493,15 +13497,15 @@ function demoFadeSwap(outEl, inEl, swap) {
       const pt  = miSpringVal(fromPT,  toPT,  startT, now);
       const px  = miSpringVal(fromPX,  toPX,  startT, now);
 
-      body.style.height   = h + 'px';
-      inner.style.opacity = op;
-      chevron.style.transform = `rotate(${rot}deg)`;
-      header.style.padding = `${pt}px ${px}px`;
+      body.style.height          = h + 'px';
+      contentEl.style.opacity    = op;
+      chevron.style.transform    = `rotate(${rot}deg)`;
+      header.style.padding       = `${pt}px ${px}px`;
 
       const settled = Math.abs(h - toH) < 0.3 && Math.abs(op - toOp) < 0.005 && Math.abs(rot - toRot) < 0.1;
       if (settled) {
-        body.style.height   = toH === 0 ? '0' : naturalH + 'px';
-        inner.style.opacity = toOp;
+        body.style.height          = toH === 0 ? '0' : naturalH + 'px';
+        contentEl.style.opacity    = toOp;
         chevron.style.transform = `rotate(${toRot}deg)`;
         header.style.padding = `${toPT}px ${toPX}px`;
         miGroupState.set(group, { rot: toRot, pt: toPT, px: toPX, raf: null });
@@ -13526,13 +13530,13 @@ function demoFadeSwap(outEl, inEl, swap) {
 
   // Initialize open groups to correct visual state
   document.querySelectorAll('.mi-theme-group.mi-open').forEach(group => {
-    const body   = group.querySelector('.mi-theme-body');
-    const inner  = group.querySelector('.mi-theme-body-inner');
-    const chevron = group.querySelector('.mi-theme-chevron');
-    const header = group.querySelector('.mi-theme-header');
+    const body      = group.querySelector('.mi-theme-body');
+    const inner     = group.querySelector('.mi-theme-body-inner');
+    const contentEl = inner.firstElementChild;
+    const chevron   = group.querySelector('.mi-theme-chevron');
+    const header    = group.querySelector('.mi-theme-header');
     body.style.height = inner.scrollHeight + 'px';
-    body.style.overflow = 'hidden';
-    inner.style.opacity = '1';
+    contentEl.style.opacity = '1';
     chevron.style.transform = 'rotate(-90deg)';
     header.style.padding = '18px 0px';
   });
