@@ -11464,7 +11464,7 @@ function ngExpandCard(card) {
     panel.style.width        = curW + 'px';
     panel.style.height       = curH + 'px';
     panel.style.borderRadius = (toR + (fromR - toR) * (isModal ? springPos(Math.max(0, t - DELAY), NG_BOUNCE_XW_K, NG_BOUNCE_XW_D) : springPos(t, NG_SPRING_K, NG_SPRING_D))) + 'px';
-    panel.style.transform    = '';
+    if (!isModal) panel.style.transform = '';
     const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
     scrim.style.opacity = (1 - scrimPos).toFixed(3);
     if (detailInner) detailInner.style.transform = `scale(${scale})`;
@@ -11517,7 +11517,8 @@ function ngCollapseCard(velX, velY) {
     toH = imgRect.height;
   }
   panel.style.pointerEvents = 'none';
-  document.getElementById('ngExpandScrim').style.pointerEvents = 'none';
+  const scrim = document.getElementById('ngExpandScrim');
+  scrim.style.pointerEvents = 'none';
   ngExpandState = null;
 
   const curX = Math.max(0, parseFloat(panel.style.left)  || 0);
@@ -11532,8 +11533,68 @@ function ngCollapseCard(velX, velY) {
   const cardLayer   = document.getElementById(cardLayerId);
   const detailLayer = document.getElementById(detailLayerId);
   const detailInner = document.getElementById(detailInnerId);
-  const scrim       = document.getElementById('ngExpandScrim');
 
+  function ngDoneCollapse() {
+    ngExpandAnim = null;
+    panel.style.display = 'none';
+    panel.style.transform = '';
+    if (detailInner) detailInner.style.transform = `scale(${toW / refW})`;
+    detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
+    scrim.style.opacity = '0'; scrim.style.pointerEvents = 'none';
+    if (isModal) panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0)';
+    if (imgEl) imgEl.style.visibility = '';
+  }
+
+  if (isModal) {
+    // Match tpCollapseCard modal: bouncy X/W, snappy-smooth H, Y delayed 40ms, center-based
+    const stiffnessX = NG_BOUNCE_XW_K, dampingX = NG_BOUNCE_XW_D;
+    const stiffnessH = 750, dampingH = calcDamping(750, 1.0);
+    const fromCX = curX + curW / 2;
+    const fromCY = curY + curH / 2;
+    const toCX   = toX  + toW  / 2;
+    const toCY   = toY  + toH  / 2;
+    if (typeof tpScalePulse === 'function') tpScalePulse(panel, false);
+    const startT = performance.now();
+    const myGen = ++ngAnimGen;
+    const scrimStart = parseFloat(scrim.style.opacity) || 1;
+    const fadeStart  = parseFloat(detailLayer.style.opacity) || 1;
+
+    function tick(now) {
+      if (ngAnimGen !== myGen) return;
+      const t   = (now - startT) / 1000;
+      const posY  = springPos(Math.max(0, t - 0.04), NG_BOUNCE_K, NG_BOUNCE_D);
+      const posXW = springPos(t, stiffnessX, dampingX);
+      const posH  = springPos(t, stiffnessH, dampingH);
+      const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+      const pY  = 1 - posY;
+      const pXW = 1 - posXW;
+      const pH  = 1 - posH;
+      const cW  = curW + (toW - curW) * pXW;
+      const cH  = curH + (toH - curH) * pH;
+      const cCX = fromCX + (toCX - fromCX) * pXW;
+      const cCY = fromCY + (toCY - fromCY) * pY;
+      panel.style.left         = (cCX - cW / 2) + 'px';
+      panel.style.top          = (cCY - cH / 2) + 'px';
+      panel.style.width        = cW + 'px';
+      panel.style.height       = cH + 'px';
+      panel.style.borderRadius = (curR + (toR - curR) * pXW) + 'px';
+      scrim.style.opacity      = (scrimStart * scrimPos).toFixed(3);
+      if (detailInner) detailInner.style.transform = `scale(${cW / refW})`;
+      const fade = Math.min(t / 0.2, 1);
+      detailLayer.style.opacity = String(Math.max(0, fadeStart * (1 - fade)));
+      cardLayer.style.opacity   = String(fade);
+      panel.style.boxShadow     = `0 8px 32px rgba(0,0,0,${(0.28 * Math.max(0, fadeStart * (1 - fade))).toFixed(3)})`;
+      if (t < 5 && (!isSettled(t, stiffnessX, dampingX) || !isSettled(Math.max(0, t - 0.04), NG_BOUNCE_K, NG_BOUNCE_D) || !isSettled(t, stiffnessH, dampingH))) {
+        ngExpandAnim = requestAnimationFrame(tick);
+      } else {
+        ngDoneCollapse();
+      }
+    }
+    ngExpandAnim = requestAnimationFrame(tick);
+    return;
+  }
+
+  // Non-modal (fullscreen): gesture-velocity SpringSim path
   const simX = new SpringSim(curX); simX.target = toX; simX.v = velX || 0;
   const simY = new SpringSim(curY); simY.target = toY; simY.v = velY || 0;
   const simW = new SpringSim(curW); simW.target = toW;
@@ -11572,20 +11633,11 @@ function ngCollapseCard(velX, velY) {
     fadeProgress = Math.max(0, fadeProgress - dt / 0.15);
     detailLayer.style.opacity = fadeProgress.toFixed(3);
     cardLayer.style.opacity   = (1 - fadeProgress).toFixed(3);
-    if (isModal) panel.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * fadeProgress).toFixed(3)})`;
 
     if (!simX.settled() || !simY.settled() || !simW.settled() || !simH.settled() || !simR.settled()) {
       ngExpandAnim = requestAnimationFrame(tick);
     } else {
-      ngExpandAnim = null;
-      panel.style.borderRadius = toR + 'px';
-      panel.style.display = 'none';
-      panel.style.transform = '';
-      if (detailInner) detailInner.style.transform = `scale(${toW / refW})`;
-      detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
-      scrim.style.opacity = '0'; scrim.style.pointerEvents = 'none';
-      if (isModal) panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0)';
-      if (imgEl) imgEl.style.visibility = '';
+      ngDoneCollapse();
     }
   }
   ngExpandAnim = requestAnimationFrame(tick);
