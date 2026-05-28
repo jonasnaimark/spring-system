@@ -4306,7 +4306,7 @@
 
 <div class="section-wrap" id="micro">
   <h1 class="section-title">Micro Animations</h1>
-  <p class="section-body">Small moments of motion that make the product feel alive and crafted.</p>
+  <p class="section-body">Small moments of motion that give the product a personality.</p>
   <div class="section-content">
 
     <!-- Numbers & Text -->
@@ -6268,6 +6268,38 @@ function tpExpandCard(card) {
   const DELAY = 0.08;
   function tick(now) {
     const t = (now - startT) / 1000;
+    if (!isModal) {
+      const posXW = springPos(t, stiffnessX, dampingX);
+      const posYH = springPos(Math.max(0, t - DELAY), stiffness, damping);
+      const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+      const curW = toW + (fromW - toW) * posXW;
+      const scale = curW / toW;
+      panel.style.visibility   = '';
+      panel.style.left         = (toX + (fromX - toX) * posXW) + 'px';
+      panel.style.top          = (toY + (fromY - toY) * posYH) + 'px';
+      panel.style.width        = curW + 'px';
+      panel.style.height       = (toH + (fromH - toH) * posYH) + 'px';
+      panel.style.borderRadius = (toR + (fromR - toR) * posXW) + 'px';
+      scrim.style.opacity      = (1 - scrimPos).toFixed(3);
+      if (detailInner) detailInner.style.transform = `scale(${scale})`;
+      const fade = Math.min(t / 0.2, 1);
+      detailLayer.style.opacity = String(fade);
+      cardLayer.style.opacity   = String(1 - fade);
+      if (t < 5 && (!isSettled(t, stiffnessX, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
+        tpExpandAnim = requestAnimationFrame(tick);
+      } else {
+        panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
+        panel.style.width = toW + 'px'; panel.style.height = toH + 'px';
+        panel.style.borderRadius = toR + 'px'; panel.style.pointerEvents = 'auto';
+        if (detailInner) detailInner.style.transform = `scale(1)`;
+        detailLayer.style.opacity = '1'; cardLayer.style.opacity = '0';
+        scrim.style.opacity = '0';
+        scrim.style.pointerEvents = 'none';
+        tpExpandAnim = null;
+        window._refreshTouchDot?.();
+      }
+      return;
+    }
     const posXW = springPos(Math.max(0, t - 0.04), stiffnessX, dampingX);
     const posYH = springPos(t, stiffness, damping);
     const posW = springPos(Math.max(0, t - DELAY), stiffnessX, dampingX);
@@ -6329,7 +6361,7 @@ function tpCollapseCard(onDone) {
   let toW = savedToW;
   let toH = savedToH;
   let toR = savedToR;
-  if (card && phone) {
+  if (isModal && card && phone) {
     const phoneRect = phone.getBoundingClientRect();
     const cardRect = card.getBoundingClientRect();
     const imgRect = imgEl ? imgEl.getBoundingClientRect() : cardRect;
@@ -6355,6 +6387,45 @@ function tpCollapseCard(onDone) {
   if (tpExpandAnim) cancelAnimationFrame(tpExpandAnim);
   function tick(now) {
     const t = (now - startT) / 1000;
+    if (!isModal) {
+      const DELAY = 0.05;
+      const posYH = springPos(t, stiffness, damping);
+      const posXW = springPos(Math.max(0, t - DELAY), stiffnessX, dampingX);
+      const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
+      const pYH = 1 - posYH;
+      const pXW = 1 - posXW;
+      const curW = fromW + (toW - fromW) * pXW;
+      const scale = curW / fromW;
+      panel.style.left         = (fromX + (toX - fromX) * pXW) + 'px';
+      panel.style.top          = (fromY + (toY - fromY) * pYH) + 'px';
+      panel.style.width        = curW + 'px';
+      panel.style.height       = (fromH + (toH - fromH) * pYH) + 'px';
+      panel.style.borderRadius = (fromR + (toR - fromR) * pXW) + 'px';
+      scrim.style.opacity      = scrimPos.toFixed(3);
+      if (detailInner) detailInner.style.transform = `scale(${scale})`;
+      const fade = Math.min(t / 0.2, 1);
+      detailLayer.style.opacity = String(1 - fade);
+      cardLayer.style.opacity   = String(fade);
+      if (t < 5 && (!isSettled(t, stiffnessX, dampingX) || !isSettled(Math.max(0, t - DELAY), stiffness, damping))) {
+        tpExpandAnim = requestAnimationFrame(tick);
+      } else {
+        panel.style.display = 'none';
+        panel.style.boxShadow = 'none';
+        if (detailInner) detailInner.style.transform = 'scale(1)';
+        detailLayer.style.opacity = '0'; cardLayer.style.opacity = '1';
+        scrim.style.opacity = '0';
+        if (imgEl) imgEl.style.visibility = '';
+        tpPendingImgEl = null;
+        tpExpandState = null;
+        tpExpandAnim = null;
+        tpModalFullState = null;
+        const wl = document.getElementById('tpModalWebsiteLayer');
+        if (wl) { wl.style.opacity = '0'; wl.style.pointerEvents = 'none'; }
+        window._refreshTouchDot?.();
+        onDone?.();
+      }
+      return;
+    }
     const posY = springPos(Math.max(0, t - 0.04), stiffness, damping);
     const posH = springPos(t, heightStiffness, heightDamping);
     const posXW = springPos(t, stiffnessX, dampingX);
@@ -11227,6 +11298,8 @@ const NG_DEMOS = {
 
 // ── Grow dismiss gesture demo ─────────────────────────────────────
 const NG_SPRING_K = 500, NG_SPRING_D = calcDamping(500, 1.0);
+const NG_BOUNCE_K = 500,  NG_BOUNCE_D  = calcDamping(500,  0.80);
+const NG_BOUNCE_XW_K = 750, NG_BOUNCE_XW_D = calcDamping(750, 0.80);
 const NG_DISMISS_K = 300, NG_DISMISS_D = calcDamping(300, 0.7);
 const NG_DISMISS_POS_THRESHOLD = 50;
 const NG_DISMISS_VEL_THRESHOLD = 1000;
@@ -11346,36 +11419,65 @@ function ngExpandCard(card) {
     if (cta) cta.style.borderRadius = Math.max(4, toR - 16) + 'px';
   }
 
+  const fromCX = fromX + fromW / 2;
+  const fromCY = fromY + fromH / 2;
+  const toCX   = toX   + toW   / 2;
+  const toCY   = toY   + toH   / 2;
+
   const startT = performance.now();
   if (ngExpandAnim) cancelAnimationFrame(ngExpandAnim);
   const myGen = ++ngAnimGen;
   const cardLayer   = document.getElementById(cardLayerId);
   const detailLayer = document.getElementById(detailLayerId);
   const detailInner = document.getElementById(detailInnerId);
-  const DELAY = 0.05;
+  const DELAY = 0.08;
+  let scalePulseFired = false;
 
   function tick(now) {
     if (ngAnimGen !== myGen) return;
-    const t    = (now - startT) / 1000;
-    const posXW = springPos(t,                      NG_SPRING_K, NG_SPRING_D);
-    const posYH = springPos(Math.max(0, t - DELAY), NG_SPRING_K, NG_SPRING_D);
-    const curW = toW + (fromW - toW) * posXW;
+    const t = (now - startT) / 1000;
+
+    let curW, curH, curCX, curCY;
+    if (isModal) {
+      const posXW  = springPos(Math.max(0, t - 0.04), NG_BOUNCE_XW_K, NG_BOUNCE_XW_D);
+      const posYH  = springPos(t,                      NG_BOUNCE_K,    NG_BOUNCE_D);
+      const posW   = springPos(Math.max(0, t - DELAY), NG_BOUNCE_XW_K, NG_BOUNCE_XW_D);
+      const posH   = springPos(Math.max(0, t - DELAY), NG_BOUNCE_K,    NG_BOUNCE_D);
+      curW  = toW + (fromW - toW) * posW;
+      curH  = toH + (fromH - toH) * posH;
+      curCX = toCX + (fromCX - toCX) * posXW;
+      curCY = toCY + (fromCY - toCY) * posYH;
+      panel.style.left   = (curCX - curW / 2) + 'px';
+      panel.style.top    = (curCY - curH / 2) + 'px';
+      if (!scalePulseFired) { scalePulseFired = true; tpScalePulse(panel, true, { startDelay: 80 }); }
+    } else {
+      const posXW = springPos(t,                      NG_SPRING_K, NG_SPRING_D);
+      const posYH = springPos(Math.max(0, t - DELAY), NG_SPRING_K, NG_SPRING_D);
+      curW = toW + (fromW - toW) * posXW;
+      curH = toH + (fromH - toH) * posYH;
+      panel.style.left = (toX + (fromX - toX) * posXW) + 'px';
+      panel.style.top  = (toY + (fromY - toY) * posYH) + 'px';
+    }
+
     const scale = curW / refW;
-    panel.style.visibility = '';
-    panel.style.left         = (toX + (fromX - toX) * posXW) + 'px';
-    panel.style.top          = (toY + (fromY - toY) * posYH) + 'px';
+    panel.style.visibility   = '';
     panel.style.width        = curW + 'px';
-    panel.style.height       = (toH + (fromH - toH) * posYH) + 'px';
-    panel.style.borderRadius = (toR + (fromR - toR) * posXW) + 'px';
+    panel.style.height       = curH + 'px';
+    panel.style.borderRadius = (toR + (fromR - toR) * (isModal ? springPos(Math.max(0, t - DELAY), NG_BOUNCE_XW_K, NG_BOUNCE_XW_D) : springPos(t, NG_SPRING_K, NG_SPRING_D))) + 'px';
     panel.style.transform    = '';
     const scrimPos = springPos(t, SCRIM_STIFFNESS, SCRIM_DAMPING);
-    scrim.style.opacity = isModal ? (1 - scrimPos).toFixed(3) : (1 - scrimPos).toFixed(3);
+    scrim.style.opacity = (1 - scrimPos).toFixed(3);
     if (detailInner) detailInner.style.transform = `scale(${scale})`;
     const fade = Math.min(t / 0.2, 1);
     detailLayer.style.opacity = String(fade);
     cardLayer.style.opacity   = String(1 - fade);
     if (isModal) panel.style.boxShadow = `0 8px 32px rgba(0,0,0,${(0.28 * fade).toFixed(3)})`;
-    if (t < 5 && (!isSettled(t, NG_SPRING_K, NG_SPRING_D) || !isSettled(Math.max(0, t - DELAY), NG_SPRING_K, NG_SPRING_D))) {
+
+    const tW = Math.max(0, t - DELAY);
+    const settled = isModal
+      ? isSettled(Math.max(0, t - 0.04), NG_BOUNCE_XW_K, NG_BOUNCE_XW_D) && isSettled(t, NG_BOUNCE_K, NG_BOUNCE_D) && isSettled(tW, NG_BOUNCE_XW_K, NG_BOUNCE_XW_D) && isSettled(tW, NG_BOUNCE_K, NG_BOUNCE_D)
+      : isSettled(t, NG_SPRING_K, NG_SPRING_D) && isSettled(Math.max(0, t - DELAY), NG_SPRING_K, NG_SPRING_D);
+    if (t < 5 && !settled) {
       ngExpandAnim = requestAnimationFrame(tick);
     } else {
       panel.style.left = toX + 'px'; panel.style.top = toY + 'px';
@@ -11386,6 +11488,7 @@ function ngExpandCard(card) {
       if (isModal) panel.style.boxShadow = '0 8px 32px rgba(0,0,0,0.28)';
       scrim.style.opacity = isModal ? '1' : '0';
       scrim.style.pointerEvents = isModal ? 'auto' : 'none';
+      ngExpandAnim = null;
     }
   }
   ngExpandAnim = requestAnimationFrame(tick);
