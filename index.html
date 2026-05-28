@@ -5291,7 +5291,7 @@ function springPos(t, stiffness, damping, mass = 1) {
 function isSettled(t, stiffness, damping) {
   const pos  = springPos(t, stiffness, damping);
   const next = springPos(t + 0.016, stiffness, damping);
-  return Math.abs(pos) < 0.002 && Math.abs(next - pos) < 0.0005;
+  return Math.abs(pos) < 0.0005 && Math.abs(next - pos) < 0.0001;
 }
 
 // ── SpringSim: velocity-preserving retarget ───────────────────────
@@ -5429,6 +5429,7 @@ const SPRING_DEMOS = {
           sheet.style.transform = isIn ? 'translateY(100%)' : `translateY(${LIFT}px)`;
           sheet.style.boxShadow = isIn ? '0 -2px 20px rgba(0,0,0,0)' : '0 -2px 20px rgba(0,0,0,0.12)';
           scrim.style.opacity   = isIn ? '0' : '1';
+          demoAnim = null;
         }
       }
       demoAnim = requestAnimationFrame(tick);
