@@ -6082,6 +6082,8 @@ let tpExpandAnim    = null;
 let tpPendingImgEl  = null; // imgEl hidden during expansion; cleared on next expand
 const TP_SPRING        = { stiffness: 500, damping: calcDamping(500, 1.0) };
 const TP_BOUNCE_SPRING = { stiffness: 500, damping: calcDamping(500, 0.80), stiffnessXW: 750, dampingXW: calcDamping(750, 0.80) };
+// Grow transition: one speed level lower — default.small.bounce Y/H, fast.small.bounce X/W
+const TP_GROW_SPRING = { stiffness: 300, damping: calcDamping(300, 0.80), stiffnessXW: 500, dampingXW: calcDamping(500, 0.80) };
 const TP_INSET_SHEET_SPRING = { stiffness: 500, damping: calcDamping(500, 0.80) }; // fast.small.bounce
 
 const TP_SCALE_STANDARD = 'cubic-bezier(0.40,0.00,0.20,1.00)';
@@ -6208,7 +6210,7 @@ function tpGetModalDest(phone) {
 function tpExpandCard(card) {
   if (tpExpandState || !card) return;
   const isModal = tpGrowMode === 'modal';
-  const { stiffness, damping, stiffnessXW, dampingXW } = isModal ? TP_BOUNCE_SPRING : TP_SPRING;
+  const { stiffness, damping, stiffnessXW, dampingXW } = isModal ? TP_GROW_SPRING : TP_SPRING;
   const stiffnessX = stiffnessXW ?? stiffness;
   const dampingX = dampingXW ?? damping;
   const phone  = document.getElementById('tpPhone');
@@ -6345,10 +6347,10 @@ function tpExpandCard(card) {
 function tpCollapseCard(onDone) {
   if (!tpExpandState) return;
   const { fromX: savedToX, fromY: savedToY, fromW: savedToW, fromH: savedToH, fromR: savedToR, card, imgEl, isModal } = tpExpandState;
-  const { stiffness, damping, stiffnessXW, dampingXW } = isModal ? TP_BOUNCE_SPRING : TP_SPRING;
+  const { stiffness, damping, stiffnessXW, dampingXW } = isModal ? TP_GROW_SPRING : TP_SPRING;
   const stiffnessX = stiffnessXW ?? stiffness;
   const dampingX = dampingXW ?? damping;
-  const heightStiffness = isModal ? 750 : stiffness; // snappy-smooth for inset sheet height on close
+  const heightStiffness = isModal ? 500 : stiffness; // snappy-smooth for inset sheet height on close
   const heightDamping = isModal ? calcDamping(heightStiffness, 1.0) : damping;
   const phone = document.getElementById('tpPhone');
   const panel     = isModal ? document.getElementById('tpModalPanel')        : document.getElementById('tpExpandPanel');
@@ -11298,8 +11300,8 @@ const NG_DEMOS = {
 
 // ── Grow dismiss gesture demo ─────────────────────────────────────
 const NG_SPRING_K = 500, NG_SPRING_D = calcDamping(500, 1.0);
-const NG_BOUNCE_K = 500,  NG_BOUNCE_D  = calcDamping(500,  0.80);
-const NG_BOUNCE_XW_K = 750, NG_BOUNCE_XW_D = calcDamping(750, 0.80);
+const NG_BOUNCE_K = 300,  NG_BOUNCE_D  = calcDamping(300,  0.80);
+const NG_BOUNCE_XW_K = 500, NG_BOUNCE_XW_D = calcDamping(500, 0.80);
 const NG_DISMISS_K = 300, NG_DISMISS_D = calcDamping(300, 0.7);
 const NG_DISMISS_POS_THRESHOLD = 50;
 const NG_DISMISS_VEL_THRESHOLD = 1000;
@@ -11548,7 +11550,7 @@ function ngCollapseCard(velX, velY) {
   if (isModal) {
     // Match tpCollapseCard modal: bouncy X/W, snappy-smooth H, Y delayed 40ms, center-based
     const stiffnessX = NG_BOUNCE_XW_K, dampingX = NG_BOUNCE_XW_D;
-    const stiffnessH = 750, dampingH = calcDamping(750, 1.0);
+    const stiffnessH = 500, dampingH = calcDamping(500, 1.0);
     const fromCX = curX + curW / 2;
     const fromCY = curY + curH / 2;
     const toCX   = toX  + toW  / 2;
